@@ -1,0 +1,47 @@
+For the sake of making our visualizations a bit more readable, this writeup will consider **maximization** of an objective function rather than minimization of a loss function. To see why this can be helpful for shifting to 3D-plotting world (and to see your first 3D plots created with `matplotlib`!), compare the following two figures, in terms of how easy/difficult it is to see the optimal value, plotted as a light blue dot:
+
+---
+
+
+I'm not gonna lie to you... by the time you are trying to add arrows to your `matplotlib` plots, you have somewhat hit the limits of the (very basic!) functionality of `matplotlib`. It is possible, and supported by way of the `quiver()` function, but personally I've never been able to get the arrows to actually look good, which is why at this point I might recommend switching over from `matplotlib` to something like [Plotly]() for this task. But, since we've already produced the above plot, we may as well see what it looks like to just add the arrows onto the plot using `ax.quiver()`.
+
+```{python}
+points = grad_path_10
+minimization = True
+
+fig, ax = plt.subplots(
+  subplot_kw={
+    "projection": "3d",
+    "title": "Adding Arrows with ax.quiver()",
+    "computed_zorder": False,
+  }
+)
+# Generate the surface representing the value of
+# the loss function (the z coordinate) for any
+# pair of (x,y) values
+x_range = np.arange(-5, 5, 0.25)
+y_range = np.arange(-5, 5, 0.25)
+x_vals, y_vals = np.meshgrid(x_range, y_range)
+z_vals = loss_fn(x_vals, y_vals)
+
+# Plot the points given by the points argument!
+points_x = [p[0] for p in points]
+points_y = [p[1] for p in points]
+points_z = [loss_fn(p[0],p[1]) for p in points]
+ax.scatter(points_x, points_y, points_z, color=cb_palette[2], s=80, zorder=10)
+
+# Compute and plot the optimal value
+opt_z = np.min(z_vals) if minimization else np.max(z_vals)
+ax.scatter([0], [0], [opt_z], color=cb_palette[1], s=80, zorder=10)
+surf = ax.plot_surface(
+    x_vals, y_vals, z_vals, cmap='magma', zorder=0, alpha=0.8
+)
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+
+ax.view_init(elev=35, azim=-80)
+
+# Add a color bar which maps values to colors.
+fig.colorbar(surf, shrink=0.5, aspect=5)
+plt.show()
+```

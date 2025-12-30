@@ -1,0 +1,464 @@
+---
+title: "Week 10: Deep Learning"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+author: "Jeff Jacobs"
+institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
+bibliography: "../_DSAN5300.bib"
+date: 2025-03-24
+date-format: full
+lecnum: 10
+categories:
+  - "Class Sessions"
+format:
+  revealjs:
+    df-print: kable
+    footer: "DSAN 5300-01 Week 10: {{< var w10.footer >}}"
+    output-file: "slides.html"
+    html-math-method: mathjax
+    scrollable: true
+    theme: [default, "../dsan-globals/jjquarto.scss"]
+    slide-number: true
+    echo: true
+    code-fold: true
+    link-external-icon: true
+    link-external-newwindow: true
+    include-in-header:
+      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
+    simplemenu:
+      flat: true
+      barhtml:
+        header: "<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>"
+      scale: 0.5
+    revealjs-plugins:
+      - simplemenu
+  html:
+    df-print: kable
+    output-file: "index.html"
+    html-math-method: mathjax
+    echo: true
+    code-fold: true
+---
+
+::: {.content-visible unless-format="revealjs"}
+
+<center class='mb-3'>
+<a class="h2" href="./slides.html" target="_blank">Open slides in new tab &rarr;</a>
+</center>
+
+:::
+
+# Schedule {.smaller .small-title .crunch-title .crunch-callout data-stack-name="Schedule"}
+
+Today's Planned Schedule:
+
+| | Start | End | Topic |
+|:- |:- |:- |:- |
+| **Lecture** | 6:30pm | 7:00pm | [Single Layer Neural Networks &rarr;](#learning-decision-boundaries) |
+| | 7:00pm | 7:20pm | [Max-Margin Classifiers &rarr;](#max-margin-classifiers) | 
+| | 7:20pm | 8:00pm | [Support Vector *Classifiers* &rarr;](#support-vector-classifiers) |
+| **Break!** | 8:00pm | 8:10pm | |
+| | 8:10pm | 9:00pm | [Fancier Neural Networks &rarr;](#quiz-time) |
+
+: {tbl-colwidths="[12,12,12,64]"}
+
+::: {.hidden}
+
+```{r}
+#| label: r-source-globals
+source("../dsan-globals/_globals.r")
+set.seed(5300)
+```
+
+:::
+
+{{< include ../dsan-globals/_globals-tex.qmd >}}
+
+## Quick Roadmap {.smaller .crunch-title .crunch-ul .text-90 .crunch-li-first}
+
+* We made it! Cutting-edge method for [statistical]{style='text-decoration: line-through;'} *neural* learning
+
+{{< video https://www.youtube.com/watch?v=L5GMVdGy8rU width="100%" height="450" >}}
+
+# Single-Layer Neural Networks {.smaller .title-12 data-stack-name="Single-Layer NNs"}
+
+![Single-Layer NN, Adapted from ISLR Fig 10.1](images/nn_single_layer.svg){fig-align="center"}
+
+## Diagram $\leftrightarrow$ Math {.crunch-title .cols-va .crunch-math .crunch-quarto-figure .math-90 .inline-90 .crunch-ul .crunch-li-8 .title-09}
+
+:::: {.columns}
+::: {.column width="66%"}
+
+* $p = 4$ features in [**Input Layer**]{.cb-in}
+* $K = 5$ [**Hidden Units**]{.cb-hidden}
+* [**Output Layer**]{.cb-out}: Regression on **activations** $a_k$ ([Hidden Unit]{.cb-hidden} outputs)
+
+$$
+\begin{align*}
+{\color{#976464} y} &= { \color{#976464} \beta_0 } + {\color{#666693} \sum_{k=1}^{5} } {\color{#976464} \beta_k } { \color{#666693} \overbrace{\boxed{a_k} }^{\mathclap{k^\text{th}\text{ activation}}} } \\
+{\color{#976464} y} &= { \color{#976464} \beta_0 } + {\color{#666693} \sum_{k=1}^{5} } {\color{#976464} \beta_k } { \color{#666693} \underbrace{ g \mkern-4mu \left( w_{k0} + {\color{#679d67} \sum_{j=1}^{4} } w_{kj} {\color{#679d67} x_j} \right) }_{k^\text{th}\text{ activation}}}
+\end{align*}
+$$
+
+:::
+::: {.column width="34%"}
+
+![](images/nn_single_layer.svg){fig-align="center" width="100%"}
+
+:::
+::::
+
+## Matrix Form (Only if Sanity-Helping) {.smaller .crunch-title .title-12}
+
+![](images/nn_activation.svg){fig-align="center"}
+
+## Example
+
+* Rather than pondering over what that diagram can/can't do, consider two "true" DGPs:
+
+$$
+\begin{align*}
+Y &= {\color{#e69f00} X_1 X_2 } \\
+Y &= {\color{#56b4e9} X_1^2 + X_2^2 } \\
+Y &= {\color{#009E73} X_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} X_2}
+\end{align*}
+$$
+
+* How exactly is a neural net able to learn these relationships?
+
+## Sum of Squares {.smaller .crunch-title .crunch-math .cols-va .crunch-quarto-figure .crunch-ul}
+
+:::: {.columns}
+::: {.column width="45%"}
+
+* Can we learn $y = {\color{#56b4e9} x_1^2 + x_2^2 }$?
+* Let's use $g(x) = x^2$.
+* Let $\mathbf{w}_1 = (0, 1, 0)$, $\mathbf{w}_2 = (0, 0, 1)$.
+* Our two activations are:
+
+:::
+::: {.column width="55%"}
+
+![](images/nn_2_2.svg){fig-align="center" width="66.6%"}
+
+:::
+::::
+
+$$
+\begin{align*}
+{\color{#666693} a_1 } &= g(0 + (1)(x_1) + (0)(x_2)) = x_1^2 \\
+{\color{#666693} a_2 } &= g(0 + (0)(x_1) + (1)(x_2)) = x_2^2
+\end{align*}
+$$
+
+* So, if $\boldsymbol\beta = (0, 1, 1)$, then
+
+$$
+{\color{#976464} y } = 0 + (1)(x_1^2) + (1)(x_2^2) = {\color{#56b4e9} x_1^2 + x_2^2} \; ✅
+$$
+
+## Interaction Term {.smaller .crunch-title .crunch-math .cols-va .crunch-quarto-figure .crunch-ul}
+
+:::: {.columns}
+::: {.column width="45%"}
+
+* Can we learn $Y = {\color{#e69f00} x_1x_2}$?
+* Let's use $g(x) = x^2$ again.
+* Let $\mathbf{w}_1 = (0, 1, 1)$, $\mathbf{w}_2 = (0, 1, -1)$.
+* Our two activations are:
+
+:::
+::: {.column width="55%"}
+
+![](images/nn_2_2.svg){fig-align="center" width="66.6%"}
+
+:::
+::::
+
+$$
+\begin{align*}
+{\color{#666693} a_1 } &= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\
+{\color{#666693} a_2 } &= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2
+\end{align*}
+$$
+
+* So, if we let $\boldsymbol\beta = \left( 0, \frac{1}{4}, -\frac{1}{4} \right)$, then
+
+$$
+{\color{#976464} y } = 0 + \left(\frac{1}{4}\right)(x_1^2 + x_2^2 + 2x_1x_2) + \left(-\frac{1}{4}\right)(x_1^2 + x_2^2 - 2x_1x_2) = {\color{#e69f00} x_1x_2} \; ✅
+$$
+
+
+## The XOR Problem {.smaller .crunch-title .crunch-math .cols-va .crunch-quarto-figure .crunch-ul}
+
+:::: {.columns}
+::: {.column width="45%"}
+
+* Can we learn $Y = {\color{#009E73} x_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} x_2}$?
+* Let's use $g(x) = x^2$ once more.
+* Let $\mathbf{w}_1 = (0, 1, 1)$, $\mathbf{w}_2 = (0, 1, -1)$.
+* Our two activations are:
+
+:::
+::: {.column width="55%"}
+
+![](images/nn_2_2.svg){fig-align="center" width="66.6%"}
+
+:::
+::::
+
+$$
+\begin{align*}
+{\color{#666693} a_1 } &= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\
+{\color{#666693} a_2 } &= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2
+\end{align*}
+$$
+
+* So, if we let $\boldsymbol\beta = (0, 0, 1)$, then
+
+$$
+\begin{align*}
+{\color{#976464} y }(0,0) &= 0 + (0)(0^2 + 0^2 + 2(0)(0)) + (1)(0^2 + 0^2 - 2(0)(0)) = {\color{#009e73} 0} \; ✅ \\
+{\color{#976464} y }(0,1) &= 0 + (0)(0^2 + 1^2 + 2(0)(1)) + (1)(0^2 + 1^2 - 2(0)(1)) = {\color{#009e73} 1} \; ✅ \\
+{\color{#976464} y }(1,0) &= 0 + (0)(1^2 + 0^2 + 2(1)(0)) + (1)(1^2 + 0^2 - 2(1)(0)) = {\color{#009e73} 1} \; ✅ \\
+{\color{#976464} y }(1,1) &= 0 + (0)(1^2 + 1^2 + 2(1)(1)) + (1)(1^2 + 1^2 - 2(1)(1)) = {\color{#009e73} 0} \; ✅
+\end{align*}
+$$
+
+## But How? {.smaller .crunch-title .crunch-quarto-figure .crunch-img}
+
+* **Output Layer** is just linear regression on **activations** (Hidden Layer outputs)
+* We saw in Week 7 how good **basis function** allows regression to learn **any** function
+* Neural Networks: **GOAT non-linear basis function learners!**
+
+:::: {.columns}
+::: {.column width="33%"}
+
+```{r}
+#| label: fig-xor-problem
+#| crop: false
+#| fig-height: 8
+#| fig-cap: The DGP $Y = x_1 \oplus x_2$ produces points in $[0,1]^2$ which are not linearly separable
+library(tidyverse) |> suppressPackageStartupMessages()
+library(latex2exp) |> suppressPackageStartupMessages()
+xor_df <- tribble(
+    ~x1, ~x2, ~label,
+    0, 0, 0,
+    0, 1, 1,
+    1, 0, 1,
+    1, 1, 0
+) |>
+mutate(
+    h1 = (x1 - x2)^2,
+    label = factor(label)
+)
+xor_df |> ggplot(aes(x=x1, y=x2, label=label)) +
+  geom_point(
+    aes(color=label, shape=label),
+    size=g_pointsize * 2,
+    stroke=6
+  ) +
+  geom_point(aes(fill=label), color='black', shape=21, size=g_pointsize * 2.5, stroke=0.75, alpha=0.4) +
+  scale_x_continuous(breaks=c(0, 1)) +
+  scale_y_continuous(breaks=c(0, 1)) +
+  expand_limits(y=c(-0.1,1.1)) +
+  # 45 is minus sign, 95 is em-dash
+  scale_shape_manual(values=c(95, 43)) +
+  theme_dsan(base_size=32) +
+  remove_legend_title() +
+  labs(
+    x=TeX("$x_1$"),
+    y=TeX("$x_2$"),
+    title="XOR Problem: Original Features"
+  )
+```
+
+:::
+::: {.column width="33%"}
+
+```{r}
+#| label: fig-xor-problem-tr
+#| crop: false
+#| fig-height: 8
+#| fig-cap: Learned bases $h_1 = (x_1 - x_2)^2$ and $h_2 = (x_1 + x_2)^2$ enable **separating hyperplane** $h_1 = 0.5$
+library(tidyverse)
+xor_df <- tribble(
+    ~x1, ~x2, ~label,
+    0, 0, 0,
+    0, 1, 1,
+    1, 0, 1,
+    1, 1, 0
+) |>
+mutate(
+    h1 = (x1 - x2)^2,
+    h2 = (x1 + x2)^2,
+    h2 = ifelse(h1 > 0.5 & x2==0, h2 + 0.5, h2),
+    label = factor(label)
+)
+xor_df |> ggplot(aes(x=h1, y=h2, label=label)) +
+  geom_vline(xintercept=0.5, linetype="dashed", linewidth=1) +
+  # Negative space
+  geom_rect(xmin=-Inf, xmax=0.5, ymin=-Inf, ymax=Inf, fill=cb_palette[1], alpha=0.15) +
+  # Positive space
+  geom_rect(xmin=0.5, xmax=Inf, ymin=-Inf, ymax=Inf, fill=cb_palette[2], alpha=0.15) +
+  geom_point(
+    aes(color=label, shape=label),
+    size=g_pointsize * 2,
+    stroke=6
+  ) +
+  geom_point(aes(fill=label), color='black', shape=21, size=g_pointsize*2.5, stroke=0.75, alpha=0.4) +
+  expand_limits(y=c(-0.2,4.2)) +
+  # 45 is minus sign, 95 is em-dash
+  scale_shape_manual(values=c(95, 43)) +
+  theme_dsan(base_size=32) +
+  remove_legend_title() +
+  labs(
+    title="NN-Learned Feature Space",
+    x=TeX("$h_1(x_1, x_2)$"),
+    y=TeX("$h_2(x_1, x_2)$")
+  )
+```
+
+:::
+::: {.column width="33%"}
+
+```{r}
+#| label: fig-xor-inverse
+#| fig-height: 8
+#| fig-cap: Here, the blue area represents points where $h_1 = (x_1 - x_2)^2 > 0.5$
+library(tidyverse)
+x1_vals <- seq(from=0, to=1, by=0.0075)
+x2_vals <- seq(from=0, to=1, by=0.0075)
+grid_df <- expand.grid(x1=x1_vals, x2=x2_vals) |>
+  as_tibble() |>
+  mutate(
+    label=factor(as.numeric((x1-x2)^2 > 0.5))
+  )
+ggplot() +
+  geom_point(
+    data=grid_df,
+    aes(x=x1, y=x2, color=label),
+    alpha=0.4
+  ) +
+  geom_point(
+    data=xor_df,
+    aes(x=x1, y=x2, color=label, shape=label),
+    size=g_pointsize * 2,
+    stroke=6
+  ) +
+  geom_point(
+    data=xor_df,
+    aes(x=x1, y=x2, fill=label),
+    color='black', shape=21, size=g_pointsize*2.5, stroke=0.75, alpha=0.4
+  ) +
+  geom_abline(slope=1, intercept=0.7, linetype="dashed", linewidth=1) +
+  geom_abline(slope=1, intercept=-0.7, linetype="dashed", linewidth=1) +
+  scale_shape_manual(values=c(95, 43)) +
+  theme_dsan(base_size=32) +
+  remove_legend_title() +
+  labs(
+    title="XOR Problem: Inverted NN Features",
+    x=TeX("$X_1$"), y=TeX("$X_2$")
+  )
+```
+
+:::
+::::
+
+# Multilayer Neural Networks {.smaller .crunch-title .title-12 data-stack-name="Multilayer NNs"}
+
+![Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4](images/nn_multilayer.svg){fig-align="center"}
+
+## Input Representation {.smaller .crunch-title .cols-va}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+![From [*But what is a neural network?*](https://www.youtube.com/watch?v=aircAruvnKk), 3Blue1Brown](images/mnist_repr.jpg){fig-align="center" width="100%"}
+
+:::
+::: {.column width="50%"}
+
+![](images/nn_multilayer.svg){fig-align="center" width="100%"}
+
+:::
+::::
+
+## But Wait... Ten Outputs? {.smaller .crunch-title .crunch-ul .cols-va}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+![](images/nn_multilayer.svg){fig-align="center" width="100%"}
+
+:::
+::: {.column width="50%"}
+
+* The (magical) **softmax** function!
+
+$$
+z_d = \Pr(Y = d \mid X) = \frac{e^{y_d}}{\sum_{i=0}^{9}e^{y_i}}
+$$
+
+* Ensures that each $Z_d$ is a **probability!**
+
+$$
+\begin{align}
+0 \leq z_d &\leq 1 \; \; \forall ~ d \in \{0,\ldots,9\} \\
+\sum_{d=0}^{9}z_d &= 1
+\end{align}
+$$
+
+:::
+::::
+
+## Visualizing Softmax Results
+
+![[**Interactive Visualization: Handwritten-Digit Space**](https://n8programs.com/mnistLatentSpace/)](images/mnist.jpg)
+
+# Fancier Neural Networks {data-stack-name="Fancier NNs"}
+
+* Convolutional Neural Networks (CNNs)
+* Recurrent Neural Networks (RNNs)
+
+## CNNs {.crunch-title .crunch-ul}
+
+* Key point: Convolutional layers are **not** fully connected!
+* Each layer "pools" info from two units in previous layer
+
+![](images/cnn.svg){fig-align="center"}
+
+## Decoding the Thought Vector {.crunch-title .title-11 .crunch-ul .smaller .crunch-quarto-figure .crunch-img}
+
+* Hidden layers closer to input layer detect low-level "fine-grained" features
+* Hidden layers closer to output layer detect high-level "coarse-grained" features
+
+![](images/frown.jpg){fig-align="center" width="70%"}
+
+![](images/smile.jpg){fig-align="center" width="70%"}
+
+<center>
+
+[**Decoding the Thought Vector**](https://gabgoh.github.io/ThoughtVectors/)
+
+</center>
+
+## Variational Autoencoders
+
+![](images/nn_vae.svg){fig-align="center"}
+
+## RNNs {.smaller}
+
+*...More next week, tbh*
+
+![ISLR Figure 10.12](images/10_12.svg){fig-align="center"}
+
+## Ok But How Do We *Learn* The Weights? {.smaller .title-11}
+
+![[Backpropagation!](https://youtu.be/tIeHLnjs5U8?si=0CSS66763D5s5UVt) (3Blue1Brown Again!)](images/backprop.jpg){fig-align="center"}
+
+*(Full NN playlist [here](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi))*
+
+## References
+
+::: {#refs}
+:::

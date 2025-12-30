@@ -1,0 +1,2213 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jeff Jacobs">
+
+<title>Week 13: Machine Learning for Causal Inference – DSAN 5300-01</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ea72dc5fed832574809a9c94082fbbb.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-8230effed8f06b34674e4faf57934fd7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-156c7c3fe023434b5d29d53166ac0fae.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css"><script src="../sidebar.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../w13/index.html">Week 13: {{&lt; var w13.date-md &gt;}}</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DSAN 5300-01: Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><i class="bi bi-house pe-1"></i> Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://georgetown.zoom.us/j/91911785762?pwd=poQh2m4AiSYWaDudp7hPLDEszWgBuG.1" class="sidebar-item-text sidebar-link" target="_blank">
+ <span class="menu-text">Zoom Link</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../writeups/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Writeups</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=07b596c2-6a0e-4302-a186-b25c00b555ce" class="sidebar-item-text sidebar-link" target="_blank">
+ <span class="menu-text">Recordings <i class="bi bi-box-arrow-up-right ps-1"></i></span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 1: Jan 9</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 2: Jan 13</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 3: Jan 27</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 4: Feb 3</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w05/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 5: Feb 10</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 6: Feb 18</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 7: Feb 24</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 8: Mar 10</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 9: Mar 17</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 10: Mar 24</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 11: Mar 31</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 12: Apr 7</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w13/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Week 13: Apr 14</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://georgetown.instructure.com/courses/203361" class="sidebar-item-text sidebar-link" target="_blank">
+ <span class="menu-text">Canvas <i class="bi bi-box-arrow-up-right ps-1"></i></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://jjacobs.me/meet" class="sidebar-item-text sidebar-link" target="_blank">
+ <span class="menu-text">Office Hours <i class="bi bi-box-arrow-up-right ps-1"></i></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+<div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
+<p><em>Updated 2025-04-14, 05:59:03 PM</em></p>
+</div></div></nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#schedule" id="toc-schedule" class="nav-link active" data-scroll-target="#schedule">Schedule</a>
+  <ul class="collapse">
+  <li><a href="#roadmap" id="toc-roadmap" class="nav-link" data-scroll-target="#roadmap">Roadmap</a></li>
+  </ul></li>
+  <li><a href="#the-fundamental-problem-of-causal-inference" id="toc-the-fundamental-problem-of-causal-inference" class="nav-link" data-scroll-target="#the-fundamental-problem-of-causal-inference">The Fundamental Problem of Causal Inference</a>
+  <ul class="collapse">
+  <li><a href="#the-fundamental-problem-of-causal-inference-1" id="toc-the-fundamental-problem-of-causal-inference-1" class="nav-link" data-scroll-target="#the-fundamental-problem-of-causal-inference-1">The <em>Fundamental</em> Problem of Causal Inference</a></li>
+  <li><a href="#cant-we-just-use-temporal-precedence" id="toc-cant-we-just-use-temporal-precedence" class="nav-link" data-scroll-target="#cant-we-just-use-temporal-precedence">Can’t We Just Use Temporal Precedence?</a></li>
+  <li><a href="#extreme-example-super-mario-64-speedrunning" id="toc-extreme-example-super-mario-64-speedrunning" class="nav-link" data-scroll-target="#extreme-example-super-mario-64-speedrunning">Extreme Example: Super Mario 64 Speedrunning</a></li>
+  <li><a href="#what-about-a-b-testing" id="toc-what-about-a-b-testing" class="nav-link" data-scroll-target="#what-about-a-b-testing">What About A-B Testing?</a></li>
+  <li><a href="#what-is-to-be-done" id="toc-what-is-to-be-done" class="nav-link" data-scroll-target="#what-is-to-be-done">What Is To Be Done?</a></li>
+  </ul></li>
+  <li><a href="#matching-estimators" id="toc-matching-estimators" class="nav-link" data-scroll-target="#matching-estimators">Matching Estimators</a>
+  <ul class="collapse">
+  <li><a href="#case-study-military-inequality-leadsto-military-success" id="toc-case-study-military-inequality-leadsto-military-success" class="nav-link" data-scroll-target="#case-study-military-inequality-leadsto-military-success">Case Study: Military Inequality <span class="math inline">\(\leadsto\)</span> Military Success</a></li>
+  <li><a href="#does-inequality-cause-poor-military-performance" id="toc-does-inequality-cause-poor-military-performance" class="nav-link" data-scroll-target="#does-inequality-cause-poor-military-performance">Does Inequality Cause Poor Military Performance?</a></li>
+  <li><a href="#glorified-logistic-regression" id="toc-glorified-logistic-regression" class="nav-link" data-scroll-target="#glorified-logistic-regression">…Glorified Logistic Regression!</a></li>
+  <li><a href="#from-controlling-for-to-how-well-are-we-controlling-for" id="toc-from-controlling-for-to-how-well-are-we-controlling-for" class="nav-link" data-scroll-target="#from-controlling-for-to-how-well-are-we-controlling-for">From “Controlling For” to “<em>How Well</em> Are We Controlling For?”</a></li>
+  <li><a href="#selection-bias" id="toc-selection-bias" class="nav-link" data-scroll-target="#selection-bias">Selection Bias</a></li>
+  <li><a href="#logistic-regression-of-treatment" id="toc-logistic-regression-of-treatment" class="nav-link" data-scroll-target="#logistic-regression-of-treatment">Logistic Regression of Treatment</a></li>
+  <li><a href="#propensity-score-logistic-regression-estimate" id="toc-propensity-score-logistic-regression-estimate" class="nav-link" data-scroll-target="#propensity-score-logistic-regression-estimate">Propensity Score = Logistic Regression Estimate</a></li>
+  <li><a href="#propensity-score-matching-distance-metric" id="toc-propensity-score-matching-distance-metric" class="nav-link" data-scroll-target="#propensity-score-matching-distance-metric">Propensity Score <em>Matching</em> = Distance Metric!</a></li>
+  <li><a href="#now-in-a-for-loop" id="toc-now-in-a-for-loop" class="nav-link" data-scroll-target="#now-in-a-for-loop">Now in a For Loop…</a></li>
+  <li><a href="#and-now-we-compare-apples-to-apples" id="toc-and-now-we-compare-apples-to-apples" class="nav-link" data-scroll-target="#and-now-we-compare-apples-to-apples">And Now We Compare Apples to Apples…</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/jpowerj/dsan5300-01/blob/main/w13/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="slides.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 13: Machine Learning for Causal Inference</h1>
+<p class="subtitle lead"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2025, Georgetown University</span></p>
+  <div class="quarto-categories">
+    <div class="quarto-category">Class Sessions</div>
+  </div>
+  </div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Jeff Jacobs </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            <a href="mailto:jj1088@georgetown.edu"><code>jj1088@georgetown.edu</code></a>
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Monday, April 14, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<center class="mb-3">
+<a class="h2" href="./slides.html" target="_blank">Open slides in new tab →</a>
+</center>
+<section id="schedule" class="level1 smaller small-title crunch-title crunch-callout" data-stack-name="Schedule">
+<h1 class="smaller small-title crunch-title crunch-callout" data-stack-name="Schedule">Schedule</h1>
+<p>Today’s Planned Schedule:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 64%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Start</th>
+<th style="text-align: left;">End</th>
+<th style="text-align: left;">Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Lecture</strong></td>
+<td style="text-align: left;">6:30pm</td>
+<td style="text-align: left;">7:00pm</td>
+<td style="text-align: left;"><a href="#learning-decision-boundaries">Fundamental Problem of Causal Inference →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7:00pm</td>
+<td style="text-align: left;">7:20pm</td>
+<td style="text-align: left;"><a href="#comparing-survival-curves">Apples to Apples →</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7:20pm</td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;"><a href="#regression-with-survival-response">How Can Machine Learning Help? →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Break!</strong></td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;">9:00pm</td>
+<td style="text-align: left;"><a href="#quiz-time">Causal Forests →</a></td>
+</tr>
+</tbody>
+</table>
+<div class="hidden">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+<div class="hidden">
+<p><span class="math display">\[
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\bigexp}[1]{\exp\mkern-4mu\left[ #1 \right]}
+\newcommand{\bigexpect}[1]{\mathbb{E}\mkern-4mu \left[ #1 \right]}
+\newcommand{\definedas}{\overset{\small\text{def}}{=}}
+\newcommand{\definedalign}{\overset{\phantom{\text{defn}}}{=}}
+\newcommand{\eqeventual}{\overset{\text{eventually}}{=}}
+\newcommand{\Err}{\text{Err}}
+\newcommand{\expect}[1]{\mathbb{E}[#1]}
+\newcommand{\expectsq}[1]{\mathbb{E}^2[#1]}
+\newcommand{\fw}[1]{\texttt{#1}}
+\newcommand{\given}{\mid}
+\newcommand{\green}[1]{\color{green}{#1}}
+\newcommand{\heads}{\outcome{heads}}
+\newcommand{\iid}{\overset{\text{\small{iid}}}{\sim}}
+\newcommand{\lik}{\mathcal{L}}
+\newcommand{\loglik}{\ell}
+\DeclareMathOperator*{\maximize}{maximize}
+\DeclareMathOperator*{\minimize}{minimize}
+\newcommand{\mle}{\textsf{ML}}
+\newcommand{\nimplies}{\;\not\!\!\!\!\implies}
+\newcommand{\orange}[1]{\color{orange}{#1}}
+\newcommand{\outcome}[1]{\textsf{#1}}
+\newcommand{\param}[1]{{\color{purple} #1}}
+\newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
+\newcommand{\prob}[1]{P\left( #1 \right)}
+\newcommand{\purp}[1]{\color{purple}{#1}}
+\newcommand{\sign}{\text{Sign}}
+\newcommand{\spacecap}{\; \cap \;}
+\newcommand{\spacewedge}{\; \wedge \;}
+\newcommand{\tails}{\outcome{tails}}
+\newcommand{\Var}[1]{\text{Var}[#1]}
+\newcommand{\bigVar}[1]{\text{Var}\mkern-4mu \left[ #1 \right]}
+\]</span></p>
+</div>
+<section id="roadmap" class="level2 crunch-title crunch-ul-full title-10 text-80 crunch-li-8 crunch-li-last">
+<h2 class="crunch-title crunch-ul-full title-10 text-80 crunch-li-8 crunch-li-last anchored" data-anchor-id="roadmap">Roadmap</h2>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="<i class='bi bi-1-circle'></i> What makes **causation** different from correlation?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<i class="bi bi-1-circle"></i> What makes <strong>causation</strong> different from correlation?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Why can’t we use, e.g., Regression to infer <strong>causal effects</strong>? <em><span class="math inline">\(\uparrow X\)</span> by 1 unit <del>causes</del> <span class="math inline">\(\uparrow Y\)</span> by <span class="math inline">\(\beta\)</span> units</em>?</li>
+<li><span class="math inline">\(\leadsto\)</span> Fundamental Problem of Causal Inference</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="<i class='bi bi-2-circle'></i> Key to resolving Fundamental Problem: *Match* similar observations">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<i class="bi bi-2-circle"></i> Key to resolving Fundamental Problem: <em>Match</em> similar observations
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>Apples to apples</strong>: If <span class="math inline">\(j\)</span> receives drug while <span class="math inline">\(i\)</span> doesn’t, and they’re <span class="math inline">\(s_{ij}\%\)</span> similar otherwise (age, height)…</li>
+<li>Higher <span class="math inline">\(s_{ij}\)</span> <span class="math inline">\(\implies\)</span> more confidence in attributing difference in outcomes <span class="math inline">\(\boxed{\Delta y = y_j - y_i}\)</span> to drug!</li>
+<li><span class="math inline">\(\leadsto\)</span> Propensity Score Matching (<span class="math inline">\(\approx\)</span> Logistic Regression)</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="<i class='bi bi-3-circle'></i> How can ML help us infer **counterfactual** effects?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<i class="bi bi-3-circle"></i> How can ML help us infer <strong>counterfactual</strong> effects?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Patient <em><span class="math inline">\(i\)</span> didn’t receive treatment, reported <a href="https://www.physio-pedia.com/McGill_Pain_Questionnaire">VAS pain level</a> <span class="math inline">\(y^0_i = 80\)</span>…</em></li>
+<li><em>If <span class="math inline">\(i\)</span> <strong>had</strong> received treatment, what would their pain level <span class="math inline">\(y_i^1\)</span> be?</em></li>
+<li><span class="math inline">\(\leadsto\)</span> Causal Forests, to estimate <span class="math inline">\(\boxed{\Delta y_i = y^1_i - y^0_i}\)</span></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="the-fundamental-problem-of-causal-inference" class="level1" data-stack-name="Fundamental Problem">
+<h1 data-stack-name="Fundamental Problem">The Fundamental Problem of Causal Inference</h1>
+<section id="the-fundamental-problem-of-causal-inference-1" class="level2 crunch-title crunch-ul crunch-callout title-07">
+<h2 class="crunch-title crunch-ul crunch-callout title-07 anchored" data-anchor-id="the-fundamental-problem-of-causal-inference-1">The <em>Fundamental</em> Problem of Causal Inference</h2>
+<p>The only workable definition of “<span class="math inline">\(X\)</span> causes <span class="math inline">\(Y\)</span>”:</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="<i class='bi bi-info-circle pe-1'></i> Defining Causality [@hume_treatise_1739]">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<i class="bi bi-info-circle pe-1"></i> Defining Causality <span class="citation" data-cites="hume_treatise_1739">(<a href="#ref-hume_treatise_1739" role="doc-biblioref">Hume 1739</a>)</span>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="math inline">\(X\)</span> causes <span class="math inline">\(Y\)</span> if and only if:</p>
+<ol type="1">
+<li><span class="math inline">\(X\)</span> <strong>temporally precedes</strong> <span class="math inline">\(Y\)</span> and</li>
+<li><ul>
+<li>In <strong>two worlds</strong> <span class="math inline">\(W_0\)</span> and <span class="math inline">\(W_1\)</span> where everything is <strong>exactly the same</strong>…</li>
+<li>…<strong>except that</strong> <span class="math inline">\(\boxed{X = 0 \text{  in  } W_0}\)</span> and <span class="math inline">\(\boxed{X = 1 \text{  in  } W_1}\)</span>,</li>
+<li><span class="math inline">\(\boxed{Y = 0 \text{  in  } W_0}\)</span> and <span class="math inline">\(\boxed{Y = 1 \text{  in  } W_1}\)</span>.</li>
+</ul></li>
+</ol>
+</div>
+</div>
+<ul>
+<li>The problem? We live in <strong>one</strong> world, not two simultaneous worlds 😭</li>
+</ul>
+</section>
+<section id="cant-we-just-use-temporal-precedence" class="level2 title-08 crunch-title">
+<h2 class="title-08 crunch-title anchored" data-anchor-id="cant-we-just-use-temporal-precedence">Can’t We Just Use Temporal Precedence?</h2>
+<ul>
+<li>Can’t we just pretend that <span class="math inline">\(W_0\)</span> is our world at time <span class="math inline">\(t\)</span> and <span class="math inline">\(W_1\)</span> is our world at time <span class="math inline">\(t + 1\)</span>?</li>
+<li>Did throwing the eraser at Sam at time <span class="math inline">\(t\)</span> <strong>cause</strong> him to be upset at time <span class="math inline">\(t + 1\)</span>?</li>
+<li>No, because at time <span class="math inline">\(t\)</span>, simultaneous with my eraser-throwing, a <strong>cockroach</strong> scuttled across his foot, the <em>true</em> cause of him being upset at time <span class="math inline">\(t + 1\)</span></li>
+<li>Without knowing that the worlds are <strong>identical except for the posited cause-event</strong>, we can’t exclude the possibility of some other cause-event</li>
+</ul>
+</section>
+<section id="extreme-example-super-mario-64-speedrunning" class="level2 smaller crunch-title title-10 crunch-quarto-figure crunch-blockquote crunch-p crunch-img">
+<h2 class="smaller crunch-title title-10 crunch-quarto-figure crunch-blockquote crunch-p crunch-img anchored" data-anchor-id="extreme-example-super-mario-64-speedrunning">Extreme Example: Super Mario 64 Speedrunning</h2>
+<p>Seemingly-reasonable assumption: Button-pushes cause outcomes in games…</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<blockquote class="blockquote">
+<p>During the race, an ionizing particle from outer space collided with DOTA_Teabag’s N64, flipping the eighth bit of Mario’s first height byte. Specifically, it flipped the byte from 11000101 to 11000100, from “C5” to “C4”. This resulted in a height change from C5837800 to C4837800, which by complete chance, happened to be the exact amount needed to warp Mario up to the higher floor at that exact moment.</p>
+</blockquote>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/sm64.jpg" class="img-fluid figure-img"></p>
+<figcaption><a href="https://www.thegamer.com/how-ionizing-particle-outer-space-helped-super-mario-64-speedrunner-save-time/">Article from TheGamer.com</a></figcaption>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>This was tested by pannenkoek12 - the same person who put up the bounty - using a script that manually flipped that particular bit at the right time, confirming the suspicion of a bit flip.</p>
+</blockquote>
+</section>
+<section id="what-about-a-b-testing" class="level2 crunch-title title-09 crunch-li-8">
+<h2 class="crunch-title title-09 crunch-li-8 anchored" data-anchor-id="what-about-a-b-testing">What About A-B Testing?</h2>
+<ul>
+<li>Gets us significantly closer, but methods for <strong>recovering</strong> causal effect require a condition called <strong>SUTVA</strong></li>
+<li><strong>S</strong>table <strong>U</strong>nit <strong>T</strong>reatment <strong>V</strong>alue <strong>A</strong>ssumption: Treatment applied to <span class="math inline">\(i\)</span> does not affect outcome for another person <span class="math inline">\(j\)</span></li>
+<li>If we A-B test an <strong>app redesign</strong> (A = old design, B = new design), and outcome = length of time spent on app…</li>
+<li>Person <span class="math inline">\(i\)</span> seeing design A may like the new design, causing them to spend more time on the app</li>
+<li>Person <span class="math inline">\(i\)</span> may then <strong>message</strong> person <span class="math inline">\(j\)</span> <em>“Check out [app], they redesigned everything!”</em>, causing <span class="math inline">\(j\)</span> to spend more time on app regardless of treatment (network spillover ❌)</li>
+</ul>
+</section>
+<section id="what-is-to-be-done" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-to-be-done">What Is To Be Done?</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/face_everything_and_rise.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+</section>
+<section id="matching-estimators" class="level1 crunch-title" data-stack-name="Matching Estimators">
+<h1 class="crunch-title" data-stack-name="Matching Estimators">Matching Estimators</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/fruit.png" class="img-fluid figure-img"></p>
+<figcaption><a href="https://shirt.woot.com/offers/comparing-apples-to-oranges">Image Source</a></figcaption>
+</figure>
+</div>
+<section id="case-study-military-inequality-leadsto-military-success" class="level2 smaller crunch-title title-09 crunch-ul crunch-blockquote crunch-li-8">
+<h2 class="smaller crunch-title title-09 crunch-ul crunch-blockquote crunch-li-8 anchored" data-anchor-id="case-study-military-inequality-leadsto-military-success">Case Study: Military Inequality <span class="math inline">\(\leadsto\)</span> Military Success</h2>
+<ul>
+<li><span class="citation" data-cites="lyall_divided_2020">Lyall (<a href="#ref-lyall_divided_2020" role="doc-biblioref">2020</a>)</span>: “Treating certain ethnic groups as second-class citizens […] leads victimized soldiers to subvert military authorities once war begins. The higher an army’s inequality, the greater its rates of desertion, side-switching, and casualties”</li>
+</ul>
+<blockquote class="blockquote">
+<p>Matching constructs <strong>pairs of belligerents</strong> that are <strong>similar</strong> across a wide range of traits thought to dictate battlefield performance but that <strong>vary</strong> in levels of prewar inequality. The more similar the belligerents, the better our estimate of inequality’s effects, as all other traits are shared and thus cannot explain observed differences in performance, helping assess how battlefield performance <strong>would have</strong> improved (declined) if the belligerent had a lower (higher) level of prewar inequality.</p>
+<p>Since [non-matched] cases are <strong>dropped</strong> […] selected cases are more representative of average belligerents/wars than outliers with few or no matches, [providing] surer ground for testing generalizability of the book’s claims than focusing solely on canonical but unrepresentative usual suspects (Germany, the United States, Israel)</p>
+</blockquote>
+</section>
+<section id="does-inequality-cause-poor-military-performance" class="level2 smaller crunch-title title-10 table-80 text-60">
+<h2 class="smaller crunch-title title-10 table-80 text-60 anchored" data-anchor-id="does-inequality-cause-poor-military-performance">Does Inequality Cause Poor Military Performance?</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><br>Covariates</th>
+<th>Sultanate of Morocco<br> <em>Spanish-Moroccan War, 1859-60</em></th>
+<th>Khanate of Kokand<br> <em>War with Russia, 1864-65</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong><span class="math inline">\(X\)</span>: Military Inequality</strong></td>
+<td>Low (0.01)</td>
+<td>Extreme (0.70)</td>
+</tr>
+<tr class="even">
+<td><strong><span class="math inline">\(\mathbf{Z}\)</span>: Matched Covariates:</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Initial relative power</td>
+<td>66%</td>
+<td>66%</td>
+</tr>
+<tr class="even">
+<td>Total fielded force</td>
+<td>55,000</td>
+<td>50,000</td>
+</tr>
+<tr class="odd">
+<td>Regime type</td>
+<td>Absolutist Monarchy (−6)</td>
+<td>Absolute Monarchy (−7)</td>
+</tr>
+<tr class="even">
+<td>Distance from capital</td>
+<td>208km</td>
+<td>265km</td>
+</tr>
+<tr class="odd">
+<td>Standing army</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Composite military</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Initiator</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Joiner</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Democratic opponent</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Great Power</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Civil war</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Combined arms</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Doctrine</td>
+<td>Offensive</td>
+<td>Offensive</td>
+</tr>
+<tr class="even">
+<td>Superior weapons</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Fortifications</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Foreign advisors</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Terrain</td>
+<td>Semiarid coastal plain</td>
+<td>Semiarid grassland plain</td>
+</tr>
+<tr class="even">
+<td>Topography</td>
+<td>Rugged</td>
+<td>Rugged</td>
+</tr>
+<tr class="odd">
+<td>War duration</td>
+<td>126 days</td>
+<td>378 days</td>
+</tr>
+<tr class="even">
+<td>Recent war history w/opp</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Facing colonizer</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Identity dimension</td>
+<td>Sunni Islam/Christian</td>
+<td>Sunni Islam/Christian</td>
+</tr>
+<tr class="odd">
+<td>New leader</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Population</td>
+<td>8–8.5 million</td>
+<td>5–6 million</td>
+</tr>
+<tr class="odd">
+<td>Ethnoling fractionalization (ELF)</td>
+<td>High</td>
+<td>High</td>
+</tr>
+<tr class="even">
+<td>Civ-mil relations</td>
+<td>Ruler as commander</td>
+<td>Ruler as commander</td>
+</tr>
+<tr class="odd">
+<td><strong><span class="math inline">\(Y\)</span>: Battlefield Performance:</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Loss-exchange ratio</td>
+<td>0.43</td>
+<td>0.02</td>
+</tr>
+<tr class="odd">
+<td>Mass desertion</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Mass defection</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Fratricidal violence</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="glorified-logistic-regression" class="level2 smaller crunch-title title-11 crunch-ul cols-va crunch-details">
+<h2 class="smaller crunch-title title-11 crunch-ul cols-va crunch-details anchored" data-anchor-id="glorified-logistic-regression">…Glorified Logistic Regression!</h2>
+<style>
+.vil-table th {
+  background-color: white !important;
+}
+.vil-table tr:nth-child(1), .vil-table tr:nth-child(2), .vil-table tr:nth-child(3), .vil-table tr:nth-child(4) {
+  background-color: rgba(230, 159, 0, 0.333) !important;
+  text-align: center !important;
+}
+.vil-table tr:nth-child(5), .vil-table tr:nth-child(6), .vil-table tr:nth-child(7), .vil-table tr:nth-child(8), .vil-table tr:nth-child(9) {
+    background-color: rgba(86, 180, 233, 0.333) !important;
+    text-align: center !important;
+}
+.vil-sum-table th {
+  background-color: white !important;
+}
+.vil-sum-table tr:nth-child(1) {
+  background-color: rgba(230, 159, 0, 0.333) !important;
+  text-align: center !important;
+}
+.vil-sum-table tr:nth-child(2) {
+  background-color: rgba(86, 180, 233, 0.333) !important;
+  text-align: center !important;
+}
+</style>
+<ul>
+<li>Similarity score via Logistic Regression! Let’s look at a <a href="https://www.youtube.com/watch?v=ACVyPp1Fy6Y">program</a> that built health clinics in several villages: did health clinics <strong>cause</strong> lower infant mortality?</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell vil-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ lubridate 1.9.3     ✔ tibble    3.2.1
+✔ purrr     1.0.2     ✔ tidyr     1.3.1
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>village_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>village_id, <span class="sc">~</span>T, <span class="sc">~</span>inf_mortality, </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">10</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">15</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">22</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">19</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">25</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="dv">6</span>, <span class="dv">0</span>, <span class="dv">19</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="dv">7</span>, <span class="dv">0</span>, <span class="dv">4</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="dv">8</span>, <span class="dv">0</span>, <span class="dv">8</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="dv">9</span>, <span class="dv">0</span>, <span class="dv">6</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">T =</span> <span class="fu">factor</span>(T))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>village_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">inf_mortality</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell vil-sum-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>village_df <span class="sc">|&gt;</span> <span class="fu">group_by</span>(T) <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_mortality =</span> <span class="fu">mean</span>(inf_mortality)) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(T))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">mean_mortality</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">16.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">12.4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Health clinics <strong>increased</strong> mortality by 4.1?</p>
+</div>
+</div>
+</section>
+<section id="from-controlling-for-to-how-well-are-we-controlling-for" class="level2 smaller crunch-title title-10 crunch-ul crunch-details">
+<h2 class="smaller crunch-title title-10 crunch-ul crunch-details anchored" data-anchor-id="from-controlling-for-to-how-well-are-we-controlling-for">From “Controlling For” to “<em>How Well</em> Are We Controlling For?”</h2>
+<ul>
+<li>By introducing covariates, we can see the <strong>selection bias</strong> at play…</li>
+</ul>
+<div class="cell vil-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>covar_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>poverty_rate, <span class="sc">~</span>docs_per_capita,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.5</span>, <span class="fl">0.01</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.6</span>, <span class="fl">0.02</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.7</span>, <span class="fl">0.01</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.6</span>, <span class="fl">0.02</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.6</span>, <span class="fl">0.01</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.5</span>, <span class="fl">0.02</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.1</span>, <span class="fl">0.04</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.3</span>, <span class="fl">0.05</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.2</span>, <span class="fl">0.04</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>village_df <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(village_df, covar_df)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>village_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">inf_mortality</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="selection-bias" class="level2 smaller crunch-title">
+<h2 class="smaller crunch-title anchored" data-anchor-id="selection-bias">Selection Bias</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>village_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> poverty_rate, <span class="at">fill=</span>T)) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Poverty Rate by Treatment"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Poverty Rate"</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/selection-bias-pov-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>village_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> docs_per_capita, <span class="at">fill=</span>T)) <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Doctors per Capita by Treatment"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Doctors per Capita"</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/selection-bias-doctors-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li><span class="math inline">\(\leadsto\)</span> We’re not comparing <strong>apples to apples</strong>! (<em>“Well, we’re both villages”</em>)</li>
+</ul>
+</section>
+<section id="logistic-regression-of-treatment" class="level2 smaller title-10 crunch-title">
+<h2 class="smaller title-10 crunch-title anchored" data-anchor-id="logistic-regression-of-treatment">Logistic Regression of Treatment</h2>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>prop_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  T <span class="sc">~</span> poverty_rate <span class="sc">+</span> docs_per_capita,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span>village_df, <span class="at">family=</span><span class="st">"binomial"</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(prop_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = T ~ poverty_rate + docs_per_capita, family = "binomial", 
+    data = village_df)
+
+Coefficients:
+                Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)       -7.498      8.992  -0.834    0.404
+poverty_rate      14.500     13.651   1.062    0.288
+docs_per_capita   -8.880    143.595  -0.062    0.951
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 12.3653  on 8  degrees of freedom
+Residual deviance:  6.9987  on 6  degrees of freedom
+AIC: 12.999
+
+Number of Fisher Scoring iterations: 6</code></pre>
+</div>
+</div>
+<ul>
+<li>We now have a <strong>model of selection bias!</strong> <span class="math inline">\(\leadsto\)</span> <strong>match</strong> observations with similar <span class="math inline">\(\Pr(T)\)</span></li>
+</ul>
+</section>
+<section id="propensity-score-logistic-regression-estimate" class="level2 smaller crunch-title title-10">
+<h2 class="smaller crunch-title title-10 anchored" data-anchor-id="propensity-score-logistic-regression-estimate">Propensity Score = Logistic Regression Estimate</h2>
+<div class="cell vil-table" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>village_df<span class="sc">$</span>ps <span class="ot">&lt;-</span> <span class="fu">predict</span>(prop_model, village_df, <span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>village_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 4%">
+<col style="width: 20%">
+<col style="width: 19%">
+<col style="width: 23%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">inf_mortality</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+<th style="text-align: right;">ps</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.4165712</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.9284516</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0016534</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0268029</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0070107</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="propensity-score-matching-distance-metric" class="level2 smaller crunch-title title-10">
+<h2 class="smaller crunch-title title-10 anchored" data-anchor-id="propensity-score-matching-distance-metric">Propensity Score <em>Matching</em> = Distance Metric!</h2>
+<style>
+.vil-match tr:nth-child(2) {
+  background-color: rgba(0, 158, 115, 0.333) !important;
+  text-align: center !important;
+}
+.vil-match tr:nth-child(2) td:nth-child(6) {
+  font-weight: bold;
+}
+</style>
+<div class="cell vil-match" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cur_T <span class="ot">&lt;-</span> village_df[<span class="dv">1</span>,<span class="st">"T"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cur_ps <span class="ot">&lt;-</span> village_df[<span class="dv">1</span>,<span class="st">"ps"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="fu">paste0</span>(<span class="st">"Current village: T = "</span>,cur_T,<span class="st">", ps = "</span>,cur_ps))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Current village: T = 1, ps = 0.416571242858422</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>other_df <span class="ot">&lt;-</span> village_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(T <span class="sc">!=</span> cur_T) <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">ps_dist =</span> <span class="fu">abs</span>(ps <span class="sc">-</span> cur_ps)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>other_df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(inf_mortality))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+<th style="text-align: right;">ps</th>
+<th style="text-align: right;">ps_dist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">0.3361428</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+<td style="text-align: right;">0.0214093</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0016534</td>
+<td style="text-align: right;">0.4149179</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0268029</td>
+<td style="text-align: right;">0.3897683</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0070107</td>
+<td style="text-align: right;">0.4095605</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="now-in-a-for-loop" class="level2 smaller crunch-title title-11">
+<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="now-in-a-for-loop">Now in a For Loop…</h2>
+<div class="cell vil-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  cur_T <span class="ot">&lt;-</span> village_df[i,<span class="st">"T"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  cur_ps <span class="ot">&lt;-</span> village_df[i,<span class="st">"ps"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># writeLines(paste0("Current village: T = ",cur_T,", ps = ",cur_ps))</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  other_df <span class="ot">&lt;-</span> village_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(T <span class="sc">!=</span> cur_T) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">ps_dist =</span> <span class="fu">abs</span>(ps <span class="sc">-</span> cur_ps)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  match_id <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">which.min</span>(other_df<span class="sc">$</span>ps_dist))</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  village_df[i,<span class="st">"match"</span>] <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(match_id)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>village_df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>inf_mortality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+<th style="text-align: right;">ps</th>
+<th style="text-align: right;">match</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.4165712</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.9284516</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0016534</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0268029</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0070107</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="and-now-we-compare-apples-to-apples" class="level2 smaller crunch-title title-11">
+<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="and-now-we-compare-apples-to-apples">And Now We Compare Apples to Apples…</h2>
+<div class="cell vil-table" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>treated_df <span class="ot">&lt;-</span> village_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(T <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>(matched_df <span class="ot">&lt;-</span> treated_df <span class="sc">|&gt;</span> <span class="fu">left_join</span>(village_df, <span class="fu">join_by</span>(match <span class="sc">==</span> village_id)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 2%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 6%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 6%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T.x</th>
+<th style="text-align: right;">inf_mortality.x</th>
+<th style="text-align: right;">poverty_rate.x</th>
+<th style="text-align: right;">docs_per_capita.x</th>
+<th style="text-align: right;">ps.x</th>
+<th style="text-align: right;">match</th>
+<th style="text-align: left;">T.y</th>
+<th style="text-align: right;">inf_mortality.y</th>
+<th style="text-align: right;">poverty_rate.y</th>
+<th style="text-align: right;">docs_per_capita.y</th>
+<th style="text-align: right;">ps.y</th>
+<th style="text-align: right;">match.y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.4165712</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.9284516</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>matched_df <span class="sc">|&gt;</span> <span class="fu">summarize</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_tr =</span> <span class="fu">mean</span>(inf_mortality.x),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_control =</span> <span class="fu">mean</span>(inf_mortality.y)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">mean_tr</th>
+<th style="text-align: right;">mean_control</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">16.5</td>
+<td style="text-align: right;">23.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<ul>
+<li><span class="math inline">\(\leadsto\)</span> Treatment effect <span class="math inline">\(\approx\)</span> <strong>-7</strong> 🥳</li>
+</ul>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-hume_treatise_1739" class="csl-entry" role="listitem">
+Hume, David. 1739. <em>A <span>Treatise</span> of <span>Human Nature</span>: <span>Being</span> an <span>Attempt</span> to <span>Introduce</span> the <span>Experimental Method</span> of <span>Reasoning Into Moral Subjects</span>; and <span>Dialogues Concerning Natural Religion</span></em>. Longmans, Green.
+</div>
+<div id="ref-lyall_divided_2020" class="csl-entry" role="listitem">
+Lyall, Jason. 2020. <em>Divided <span>Armies</span>: <span>Inequality</span> and <span>Battlefield Performance</span> in <span>Modern War</span></em>. Princeton University Press.
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jpowerj/dsan5300-01/blob/main/w13/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

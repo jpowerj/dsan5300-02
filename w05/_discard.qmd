@@ -1,0 +1,31 @@
+
+## First Things First: The Data-Generating Process (DGP) {.smaller}
+
+* From economic microfoundations, can derive that production cost curves (in presence of *economies of scale*) tend to take on forms like
+
+$$
+C(x) = 250 + 195x - 24x^2 + x^3
+$$
+
+```{r}
+#| label: cubic-dgp
+library(tidyverse)
+compute_prod_cost <- function(x) {
+    return(250 + 195*x - 24*(x^2) + x^3)
+}
+N <- 500
+x_vals <- runif(N, min=0, max=16)
+y_raw = compute_prod_cost(x_vals)
+y_noise = rnorm(N, mean=0, sd=100)
+y_vals <- y_raw + y_noise
+prod_df <- tibble(x=x_vals, y=y_vals)
+prod_df |> ggplot(aes(x=x, y=y)) +
+  geom_point() +
+  theme_classic(base_size=22)
+```
+
+::: {.notes}
+
+https://www.opportunityatlas.org/?%7B%22mapping%22%3A%22kfr%22%2C%22dataToggles%22%3A%7B%22parentIncome%22%3A%22p25%22%2C%22childRace%22%3A%22rP%22%2C%22childGender%22%3A%22gP%22%2C%22cohortTimeline%22%3A%22e%22%7D%2C%22compareDataToggles%22%3A%7B%22parentIncome%22%3A%22pall%22%2C%22childRace%22%3A%22rP%22%2C%22childGender%22%3A%22gP%22%2C%22cohortTimeline%22%3A%22e%22%7D%2C%22selectedChapterId%22%3A%22chapter1%22%2C%22compareFeatures%22%3A%22subgroup%22%2C%22selectedFeatureByID%22%3A%22cty11001%22%2C%22filters%22%3A%5B%5D%2C%22mode%22%3A%22standardMode%22%2C%22mapBounds%22%3A%5B%5B-78.90679442941929%2C38.087613189251755%5D%2C%5B-74.96364651649473%2C40.07482897415662%5D%5D%2C%22showStoryMarkers%22%3Atrue%2C%22showHistogram%22%3Afalse%2C%22propertyShownOnMap%22%3A%22kfr_rP_gP_p25_e%22%7D
+
+:::

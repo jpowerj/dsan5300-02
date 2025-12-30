@@ -1,0 +1,5 @@
+## "Entropy Loss": Output Layer Uncertainty {.smaller .crunch-title .title-10 .math-80 .text-70 .crunch-quarto-figure .crunch-math}
+
+$$
+H = -\sum_{d=0}^{9}\Pr(Y = d)\log[\Pr(Y = d)]
+$$

@@ -1,0 +1,67 @@
+
+## Outliers Penalized Quadratically {.smaller}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r}
+#| label: abs-resid-plot
+sim_lg_df |> ggplot(aes(x=x, y=y)) +
+  geom_abline(slope=1, intercept=0, linetype="dashed", color=cbPalette[1], linewidth=g_linewidth) +
+  # geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +
+  geom_segment(aes(xend=x, yend=x, color=ifelse(y>x,"Positive","Negative")), linewidth=1.5*g_linewidth) +
+  geom_point(size=g_pointsize) +
+  # coord_equal() +
+  theme_dsan("half") +
+  scale_color_manual("Spread", values=c("Positive"=cbPalette[3],"Negative"=cbPalette[6]), labels=c("Positive"="Positive","Negative"="Negative")) +
+  labs(
+    title = "Regression Line"
+  )
+```
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| label: square-resid-plot
+sim_lg_df |> ggplot(aes(x=x, y=y)) +
+  geom_abline(slope=1, intercept=0, linetype="dashed", color=cbPalette[1], linewidth=g_linewidth) +
+  # geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +
+  geom_segment(aes(xend=x, yend=x, color=ifelse(y>x,"Positive","Negative")), linewidth=1.5*g_linewidth) +
+  geom_point(size=g_pointsize) +
+  geom_rect(xmin=x, xmax=x+abs(spread), ymin=y, ymax=y+abs(spread), alpha=0.25, fill='red') +
+  # coord_equal() +
+  theme_dsan("half") +
+  scale_color_manual("Spread", values=c("Positive"=cbPalette[3],"Negative"=cbPalette[6]), labels=c("Positive"="Positive","Negative"="Negative")) +
+  labs(
+    title = "Regression Line"
+  )
+```
+
+:::
+::::
+
+---
+
+
+<pre>
+Call:
+lm(formula = military ~ industrial, data = gdp_df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.3354 -1.0997 -0.3870  0.6081  6.7508 
+</pre>
+<pre class="highlight-block">
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)  
+(Intercept)  0.61969    0.59526   1.041   0.3010  
+industrial   0.05253    0.02019   2.602   0.0111 *
+</pre>
+<pre class="highlight-below">---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+Residual standard error: 1.671 on 79 degrees of freedom
+  (8 observations deleted due to missingness)
+Multiple R-squared:  0.07895,   Adjusted R-squared:  0.06729 
+F-statistic: 6.771 on 1 and 79 DF,  p-value: 0.01106
+</pre>

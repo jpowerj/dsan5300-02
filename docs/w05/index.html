@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jeff Jacobs">
+
+<title>Week 5: Cross-Validation for Model Assessment – DSAN 5300-01</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ea72dc5fed832574809a9c94082fbbb.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-8230effed8f06b34674e4faf57934fd7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-156c7c3fe023434b5d29d53166ac0fae.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="../site_libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css"><script src="../sidebar.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../w05/index.html">Week 5: {{&lt; var w05.date-md &gt;}}</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DSAN 5300-01: Statistical Learning</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><i class="bi bi-house pe-1"></i> Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://georgetown.zoom.us/j/91911785762?pwd=poQh2m4AiSYWaDudp7hPLDEszWgBuG.1" class="sidebar-item-text sidebar-link" target="_blank">
+ <span class="menu-text">Zoom Link</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../writeups/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Writeups</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=07b596c2-6a0e-4302-a186-b25c00b555ce" class="sidebar-item-text sidebar-link" target="_blank">
+ <span class="menu-text">Recordings <i class="bi bi-box-arrow-up-right ps-1"></i></span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w01/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 1: Jan 9</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w02/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 2: Jan 13</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w03/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 3: Jan 27</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w04/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 4: Feb 3</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w05/index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Week 5: Feb 10</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w06/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 6: Feb 18</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w07/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 7: Feb 24</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w08/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 8: Mar 10</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w09/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 9: Mar 17</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w10/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 10: Mar 24</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w11/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 11: Mar 31</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w12/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 12: Apr 7</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../w13/index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Week 13: Apr 14</span></a>
+  </div>
+</li>
+        <li class="px-0"><hr class="sidebar-divider hi "></li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://georgetown.instructure.com/courses/203361" class="sidebar-item-text sidebar-link" target="_blank">
+ <span class="menu-text">Canvas <i class="bi bi-box-arrow-up-right ps-1"></i></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://jjacobs.me/meet" class="sidebar-item-text sidebar-link" target="_blank">
+ <span class="menu-text">Office Hours <i class="bi bi-box-arrow-up-right ps-1"></i></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+<div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
+<p><em>Updated 2025-04-14, 05:59:03 PM</em></p>
+</div></div></nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#schedule" id="toc-schedule" class="nav-link active" data-scroll-target="#schedule">Schedule</a></li>
+  <li><a href="#roadmap" id="toc-roadmap" class="nav-link" data-scroll-target="#roadmap">Roadmap</a>
+  <ul class="collapse">
+  <li><a href="#reminder-w04-new-goal-generalizability" id="toc-reminder-w04-new-goal-generalizability" class="nav-link" data-scroll-target="#reminder-w04-new-goal-generalizability">[Reminder (W04)] New Goal: <em>Generalizability</em></a></li>
+  </ul></li>
+  <li><a href="#a-non-linear-data-generating-process-dgp" id="toc-a-non-linear-data-generating-process-dgp" class="nav-link" data-scroll-target="#a-non-linear-data-generating-process-dgp">A Non-Linear Data-Generating Process (DGP)</a>
+  <ul class="collapse">
+  <li><a href="#our-working-dgp" id="toc-our-working-dgp" class="nav-link" data-scroll-target="#our-working-dgp">Our Working DGP</a></li>
+  <li><a href="#the-true-model" id="toc-the-true-model" class="nav-link" data-scroll-target="#the-true-model">The “True” Model</a></li>
+  </ul></li>
+  <li><a href="#cross-validation-evaluating-non-linear-models" id="toc-cross-validation-evaluating-non-linear-models" class="nav-link" data-scroll-target="#cross-validation-evaluating-non-linear-models">Cross-Validation: Evaluating Non-Linear Models</a>
+  <ul class="collapse">
+  <li><a href="#training-vs.-test-data" id="toc-training-vs.-test-data" class="nav-link" data-scroll-target="#training-vs.-test-data">Training vs.&nbsp;Test Data</a></li>
+  <li><a href="#the-chilling-truth-behind-test-data" id="toc-the-chilling-truth-behind-test-data" class="nav-link" data-scroll-target="#the-chilling-truth-behind-test-data">The Chilling Truth Behind Test Data 🫣</a></li>
+  <li><a href="#the-validation-set-approach" id="toc-the-validation-set-approach" class="nav-link" data-scroll-target="#the-validation-set-approach">The Validation Set Approach</a></li>
+  <li><a href="#evaluating-one-model-validation-set-approach" id="toc-evaluating-one-model-validation-set-approach" class="nav-link" data-scroll-target="#evaluating-one-model-validation-set-approach">Evaluating <em>One</em> Model: Validation Set Approach</a></li>
+  <li><a href="#how-does-it-do-for-our-dgp" id="toc-how-does-it-do-for-our-dgp" class="nav-link" data-scroll-target="#how-does-it-do-for-our-dgp">How Does It Do for Our DGP?</a></li>
+  <li><a href="#optimizing-over-many-models" id="toc-optimizing-over-many-models" class="nav-link" data-scroll-target="#optimizing-over-many-models">Optimizing over <em>Many</em> Models</a></li>
+  <li><a href="#cooking-with-even-more-gas" id="toc-cooking-with-even-more-gas" class="nav-link" data-scroll-target="#cooking-with-even-more-gas">Cooking with Even More Gas!</a></li>
+  <li><a href="#fold-cross-validation" id="toc-fold-cross-validation" class="nav-link" data-scroll-target="#fold-cross-validation">5-Fold Cross-Validation</a></li>
+  <li><a href="#k-fold-cross-validation" id="toc-k-fold-cross-validation" class="nav-link" data-scroll-target="#k-fold-cross-validation"><span class="math inline">\(K\)</span>-Fold Cross-Validation</a></li>
+  <li><a href="#leave-one-out-cross-validation-loocv" id="toc-leave-one-out-cross-validation-loocv" class="nav-link" data-scroll-target="#leave-one-out-cross-validation-loocv">Leave-One-Out Cross-Validation (LOOCV)</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/jpowerj/dsan5300-01/blob/main/w05/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="slides.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 5: Cross-Validation for Model Assessment</h1>
+<p class="subtitle lead"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2025, Georgetown University</span></p>
+  <div class="quarto-categories">
+    <div class="quarto-category">Class Sessions</div>
+  </div>
+  </div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Jeff Jacobs </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            <a href="mailto:jj1088@georgetown.edu"><code>jj1088@georgetown.edu</code></a>
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Monday, February 10, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<center class="mb-3">
+<a class="h2" href="./slides.html" target="_blank">Open slides in new tab →</a>
+</center>
+<section id="schedule" class="level1 smaller small-title crunch-title crunch-callout" data-name="Schedule">
+<h1 class="smaller small-title crunch-title crunch-callout" data-name="Schedule">Schedule</h1>
+<p>Today’s Planned Schedule:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 64%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Start</th>
+<th style="text-align: left;">End</th>
+<th style="text-align: left;">Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Lecture</strong></td>
+<td style="text-align: left;">6:30pm</td>
+<td style="text-align: left;">6:50pm</td>
+<td style="text-align: left;"><a href="#roadmap">Roadmap: Week 4 <span class="math inline">\(\leadsto\)</span> Week 6 →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">6:50pm</td>
+<td style="text-align: left;">7:20pm</td>
+<td style="text-align: left;"><a href="#a-non-linear-data-generating-process-(dgp)">Non-Linear Data-Generating Processes →</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7:20pm</td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;"><a href="#cross-validation-evaluating-non-linear-models">Validation: Evaluating Non-Linear Models →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Break!</strong></td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;">9:00pm</td>
+<td style="text-align: left;"><a href="#k-fold-cross-validation"><span class="math inline">\(K\)</span>-Fold Cross-Validation: Cooking with Gas →</a></td>
+</tr>
+</tbody>
+</table>
+<div class="hidden">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+<div class="hidden">
+<p><span class="math display">\[
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\bigexp}[1]{\exp\mkern-4mu\left[ #1 \right]}
+\newcommand{\bigexpect}[1]{\mathbb{E}\mkern-4mu \left[ #1 \right]}
+\newcommand{\definedas}{\overset{\small\text{def}}{=}}
+\newcommand{\definedalign}{\overset{\phantom{\text{defn}}}{=}}
+\newcommand{\eqeventual}{\overset{\text{eventually}}{=}}
+\newcommand{\Err}{\text{Err}}
+\newcommand{\expect}[1]{\mathbb{E}[#1]}
+\newcommand{\expectsq}[1]{\mathbb{E}^2[#1]}
+\newcommand{\fw}[1]{\texttt{#1}}
+\newcommand{\given}{\mid}
+\newcommand{\green}[1]{\color{green}{#1}}
+\newcommand{\heads}{\outcome{heads}}
+\newcommand{\iid}{\overset{\text{\small{iid}}}{\sim}}
+\newcommand{\lik}{\mathcal{L}}
+\newcommand{\loglik}{\ell}
+\DeclareMathOperator*{\maximize}{maximize}
+\DeclareMathOperator*{\minimize}{minimize}
+\newcommand{\mle}{\textsf{ML}}
+\newcommand{\nimplies}{\;\not\!\!\!\!\implies}
+\newcommand{\orange}[1]{\color{orange}{#1}}
+\newcommand{\outcome}[1]{\textsf{#1}}
+\newcommand{\param}[1]{{\color{purple} #1}}
+\newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
+\newcommand{\prob}[1]{P\left( #1 \right)}
+\newcommand{\purp}[1]{\color{purple}{#1}}
+\newcommand{\sign}{\text{Sign}}
+\newcommand{\spacecap}{\; \cap \;}
+\newcommand{\spacewedge}{\; \wedge \;}
+\newcommand{\tails}{\outcome{tails}}
+\newcommand{\Var}[1]{\text{Var}[#1]}
+\newcommand{\bigVar}[1]{\text{Var}\mkern-4mu \left[ #1 \right]}
+\]</span></p>
+</div>
+</section>
+<section id="roadmap" class="level1 smaller title-10" data-stack-name="Roadmap">
+<h1 class="smaller title-10" data-stack-name="Roadmap">Roadmap</h1>
+<ul>
+<li>[Week 4] Oh no! When we go beyond linear models, we have to worry about <strong>overfitting</strong>!
+<ul>
+<li><span class="math inline">\(\implies\)</span> New goal! Maximize <strong>generalizability</strong> rather than <strong>accuracy</strong></li>
+<li><span class="math inline">\(\implies\)</span> Evaluate models on <strong><em>unseen</em> test data</strong> rather than training data</li>
+</ul></li>
+<li>[Week 5] <strong>Cross-Validation (CV)</strong> as a tool for <strong>Model Assessment</strong>: For more complex, non-linear models, is there some way we can try to… “foresee” how well a trained model will <strong>generalize?</strong>
+<ul>
+<li>Answer: <strong>Yes!</strong> Cross-validation!</li>
+</ul></li>
+<li>[Week 6] <strong>Regularization</strong> as a tool for <strong>Model Selection</strong>: Now that we have a method (CV) for <em>imperfectly</em> measuring “generalizability”, is there some way we can try to… <strong>allow</strong> models to optimize CV but <strong>penalize</strong> them for unnecessary complexity?
+<ul>
+<li>Answer: <strong>Yes!</strong> Regularization methods like LASSO and Elastic Net!</li>
+</ul></li>
+</ul>
+<section id="reminder-w04-new-goal-generalizability" class="level2 smaller crunch-title crunch-callout crunch-ul title-11">
+<h2 class="smaller crunch-title crunch-callout crunch-ul title-11 anchored" data-anchor-id="reminder-w04-new-goal-generalizability">[Reminder (W04)] New Goal: <em>Generalizability</em></h2>
+<div class="r-fit-text callout callout-style-default callout-tip no-icon callout-titled" title="<i class='bi bi-info-circle'></i> The Goal of Statistical Learning">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<i class="bi bi-info-circle"></i> The Goal of Statistical Learning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Find…</p>
+<ul>
+<li>A function <span class="math inline">\(\widehat{y} = f(x)\)</span> ✅</li>
+<li>That best predicts <span class="math inline">\(Y\)</span> for given values of <span class="math inline">\(X\)</span> ✅</li>
+<li>For data that has not yet been observed! 😳❓</li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="a-non-linear-data-generating-process-dgp" class="level1" data-stack-name="Non-Linear DGP">
+<h1 data-stack-name="Non-Linear DGP">A Non-Linear Data-Generating Process (DGP)</h1>
+<section id="our-working-dgp" class="level2 smaller crunch-title math-80 plotly-340 crunch-math">
+<h2 class="smaller crunch-title math-80 plotly-340 crunch-math anchored" data-anchor-id="our-working-dgp">Our Working DGP</h2>
+<ul>
+<li>Each country <span class="math inline">\(i\)</span> has a certain <span class="math inline">\(x_i = \texttt{gdp\_per\_capita}_i\)</span></li>
+<li>They spend some portion of it on <strong>healthcare</strong> each year, which translates (based on the country’s healthcare system) into <strong>health outcomes</strong> <span class="math inline">\(y_i\)</span></li>
+<li>We <em>operationalize</em> these health outcomes as <span class="math inline">\(y_i = \texttt{DALY}_i\)</span>: <strong><a href="https://ourworldindata.org/burden-of-disease">Disability Adjusted Life Years</a></strong>, cross-nationally-standardized “lost years of minimally-healthy life”</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>daly_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/dalys_cleaned.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 162 Columns: 6
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (2): name, gdp_cap
+dbl (4): dalys_pc, population, gdp_pc_clean, log_dalys_pc
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>daly_df <span class="ot">&lt;-</span> daly_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">gdp_pc_1k=</span>gdp_pc_clean<span class="sc">/</span><span class="dv">1000</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>model_labels <span class="ot">&lt;-</span> <span class="fu">labs</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">x=</span><span class="st">"GDP per capita ($1K PPP, 2021)"</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">y=</span><span class="st">"Log(DALYs/n)"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">title=</span><span class="st">"Decrease in DALYs as GDP/n Increases"</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>daly_plot <span class="ot">&lt;-</span> daly_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>gdp_pc_1k, <span class="at">y=</span>log_dalys_pc, <span class="at">label=</span>name)) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># geom_smooth(method="loess", formula=y ~ x) +</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">"lm"</span>, <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">5</span>), <span class="at">se=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  model_labels</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(daly_plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: The following aesthetics were dropped during statistical transformation: label.
+ℹ This can happen when ggplot fails to infer the correct grouping structure in
+  the data.
+ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
+  variable into a factor?</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-94264ee9ce07bac537c8" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-94264ee9ce07bac537c8">{"x":{"data":[{"x":[2.1440000000000001,16.353999999999999,14.497,7.4080000000000004,26.300000000000001,15.922000000000001,57.322000000000003,63.576000000000001,20.111000000000001,7.4409999999999998,27.611000000000001,61.874000000000002,3.464,13.459,9.4540000000000006,18.544,17.960999999999999,18.076000000000001,29.536999999999999,2.4860000000000002,0.83699999999999997,6.226,4.7939999999999996,55.781999999999996,7.6849999999999996,1.129,1.7,29.105,20.407,17.699999999999999,3.4409999999999998,6.2629999999999999,24.140000000000001,6.0449999999999999,36.914000000000001,9.6050000000000004,49.93,49.996000000000002,1.3140000000000001,70.341999999999999,5.9480000000000004,21.911999999999999,6.8250000000000002,13.539999999999999,15.579000000000001,10.81,16.821000000000002,0.59599999999999997,45.064,9.8460000000000001,2.5880000000000001,10.685,57.350999999999999,53.901000000000003,18.524000000000001,2.778,18.916,62.950000000000003,6.6079999999999997,33.578000000000003,11.827999999999999,3.7389999999999999,2.4510000000000001,22.866,3.1349999999999998,6.2030000000000003,38.648000000000003,8.0500000000000007,12.757,14.952,12.731999999999999,46.238,50.465000000000003,9.577,44.548999999999999,9.1820000000000004,32.945999999999998,5.3390000000000004,5.7359999999999998,8.0800000000000001,35.604999999999997,11.6,2.5449999999999999,1.5389999999999999,12.641999999999999,46.576000000000001,1.599,1.6879999999999999,29.823,19.053000000000001,2.3479999999999999,58.198999999999998,5.8369999999999997,22.738,21.032,15.682,14.792,24.510000000000002,8.6229999999999993,1.4570000000000001,5.1779999999999999,9.7089999999999996,4.5460000000000003,69.322999999999993,48.194000000000003,7.0869999999999997,1.5860000000000001,5.492,1.5840000000000001,22.370999999999999,89.209000000000003,38.719000000000001,5.367,5.6630000000000003,30.933,3.9769999999999999,15.406000000000001,15.282,8.8580000000000005,41.774999999999999,38.862000000000002,40.560000000000002,38.070999999999998,38.938000000000002,2.7309999999999999,55.768000000000001,4.1740000000000004,23.669,2.8490000000000002,38.436999999999998,46.274000000000001,2.5179999999999998,1.3919999999999999,13.711,48.570999999999998,0.39200000000000002,44.091000000000001,14.316000000000001,3.2490000000000001,18.457999999999998,63.125,81.602999999999994,4.593,3.9860000000000002,3.4929999999999999,20.245000000000001,2.577,30.826000000000001,12.375,31.638000000000002,16.434000000000001,2.6850000000000001,17.846,52.872,71.317999999999998,29.440999999999999,9.2479999999999993,2.621,12.048999999999999,0.626,3.5030000000000001,3.1850000000000001],"y":[9.9217645067809102,8.5888066262257698,8.8819751842488674,10.259075906349571,8.6437905994378301,8.6301825334385356,6.8403326026647031,7.6010524482932071,9.2693071497400314,9.2646391453835619,8.7276485874539631,7.5063170170522149,10.21989191239992,9.087426697070768,9.7663267243285041,8.6011298462887904,10.504291896371402,9.030579533742106,8.978887392790833,10.404577942313962,10.23800430701923,9.3357034949328543,10.30937257246898,7.5573684575183542,8.912581027281183,10.860758986335853,10.519278413847845,8.3365821708207299,7.3971938208664803,8.7378055419429153,9.7978603346497568,10.126479092297169,8.4334202015498363,10.223993721417102,8.1305007686313573,8.8818918590165499,7.304179642438152,8.3116193842120865,10.217714180210022,7.2631193641207688,10.006887647825058,8.8780095478555197,9.4589177245472023,8.9076123413191297,8.9911639412230837,8.6419562543489032,10.26369724189499,10.115683395781833,8.136606044573977,10.86186603752004,10.063218348800268,9.1709652469019964,6.8665165309655398,7.5928702878448178,9.9644509404942436,10.115921965175319,8.9097486609028298,7.5360972361759666,9.9939633381926676,7.7869670026148716,9.3821232582124363,10.376863613735219,10.374303351882419,9.5830274349697753,9.9496982021404676,9.228730237087774,8.5432702111263552,9.5895710127800076,9.2059005304501191,8.8341913182020715,8.9823224602457117,7.4559344892894766,7.4642805819991178,8.8105789667846963,6.8114646186638508,8.7733691167806711,9.0219001341740501,10.147750510870264,8.7945976294568844,9.3381001407774544,8.5608655198724239,8.905010149674025,11.138111280967967,10.275120072107841,8.8244131502410585,8.4292577512480698,10.134357180705356,10.4982056947047,8.851004748710233,8.5144694854946401,10.493518918433075,7.4629613584288599,9.5275861010266585,8.5643629958926279,9.1074767365169436,8.6898010560225529,8.8192070711281971,8.7997069310152103,8.7625208457863177,10.671194745921158,9.3016425303829688,10.364422056303168,9.5490957146119637,7.5417891950495761,6.8556195245616083,9.1679963864817111,10.34221656462144,10.339507730200753,8.1696195617238505,9.0054050403106416,6.9964984888165258,8.9075581980017571,9.8912681993977873,8.6903730902929084,8.5567599985182525,9.7942863374923643,9.1555462198890432,9.4003572437375436,9.4339478156756797,8.3075086597861834,7.6698219950066804,7.8512719971098832,8.6323772972226998,8.9444980661288582,9.9233735096936115,8.0931872596028072,9.8735642838847699,8.3149301176813832,10.425884964160316,8.5980540258712352,7.831855437747774,9.2361543068691621,10.789428349305648,10.287449788751106,7.0914092810098701,10.702039247785928,7.4756793147880041,8.3506662405209244,9.4080922664254967,9.2478480803125844,7.2260635449756787,7.2589049868780311,8.5507440149273197,9.4704328270685938,10.153989428563625,8.4711492529148309,10.134956352596328,8.9586301510940025,8.897887350532482,8.5631221233046375,9.1606878360711121,10.336632676417601,8.7071852545144122,7.9479966543239167,8.2400949125041016,8.3306226203328677,8.7165685027760187,9.1492200022970795,8.4544237711631567,9.5729049379910975,10.490070715742744,10.714171071658564],"text":["gdp_pc_1k:  2.144<br />log_dalys_pc:  9.921765<br />name: Afghanistan","gdp_pc_1k: 16.354<br />log_dalys_pc:  8.588807<br />name: Albania","gdp_pc_1k: 14.497<br />log_dalys_pc:  8.881975<br />name: Algeria","gdp_pc_1k:  7.408<br />log_dalys_pc: 10.259076<br />name: Angola","gdp_pc_1k: 26.300<br />log_dalys_pc:  8.643791<br />name: Argentina","gdp_pc_1k: 15.922<br />log_dalys_pc:  8.630183<br />name: Armenia","gdp_pc_1k: 57.322<br />log_dalys_pc:  6.840333<br />name: Australia","gdp_pc_1k: 63.576<br />log_dalys_pc:  7.601052<br />name: Austria","gdp_pc_1k: 20.111<br />log_dalys_pc:  9.269307<br />name: Azerbaijan","gdp_pc_1k:  7.441<br />log_dalys_pc:  9.264639<br />name: Bangladesh","gdp_pc_1k: 27.611<br />log_dalys_pc:  8.727649<br />name: Belarus","gdp_pc_1k: 61.874<br />log_dalys_pc:  7.506317<br />name: Belgium","gdp_pc_1k:  3.464<br />log_dalys_pc: 10.219892<br />name: Benin","gdp_pc_1k: 13.459<br />log_dalys_pc:  9.087427<br />name: Bhutan","gdp_pc_1k:  9.454<br />log_dalys_pc:  9.766327<br />name: Bolivia","gdp_pc_1k: 18.544<br />log_dalys_pc:  8.601130<br />name: Bosnia and Herzegovina","gdp_pc_1k: 17.961<br />log_dalys_pc: 10.504292<br />name: Botswana","gdp_pc_1k: 18.076<br />log_dalys_pc:  9.030580<br />name: Brazil","gdp_pc_1k: 29.537<br />log_dalys_pc:  8.978887<br />name: Bulgaria","gdp_pc_1k:  2.486<br />log_dalys_pc: 10.404578<br />name: Burkina Faso","gdp_pc_1k:  0.837<br />log_dalys_pc: 10.238004<br />name: Burundi","gdp_pc_1k:  6.226<br />log_dalys_pc:  9.335703<br />name: Cambodia","gdp_pc_1k:  4.794<br />log_dalys_pc: 10.309373<br />name: Cameroon","gdp_pc_1k: 55.782<br />log_dalys_pc:  7.557368<br />name: Canada","gdp_pc_1k:  7.685<br />log_dalys_pc:  8.912581<br />name: Cape Verde","gdp_pc_1k:  1.129<br />log_dalys_pc: 10.860759<br />name: Central African Republic","gdp_pc_1k:  1.700<br />log_dalys_pc: 10.519278<br />name: Chad","gdp_pc_1k: 29.105<br />log_dalys_pc:  8.336582<br />name: Chile","gdp_pc_1k: 20.407<br />log_dalys_pc:  7.397194<br />name: China","gdp_pc_1k: 17.700<br />log_dalys_pc:  8.737806<br />name: Colombia","gdp_pc_1k:  3.441<br />log_dalys_pc:  9.797860<br />name: Comoros","gdp_pc_1k:  6.263<br />log_dalys_pc: 10.126479<br />name: Republic of Congo","gdp_pc_1k: 24.140<br />log_dalys_pc:  8.433420<br />name: Costa Rica","gdp_pc_1k:  6.045<br />log_dalys_pc: 10.223994<br />name: Cote d'Ivoire","gdp_pc_1k: 36.914<br />log_dalys_pc:  8.130501<br />name: Croatia","gdp_pc_1k:  9.605<br />log_dalys_pc:  8.881892<br />name: Cuba","gdp_pc_1k: 49.930<br />log_dalys_pc:  7.304180<br />name: Cyprus","gdp_pc_1k: 49.996<br />log_dalys_pc:  8.311619<br />name: Czechia","gdp_pc_1k:  1.314<br />log_dalys_pc: 10.217714<br />name: Democratic Republic of Congo","gdp_pc_1k: 70.342<br />log_dalys_pc:  7.263119<br />name: Denmark","gdp_pc_1k:  5.948<br />log_dalys_pc: 10.006888<br />name: Djibouti","gdp_pc_1k: 21.912<br />log_dalys_pc:  8.878010<br />name: Dominican Republic","gdp_pc_1k:  6.825<br />log_dalys_pc:  9.458918<br />name: East Timor","gdp_pc_1k: 13.540<br />log_dalys_pc:  8.907612<br />name: Ecuador","gdp_pc_1k: 15.579<br />log_dalys_pc:  8.991164<br />name: Egypt","gdp_pc_1k: 10.810<br />log_dalys_pc:  8.641956<br />name: El Salvador","gdp_pc_1k: 16.821<br />log_dalys_pc: 10.263697<br />name: Equatorial Guinea","gdp_pc_1k:  0.596<br />log_dalys_pc: 10.115683<br />name: Eritrea","gdp_pc_1k: 45.064<br />log_dalys_pc:  8.136606<br />name: Estonia","gdp_pc_1k:  9.846<br />log_dalys_pc: 10.861866<br />name: Eswatini","gdp_pc_1k:  2.588<br />log_dalys_pc: 10.063218<br />name: Ethiopia","gdp_pc_1k: 10.685<br />log_dalys_pc:  9.170965<br />name: Fiji","gdp_pc_1k: 57.351<br />log_dalys_pc:  6.866517<br />name: Finland","gdp_pc_1k: 53.901<br />log_dalys_pc:  7.592870<br />name: France","gdp_pc_1k: 18.524<br />log_dalys_pc:  9.964451<br />name: Gabon","gdp_pc_1k:  2.778<br />log_dalys_pc: 10.115922<br />name: Gambia","gdp_pc_1k: 18.916<br />log_dalys_pc:  8.909749<br />name: Georgia","gdp_pc_1k: 62.950<br />log_dalys_pc:  7.536097<br />name: Germany","gdp_pc_1k:  6.608<br />log_dalys_pc:  9.993963<br />name: Ghana","gdp_pc_1k: 33.578<br />log_dalys_pc:  7.786967<br />name: Greece","gdp_pc_1k: 11.828<br />log_dalys_pc:  9.382123<br />name: Guatemala","gdp_pc_1k:  3.739<br />log_dalys_pc: 10.376864<br />name: Guinea","gdp_pc_1k:  2.451<br />log_dalys_pc: 10.374303<br />name: Guinea-Bissau","gdp_pc_1k: 22.866<br />log_dalys_pc:  9.583027<br />name: Guyana","gdp_pc_1k:  3.135<br />log_dalys_pc:  9.949698<br />name: Haiti","gdp_pc_1k:  6.203<br />log_dalys_pc:  9.228730<br />name: Honduras","gdp_pc_1k: 38.648<br />log_dalys_pc:  8.543270<br />name: Hungary","gdp_pc_1k:  8.050<br />log_dalys_pc:  9.589571<br />name: India","gdp_pc_1k: 12.757<br />log_dalys_pc:  9.205901<br />name: Indonesia","gdp_pc_1k: 14.952<br />log_dalys_pc:  8.834191<br />name: Iran","gdp_pc_1k: 12.732<br />log_dalys_pc:  8.982322<br />name: Iraq","gdp_pc_1k: 46.238<br />log_dalys_pc:  7.455934<br />name: Israel","gdp_pc_1k: 50.465<br />log_dalys_pc:  7.464281<br />name: Italy","gdp_pc_1k:  9.577<br />log_dalys_pc:  8.810579<br />name: Jamaica","gdp_pc_1k: 44.549<br />log_dalys_pc:  6.811465<br />name: Japan","gdp_pc_1k:  9.182<br />log_dalys_pc:  8.773369<br />name: Jordan","gdp_pc_1k: 32.946<br />log_dalys_pc:  9.021900<br />name: Kazakhstan","gdp_pc_1k:  5.339<br />log_dalys_pc: 10.147751<br />name: Kenya","gdp_pc_1k:  5.736<br />log_dalys_pc:  8.794598<br />name: Kyrgyzstan","gdp_pc_1k:  8.080<br />log_dalys_pc:  9.338100<br />name: Laos","gdp_pc_1k: 35.605<br />log_dalys_pc:  8.560866<br />name: Latvia","gdp_pc_1k: 11.600<br />log_dalys_pc:  8.905010<br />name: Lebanon","gdp_pc_1k:  2.545<br />log_dalys_pc: 11.138111<br />name: Lesotho","gdp_pc_1k:  1.539<br />log_dalys_pc: 10.275120<br />name: Liberia","gdp_pc_1k: 12.642<br />log_dalys_pc:  8.824413<br />name: Libya","gdp_pc_1k: 46.576<br />log_dalys_pc:  8.429258<br />name: Lithuania","gdp_pc_1k:  1.599<br />log_dalys_pc: 10.134357<br />name: Madagascar","gdp_pc_1k:  1.688<br />log_dalys_pc: 10.498206<br />name: Malawi","gdp_pc_1k: 29.823<br />log_dalys_pc:  8.851005<br />name: Malaysia","gdp_pc_1k: 19.053<br />log_dalys_pc:  8.514469<br />name: Maldives","gdp_pc_1k:  2.348<br />log_dalys_pc: 10.493519<br />name: Mali","gdp_pc_1k: 58.199<br />log_dalys_pc:  7.462961<br />name: Malta","gdp_pc_1k:  5.837<br />log_dalys_pc:  9.527586<br />name: Mauritania","gdp_pc_1k: 22.738<br />log_dalys_pc:  8.564363<br />name: Mauritius","gdp_pc_1k: 21.032<br />log_dalys_pc:  9.107477<br />name: Mexico","gdp_pc_1k: 15.682<br />log_dalys_pc:  8.689801<br />name: Moldova","gdp_pc_1k: 14.792<br />log_dalys_pc:  8.819207<br />name: Mongolia","gdp_pc_1k: 24.510<br />log_dalys_pc:  8.799707<br />name: Montenegro","gdp_pc_1k:  8.623<br />log_dalys_pc:  8.762521<br />name: Morocco","gdp_pc_1k:  1.457<br />log_dalys_pc: 10.671195<br />name: Mozambique","gdp_pc_1k:  5.178<br />log_dalys_pc:  9.301643<br />name: Myanmar","gdp_pc_1k:  9.709<br />log_dalys_pc: 10.364422<br />name: Namibia","gdp_pc_1k:  4.546<br />log_dalys_pc:  9.549096<br />name: Nepal","gdp_pc_1k: 69.323<br />log_dalys_pc:  7.541789<br />name: Netherlands","gdp_pc_1k: 48.194<br />log_dalys_pc:  6.855620<br />name: New Zealand","gdp_pc_1k:  7.087<br />log_dalys_pc:  9.167996<br />name: Nicaragua","gdp_pc_1k:  1.586<br />log_dalys_pc: 10.342217<br />name: Niger","gdp_pc_1k:  5.492<br />log_dalys_pc: 10.339508<br />name: Nigeria","gdp_pc_1k:  1.584<br />log_dalys_pc:  8.169620<br />name: North Korea","gdp_pc_1k: 22.371<br />log_dalys_pc:  9.005405<br />name: North Macedonia","gdp_pc_1k: 89.209<br />log_dalys_pc:  6.996498<br />name: Norway","gdp_pc_1k: 38.719<br />log_dalys_pc:  8.907558<br />name: Oman","gdp_pc_1k:  5.367<br />log_dalys_pc:  9.891268<br />name: Pakistan","gdp_pc_1k:  5.663<br />log_dalys_pc:  8.690373<br />name: Palestine","gdp_pc_1k: 30.933<br />log_dalys_pc:  8.556760<br />name: Panama","gdp_pc_1k:  3.977<br />log_dalys_pc:  9.794286<br />name: Papua New Guinea","gdp_pc_1k: 15.406<br />log_dalys_pc:  9.155546<br />name: Paraguay","gdp_pc_1k: 15.282<br />log_dalys_pc:  9.400357<br />name: Peru","gdp_pc_1k:  8.858<br />log_dalys_pc:  9.433948<br />name: Philippines","gdp_pc_1k: 41.775<br />log_dalys_pc:  8.307509<br />name: Poland","gdp_pc_1k: 38.862<br />log_dalys_pc:  7.669822<br />name: Portugal","gdp_pc_1k: 40.560<br />log_dalys_pc:  7.851272<br />name: Puerto Rico","gdp_pc_1k: 38.071<br />log_dalys_pc:  8.632377<br />name: Romania","gdp_pc_1k: 38.938<br />log_dalys_pc:  8.944498<br />name: Russia","gdp_pc_1k:  2.731<br />log_dalys_pc:  9.923374<br />name: Rwanda","gdp_pc_1k: 55.768<br />log_dalys_pc:  8.093187<br />name: Saudi Arabia","gdp_pc_1k:  4.174<br />log_dalys_pc:  9.873564<br />name: Senegal","gdp_pc_1k: 23.669<br />log_dalys_pc:  8.314930<br />name: Serbia","gdp_pc_1k:  2.849<br />log_dalys_pc: 10.425885<br />name: Sierra Leone","gdp_pc_1k: 38.437<br />log_dalys_pc:  8.598054<br />name: Slovakia","gdp_pc_1k: 46.274<br />log_dalys_pc:  7.831855<br />name: Slovenia","gdp_pc_1k:  2.518<br />log_dalys_pc:  9.236154<br />name: Solomon Islands","gdp_pc_1k:  1.392<br />log_dalys_pc: 10.789428<br />name: Somalia","gdp_pc_1k: 13.711<br />log_dalys_pc: 10.287450<br />name: South Africa","gdp_pc_1k: 48.571<br />log_dalys_pc:  7.091409<br />name: South Korea","gdp_pc_1k:  0.392<br />log_dalys_pc: 10.702039<br />name: South Sudan","gdp_pc_1k: 44.091<br />log_dalys_pc:  7.475679<br />name: Spain","gdp_pc_1k: 14.316<br />log_dalys_pc:  8.350666<br />name: Sri Lanka","gdp_pc_1k:  3.249<br />log_dalys_pc:  9.408092<br />name: Sudan","gdp_pc_1k: 18.458<br />log_dalys_pc:  9.247848<br />name: Suriname","gdp_pc_1k: 63.125<br />log_dalys_pc:  7.226064<br />name: Sweden","gdp_pc_1k: 81.603<br />log_dalys_pc:  7.258905<br />name: Switzerland","gdp_pc_1k:  4.593<br />log_dalys_pc:  8.550744<br />name: Syria","gdp_pc_1k:  3.986<br />log_dalys_pc:  9.470433<br />name: Tajikistan","gdp_pc_1k:  3.493<br />log_dalys_pc: 10.153989<br />name: Tanzania","gdp_pc_1k: 20.245<br />log_dalys_pc:  8.471149<br />name: Thailand","gdp_pc_1k:  2.577<br />log_dalys_pc: 10.134956<br />name: Togo","gdp_pc_1k: 30.826<br />log_dalys_pc:  8.958630<br />name: Trinidad and Tobago","gdp_pc_1k: 12.375<br />log_dalys_pc:  8.897887<br />name: Tunisia","gdp_pc_1k: 31.638<br />log_dalys_pc:  8.563122<br />name: Turkey","gdp_pc_1k: 16.434<br />log_dalys_pc:  9.160688<br />name: Turkmenistan","gdp_pc_1k:  2.685<br />log_dalys_pc: 10.336633<br />name: Uganda","gdp_pc_1k: 17.846<br />log_dalys_pc:  8.707185<br />name: Ukraine","gdp_pc_1k: 52.872<br />log_dalys_pc:  7.947997<br />name: United Kingdom","gdp_pc_1k: 71.318<br />log_dalys_pc:  8.240095<br />name: United States","gdp_pc_1k: 29.441<br />log_dalys_pc:  8.330623<br />name: Uruguay","gdp_pc_1k:  9.248<br />log_dalys_pc:  8.716569<br />name: Uzbekistan","gdp_pc_1k:  2.621<br />log_dalys_pc:  9.149220<br />name: Venezuela","gdp_pc_1k: 12.049<br />log_dalys_pc:  8.454424<br />name: Vietnam","gdp_pc_1k:  0.626<br />log_dalys_pc:  9.572905<br />name: Yemen","gdp_pc_1k:  3.503<br />log_dalys_pc: 10.490071<br />name: Zambia","gdp_pc_1k:  3.185<br />log_dalys_pc: 10.714171<br />name: Zimbabwe"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[0.39200000000000002,1.5162658227848103,2.6405316455696202,3.7647974683544301,4.8890632911392409,6.0133291139240512,7.1375949367088607,8.2618607594936702,9.3861265822784805,10.510392405063291,11.634658227848101,12.758924050632912,13.88318987341772,15.007455696202531,16.131721518987341,17.255987341772151,18.380253164556962,19.504518987341772,20.628784810126582,21.753050632911393,22.877316455696203,24.001582278481013,25.125848101265824,26.250113924050634,27.374379746835441,28.498645569620251,29.622911392405062,30.747177215189872,31.871443037974682,32.9957088607595,34.119974683544307,35.24424050632912,36.368506329113927,37.492772151898734,38.617037974683548,39.741303797468355,40.865569620253169,41.989835443037975,43.114101265822789,44.238367088607596,45.36263291139241,46.486898734177217,47.611164556962031,48.735430379746838,49.859696202531651,50.983962025316458,52.108227848101272,53.232493670886079,54.356759493670886,55.4810253164557,56.605291139240506,57.72955696202532,58.853822784810127,59.978088607594941,61.102354430379748,62.226620253164562,63.350886075949369,64.475151898734168,65.599417721518989,66.723683544303796,67.847949367088603,68.97221518987341,70.096481012658231,71.220746835443038,72.345012658227844,73.469278481012651,74.593544303797458,75.717810126582279,76.842075949367086,77.966341772151893,79.090607594936699,80.21487341772152,81.339139240506327,82.463405063291134,83.587670886075941,84.711936708860762,85.836202531645569,86.960468354430375,88.084734177215182,89.209000000000003],"y":[10.488405378158266,10.253236422060775,10.048773083697801,9.8718420462751695,9.7194628821919924,9.5888427948954185,9.4773713607353862,9.3826152708193771,9.3023130728671664,9.2343699130655956,9.1768522779233006,9.1279827361254888,9.0861346803886764,9.0498270693154605,9.0177191692492471,8.988605296129041,8.9614095573441723,8.935180593589056,8.9090863207179538,8.8824086715997304,8.8545383379725919,8.824969512298857,8.7932946296197052,8.7591991094099289,8.7224560974326906,8.6829212075942799,8.640527263798857,8.5952790418032219,8.5472480110715576,8.4965670766301997,8.4434253209223584,8.388062745662916,8.3307650136931475,8.271858190835486,8.2117034877482897,8.1506920017805733,8.0892394588267766,8.0277809551815231,7.966765699394359,7.9066517541245211,7.8479007779956875,7.7909727674507243,7.7363207986064522,7.6843857691083963,7.6355911399855358,7.5903376775050635,7.5489981950271394,7.511912294859644,7.4793811101129339,7.4516620465545955,7.4289635244641987,7.4114397204880538,7.3991853094939639,7.3922302064259782,7.3905343081591477,7.3939822353542821,7.402378074312705,7.4154401188309951,7.4327956120557594,7.4539754883383775,7.4784091150897547,7.5054190346350813,7.5342157060685873,7.5638922471082886,7.5934191759507526,7.6216391531258436,7.6472617233514857,7.6688580573884071,7.6848556938949031,7.6935332812815833,7.6930153195661388,7.6812669022280771,7.6560884580634943,7.6151104930398219,7.5557883321505752,7.4753968612701245,7.371025269008431,7.2395717885658151,7.0777384395876997,6.8820257700193741],"text":["gdp_pc_1k:  0.392000<br />log_dalys_pc: 10.488405","gdp_pc_1k:  1.516266<br />log_dalys_pc: 10.253236","gdp_pc_1k:  2.640532<br />log_dalys_pc: 10.048773","gdp_pc_1k:  3.764797<br />log_dalys_pc:  9.871842","gdp_pc_1k:  4.889063<br />log_dalys_pc:  9.719463","gdp_pc_1k:  6.013329<br />log_dalys_pc:  9.588843","gdp_pc_1k:  7.137595<br />log_dalys_pc:  9.477371","gdp_pc_1k:  8.261861<br />log_dalys_pc:  9.382615","gdp_pc_1k:  9.386127<br />log_dalys_pc:  9.302313","gdp_pc_1k: 10.510392<br />log_dalys_pc:  9.234370","gdp_pc_1k: 11.634658<br />log_dalys_pc:  9.176852","gdp_pc_1k: 12.758924<br />log_dalys_pc:  9.127983","gdp_pc_1k: 13.883190<br />log_dalys_pc:  9.086135","gdp_pc_1k: 15.007456<br />log_dalys_pc:  9.049827","gdp_pc_1k: 16.131722<br />log_dalys_pc:  9.017719","gdp_pc_1k: 17.255987<br />log_dalys_pc:  8.988605","gdp_pc_1k: 18.380253<br />log_dalys_pc:  8.961410","gdp_pc_1k: 19.504519<br />log_dalys_pc:  8.935181","gdp_pc_1k: 20.628785<br />log_dalys_pc:  8.909086","gdp_pc_1k: 21.753051<br />log_dalys_pc:  8.882409","gdp_pc_1k: 22.877316<br />log_dalys_pc:  8.854538","gdp_pc_1k: 24.001582<br />log_dalys_pc:  8.824970","gdp_pc_1k: 25.125848<br />log_dalys_pc:  8.793295","gdp_pc_1k: 26.250114<br />log_dalys_pc:  8.759199","gdp_pc_1k: 27.374380<br />log_dalys_pc:  8.722456","gdp_pc_1k: 28.498646<br />log_dalys_pc:  8.682921","gdp_pc_1k: 29.622911<br />log_dalys_pc:  8.640527","gdp_pc_1k: 30.747177<br />log_dalys_pc:  8.595279","gdp_pc_1k: 31.871443<br />log_dalys_pc:  8.547248","gdp_pc_1k: 32.995709<br />log_dalys_pc:  8.496567","gdp_pc_1k: 34.119975<br />log_dalys_pc:  8.443425","gdp_pc_1k: 35.244241<br />log_dalys_pc:  8.388063","gdp_pc_1k: 36.368506<br />log_dalys_pc:  8.330765","gdp_pc_1k: 37.492772<br />log_dalys_pc:  8.271858","gdp_pc_1k: 38.617038<br />log_dalys_pc:  8.211703","gdp_pc_1k: 39.741304<br />log_dalys_pc:  8.150692","gdp_pc_1k: 40.865570<br />log_dalys_pc:  8.089239","gdp_pc_1k: 41.989835<br />log_dalys_pc:  8.027781","gdp_pc_1k: 43.114101<br />log_dalys_pc:  7.966766","gdp_pc_1k: 44.238367<br />log_dalys_pc:  7.906652","gdp_pc_1k: 45.362633<br />log_dalys_pc:  7.847901","gdp_pc_1k: 46.486899<br />log_dalys_pc:  7.790973","gdp_pc_1k: 47.611165<br />log_dalys_pc:  7.736321","gdp_pc_1k: 48.735430<br />log_dalys_pc:  7.684386","gdp_pc_1k: 49.859696<br />log_dalys_pc:  7.635591","gdp_pc_1k: 50.983962<br />log_dalys_pc:  7.590338","gdp_pc_1k: 52.108228<br />log_dalys_pc:  7.548998","gdp_pc_1k: 53.232494<br />log_dalys_pc:  7.511912","gdp_pc_1k: 54.356759<br />log_dalys_pc:  7.479381","gdp_pc_1k: 55.481025<br />log_dalys_pc:  7.451662","gdp_pc_1k: 56.605291<br />log_dalys_pc:  7.428964","gdp_pc_1k: 57.729557<br />log_dalys_pc:  7.411440","gdp_pc_1k: 58.853823<br />log_dalys_pc:  7.399185","gdp_pc_1k: 59.978089<br />log_dalys_pc:  7.392230","gdp_pc_1k: 61.102354<br />log_dalys_pc:  7.390534","gdp_pc_1k: 62.226620<br />log_dalys_pc:  7.393982","gdp_pc_1k: 63.350886<br />log_dalys_pc:  7.402378","gdp_pc_1k: 64.475152<br />log_dalys_pc:  7.415440","gdp_pc_1k: 65.599418<br />log_dalys_pc:  7.432796","gdp_pc_1k: 66.723684<br />log_dalys_pc:  7.453975","gdp_pc_1k: 67.847949<br />log_dalys_pc:  7.478409","gdp_pc_1k: 68.972215<br />log_dalys_pc:  7.505419","gdp_pc_1k: 70.096481<br />log_dalys_pc:  7.534216","gdp_pc_1k: 71.220747<br />log_dalys_pc:  7.563892","gdp_pc_1k: 72.345013<br />log_dalys_pc:  7.593419","gdp_pc_1k: 73.469278<br />log_dalys_pc:  7.621639","gdp_pc_1k: 74.593544<br />log_dalys_pc:  7.647262","gdp_pc_1k: 75.717810<br />log_dalys_pc:  7.668858","gdp_pc_1k: 76.842076<br />log_dalys_pc:  7.684856","gdp_pc_1k: 77.966342<br />log_dalys_pc:  7.693533","gdp_pc_1k: 79.090608<br />log_dalys_pc:  7.693015","gdp_pc_1k: 80.214873<br />log_dalys_pc:  7.681267","gdp_pc_1k: 81.339139<br />log_dalys_pc:  7.656088","gdp_pc_1k: 82.463405<br />log_dalys_pc:  7.615110","gdp_pc_1k: 83.587671<br />log_dalys_pc:  7.555788","gdp_pc_1k: 84.711937<br />log_dalys_pc:  7.475397","gdp_pc_1k: 85.836203<br />log_dalys_pc:  7.371025","gdp_pc_1k: 86.960468<br />log_dalys_pc:  7.239572","gdp_pc_1k: 88.084734<br />log_dalys_pc:  7.077738","gdp_pc_1k: 89.209000<br />log_dalys_pc:  6.882026"],"type":"scatter","mode":"lines","name":"fitted values","line":{"width":3.7795275590551185,"color":"rgba(51,102,255,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":51.334163553341639,"r":9.2984640929846432,"b":51.141552511415526,"l":47.422166874221681},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":18.596928185969279},"title":{"text":"Decrease in DALYs as GDP/n Increases","font":{"color":"rgba(0,0,0,1)","family":"","size":22.316313823163139},"x":0.5,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-4.0488499999999998,93.649850000000001],"tickmode":"array","ticktext":["0","25","50","75"],"tickvals":[0,25,50,75],"categoryorder":"array","categoryarray":["0","25","50","75"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":4.6492320464923198,"tickwidth":0.8453149175440583,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":14.877542548775427},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.8453149175440583,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"GDP per capita ($1K PPP, 2021)","font":{"color":"rgba(0,0,0,1)","family":"","size":18.596928185969279}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[6.5951322855486447,11.354443614083173],"tickmode":"array","ticktext":["7","8","9","10","11"],"tickvals":[7,8,9,10,11],"categoryorder":"array","categoryarray":["7","8","9","10","11"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":4.6492320464923216,"tickwidth":0.8453149175440583,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":14.87754254877543},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.8453149175440583,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"Log(DALYs/n)","font":{"color":"rgba(0,0,0,1)","family":"","size":18.596928185969279}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":2.405153901216893,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.877542548775427}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"1586a61299e8c":{"x":{},"y":{},"label":{},"type":"scatter"},"1586a73682b29":{"x":{},"y":{},"label":{}}},"cur_data":"1586a61299e8c","visdat":{"1586a61299e8c":["function (y) ","x"],"1586a73682b29":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<p><span class="math display">\[
+\begin{align*}
+\leadsto Y = &amp;10.58 - 0.2346 X + 0.01396 X^2 \\
+&amp;- 0.0004 X^3 + 0.000005 X^4 \\
+&amp;- 0.00000002 X^5 + \varepsilon
+\end{align*}
+\]</span></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>eval_fitted_poly <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  coefs <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fl">10.58</span>,  <span class="sc">-</span><span class="fl">0.2346</span>, <span class="fl">0.01396</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">-</span><span class="fl">0.0004156</span>, <span class="fl">0.0000053527</span>, <span class="sc">-</span><span class="fl">0.0000000244</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  x_terms <span class="ot">&lt;-</span> <span class="fu">c</span>(x<span class="sc">^</span><span class="dv">0</span>, x<span class="sc">^</span><span class="dv">1</span>, x<span class="sc">^</span><span class="dv">2</span>, x<span class="sc">^</span><span class="dv">3</span>, x<span class="sc">^</span><span class="dv">4</span>, x<span class="sc">^</span><span class="dv">5</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  dot_prod <span class="ot">&lt;-</span> <span class="fu">sum</span>(coefs <span class="sc">*</span> x_terms)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(dot_prod)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="at">min=</span><span class="dv">0</span>, <span class="at">max=</span><span class="dv">90</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>y_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="at">X=</span>x_vals, <span class="at">FUN=</span>eval_fitted_poly)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>sim_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">gdpc=</span>x_vals, <span class="at">ldalys=</span>y_vals)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data=</span>sim_df, <span class="fu">aes</span>(<span class="at">x=</span>gdpc, <span class="at">y=</span>ldalys)) <span class="sc">+</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>daly_df, <span class="fu">aes</span>(<span class="at">x=</span>gdp_pc_1k, <span class="at">y=</span>log_dalys_pc)) <span class="sc">+</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  model_labels</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-true-model" class="level2 smaller crunch-title crunch-ul crunch-quarto-figure crunch-li-6">
+<h2 class="smaller crunch-title crunch-ul crunch-quarto-figure crunch-li-6 anchored" data-anchor-id="the-true-model">The “True” Model</h2>
+<ul>
+<li>From here onwards, we adopt this as our “true” model, for <strong>pedagogical</strong> purposes!</li>
+<li>Meaning: we use this model to get a sense for how…
+<ul>
+<li>CV can “foresee” <strong>test error</strong> <span class="math inline">\(\leadsto\)</span> confidence in CV</li>
+<li>Regularization can <strong>penalize</strong> overly-complex models <span class="math inline">\(\leadsto\)</span> confidence in LASSO</li>
+</ul></li>
+<li>In the real world we <strong>don’t know the DGP!</strong>
+<ul>
+<li><span class="math inline">\(\implies\)</span> We <strong>build our confidence</strong> here, then <strong>take off the training wheels</strong> irl: use CV/Regularization in hopes they can help us “uncover” the <strong>unknown DGP</strong></li>
+</ul></li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>run_dgp <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">world_label=</span><span class="st">"Sim"</span>, <span class="at">N=</span><span class="dv">60</span>, <span class="at">x_max=</span><span class="dv">90</span>) {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="at">min=</span><span class="dv">0</span>, <span class="at">max=</span>x_max)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  y_raw <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="at">X=</span>x_vals, <span class="at">FUN=</span>eval_fitted_poly)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  y_noise <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fl">0.8</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  y_vals <span class="ot">&lt;-</span> y_raw <span class="sc">+</span> y_noise</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  sim_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdpc=</span>x_vals,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">ldalys=</span>y_vals,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">world=</span>world_label</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(sim_df)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(<span class="st">"World 1"</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(<span class="st">"World 2"</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>df3 <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(<span class="st">"World 3"</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>dgp_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df1, df2, df3)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>dgp_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>gdpc, <span class="at">y=</span>ldalys)) <span class="sc">+</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>world)) <span class="sc">+</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(world)) <span class="sc">+</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>) <span class="sc">+</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">remove_legend</span>() <span class="sc">+</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  model_labels <span class="sc">+</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Three Possible Realizations of our DGP"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/dgp-realizations-1.png" class="img-fluid figure-img" width="1440"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="cross-validation-evaluating-non-linear-models" class="level1 title-09" data-stack-name="Cross-Validation">
+<h1 class="title-09" data-stack-name="Cross-Validation">Cross-Validation: Evaluating Non-Linear Models</h1>
+<p>Specifically: evaluating non-linear models <strong>on how well they <em>generalize</em>!</strong></p>
+<ul>
+<li>Beyond the Train-Test Split</li>
+<li>Validation Set</li>
+<li>LOOCV</li>
+<li><span class="math inline">\(K\)</span>-Fold CV</li>
+</ul>
+<section id="training-vs.-test-data" class="level2">
+<h2 class="anchored" data-anchor-id="training-vs.-test-data">Training vs.&nbsp;Test Data</h2>
+<ul>
+<li>We introduced this as a first step towards tackling the <strong>scourge of overfitting!</strong></li>
+</ul>
+<div class="cell" data-fig-height="2" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<svg width="672" height="192" viewbox="0.00 0.00 366.00 100.80" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 96.8)">
+<title>grid</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-96.8 362,-96.8 362,4 -4,4"></polygon>
+<g id="clust2" class="cluster">
+<title>cluster_02</title>
+<polygon fill="none" stroke="black" points="251,-8 251,-84.8 350,-84.8 350,-8 251,-8"></polygon>
+<text text-anchor="middle" x="300.5" y="-68.2" font-family="Times,serif" font-size="14.00">Test Set (20%)</text>
+</g>
+<g id="clust1" class="cluster">
+<title>cluster_01</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-84.8 243,-84.8 243,-8 8,-8"></polygon>
+<text text-anchor="middle" x="125.5" y="-68.2" font-family="Times,serif" font-size="14.00">Training Set (80%)</text>
+</g>
+<!-- N1 -->
+<g id="node1" class="node">
+<title>N1</title>
+<polygon fill="lightblue" stroke="black" points="235,-52 181,-52 181,-16 235,-16 235,-52"></polygon>
+<text text-anchor="middle" x="208" y="-29.8" font-family="Times,serif" font-size="14.00">20%</text>
+</g>
+<!-- N2 -->
+<g id="node2" class="node">
+<title>N2</title>
+<polygon fill="lightblue" stroke="black" points="180,-52 126,-52 126,-16 180,-16 180,-52"></polygon>
+<text text-anchor="middle" x="153" y="-29.8" font-family="Times,serif" font-size="14.00">20%</text>
+</g>
+<!-- N3 -->
+<g id="node3" class="node">
+<title>N3</title>
+<polygon fill="lightblue" stroke="black" points="125,-52 71,-52 71,-16 125,-16 125,-52"></polygon>
+<text text-anchor="middle" x="98" y="-29.8" font-family="Times,serif" font-size="14.00">20%</text>
+</g>
+<!-- N4 -->
+<g id="node4" class="node">
+<title>N4</title>
+<polygon fill="lightblue" stroke="black" points="70,-52 16,-52 16,-16 70,-16 70,-52"></polygon>
+<text text-anchor="middle" x="43" y="-29.8" font-family="Times,serif" font-size="14.00">20%</text>
+</g>
+<!-- N5 -->
+<g id="node5" class="node">
+<title>N5</title>
+<polygon fill="orange" stroke="black" points="327,-52 273,-52 273,-16 327,-16 327,-52"></polygon>
+<text text-anchor="middle" x="300" y="-29.8" font-family="Times,serif" font-size="14.00">20%</text>
+</g>
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<ul>
+<li>Training Set <span class="math inline">\(\leadsto\)</span> Training Error, Test Set <span class="math inline">\(\leadsto\)</span> Test Error</li>
+<li>So… what’s the issue? Why do we need to complicate this picture?</li>
+</ul>
+</section>
+<section id="the-chilling-truth-behind-test-data" class="level2 smaller crunch-title title-11">
+<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="the-chilling-truth-behind-test-data">The Chilling Truth Behind Test Data 🫣</h2>
+<ul>
+<li>Science-wise, technically, once you use the <strong>test set</strong>, you should <strong>stop working</strong></li>
+<li>Full gory details in fancy books (<span class="citation" data-cites="hume_enquiry_1760">Hume (<a href="#ref-hume_enquiry_1760" role="doc-biblioref">1760</a>)</span> <span class="math inline">\(\rightarrow\)</span> <span class="citation" data-cites="popper_logic_1934">Popper (<a href="#ref-popper_logic_1934" role="doc-biblioref">1934</a>)</span>), but the essence is captured by visualizing scientific inference (and <strong>statistical learning!</strong>) like:</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/train_test.svg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<ul>
+<li>So, what do we do? Use <span class="math inline">\(\mathbf{D}_{\text{Tr}}\)</span> along with knowledge of issues like <strong>overfitting</strong> to <strong>estimate</strong> test error!</li>
+<li>Fulfills our <strong>goal</strong>: find model which <strong>best predicts <span class="math inline">\(Y\)</span> from <span class="math inline">\(X\)</span> for unobserved data</strong></li>
+</ul>
+</section>
+<section id="the-validation-set-approach" class="level2 crunch-title crunch-ul crunch-li-8 crunch-quarto-figure">
+<h2 class="crunch-title crunch-ul crunch-li-8 crunch-quarto-figure anchored" data-anchor-id="the-validation-set-approach">The Validation Set Approach</h2>
+<ul>
+<li>⚠️ Remember: under our new goal, <strong>“good” models</strong> = models that <strong>generalize well!</strong></li>
+<li>Optimizing over <strong>test set</strong> violates scientific inference axioms</li>
+<li>Instead, optimize over <strong>training data</strong> by “holding out” some portion of it… Enter the <strong>Validation Set</strong>:</li>
+</ul>
+<div class="cell" data-fig-height="2.5" data-layout-align="default">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode dot code-with-copy"><code class="sourceCode dot"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">graph</span> <span class="va">grid</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">graph</span><span class="co"> </span><span class="ot">[</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="va">overlap</span><span class="ot">=</span><span class="va">true</span><span class="co">,</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="va">scale</span><span class="ot">=</span><span class="dv">0.2</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">]</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">nodesep</span><span class="ot">=</span><span class="dv">0.0</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">ranksep</span><span class="ot">=</span><span class="dv">0.0</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">rankdir</span><span class="ot">=</span><span class="st">"LR"</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">scale</span><span class="ot">=</span><span class="dv">0.2</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">style</span><span class="ot">=</span><span class="st">"filled"</span><span class="co">,</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">color</span><span class="ot">=</span><span class="va">black</span><span class="co">,</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightblue</span><span class="co">,</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">shape</span><span class="ot">=</span><span class="va">box</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">]</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">    // uncomment to hide the grid</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">edge</span><span class="co"> </span><span class="ot">[</span><span class="at">style</span><span class="ot">=</span><span class="va">invis</span><span class="ot">]</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_01</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Set (80%)"</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_02</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Fold (80%)"</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="va">A1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A2</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A3</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A4</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="ot">}</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_03</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="at">label</span><span class="ot">=</span><span class="st">"Validation Fold (20%)"</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="va">B1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightgreen</span><span class="ot">]</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="ot">}</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">}</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_04</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Test Set (20%)"</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">C1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">orange</span><span class="ot">]</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">}</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">A1</span><span class="co"> -- </span><span class="va">A2</span><span class="co"> -- </span><span class="va">A3</span><span class="co"> -- </span><span class="va">A4</span><span class="co"> -- </span><span class="va">B1</span><span class="co"> -- </span><span class="va">C1</span><span class="ot">;</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="ot">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<svg width="672" height="240" viewbox="0.00 0.00 553.00 142.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 138)">
+<title>grid</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-138 549,-138 549,4 -4,4"></polygon>
+<g id="clust1" class="cluster">
+<title>cluster_01</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-126 438,-126 438,-8 8,-8"></polygon>
+<text text-anchor="middle" x="223" y="-109.4" font-family="Times,serif" font-size="14.00">Training Set (80%)</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_02</title>
+<polygon fill="none" stroke="black" points="16,-16 16,-93 272,-93 272,-16 16,-16"></polygon>
+<text text-anchor="middle" x="144" y="-76.4" font-family="Times,serif" font-size="14.00">Training Fold (80%)</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_03</title>
+<polygon fill="none" stroke="black" points="288,-16 288,-93 430,-93 430,-16 288,-16"></polygon>
+<text text-anchor="middle" x="359" y="-76.4" font-family="Times,serif" font-size="14.00">Validation Fold (20%)</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_04</title>
+<polygon fill="none" stroke="black" points="446,-16 446,-93 545,-93 545,-16 446,-16"></polygon>
+<text text-anchor="middle" x="495.5" y="-76.4" font-family="Times,serif" font-size="14.00">Test Set (20%)</text>
+</g>
+<!-- A1 -->
+<g id="node1" class="node">
+<title>A1</title>
+<polygon fill="lightblue" stroke="black" points="78,-60 24,-60 24,-24 78,-24 78,-60"></polygon>
+<text text-anchor="middle" x="51" y="-37.8" font-family="Times,serif" font-size="14.00">16%</text>
+</g>
+<!-- A2 -->
+<g id="node2" class="node">
+<title>A2</title>
+<polygon fill="lightblue" stroke="black" points="140,-60 86,-60 86,-24 140,-24 140,-60"></polygon>
+<text text-anchor="middle" x="113" y="-37.8" font-family="Times,serif" font-size="14.00">16%</text>
+</g>
+<!-- A1&#45;&#45;A2 -->
+<!-- A3 -->
+<g id="node3" class="node">
+<title>A3</title>
+<polygon fill="lightblue" stroke="black" points="202,-60 148,-60 148,-24 202,-24 202,-60"></polygon>
+<text text-anchor="middle" x="175" y="-37.8" font-family="Times,serif" font-size="14.00">16%</text>
+</g>
+<!-- A2&#45;&#45;A3 -->
+<!-- A4 -->
+<g id="node4" class="node">
+<title>A4</title>
+<polygon fill="lightblue" stroke="black" points="264,-60 210,-60 210,-24 264,-24 264,-60"></polygon>
+<text text-anchor="middle" x="237" y="-37.8" font-family="Times,serif" font-size="14.00">16%</text>
+</g>
+<!-- A3&#45;&#45;A4 -->
+<!-- B1 -->
+<g id="node5" class="node">
+<title>B1</title>
+<polygon fill="lightgreen" stroke="black" points="386,-60 332,-60 332,-24 386,-24 386,-60"></polygon>
+<text text-anchor="middle" x="359" y="-37.8" font-family="Times,serif" font-size="14.00">16%</text>
+</g>
+<!-- A4&#45;&#45;B1 -->
+<!-- C1 -->
+<g id="node6" class="node">
+<title>C1</title>
+<polygon fill="orange" stroke="black" points="522,-60 468,-60 468,-24 522,-24 522,-60"></polygon>
+<text text-anchor="middle" x="495" y="-37.8" font-family="Times,serif" font-size="14.00">20%</text>
+</g>
+<!-- B1&#45;&#45;C1 -->
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="evaluating-one-model-validation-set-approach" class="level2 crunch-title title-07 inline-90">
+<h2 class="crunch-title title-07 inline-90 anchored" data-anchor-id="evaluating-one-model-validation-set-approach">Evaluating <em>One</em> Model: Validation Set Approach</h2>
+<ul>
+<li><i class="bi bi-1-circle"></i> Randomly pick 20% of <span class="math inline">\(\mathbf{D}_{\text{train}}\)</span> as <strong>sub-training set</strong> <span class="math inline">\(\mathbf{D}_{\text{SubTr}}\)</span></li>
+<li><i class="bi bi-2-circle"></i> The other 80% becomes <strong>validation set</strong> <span class="math inline">\(\mathbf{D}_{\text{Val}}\)</span></li>
+<li><i class="bi bi-3-circle"></i> Train model on <span class="math inline">\(\mathbf{D}_{\text{SubTr}}\)</span>, then evaluate using <span class="math inline">\(\mathbf{D}_{\text{Val}}\)</span>, to produce <strong>validation error</strong> <span class="math inline">\(\boxed{\varepsilon_{\text{Val}} = \widehat{\text{Err}}_{\text{Test}}}\)</span></li>
+<li><span class="math inline">\(\varepsilon_{\text{Val}}\)</span> gives us an <strong>estimate of the test error</strong>
+<ul>
+<li><span class="math inline">\(\implies\)</span> this is what we want to <strong>optimize</strong>, in place of <strong>training error</strong>, for our new goal 😎!</li>
+</ul></li>
+</ul>
+</section>
+<section id="how-does-it-do-for-our-dgp" class="level2 smaller crunch-title">
+<h2 class="smaller crunch-title anchored" data-anchor-id="how-does-it-do-for-our-dgp">How Does It Do for Our DGP?</h2>
+<ul>
+<li>Recall that the “true” degree is <strong>5</strong>, but that you’re not supposed to know that!</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(boot)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>sim200_df <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">world_label=</span><span class="st">"N=200"</span>, <span class="at">N=</span><span class="dv">200</span>, <span class="at">x_max=</span><span class="dv">100</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>sim1k_df <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">world_label=</span><span class="st">"N=1000"</span>, <span class="at">N=</span><span class="dv">1000</span>, <span class="at">x_max=</span><span class="dv">100</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>compute_deltas <span class="ot">&lt;-</span> <span class="cf">function</span>(df, <span class="at">min_deg=</span><span class="dv">1</span>, <span class="at">max_deg=</span><span class="dv">12</span>) {</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  cv_deltas <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> min_deg<span class="sc">:</span>max_deg) {</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    cur_poly <span class="ot">&lt;-</span> <span class="fu">glm</span>(ldalys <span class="sc">~</span> <span class="fu">poly</span>(gdpc, i), <span class="at">data=</span>df)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    cur_poly_cv_result <span class="ot">&lt;-</span> <span class="fu">cv.glm</span>(<span class="at">data=</span>df, <span class="at">glmfit=</span>cur_poly, <span class="at">K=</span><span class="dv">5</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    cur_cv_adj <span class="ot">&lt;-</span> cur_poly_cv_result<span class="sc">$</span>delta[<span class="dv">1</span>]</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    cv_deltas <span class="ot">&lt;-</span> <span class="fu">c</span>(cv_deltas, cur_cv_adj)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(cv_deltas)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>sim200_deltas <span class="ot">&lt;-</span> <span class="fu">compute_deltas</span>(sim200_df)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>sim200_delta_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">degree=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">delta=</span>sim200_deltas)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>sim200_delta_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>degree, <span class="at">y=</span>delta)) <span class="sc">+</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="dv">1</span>,<span class="at">to=</span><span class="dv">12</span>,<span class="at">by=</span><span class="dv">1</span>)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>) <span class="sc">+</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"N = 200"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/n200-delta-plot-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Here, validation error fails to capture ‘true’ model (likely culprits: low <span class="math inline">\(N\)</span>, high noise…)</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Possible resolution: <em>[See coming slides!]</em></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>sim1k_deltas <span class="ot">&lt;-</span> <span class="fu">compute_deltas</span>(sim1k_df)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>sim1k_delta_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">degree=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">delta=</span>sim1k_deltas)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>sim1k_delta_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>degree, <span class="at">y=</span>delta)) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="dv">1</span>,<span class="at">to=</span><span class="dv">12</span>,<span class="at">by=</span><span class="dv">1</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>) <span class="sc">+</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"N = 1000"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/n1k-delta-plot-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Here, validation error fails to sharply distinguish <span class="math inline">\(d \in \{5, 6, 7, 8\}\)</span></figcaption>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Possible resolution: <em>“one standard error rule”</em></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="optimizing-over-many-models" class="level2 crunch-title title-09">
+<h2 class="crunch-title title-09 anchored" data-anchor-id="optimizing-over-many-models">Optimizing over <em>Many</em> Models</h2>
+<ul>
+<li><i class="bi bi-1-circle"></i> Let <span class="math inline">\(\mathfrak{M} = (\mathcal{M}_1, \ldots, \mathcal{M}_D)\)</span> be a set of <span class="math inline">\(D\)</span> different models
+<ul>
+<li>Ex: <span class="math inline">\(\mathcal{M}_1\)</span> could be a linear model, <span class="math inline">\(\mathcal{M}_2\)</span> a quadratic model, <span class="math inline">\(\mathcal{M}_3\)</span> a cubic model, and so on…</li>
+</ul></li>
+<li><i class="bi bi-2-circle"></i> For each <span class="math inline">\(\mathcal{M}_i \in \mathfrak{M}\)</span> (and for given <strong>training</strong> data <span class="math inline">\(\mathbf{D}_{\text{Tr}}\)</span>):
+<ul>
+<li>Use [Insert Validation Approach] to derive <span class="math inline">\(\varepsilon_i\)</span></li>
+</ul></li>
+<li><i class="bi bi-3-circle"></i> Model <span class="math inline">\(\mathcal{M}_i\)</span> with <strong>lowest <span class="math inline">\(\varepsilon_i\)</span> wins!</strong></li>
+<li>We are now <strong>cooking with gas!</strong> We can use CV to optimize over e.g.&nbsp;<strong>HYPERPARAMETERS</strong> 🤯 (that we had to just kind of… guess before)!</li>
+</ul>
+</section>
+<section id="cooking-with-even-more-gas" class="level2 crunch-title crunch-ul crunch-p">
+<h2 class="crunch-title crunch-ul crunch-p anchored" data-anchor-id="cooking-with-even-more-gas">Cooking with Even More Gas!</h2>
+<p><em>(加 even more 油!)</em></p>
+<ul>
+<li>It turns out that, for the purposes of estimating test error (aka, estimating how well the fitted model will <strong>generalize</strong>), Validation Set Approach is the <strong>worst</strong> approach (still good, just, least good!)</li>
+<li>To see its limitations, consider: is there something special about the 20% of data we selected for the validation set?</li>
+<li>Answer: <strong>No!</strong> It was literally randomly selected!</li>
+<li><span class="math inline">\(\implies\)</span> Any other 20% “chunk” (which we’ll call a <strong>fold</strong> from now on) could work just as well</li>
+</ul>
+</section>
+<section id="fold-cross-validation" class="level2 crunch-title crunch-ul crunch-quarto-figure">
+<h2 class="crunch-title crunch-ul crunch-quarto-figure anchored" data-anchor-id="fold-cross-validation">5-Fold Cross-Validation</h2>
+<ul>
+<li>Secretly, by choosing a <strong>20%</strong> fold to be the validation set earlier, I was priming you for <strong>5-fold</strong> cross-validation!</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/kfold.png" class="img-fluid figure-img"></p>
+<figcaption><a href="https://biol607.github.io/">Image Source</a></figcaption>
+</figure>
+</div>
+</section>
+<section id="k-fold-cross-validation" class="level2">
+<h2 class="anchored" data-anchor-id="k-fold-cross-validation"><span class="math inline">\(K\)</span>-Fold Cross-Validation</h2>
+<ul>
+<li>5 was an arbitrary choice!
+<ul>
+<li>(Though, one with important and desirable statistical properties, which we’ll get to ASAP)</li>
+</ul></li>
+<li>In general, <span class="math inline">\(K\)</span>-Fold CV Estimator <span class="math inline">\(\varepsilon_{(K)} = \widehat{\text{Err}}_{\text{Test}}\)</span> given by</li>
+</ul>
+<p><span class="math display">\[
+\varepsilon_{(K)} = \frac{1}{K}\sum_{i=1}^{K}\varepsilon^{\text{Val}}_{i}
+\]</span></p>
+</section>
+<section id="leave-one-out-cross-validation-loocv" class="level2 smaller crunch-title">
+<h2 class="smaller crunch-title anchored" data-anchor-id="leave-one-out-cross-validation-loocv">Leave-One-Out Cross-Validation (LOOCV)</h2>
+<ul>
+<li><span class="math inline">\(K\)</span>-Fold CV with <span class="math inline">\(K := N\)</span></li>
+<li>Produces the maximum possible number of terms in the summation that leads to <span class="math inline">\(\varepsilon_{(K)}\)</span>
+<ul>
+<li>i.e., <span class="math inline">\(\varepsilon_{(N)}\)</span> is an average over the maximum possible number of models</li>
+</ul></li>
+<li>So… does this mean it’s the best choice?</li>
+<li><em>Hint</em>: How “different” are any two models used in the sum?</li>
+</ul>
+<p><span class="math display">\[
+\begin{align*}
+\varepsilon_{(N)} =~ &amp; \text{Err}(\mathbf{D}_1 \mid \mathbf{D}_{2:100}) + \text{Err}(\mathbf{D}_2 \mid \mathbf{D}_1, \mathbf{D}_{3:100}) \\
+&amp;+ \text{Err}(\mathbf{D}_3 \mid \mathbf{D}_{1:2}, \mathbf{D}_{4:100}) + \cdots + \text{Err}(\mathbf{D}_{100} \mid \mathbf{D}_{1:99})
+\end{align*}
+\]</span></p>
+<ul>
+<li>The terms here are <strong>highly correlated!</strong></li>
+<li>Fun math results around how <span class="math inline">\(K = 5\)</span> or <span class="math inline">\(K = 10\)</span> can best <strong>strike a balance</strong> between overly-correlated terms (<span class="math inline">\(K = N\)</span>) and not averaging enough models (<span class="math inline">\(K = 2\)</span>)!</li>
+</ul>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-hume_enquiry_1760" class="csl-entry" role="listitem">
+Hume, David. 1760. <em>An <span>Enquiry Concerning Human Understanding</span></em>. <span>Simon and Schuster</span>.
+</div>
+<div id="ref-popper_logic_1934" class="csl-entry" role="listitem">
+Popper, Karl R. 1934. <em>The <span>Logic</span> of <span>Scientific Discovery</span></em>. Psychology Press.
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jpowerj/dsan5300-01/blob/main/w05/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

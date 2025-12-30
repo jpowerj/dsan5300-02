@@ -1,0 +1,67 @@
+
+## Reminder: Our Working DGP {.smaller .crunch-title .math-80 .plotly-340 .crunch-math .crunch-ul .crunch-li-8 .crunch-quarto-figure}
+
+* Each country $i$ has a certain $x_i = \texttt{gdp\_per\_capita}_i$
+* They spend some portion of it on **healthcare** each year, which translates (based on the country's healthcare system) into **health outcomes** $y_i$
+* We *operationalize* these health outcomes as $y_i = \texttt{DALY}_i$: **[Disability Adjusted Life Years](https://ourworldindata.org/burden-of-disease)**, cross-nationally-standardized "lost years of minimally-healthy life"
+
+:::: {.columns}
+::: {.column width="60%"}
+
+```{r}
+#| label: cubic-dgp
+#| fig-align: center
+library(tidyverse) |> suppressPackageStartupMessages()
+library(plotly) |> suppressPackageStartupMessages()
+daly_df <- read_csv("assets/dalys_cleaned.csv")
+daly_df <- daly_df |> mutate(
+  gdp_pc_1k=gdp_pc_clean/1000
+)
+model_labels <- labs(
+  x="GDP per capita ($1K PPP, 2021)",
+  y="Log(DALYs/n)",
+  title="Decrease in DALYs as GDP/n Increases"
+)
+daly_plot <- daly_df |> ggplot(aes(x=gdp_pc_1k, y=log_dalys_pc, label=name)) +
+  geom_point() +
+  # geom_smooth(method="loess", formula=y ~ x) +
+  geom_smooth(method="lm", formula=y ~ poly(x,5), se=FALSE) +
+  theme_dsan(base_size=14) +
+  model_labels
+ggplotly(daly_plot)
+```
+
+:::
+::: {.column width="40%"}
+
+$$
+\begin{align*}
+\leadsto Y = &10.58 - 0.2346 X + 0.01396 X^2 \\
+&- 0.0004 X^3 + 0.000005 X^4 \\
+&- 0.00000002 X^5 + \varepsilon
+\end{align*}
+$$
+
+```{r}
+eval_fitted_poly <- function(x) {
+  coefs <- c(
+    10.58,  -0.2346, 0.01396,
+    -0.0004156, 0.0000053527, -0.0000000244
+  )
+  x_terms <- c(x^0, x^1, x^2, x^3, x^4, x^5)
+  dot_prod <- sum(coefs * x_terms)
+  return(dot_prod)
+}
+N <- 500
+x_vals <- runif(N, min=0, max=90)
+y_vals <- sapply(X=x_vals, FUN=eval_fitted_poly)
+sim_df <- tibble(gdpc=x_vals, ldalys=y_vals)
+ggplot() +
+  geom_line(data=sim_df, aes(x=gdpc, y=ldalys)) +
+  geom_point(data=daly_df, aes(x=gdp_pc_1k, y=log_dalys_pc)) +
+  theme_dsan() +
+  model_labels
+```
+
+:::
+::::

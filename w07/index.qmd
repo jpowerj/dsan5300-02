@@ -1,0 +1,847 @@
+---
+title: "Week 7: Basis Functions and Splines"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+author: "Jeff Jacobs"
+institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
+bibliography: "../_DSAN5300.bib"
+date: 2025-02-24
+date-format: full
+lecnum: 7
+cache: true
+categories:
+  - "Class Sessions"
+format:
+  revealjs:
+    df-print: kable
+    footer: "DSAN 5300-01 Week 7: {{< var w07.footer >}}"
+    output-file: "slides.html"
+    html-math-method: mathjax
+    scrollable: true
+    theme: [default, "../dsan-globals/jjquarto.scss"]
+    slide-number: true
+    echo: true
+    code-fold: true
+    link-external-icon: true
+    link-external-newwindow: true
+    include-in-header:
+      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Kablammo&family=Rubik+Puddles&display=swap' rel='stylesheet'><link href='https://fonts.googleapis.com/css2?family=Workbench&display=swap' rel='stylesheet'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
+    simplemenu:
+      flat: true
+      barhtml:
+        header: "<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>"
+      scale: 0.5
+    revealjs-plugins:
+      - simplemenu
+  html:
+    df-print: kable
+    output-file: "index.html"
+    html-math-method: mathjax
+    echo: true
+    code-fold: true
+---
+
+::: {.content-visible unless-format="revealjs"}
+
+<center class='mb-3'>
+<a class="h2" href="./slides.html" target="_blank">Open slides in new tab &rarr;</a>
+</center>
+
+:::
+
+# Schedule {.smaller .small-title .crunch-title .crunch-callout data-name="Schedule"}
+
+Today's Planned Schedule:
+
+| | Start | End | Topic |
+|:- |:- |:- |:- |
+| **Lecture** | 6:30pm | 7:00pm | [Roadmap: Even More Wiggly "Linearity" &rarr;](#roadmap) |
+| | 7:00pm | 7:20pm | ["Manual" Model Selection: Subsets &rarr;](#model-selection) | 
+| | 7:20pm | 7:40pm | [Key Regularization Building Block: $L^p$ Norm &rarr;](#regularization-for-automatic-model-selection) |
+| | 7:40pm | 8:00pm | [Regularized Regression Intro &rarr;](#regularized-regression-(finally)) |
+| **Break!** | 8:00pm | 8:10pm | |
+| | 8:10pm | 8:50pm | [Basically Lasso is the Coolest Thing Ever &rarr;](#the-key-plot) |
+| | 8:50pm | 9:00pm | [Scary-Looking But Actually-Fun W07 Preview &rarr;](#week-7-preview-linear.noodle-jj-functions) |
+
+: {tbl-colwidths="[12,12,12,64]"}
+
+::: {.hidden}
+
+```{r}
+#| label: r-source-globals
+source("../dsan-globals/_globals.r")
+set.seed(5300)
+```
+
+:::
+
+{{< include ../dsan-globals/_globals-tex.qmd >}}
+
+# Roadmap {.smaller .title-10 data-stack-name="Roadmap"}
+
+```{=html}
+<style>
+@font-face {
+    font-family: Noodle;
+    src: url('/assets/Kbnoodlemonster.ttf');
+}
+.workbench-jj {
+  font-family: "Workbench", serif;
+  /* font-optical-sizing: auto; */
+  font-weight: 400;
+  font-style: normal;
+  font-size: 48pt !important;
+}
+.noodle-jj {
+    font-family: "Noodle", serif;
+    font-size: 52pt !important;
+}
+.kablammo-jj {
+  font-family: "Kablammo", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "MORF" 0;
+  font-size: 48pt !important;
+}
+.rubik-jj {
+  font-family: "Rubik Puddles", serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 48pt !important;
+}
+</style>
+```
+
+<center>
+
+**[Weeks 4-6]**
+
+</center>
+
+:::: {.columns}
+::: {.column width="50%"}
+
+::: {#fig-noodle}
+
+<center>
+
+*Polynomial Regression*
+
+[Linear Models]{.noodle-jj}
+
+</center>
+
+[Font Credit](http://keepinitkoolinkinderland.blogspot.com/p/fonts.html)
+:::
+
+:::
+::: {.column width="50%"}
+
+::: {#fig-workbench}
+
+<center>
+
+*Piecewise Regression*
+
+[Linear Models]{.workbench-jj}
+
+</center>
+
+[Font Credit](https://fonts.google.com/specimen/Workbench)
+:::
+
+:::
+::::
+
+<center>
+
+**[Today]**
+
+</center>
+
+:::: {.columns}
+::: {.column width="50%"}
+
+::: {#fig-kablammo}
+
+<center>
+
+*Splines (Truncated Power Bases)*
+
+[Linear Models]{.kablammo-jj}
+
+</center>
+
+[Font Credit](https://fonts.google.com/specimen/Kablammo)
+:::
+
+:::
+::: {.column width="50%"}
+
+::: {#fig-rubik}
+
+<center>
+
+*Natural Splines*
+
+[Linear Models]{.rubik-jj}
+
+</center>
+
+[Font Credit](https://fonts.google.com/specimen/Rubik+Puddles)
+:::
+
+:::
+::::
+
+## What Problem Are We Solving? {.smaller}
+
+* From W04-06, you are now really good at thinking through issues of **non-linearity** in terms of **polynomial regression**
+    * (Hence, why I kept "plugging in" **degree of polynomial** as our measure of **complexity**)
+* Now we want to move towards handling **any kind of non-linearity**
+    * (Hence, why I kept reminding you how **degree of polynomial** is *only one possible measure* of **complexity**)
+
+## What's So Bad About Polynomial Regression? {.smaller .title-11 .crunch-title .crunch-ul .crunch-quarto-figure .crunch-li-8 .inline-90 .math-90 .crunch-p}
+
+* Mathematically, [Weierstrass Approximation Theorem](https://en.wikipedia.org/wiki/Weierstrass_approximation_theorem) says we can model **any function** as (possibly infinite) sum of polynomials
+* In practice, this can be a **horrifically bad** way to actually model things:
+
+:::: {.columns .text-90}
+::: {.column width="32%"}
+
+<i class='bi bi-1-circle'></i> Raw data: $y = \sin(x) + \varepsilon$
+
+```{r}
+#| label: sine-data-plot
+library(tidyverse) |> suppressPackageStartupMessages()
+library(latex2exp) |> suppressPackageStartupMessages()
+N <- 200
+x_vals <- seq(from=-10, to=10, length.out=N)
+y_raw <- sin(x_vals)
+y_noise <- rnorm(length(y_raw), mean=0, sd=0.075)
+y_vals <- y_raw + y_noise
+dgp_label <- TeX("Raw Data")
+data_df <- tibble(x=x_vals, y=y_vals)
+base_plot <- data_df |> ggplot(aes(x=x, y=y)) +
+  geom_point() +
+  theme_dsan(base_size=28)
+base_plot + labs(title=dgp_label)
+```
+
+<i class='bi bi-2-circle'></i> Bad (quadratic) model
+
+```{r}
+#| label: sine-poly2-fit
+quad_model <- lm(y ~ poly(x,2), data=data_df)
+quad_rss <- round(get_rss(quad_model), 3)
+poly_label_2 <- TeX(paste0("2 $\\beta$ Coefficients: RSS = ",quad_rss))
+base_plot +
+  geom_smooth(method='lm', formula=y ~ poly(x,2)) +
+  labs(title=poly_label_2)
+```
+
+:::
+::: {.column width="2%"}
+
+&nbsp;
+
+:::
+::: {.column width="32%"}
+
+<i class='bi bi-3-circle'></i> Making it "better" with more complex polynomials
+
+```{r}
+#| label: sine-poly5-fit
+poly5_model <- lm(y ~ poly(x,5), data=data_df)
+poly5_rss <- round(get_rss(poly5_model), 3)
+poly5_label <- TeX(paste0("5 $\\beta$ Coefficients: RSS = ",poly5_rss))
+base_plot +
+  geom_smooth(method='lm', formula=y ~ poly(x,5)) +
+  labs(title=poly5_label)
+```
+
+```{r}
+#| label: sine-poly10-fit
+poly8_model <- lm(y ~ poly(x,8), data=data_df)
+poly8_rss <- round(get_rss(poly8_model), 3)
+poly8_label <- TeX(paste0("8 $\\beta$ Coefficients: RSS = ",poly8_rss))
+base_plot +
+  geom_smooth(method='lm', formula=y ~ poly(x,8)) +
+  labs(title=poly8_label)
+```
+
+:::
+::: {.column width="2%"}
+
+&nbsp;
+
+:::
+::: {.column width="32%"}
+
+<i class='bi bi-4-circle'></i> Using *all* data to estimate **single** parameter, by using the "correct" **basis function**!
+
+$$
+Y = \beta_0 + \beta_1 \sin(x)
+$$
+
+```{r}
+#| label: sine-fit
+sine_model <- lm(y ~ sin(x), data=data_df)
+sine_rss <- round(get_rss(sine_model), 3)
+sine_label <- TeX(paste0("Single sin(x) Coefficient: RSS = ",sine_rss))
+base_plot +
+  geom_smooth(method='lm', formula=y ~ sin(x)) +
+  labs(title=sine_label)
+```
+
+:::
+::::
+
+# Basis Functions {data-stack-name="Basis Functions"}
+
+* Seems like it'll help to have a toolkit filled with different **basis functions**, so we can use them with `lm()` 🤔
+* ...Let's get into it!
+
+## The General Form {.crunch-title .crunch-ul .inline-90 .math-90}
+
+*(Decomposing Fancy Regressions into Core "Pieces")*
+
+* Q: What do **all** these types of regression have in common?
+* A: They can all be written in the form
+  
+  $$
+  Y = \beta_0 + \beta_1 b_1(X) + \beta_2 b_2(X) + \cdots + \beta_d b_d(X)
+  $$
+
+* Where $b(\cdot)$ is called a **basis function**
+  * Polynomial: $b_j(X) = X^j$
+  * Piecewise: $b_j(X) = \mathbb{1}[c_{j-1} \leq X < c_j]$
+  * Earlier Example: $b_1(X) = \sin(X)$
+
+# Segments $\rightarrow$ Splines {data-stack-name="Segmented Regression" .smaller .crunch-title .table-va}
+
+| | What we want | How we do it | Name for result |
+| - | - | - |:-:|
+| <i class='bi bi-1-circle'></i> | Model **sub-regions** of $\text{domain}(X)$ | Chop $\text{domain}(X)$ into pieces, one regression per piece | *Discontinuous Segmented Regression* |
+| <i class='bi bi-2-circle'></i> | **Continuous** prediction function | Require pieces to **join** at chop points $\{\xi_1, \ldots, \xi_K\}$ | *Continuous Segmented Regression* |
+| <i class='bi bi-3-circle'></i> | **Smooth** prediction function | Require pieces to **join** and have **equal derivatives** at $\xi_i$ | **Spline** |
+| <i class='bi bi-4-circle'></i> | Less jump in variance at **boundaries** | Reduce complexity of polynomials at endpoints | **Natural Spline** |
+
+: {tbl-colwidths="[4,28,38,30]"}
+
+## Discontinuous Segmented Regression {.smaller .title-12}
+
+* Here we see why our first two basis functions were **polynomial** and **piecewise**: most rudimentary spline fits a **polynomial** to each **piece**
+
+```{r}
+#| label: quad-naive-spline
+library(tidyverse) |> suppressPackageStartupMessages()
+set.seed(5300)
+compute_y <- function(x) {
+  return(x * cos(x^2))
+}
+N <- 500
+xmin <- -1.9
+xmax <- 2.7
+x_vals <- runif(N, min=xmin, max=xmax)
+y_raw = compute_y(x_vals)
+y_noise = rnorm(N, mean=0, sd=0.5)
+y_vals <- y_raw + y_noise
+prod_df <- tibble(x=x_vals, y=y_vals)
+knot <- (xmin + xmax) / 2
+prod_df <- prod_df |> mutate(segment = x <= knot)
+# First segment model
+#left_df <- prod_df |> filter(x <= knot_point)
+#left_model <- lm(y ~ poly(x, 2), data=left_df)
+prod_df |> ggplot(aes(x=x, y=y, group=segment)) +
+  geom_point(size=0.5) +
+  geom_vline(xintercept=knot, linetype="dashed") +
+  geom_smooth(method='lm', formula=y ~ poly(x, 2), se=TRUE) +
+  theme_classic(base_size=22)
+```
+
+* What's the issue with this?
+
+## Forcing Continuity at Knot Points {.smaller .title-12}
+
+* Starting slow: let's come back down to line world...
+* Why are these two lines "allowed" to be non-continuous, under our current approach?
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$
+\hspace{6.5cm} Y^{\phantom{🧐}}_L = \beta_0 + \beta_1 X_L
+$$
+
+:::
+::: {.column width="50%"}
+
+$$
+Y_R = \beta_0^{🧐} + \beta_1 X_R \hspace{5cm}
+$$
+
+:::
+::::
+
+```{r}
+#| label: linear-continuity
+set.seed(5300)
+xmin_sub <- -1
+xmax_sub <- 1.9
+sub_df <- prod_df |> filter(x >= xmin_sub & x <= xmax_sub)
+sub_knot <- (xmin_sub + xmax_sub) / 2
+sub_df <- sub_df |> mutate(segment = x <= sub_knot)
+# First segment model
+sub_df |> ggplot(aes(x=x, y=y, group=segment)) +
+  geom_point(size=0.5) +
+  geom_vline(xintercept=sub_knot, linetype="dashed") +
+  geom_smooth(method='lm', formula=y ~ x, se=TRUE, linewidth=g_linewidth) +
+  theme_classic(base_size=28)
+```
+
+* ...We need $X_R$ to have its own slope but **not** its own intercept! Something like:
+
+$$
+Y = \beta_0 + \beta_1 (X \text{ before } \xi) + \beta_2 (X \text{ after } \xi)
+$$
+
+## Truncated Power Basis (ReLU Basis) {.crunch-title .math-80 .inline-90 .title-09}
+
+$$
+\text{ReLU}(x) \definedas (x)_+ \definedas \begin{cases}
+0 &\text{if }x \leq 0 \\
+x &\text{if }x > 0
+\end{cases} \implies (x - \xi)_+ = \begin{cases}
+0 &\text{if }x \leq \xi \\
+x - \xi &\text{if }x > 0
+\end{cases}
+$$
+
+```{r}
+#| label: truncated-power
+library(latex2exp) |> suppressPackageStartupMessages()
+trunc_x <- function(x, xi) {
+  return(ifelse(x <= xi, 0, x - xi))
+}
+trunc_x_05 <- function(x) trunc_x(x, 1/2)
+trunc_title <- TeX("$(x - \\xi)_+$ with $\\xi = 0.5$")
+trunc_label <- TeX("$y = (x - \\xi)_+$")
+ggplot() +
+  stat_function(
+    data=data.frame(x=c(-3,3)),
+    fun=trunc_x_05,
+    linewidth=g_linewidth
+  ) +
+  xlim(-3, 3) +
+  theme_dsan(base_size=28) +
+  labs(
+    title = trunc_title,
+    x = "x",
+    y = trunc_label
+  )
+```
+
+* $\Rightarrow$ we can include a **"slope modifier"** $\beta_m (X - \xi)_+$ that only **"kicks in"** once $x$ goes past $\xi$! (Changing slope by $\beta_m$)
+
+## Linear Segments with Continuity at Knot {.smaller .title-12 .math-80 .table-80}
+
+:::: {.columns}
+::: {.column width="40%"}
+
+Our new (non-naïve) model:
+
+$$
+\begin{align*}
+Y &= \beta_0 + \beta_1 X + \beta_2 (X - \xi)_+ \\
+&= \beta_0 + \begin{cases}
+\beta_1 X &\text{if }X \leq \xi \\
+(\beta_1 + \beta_2)X &\text{if }X > \xi
+\end{cases}
+\end{align*}
+$$
+
+:::
+::: {.column width="60%"}
+
+```{r}
+#| label: linear-seg-model
+sub_df <- sub_df |> mutate(x_tr = ifelse(x < sub_knot, 0, x - sub_knot))
+linseg_model <- lm(y ~ x + x_tr, data=sub_df)
+broom::tidy(linseg_model) |> mutate_if(is.numeric, round, 3) |> select(-p.value)
+```
+
+:::
+::::
+
+```{r}
+#| label: linear-seg-plot
+sub_df |> ggplot(aes(x=x, y=y)) +
+  geom_point(size=0.5) +
+  geom_vline(xintercept=sub_knot, linetype="dashed") +
+  geom_smooth(method='lm', formula=y ~ x + ifelse(x > sub_knot, x-sub_knot, 0), se=TRUE, linewidth=g_linewidth) +
+  theme_classic(base_size=28)
+```
+
+## Continuous Segmented Regression {.smaller .crunch-ul .crunch-title .title-12 .math-80 .table-80}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$
+\begin{align*}
+Y &= \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 (X - \xi)_+ + \beta_4 (X - \xi)_+^2 \\[0.8em]
+&= \beta_0 + \begin{cases}
+\beta_1 X + \beta_2 X^2 &\text{if }X \leq \xi \\
+(\beta_1 + \beta_3) X + (\beta_2 + \beta_4) X^2 &\text{if }X > \xi
+\end{cases}
+\end{align*}
+$$
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| label: continuous-seg-model
+#| code-fold: show
+prod_df <- prod_df |> mutate(x_tr = ifelse(x > knot, x - knot, 0))
+seg_model <- lm(
+  y ~ poly(x, 2) + poly(x_tr, 2),
+  data=prod_df
+)
+```
+
+:::
+::::
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r}
+#| label: continuous-seg-model-results
+seg_model |> broom::tidy() |> mutate_if(is.numeric, round, 3) |> select(-p.value)
+```
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| label: continuous-seg-plot
+cont_seg_plot <- ggplot() +
+  geom_point(data=prod_df, aes(x=x, y=y), size=0.5) +
+  geom_vline(xintercept=knot, linetype="dashed") +
+  stat_smooth(
+    data=prod_df, aes(x=x, y=y),
+    method='lm',
+    formula=y ~ poly(x,2) + poly(ifelse(x > knot, (x - knot), 0), 2),
+    n = 300
+  ) +
+  #geom_smooth(data=prod_df |> filter(segment == FALSE), aes(x=x, y=y), method='lm', formula=y ~ poly(x,2)) +
+  # geom_smooth(method=segreg, formula=y ~ seg(x, npsi=1, fixed.psi=0.5)) + # + seg(I(x^2), npsi=1)) +
+  theme_classic(base_size=22)
+cont_seg_plot
+```
+
+:::
+::::
+
+* There's still a problem here... can you see what it is? (Hint: things that break calculus)
+
+# Splines (The Moment You've Been Waiting For!) {data-stack-name="Splines" .title-12}
+
+## Constrained Derivatives: "Quadratic Splines" (⚠️) {.smaller .crunch-title .title-10 .crunch-quarto-figure .crunch-math}
+
+* Like "Linear Probability Models", "Quadratic Splines" are a **red flag**
+* Why? If we have leftmost plot below, but want it differentiable everywhere... only option is to fit a single quadratic, defeating the whole point of the "chopping"!
+
+$$
+\frac{\partial Y}{\partial X} = \beta_1 + 2\beta_2 X + \beta_3 + 2\beta_4 X
+$$
+
+:::: {.columns}
+::: {.column width="30%"}
+
+Continuous Segmented:
+
+```{r}
+#| label: quadratic-seg-plot-again
+cont_seg_plot
+```
+
+:::
+::: {.column width="5%"}
+
+&nbsp;
+
+:::
+::: {.column width="30%"}
+
+"Quadratic Spline":
+
+```{r}
+#| label: deriv-contraints
+ggplot() +
+  geom_point(data=prod_df, aes(x=x, y=y), size=0.5) +
+  geom_vline(xintercept=knot, linetype="dashed") +
+  stat_smooth(
+    data=prod_df, aes(x=x, y=y),
+    method='lm',
+    formula=y ~ poly(x,2) + ifelse(x > knot, (x - knot)^2, 0),
+    n = 300
+  ) +
+  theme_dsan(base_size=22)
+```
+
+:::
+::: {.column width="5%"}
+
+&nbsp;
+
+:::
+::: {.column width="30%"}
+
+$$
+Y = \beta_0 + \beta_1 X + \beta_2 X^2
+$$
+
+```{r}
+#| label: base-quadratic-reg
+ggplot() +
+  geom_point(data=prod_df, aes(x=x, y=y), size=0.5) +
+  geom_vline(xintercept=knot, linetype="dashed") +
+  stat_smooth(
+    data=prod_df, aes(x=x, y=y),
+    method='lm',
+    formula=y ~ poly(x,2),
+    n = 300
+  ) +
+  theme_dsan(base_size=22)
+```
+
+:::
+::::
+
+* $\implies$ Least-complex function that allows smooth "joining" is **cubic function**
+
+## Cubic Splines (aka, Splines) {.smaller .crunch-title .crunch-ul}
+
+*(We did it, we finally did it)*
+
+```{r}
+#| label: cubic-spline-plot
+ggplot() +
+  geom_point(data=prod_df, aes(x=x, y=y), size=0.5) +
+  geom_vline(xintercept=knot, linetype="dashed") +
+  stat_smooth(
+    data=prod_df, aes(x=x, y=y),
+    method='lm',
+    formula=y ~ poly(x,3) + ifelse(x > knot, (x - knot)^3, 0),
+    n = 300
+  ) +
+  theme_dsan(base_size=22)
+```
+
+## Natural Splines: Why Not Stop There? {.smaller .crunch-title .crunch-ul .title-12}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+Polynomials start to BEHAVE BADLY as they go to $-\infty$ and $\infty$
+
+```{r}
+#| label: cubic-spline-boundary-issue
+library(splines) |> suppressPackageStartupMessages()
+set.seed(5300)
+N_sparse <- 400
+x_vals <- runif(N_sparse, min=xmin, max=xmax)
+y_raw = compute_y(x_vals)
+y_noise = rnorm(N_sparse, mean=0, sd=1.0)
+y_vals <- y_raw + y_noise
+sparse_df <- tibble(x=x_vals, y=y_vals)
+knot_sparse <- (xmin + xmax) / 2
+knot_vec <- c(-1.8,-1.7,-1.6,-1.5,-1.4,-1.2,-1.0,-0.8,-0.6,-0.4,-0.2,0,knot_sparse,1,1.5,2)
+knot_df <- tibble(knot=knot_vec)
+# Boundary lines
+left_bound_line <- geom_vline(
+  xintercept = xmin + 0.1, linewidth=1,
+  color="red", alpha=0.8
+)
+right_bound_line <- geom_vline(
+  xintercept = xmax - 0.1,
+  linewidth=1, color="red", alpha=0.8
+)
+ggplot() +
+  geom_point(data=sparse_df, aes(x=x, y=y), size=0.5) +
+  geom_vline(
+    data=knot_df, aes(xintercept=knot),
+    linetype="dashed"
+  ) +
+  stat_smooth(
+    data=sparse_df, aes(x=x, y=y),
+    method='lm',
+    formula=y ~ bs(x, knots=c(knot_sparse), degree=25),
+    n=300
+  ) +
+  left_bound_line +
+  right_bound_line +
+  theme_dsan(base_size=22)
+```
+
+:::
+::: {.column width="50%"}
+
+Natural Splines: **Force** leftmost and rightmost pieces to be **linear**
+
+```{r}
+#| label: natural-spline
+library(splines) |> suppressPackageStartupMessages()
+set.seed(5300)
+N_sparse <- 400
+x_vals <- runif(N_sparse, min=xmin, max=xmax)
+y_raw = compute_y(x_vals)
+y_noise = rnorm(N_sparse, mean=0, sd=1.0)
+y_vals <- y_raw + y_noise
+sparse_df <- tibble(x=x_vals, y=y_vals)
+knot_sparse <- (xmin + xmax) / 2
+ggplot() +
+  geom_point(data=sparse_df, aes(x=x, y=y), size=0.5) +
+  stat_smooth(
+    data=sparse_df, aes(x=x, y=y),
+    method='lm',
+    formula=y ~ ns(x, knots=knot_vec, Boundary.knots=c(xmin + 0.1, xmax - 0.1)),
+    n=300
+  ) +
+  geom_vline(
+    data=knot_df, aes(xintercept=knot),
+    linetype="dashed"
+  ) +
+  left_bound_line +
+  right_bound_line +
+  theme_dsan(base_size=22)
+```
+
+:::
+::::
+
+## How Do We Find The Magical Knot Points?
+
+* Hyperparameter 0: Number of knots $K$
+* Hyperparameters 1 to $K$: **Location** $\xi_k$ for each knot
+* Fear: Seems like we're going to need a bunch of slides/lectures talking about this, right?
+  * (e.g., if you really do have to manually choose them, heuristic is to place them in more "volatile" parts of $D_X$)
+* Reality: Nope, just use **CV**! 😉😎
+
+# Even Cooler Alternative Approach: Smoothing Splines {data-stack-name="Smoothing Splines"}
+
+*(Where "cooler" here really means "more statistically-principled")*
+
+## Reminder (W04): Penalizing Complexity {.smaller .title-12 .crunch-img .crunch-quarto-figure .math-95}
+
+:::: {.columns}
+::: {.column width="70%"}
+
+*Week 4 (General Form):*
+
+$$
+\boldsymbol\theta^* = \underset{\boldsymbol\theta}{\operatorname{argmin}} \left[ \mathcal{L}(y, \widehat{y}; \boldsymbol\theta) + \lambda \cdot \mathsf{Complexity}(\boldsymbol\theta) \right]
+$$
+
+:::
+::: {.column width="30%"}
+
+![](images/porygon.png){fig-align="center" width="160"}
+
+:::
+::::
+
+:::: {.columns}
+::: {.column width="70%"}
+
+*Last Week (Penalizing Polynomials):*
+
+$$
+\boldsymbol\beta^*_{\text{lasso}} = \underset{\boldsymbol\beta, \lambda}{\operatorname{argmin}} \left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 + \lambda \|\boldsymbol\beta\|_1 \right]
+$$
+
+:::
+::: {.column width="30%"}
+
+![](images/exeggcute.png){fig-align="center" width="180"}
+
+:::
+::::
+
+:::: {.columns}
+::: {.column width="70%"}
+
+*Now (Penalizing Sharp Change / Wigglyness):*
+
+$$
+g^* = \underset{g, \lambda}{\operatorname{argmin}} \left[ \sum_{i=1}^{N}(g(x_i) - y_i)^2 + \lambda \overbrace{\int}^{\mathclap{\text{Sum of}}} [\underbrace{g''(t)}_{\mathclap{\text{Change in }g'(t)}}]^2 \mathrm{d}t \right]
+$$
+
+:::
+::: {.column width="30%"}
+
+![](images/wigglytuff.jpg){fig-align="center" width="170"}
+
+:::
+::::
+
+::: {.notes}
+
+Restricting the *first* derivative would optimize for a function that **doesn't change much at all**. Restricting the *second* derivative just constrains **sharpness** of the changes.
+
+Think of an Uber driver: penalizing **speed** would just make them go slowly (ensuring slow ride). Penalizing **acceleration** ensures that they can travel whatever speed they want, as long as they smoothly accelerate and decelerate between those speeds (ensuring non-bumpy ride!).
+
+:::
+
+## Penalizing Wiggles {.smaller .crunch-title .crunch-ul .math-90 .crunch-li-8}
+
+$$
+g^* = \underset{g, \lambda}{\operatorname{argmin}} \left[ \sum_{i=1}^{N}(g(x_i) - y_i)^2 + \lambda \overbrace{\int}^{\mathclap{\text{Sum of}}} [\underbrace{g''(t)}_{\mathclap{\text{Change in }g'(t)}}]^2 \mathrm{d}t \right]
+$$
+
+* *(Note that we do **not** assume it's a spline! We optimize over $g$ itself, not $K$, $\xi_k$)*
+* Penalizing $[g'(t)]^2$ would mean: penalize function for **changing** over its domain
+* Penalizing $[g''(t)]^2$ means: it's ok to change, but do so **smoothly**
+* Uber ride metaphor: remember how $g'(t)$ gives **speed** while $g''(t)$ gives **acceleration**
+* Penalizing **speed**... would just make driver go slowly (ensuring slow ride)
+* Penalizing **acceleration**... 
+  * Ensures that they can fit the traffic pattern (can drive whatever speed they want)
+  * As long as they **smoothly accelerate and decelerate** between those speeds (ensuring non-bumpy ride!)
+
+## Three Mind-Blowing Math Facts
+
+<i class='bi bi-1-circle'></i> As $\lambda \rightarrow 0$, $g^*$ will grow as wiggly as necessary to achieve **zero** RSS / MSE / $R^2$
+
+<i class='bi bi-2-circle'></i> As $\lambda \rightarrow \infty$, $g^*$ converges to **OLS linear regression line**
+
+<i class='bi bi-3-circle'></i> We didn't optimize over splines, yet **optimal $g$ is a spline!**
+
+Specifically, a **Natural Cubic Spline** with...
+
+* Knots at **every data point** ($K = N$, $\xi_i = x_i$), but
+* Penalized via (optimal) $\lambda^*$, so not as wiggly as "free to wiggle" splines from previous approach: **shrunken natural cubic spline**
+
+## Related (Important!) Local Regression at $X = x_0$ {.smaller}
+
+<i class='bi bi-1-circle'></i> Identify $k$ points closest to $x_0$
+
+<i class='bi bi-2-circle'></i> Compute weights $K_i = K(x_0, x_i)$, such that $K_i = 0$ for furthest $i$, and $K_i$ increases as $x_i$ gets closer to $x_0$
+
+<i class='bi bi-3-circle'></i> Compute **Weighted Least Squares Estimate**
+
+$$
+\boldsymbol\beta^*_{\text{WLS}} = \underset{\boldsymbol\beta}{\operatorname{argmin}} \left[ \frac{1}{N}\sum_{i=1}^{N}K_i(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right]
+$$
+
+<i class='bi bi-4-circle'></i> Estimate is ready! $\widehat{f}(x_0) = \beta^{\text{WLS}}_0 + \beta^{\text{WLS}}_1 x_0$.
+
+## References
+
+::: {#refs}
+:::
+
+

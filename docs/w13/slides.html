@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<link href="../favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.6.40">
+
+  <meta name="author" content="Jeff Jacobs">
+  <title>DSAN 5300-01 – Week 13: Machine Learning for Causal Inference</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 0em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-8f68bdfe1fab35e4f5fa44ba3024eea8.css">
+  <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/simplemenu/simplemenu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Week 13: Machine Learning for Causal Inference</h1>
+  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2025, Georgetown University</span></p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Jeff Jacobs 
+</div>
+        <p class="quarto-title-affiliation">
+            <a href="mailto:jj1088@georgetown.edu"><code>jj1088@georgetown.edu</code></a>
+          </p>
+    </div>
+</div>
+
+  <p class="date">Monday, April 14, 2025</p>
+</section>
+<section>
+<section id="schedule" class="title-slide slide level1 smaller small-title crunch-title crunch-callout center" data-stack-name="Schedule">
+<h1>Schedule</h1>
+<p>Today’s Planned Schedule:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 64%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Start</th>
+<th style="text-align: left;">End</th>
+<th style="text-align: left;">Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Lecture</strong></td>
+<td style="text-align: left;">6:30pm</td>
+<td style="text-align: left;">7:00pm</td>
+<td style="text-align: left;"><a href="#/learning-decision-boundaries">Fundamental Problem of Causal Inference →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7:00pm</td>
+<td style="text-align: left;">7:20pm</td>
+<td style="text-align: left;"><a href="#/comparing-survival-curves">Apples to Apples →</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7:20pm</td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;"><a href="#/regression-with-survival-response">How Can Machine Learning Help? →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Break!</strong></td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;">9:00pm</td>
+<td style="text-align: left;"><a href="#/quiz-time">Causal Forests →</a></td>
+</tr>
+</tbody>
+</table>
+<div class="hidden">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
+<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+<div class="hidden">
+<p><span class="math display">\[
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\bigexp}[1]{\exp\mkern-4mu\left[ #1 \right]}
+\newcommand{\bigexpect}[1]{\mathbb{E}\mkern-4mu \left[ #1 \right]}
+\newcommand{\definedas}{\overset{\small\text{def}}{=}}
+\newcommand{\definedalign}{\overset{\phantom{\text{defn}}}{=}}
+\newcommand{\eqeventual}{\overset{\text{eventually}}{=}}
+\newcommand{\Err}{\text{Err}}
+\newcommand{\expect}[1]{\mathbb{E}[#1]}
+\newcommand{\expectsq}[1]{\mathbb{E}^2[#1]}
+\newcommand{\fw}[1]{\texttt{#1}}
+\newcommand{\given}{\mid}
+\newcommand{\green}[1]{\color{green}{#1}}
+\newcommand{\heads}{\outcome{heads}}
+\newcommand{\iid}{\overset{\text{\small{iid}}}{\sim}}
+\newcommand{\lik}{\mathcal{L}}
+\newcommand{\loglik}{\ell}
+\DeclareMathOperator*{\maximize}{maximize}
+\DeclareMathOperator*{\minimize}{minimize}
+\newcommand{\mle}{\textsf{ML}}
+\newcommand{\nimplies}{\;\not\!\!\!\!\implies}
+\newcommand{\orange}[1]{\color{orange}{#1}}
+\newcommand{\outcome}[1]{\textsf{#1}}
+\newcommand{\param}[1]{{\color{purple} #1}}
+\newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
+\newcommand{\prob}[1]{P\left( #1 \right)}
+\newcommand{\purp}[1]{\color{purple}{#1}}
+\newcommand{\sign}{\text{Sign}}
+\newcommand{\spacecap}{\; \cap \;}
+\newcommand{\spacewedge}{\; \wedge \;}
+\newcommand{\tails}{\outcome{tails}}
+\newcommand{\Var}[1]{\text{Var}[#1]}
+\newcommand{\bigVar}[1]{\text{Var}\mkern-4mu \left[ #1 \right]}
+\]</span></p>
+</div>
+</section>
+<section id="roadmap" class="slide level2 crunch-title crunch-ul-full title-10 text-80 crunch-li-8 crunch-li-last">
+<h2>Roadmap</h2>
+<div title="<i class='bi bi-1-circle'></i> What makes **causation** different from correlation?">
+<div class="callout callout-note no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong><i class="bi bi-1-circle"></i> What makes <strong>causation</strong> different from correlation?</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Why can’t we use, e.g., Regression to infer <strong>causal effects</strong>? <em><span class="math inline">\(\uparrow X\)</span> by 1 unit <del>causes</del> <span class="math inline">\(\uparrow Y\)</span> by <span class="math inline">\(\beta\)</span> units</em>?</li>
+<li><span class="math inline">\(\leadsto\)</span> Fundamental Problem of Causal Inference</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div title="<i class='bi bi-2-circle'></i> Key to resolving Fundamental Problem: *Match* similar observations">
+<div class="callout callout-note no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong><i class="bi bi-2-circle"></i> Key to resolving Fundamental Problem: <em>Match</em> similar observations</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Apples to apples</strong>: If <span class="math inline">\(j\)</span> receives drug while <span class="math inline">\(i\)</span> doesn’t, and they’re <span class="math inline">\(s_{ij}\%\)</span> similar otherwise (age, height)…</li>
+<li>Higher <span class="math inline">\(s_{ij}\)</span> <span class="math inline">\(\implies\)</span> more confidence in attributing difference in outcomes <span class="math inline">\(\boxed{\Delta y = y_j - y_i}\)</span> to drug!</li>
+<li><span class="math inline">\(\leadsto\)</span> Propensity Score Matching (<span class="math inline">\(\approx\)</span> Logistic Regression)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div title="<i class='bi bi-3-circle'></i> How can ML help us infer **counterfactual** effects?">
+<div class="callout callout-note no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong><i class="bi bi-3-circle"></i> How can ML help us infer <strong>counterfactual</strong> effects?</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Patient <em><span class="math inline">\(i\)</span> didn’t receive treatment, reported <a href="https://www.physio-pedia.com/McGill_Pain_Questionnaire">VAS pain level</a> <span class="math inline">\(y^0_i = 80\)</span>…</em></li>
+<li><em>If <span class="math inline">\(i\)</span> <strong>had</strong> received treatment, what would their pain level <span class="math inline">\(y_i^1\)</span> be?</em></li>
+<li><span class="math inline">\(\leadsto\)</span> Causal Forests, to estimate <span class="math inline">\(\boxed{\Delta y_i = y^1_i - y^0_i}\)</span></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="the-fundamental-problem-of-causal-inference" class="title-slide slide level1 center" data-stack-name="Fundamental Problem">
+<h1>The Fundamental Problem of Causal Inference</h1>
+
+</section>
+<section id="the-fundamental-problem-of-causal-inference-1" class="slide level2 crunch-title crunch-ul crunch-callout title-07 scrollable">
+<h2>The <em>Fundamental</em> Problem of Causal Inference</h2>
+<p>The only workable definition of “<span class="math inline">\(X\)</span> causes <span class="math inline">\(Y\)</span>”:</p>
+<div title="<i class='bi bi-info-circle pe-1'></i> Defining Causality [@hume_treatise_1739]">
+<div class="callout callout-note no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong><i class="bi bi-info-circle pe-1"></i> Defining Causality <span class="citation" data-cites="hume_treatise_1739">(<a href="#/references" role="doc-biblioref" onclick="">Hume 1739</a>)</span></strong></p>
+</div>
+<div class="callout-content">
+<p><span class="math inline">\(X\)</span> causes <span class="math inline">\(Y\)</span> if and only if:</p>
+<ol type="1">
+<li><span class="math inline">\(X\)</span> <strong>temporally precedes</strong> <span class="math inline">\(Y\)</span> and</li>
+<li><ul>
+<li>In <strong>two worlds</strong> <span class="math inline">\(W_0\)</span> and <span class="math inline">\(W_1\)</span> where everything is <strong>exactly the same</strong>…</li>
+<li>…<strong>except that</strong> <span class="math inline">\(\boxed{X = 0 \text{  in  } W_0}\)</span> and <span class="math inline">\(\boxed{X = 1 \text{  in  } W_1}\)</span>,</li>
+<li><span class="math inline">\(\boxed{Y = 0 \text{  in  } W_0}\)</span> and <span class="math inline">\(\boxed{Y = 1 \text{  in  } W_1}\)</span>.</li>
+</ul></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li>The problem? We live in <strong>one</strong> world, not two simultaneous worlds 😭</li>
+</ul>
+</section>
+<section id="cant-we-just-use-temporal-precedence" class="slide level2 title-08 crunch-title">
+<h2>Can’t We Just Use Temporal Precedence?</h2>
+<ul>
+<li>Can’t we just pretend that <span class="math inline">\(W_0\)</span> is our world at time <span class="math inline">\(t\)</span> and <span class="math inline">\(W_1\)</span> is our world at time <span class="math inline">\(t + 1\)</span>?</li>
+<li>Did throwing the eraser at Sam at time <span class="math inline">\(t\)</span> <strong>cause</strong> him to be upset at time <span class="math inline">\(t + 1\)</span>?</li>
+<li>No, because at time <span class="math inline">\(t\)</span>, simultaneous with my eraser-throwing, a <strong>cockroach</strong> scuttled across his foot, the <em>true</em> cause of him being upset at time <span class="math inline">\(t + 1\)</span></li>
+<li>Without knowing that the worlds are <strong>identical except for the posited cause-event</strong>, we can’t exclude the possibility of some other cause-event</li>
+</ul>
+</section>
+<section id="extreme-example-super-mario-64-speedrunning" class="slide level2 smaller crunch-title title-10 crunch-quarto-figure crunch-blockquote crunch-p crunch-img">
+<h2>Extreme Example: Super Mario 64 Speedrunning</h2>
+<p>Seemingly-reasonable assumption: Button-pushes cause outcomes in games…</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<blockquote>
+<p>During the race, an ionizing particle from outer space collided with DOTA_Teabag’s N64, flipping the eighth bit of Mario’s first height byte. Specifically, it flipped the byte from 11000101 to 11000100, from “C5” to “C4”. This resulted in a height change from C5837800 to C4837800, which by complete chance, happened to be the exact amount needed to warp Mario up to the higher floor at that exact moment.</p>
+</blockquote>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/sm64.jpg"></p>
+<figcaption><a href="https://www.thegamer.com/how-ionizing-particle-outer-space-helped-super-mario-64-speedrunner-save-time/">Article from TheGamer.com</a></figcaption>
+</figure>
+</div>
+</div></div>
+<blockquote>
+<p>This was tested by pannenkoek12 - the same person who put up the bounty - using a script that manually flipped that particular bit at the right time, confirming the suspicion of a bit flip.</p>
+</blockquote>
+</section>
+<section id="what-about-a-b-testing" class="slide level2 crunch-title title-09 crunch-li-8">
+<h2>What About A-B Testing?</h2>
+<ul>
+<li>Gets us significantly closer, but methods for <strong>recovering</strong> causal effect require a condition called <strong>SUTVA</strong></li>
+<li><strong>S</strong>table <strong>U</strong>nit <strong>T</strong>reatment <strong>V</strong>alue <strong>A</strong>ssumption: Treatment applied to <span class="math inline">\(i\)</span> does not affect outcome for another person <span class="math inline">\(j\)</span></li>
+<li>If we A-B test an <strong>app redesign</strong> (A = old design, B = new design), and outcome = length of time spent on app…</li>
+<li>Person <span class="math inline">\(i\)</span> seeing design A may like the new design, causing them to spend more time on the app</li>
+<li>Person <span class="math inline">\(i\)</span> may then <strong>message</strong> person <span class="math inline">\(j\)</span> <em>“Check out [app], they redesigned everything!”</em>, causing <span class="math inline">\(j\)</span> to spend more time on app regardless of treatment (network spillover ❌)</li>
+</ul>
+</section>
+<section id="what-is-to-be-done" class="slide level2">
+<h2>What Is To Be Done?</h2>
+
+<img data-src="images/face_everything_and_rise.jpg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
+<section>
+<section id="matching-estimators" class="title-slide slide level1 crunch-title center" data-stack-name="Matching Estimators">
+<h1>Matching Estimators</h1>
+
+<img data-src="images/fruit.png" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://shirt.woot.com/offers/comparing-apples-to-oranges">Image Source</a></p></section>
+<section id="case-study-military-inequality-leadsto-military-success" class="slide level2 smaller crunch-title title-09 crunch-ul crunch-blockquote crunch-li-8">
+<h2>Case Study: Military Inequality <span class="math inline">\(\leadsto\)</span> Military Success</h2>
+<ul>
+<li><span class="citation" data-cites="lyall_divided_2020">Lyall (<a href="#/references" role="doc-biblioref" onclick="">2020</a>)</span>: “Treating certain ethnic groups as second-class citizens […] leads victimized soldiers to subvert military authorities once war begins. The higher an army’s inequality, the greater its rates of desertion, side-switching, and casualties”</li>
+</ul>
+<blockquote>
+<p>Matching constructs <strong>pairs of belligerents</strong> that are <strong>similar</strong> across a wide range of traits thought to dictate battlefield performance but that <strong>vary</strong> in levels of prewar inequality. The more similar the belligerents, the better our estimate of inequality’s effects, as all other traits are shared and thus cannot explain observed differences in performance, helping assess how battlefield performance <strong>would have</strong> improved (declined) if the belligerent had a lower (higher) level of prewar inequality.</p>
+<p>Since [non-matched] cases are <strong>dropped</strong> […] selected cases are more representative of average belligerents/wars than outliers with few or no matches, [providing] surer ground for testing generalizability of the book’s claims than focusing solely on canonical but unrepresentative usual suspects (Germany, the United States, Israel)</p>
+</blockquote>
+</section>
+<section id="does-inequality-cause-poor-military-performance" class="slide level2 smaller crunch-title title-10 table-80 text-60">
+<h2>Does Inequality Cause Poor Military Performance?</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><br>Covariates</th>
+<th>Sultanate of Morocco<br> <em>Spanish-Moroccan War, 1859-60</em></th>
+<th>Khanate of Kokand<br> <em>War with Russia, 1864-65</em></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong><span class="math inline">\(X\)</span>: Military Inequality</strong></td>
+<td>Low (0.01)</td>
+<td>Extreme (0.70)</td>
+</tr>
+<tr class="even">
+<td><strong><span class="math inline">\(\mathbf{Z}\)</span>: Matched Covariates:</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Initial relative power</td>
+<td>66%</td>
+<td>66%</td>
+</tr>
+<tr class="even">
+<td>Total fielded force</td>
+<td>55,000</td>
+<td>50,000</td>
+</tr>
+<tr class="odd">
+<td>Regime type</td>
+<td>Absolutist Monarchy (−6)</td>
+<td>Absolute Monarchy (−7)</td>
+</tr>
+<tr class="even">
+<td>Distance from capital</td>
+<td>208km</td>
+<td>265km</td>
+</tr>
+<tr class="odd">
+<td>Standing army</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Composite military</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Initiator</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Joiner</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Democratic opponent</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Great Power</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Civil war</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Combined arms</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Doctrine</td>
+<td>Offensive</td>
+<td>Offensive</td>
+</tr>
+<tr class="even">
+<td>Superior weapons</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Fortifications</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Foreign advisors</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Terrain</td>
+<td>Semiarid coastal plain</td>
+<td>Semiarid grassland plain</td>
+</tr>
+<tr class="even">
+<td>Topography</td>
+<td>Rugged</td>
+<td>Rugged</td>
+</tr>
+<tr class="odd">
+<td>War duration</td>
+<td>126 days</td>
+<td>378 days</td>
+</tr>
+<tr class="even">
+<td>Recent war history w/opp</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Facing colonizer</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Identity dimension</td>
+<td>Sunni Islam/Christian</td>
+<td>Sunni Islam/Christian</td>
+</tr>
+<tr class="odd">
+<td>New leader</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Population</td>
+<td>8–8.5 million</td>
+<td>5–6 million</td>
+</tr>
+<tr class="odd">
+<td>Ethnoling fractionalization (ELF)</td>
+<td>High</td>
+<td>High</td>
+</tr>
+<tr class="even">
+<td>Civ-mil relations</td>
+<td>Ruler as commander</td>
+<td>Ruler as commander</td>
+</tr>
+<tr class="odd">
+<td><strong><span class="math inline">\(Y\)</span>: Battlefield Performance:</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Loss-exchange ratio</td>
+<td>0.43</td>
+<td>0.02</td>
+</tr>
+<tr class="odd">
+<td>Mass desertion</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Mass defection</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Fratricidal violence</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="glorified-logistic-regression" class="slide level2 smaller crunch-title title-11 crunch-ul cols-va crunch-details">
+<h2>…Glorified Logistic Regression!</h2>
+<style>
+.vil-table th {
+  background-color: white !important;
+}
+.vil-table tr:nth-child(1), .vil-table tr:nth-child(2), .vil-table tr:nth-child(3), .vil-table tr:nth-child(4) {
+  background-color: rgba(230, 159, 0, 0.333) !important;
+  text-align: center !important;
+}
+.vil-table tr:nth-child(5), .vil-table tr:nth-child(6), .vil-table tr:nth-child(7), .vil-table tr:nth-child(8), .vil-table tr:nth-child(9) {
+    background-color: rgba(86, 180, 233, 0.333) !important;
+    text-align: center !important;
+}
+.vil-sum-table th {
+  background-color: white !important;
+}
+.vil-sum-table tr:nth-child(1) {
+  background-color: rgba(230, 159, 0, 0.333) !important;
+  text-align: center !important;
+}
+.vil-sum-table tr:nth-child(2) {
+  background-color: rgba(86, 180, 233, 0.333) !important;
+  text-align: center !important;
+}
+</style>
+<ul>
+<li>Similarity score via Logistic Regression! Let’s look at a <a href="https://www.youtube.com/watch?v=ACVyPp1Fy6Y">program</a> that built health clinics in several villages: did health clinics <strong>cause</strong> lower infant mortality?</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell vil-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-2"><a></a>village_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-3"><a></a>  <span class="sc">~</span>village_id, <span class="sc">~</span>T, <span class="sc">~</span>inf_mortality, </span>
+<span id="cb2-4"><a></a>  <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">10</span>,</span>
+<span id="cb2-5"><a></a>  <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">15</span>,</span>
+<span id="cb2-6"><a></a>  <span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">22</span>,</span>
+<span id="cb2-7"><a></a>  <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">19</span>,</span>
+<span id="cb2-8"><a></a>  <span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">25</span>,</span>
+<span id="cb2-9"><a></a>  <span class="dv">6</span>, <span class="dv">0</span>, <span class="dv">19</span>,</span>
+<span id="cb2-10"><a></a>  <span class="dv">7</span>, <span class="dv">0</span>, <span class="dv">4</span>,</span>
+<span id="cb2-11"><a></a>  <span class="dv">8</span>, <span class="dv">0</span>, <span class="dv">8</span>,</span>
+<span id="cb2-12"><a></a>  <span class="dv">9</span>, <span class="dv">0</span>, <span class="dv">6</span></span>
+<span id="cb2-13"><a></a>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">T =</span> <span class="fu">factor</span>(T))</span>
+<span id="cb2-14"><a></a>village_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">inf_mortality</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell vil-sum-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>village_df <span class="sc">|&gt;</span> <span class="fu">group_by</span>(T) <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a></a>  <span class="fu">summarize</span>(<span class="at">mean_mortality =</span> <span class="fu">mean</span>(inf_mortality)) <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(T))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">mean_mortality</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">16.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">12.4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Health clinics <strong>increased</strong> mortality by 4.1?</p>
+</div></div>
+</section>
+<section id="from-controlling-for-to-how-well-are-we-controlling-for" class="slide level2 smaller crunch-title title-10 crunch-ul crunch-details">
+<h2>From “Controlling For” to “<em>How Well</em> Are We Controlling For?”</h2>
+<ul>
+<li>By introducing covariates, we can see the <strong>selection bias</strong> at play…</li>
+</ul>
+<div class="cell vil-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>covar_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb4-2"><a></a>  <span class="sc">~</span>poverty_rate, <span class="sc">~</span>docs_per_capita,</span>
+<span id="cb4-3"><a></a>  <span class="fl">0.5</span>, <span class="fl">0.01</span>,</span>
+<span id="cb4-4"><a></a>  <span class="fl">0.6</span>, <span class="fl">0.02</span>,</span>
+<span id="cb4-5"><a></a>  <span class="fl">0.7</span>, <span class="fl">0.01</span>,</span>
+<span id="cb4-6"><a></a>  <span class="fl">0.6</span>, <span class="fl">0.02</span>,</span>
+<span id="cb4-7"><a></a>  <span class="fl">0.6</span>, <span class="fl">0.01</span>,</span>
+<span id="cb4-8"><a></a>  <span class="fl">0.5</span>, <span class="fl">0.02</span>,</span>
+<span id="cb4-9"><a></a>  <span class="fl">0.1</span>, <span class="fl">0.04</span>,</span>
+<span id="cb4-10"><a></a>  <span class="fl">0.3</span>, <span class="fl">0.05</span>,</span>
+<span id="cb4-11"><a></a>  <span class="fl">0.2</span>, <span class="fl">0.04</span>,</span>
+<span id="cb4-12"><a></a>)</span>
+<span id="cb4-13"><a></a>village_df <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(village_df, covar_df)</span>
+<span id="cb4-14"><a></a>village_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">inf_mortality</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="selection-bias" class="slide level2 smaller crunch-title">
+<h2>Selection Bias</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>village_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> poverty_rate, <span class="at">fill=</span>T)) <span class="sc">+</span></span>
+<span id="cb5-2"><a></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb5-3"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb5-4"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb5-5"><a></a>    <span class="at">title =</span> <span class="st">"Poverty Rate by Treatment"</span>,</span>
+<span id="cb5-6"><a></a>    <span class="at">x =</span> <span class="st">"Poverty Rate"</span></span>
+<span id="cb5-7"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/selection-bias-pov-1.png" class="quarto-figure quarto-figure-center" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a>village_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> docs_per_capita, <span class="at">fill=</span>T)) <span class="sc">+</span></span>
+<span id="cb6-2"><a></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb6-3"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb6-4"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-5"><a></a>    <span class="at">title =</span> <span class="st">"Doctors per Capita by Treatment"</span>,</span>
+<span id="cb6-6"><a></a>    <span class="at">x =</span> <span class="st">"Doctors per Capita"</span></span>
+<span id="cb6-7"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/selection-bias-doctors-1.png" class="quarto-figure quarto-figure-center" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<ul>
+<li><span class="math inline">\(\leadsto\)</span> We’re not comparing <strong>apples to apples</strong>! (<em>“Well, we’re both villages”</em>)</li>
+</ul>
+</section>
+<section id="logistic-regression-of-treatment" class="slide level2 smaller title-10 crunch-title">
+<h2>Logistic Regression of Treatment</h2>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>prop_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb7-2"><a></a>  T <span class="sc">~</span> poverty_rate <span class="sc">+</span> docs_per_capita,</span>
+<span id="cb7-3"><a></a>  <span class="at">data=</span>village_df, <span class="at">family=</span><span class="st">"binomial"</span></span>
+<span id="cb7-4"><a></a>)</span>
+<span id="cb7-5"><a></a><span class="fu">summary</span>(prop_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = T ~ poverty_rate + docs_per_capita, family = "binomial", 
+    data = village_df)
+
+Coefficients:
+                Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)       -7.498      8.992  -0.834    0.404
+poverty_rate      14.500     13.651   1.062    0.288
+docs_per_capita   -8.880    143.595  -0.062    0.951
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 12.3653  on 8  degrees of freedom
+Residual deviance:  6.9987  on 6  degrees of freedom
+AIC: 12.999
+
+Number of Fisher Scoring iterations: 6</code></pre>
+</div>
+</div>
+<ul>
+<li>We now have a <strong>model of selection bias!</strong> <span class="math inline">\(\leadsto\)</span> <strong>match</strong> observations with similar <span class="math inline">\(\Pr(T)\)</span></li>
+</ul>
+</section>
+<section id="propensity-score-logistic-regression-estimate" class="slide level2 smaller crunch-title title-10">
+<h2>Propensity Score = Logistic Regression Estimate</h2>
+<div class="cell vil-table" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>village_df<span class="sc">$</span>ps <span class="ot">&lt;-</span> <span class="fu">predict</span>(prop_model, village_df, <span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb9-2"><a></a>village_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 4%">
+<col style="width: 20%">
+<col style="width: 19%">
+<col style="width: 23%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">inf_mortality</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+<th style="text-align: right;">ps</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.4165712</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.9284516</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0016534</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0268029</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0070107</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="propensity-score-matching-distance-metric" class="slide level2 smaller crunch-title title-10">
+<h2>Propensity Score <em>Matching</em> = Distance Metric!</h2>
+<style>
+.vil-match tr:nth-child(2) {
+  background-color: rgba(0, 158, 115, 0.333) !important;
+  text-align: center !important;
+}
+.vil-match tr:nth-child(2) td:nth-child(6) {
+  font-weight: bold;
+}
+</style>
+<div class="cell vil-match" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a>cur_T <span class="ot">&lt;-</span> village_df[<span class="dv">1</span>,<span class="st">"T"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb10-2"><a></a>cur_ps <span class="ot">&lt;-</span> village_df[<span class="dv">1</span>,<span class="st">"ps"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb10-3"><a></a><span class="fu">writeLines</span>(<span class="fu">paste0</span>(<span class="st">"Current village: T = "</span>,cur_T,<span class="st">", ps = "</span>,cur_ps))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Current village: T = 1, ps = 0.416571242858422</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a>other_df <span class="ot">&lt;-</span> village_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(T <span class="sc">!=</span> cur_T) <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-3"><a></a>    <span class="at">ps_dist =</span> <span class="fu">abs</span>(ps <span class="sc">-</span> cur_ps)</span>
+<span id="cb12-4"><a></a>  )</span>
+<span id="cb12-5"><a></a>other_df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(inf_mortality))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+<th style="text-align: right;">ps</th>
+<th style="text-align: right;">ps_dist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">0.3361428</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+<td style="text-align: right;">0.0214093</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0016534</td>
+<td style="text-align: right;">0.4149179</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0268029</td>
+<td style="text-align: right;">0.3897683</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0070107</td>
+<td style="text-align: right;">0.4095605</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="now-in-a-for-loop" class="slide level2 smaller crunch-title title-11">
+<h2>Now in a For Loop…</h2>
+<div class="cell vil-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb13-2"><a></a>  cur_T <span class="ot">&lt;-</span> village_df[i,<span class="st">"T"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb13-3"><a></a>  cur_ps <span class="ot">&lt;-</span> village_df[i,<span class="st">"ps"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb13-4"><a></a>  <span class="co"># writeLines(paste0("Current village: T = ",cur_T,", ps = ",cur_ps))</span></span>
+<span id="cb13-5"><a></a>  other_df <span class="ot">&lt;-</span> village_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(T <span class="sc">!=</span> cur_T) <span class="sc">|&gt;</span></span>
+<span id="cb13-6"><a></a>    <span class="fu">mutate</span>(</span>
+<span id="cb13-7"><a></a>      <span class="at">ps_dist =</span> <span class="fu">abs</span>(ps <span class="sc">-</span> cur_ps)</span>
+<span id="cb13-8"><a></a>    )</span>
+<span id="cb13-9"><a></a>  match_id <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">which.min</span>(other_df<span class="sc">$</span>ps_dist))</span>
+<span id="cb13-10"><a></a>  village_df[i,<span class="st">"match"</span>] <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(match_id)</span>
+<span id="cb13-11"><a></a>}</span>
+<span id="cb13-12"><a></a>village_df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>inf_mortality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+<th style="text-align: right;">ps</th>
+<th style="text-align: right;">match</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.4165712</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.9284516</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0016534</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0268029</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0070107</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="and-now-we-compare-apples-to-apples" class="slide level2 smaller crunch-title title-11">
+<h2>And Now We Compare Apples to Apples…</h2>
+<div class="cell vil-table" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a>treated_df <span class="ot">&lt;-</span> village_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(T <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb14-2"><a></a>(matched_df <span class="ot">&lt;-</span> treated_df <span class="sc">|&gt;</span> <span class="fu">left_join</span>(village_df, <span class="fu">join_by</span>(match <span class="sc">==</span> village_id)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 2%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 6%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 6%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T.x</th>
+<th style="text-align: right;">inf_mortality.x</th>
+<th style="text-align: right;">poverty_rate.x</th>
+<th style="text-align: right;">docs_per_capita.x</th>
+<th style="text-align: right;">ps.x</th>
+<th style="text-align: right;">match</th>
+<th style="text-align: left;">T.y</th>
+<th style="text-align: right;">inf_mortality.y</th>
+<th style="text-align: right;">poverty_rate.y</th>
+<th style="text-align: right;">docs_per_capita.y</th>
+<th style="text-align: right;">ps.y</th>
+<th style="text-align: right;">match.y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.4165712</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.9284516</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>matched_df <span class="sc">|&gt;</span> <span class="fu">summarize</span>(</span>
+<span id="cb15-2"><a></a>  <span class="at">mean_tr =</span> <span class="fu">mean</span>(inf_mortality.x),</span>
+<span id="cb15-3"><a></a>  <span class="at">mean_control =</span> <span class="fu">mean</span>(inf_mortality.y)</span>
+<span id="cb15-4"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: right;">mean_tr</th>
+<th style="text-align: right;">mean_control</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">16.5</td>
+<td style="text-align: right;">23.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<ul>
+<li><span class="math inline">\(\leadsto\)</span> Treatment effect <span class="math inline">\(\approx\)</span> <strong>-7</strong> 🥳</li>
+</ul>
+</section>
+<section id="references" class="slide level2 smaller scrollable">
+<h2>References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-hume_treatise_1739" class="csl-entry" role="listitem">
+Hume, David. 1739. <em>A <span>Treatise</span> of <span>Human Nature</span>: <span>Being</span> an <span>Attempt</span> to <span>Introduce</span> the <span>Experimental Method</span> of <span>Reasoning Into Moral Subjects</span>; and <span>Dialogues Concerning Natural Religion</span></em>. Longmans, Green.
+</div>
+<div id="ref-lyall_divided_2020" class="csl-entry" role="listitem">
+Lyall, Jason. 2020. <em>Divided <span>Armies</span>: <span>Inequality</span> and <span>Battlefield Performance</span> in <span>Modern War</span></em>. Princeton University Press.
+</div>
+</div>
+
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>DSAN 5300-01 Week 13: Machine Learning for Causal Inference</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/simplemenu/simplemenu.js"></script>
+  <script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'simplemenu': {"menubarclass":"menubar","menuclass":"menu","activeclass":"active","activeelement":"li","flat":true,"barhtml":{"header":"<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>","footer":""},"scale":0.5},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, Simplemenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const onCopySuccess = function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
+      });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp('/' + window.location.host + '/');
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+              // target, if specified
+              link.setAttribute("target", "_blank");
+              if (link.getAttribute("rel") === null) {
+                link.setAttribute("rel", "noopener");
+              }
+              // default icon
+              link.classList.add("external");
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>

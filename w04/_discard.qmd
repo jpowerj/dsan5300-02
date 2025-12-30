@@ -1,0 +1,121 @@
+How did we measure a "good" fit in e.g. DSAN 5000? High $R^2$? Low $RSS$?
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r}
+#| label: training-data-plot
+#| fig-width: 3.666
+#| fig-height: 2.5
+#| fig-align: left
+x <- seq(from = 0, to = 1, by = 0.1)
+n <- length(x)
+eps <- rnorm(n, 0, 0.04)
+y <- x + eps
+# But make one big outlier
+midpoint <- ceiling((3/4)*n)
+y[midpoint] <- 0
+of_data <- tibble::tibble(x=x, y=y)
+# Linear model
+lin_model <- lm(y ~ x)
+# But now polynomial regression
+poly_model <- lm(y ~ poly(x, degree = 10, raw=TRUE))
+#summary(model)
+ggplot(of_data, aes(x=x, y=y)) +
+  geom_point(size=g_pointsize/2) +
+  labs(
+    title = "Training Data",
+    color = "Model"
+  ) +
+  theme_dsan()
+```
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| label: training-linear-poly
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: left
+ggplot(of_data, aes(x=x, y=y)) +
+  geom_point(size=g_pointsize/2) +
+  geom_abline(aes(intercept=0, slope=1, color="Linear"), linewidth=1, show.legend = FALSE) +
+  stat_smooth(method = "lm",
+              formula = y ~ poly(x, 10, raw=TRUE),
+              se = FALSE, aes(color="Polynomial")) +
+  labs(
+    title = "A Perfect Model?",
+    color = "Model"
+  ) +
+  theme_dsan()
+```
+
+:::
+::::
+
+:::: {.columns}
+::: {.column width="50%"}
+
+<center>
+Linear Model:
+</center>
+
+```{r,echo=TRUE}
+#| label: lin-model-metrics
+#| echo: true
+#| code-fold: show
+summary(lin_model)$r.squared
+get_rss(lin_model)
+```
+
+:::
+::: {.column width="50%"}
+
+<center>
+Polynomial Model:
+</center>
+
+```{r,echo=TRUE}
+#| label: poly-model-metrics
+#| echo: true
+#| code-fold: show
+summary(poly_model)$r.squared
+get_rss(poly_model)
+```
+:::
+
+::::
+
+---
+
+# Cross-Validation {data-stack-name="Cross Validation"}
+
+## Naïve Approach: Validation Set
+
+## Better Approach: LOOCV
+
+## Best Approach: $K$-Fold CV
+
+---
+
+# Model Selection Preview {data-stack-name="Model Selection"}
+
+## The Goal
+
+* Maximize **generalizability** by
+* Penalizing **complexity**
+
+---
+
+## Resampling Methods
+
+* Cross-Validation and Bootstrap
+
+## Model Selection
+
+* Subset Selection
+* "Complexity Penalties"
+* LASSO 🤠
+
+---

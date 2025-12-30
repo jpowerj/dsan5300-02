@@ -1,0 +1,732 @@
+---
+title: "Week 6: Regularization for Model Selection"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+author: "Jeff Jacobs"
+institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
+bibliography: "../_DSAN5300.bib"
+date: 2025-02-18
+date-format: full
+cache: true
+lecnum: 6
+categories:
+  - "Class Sessions"
+format:
+  revealjs:
+    df-print: kable
+    footer: "DSAN 5300-01 Week 6: {{< var w06.footer >}}"
+    output-file: "slides.html"
+    html-math-method: mathjax
+    scrollable: true
+    theme: [default, "../dsan-globals/jjquarto.scss"]
+    slide-number: true
+    echo: true
+    code-fold: true
+    link-external-icon: true
+    link-external-newwindow: true
+    include-in-header:
+      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
+    simplemenu:
+      flat: true
+      barhtml:
+        header: "<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>"
+      scale: 0.5
+    revealjs-plugins:
+      - simplemenu
+  html:
+    df-print: kable
+    output-file: "index.html"
+    html-math-method: mathjax
+    echo: true
+    code-fold: true
+---
+
+::: {.content-visible unless-format="revealjs"}
+
+<center class='mb-3'>
+<a class="h2" href="./slides.html" target="_blank">Open slides in new tab &rarr;</a>
+</center>
+
+:::
+
+# Schedule {.smaller .small-title .crunch-title .crunch-callout data-name="Schedule"}
+
+Today's Planned Schedule:
+
+| | Start | End | Topic |
+|:- |:- |:- |:- |
+| **Lecture** | 6:30pm | 7:00pm | [Extended Recap / Clarification &rarr;](#roadmap) |
+| | 7:00pm | 7:20pm | ["Manual" Model Selection: Subsets &rarr;](#model-selection) | 
+| | 7:20pm | 7:40pm | [Key Regularization Building Block: $L^p$ Norm &rarr;](#regularization-for-automatic-model-selection) |
+| | 7:40pm | 8:00pm | [Regularized Regression Intro &rarr;](#regularized-regression-(finally)) |
+| **Break!** | 8:00pm | 8:10pm | |
+| | 8:10pm | 8:50pm | [Basically Lasso is the Coolest Thing Ever &rarr;](#the-key-plot) |
+| | 8:50pm | 9:00pm | [Scary-Looking But Actually-Fun W07 Preview &rarr;](#week-7-preview-linear.noodle-jj-functions) |
+
+: {tbl-colwidths="[12,12,12,64]"}
+
+::: {.hidden}
+
+```{r}
+#| label: r-source-globals
+source("../dsan-globals/_globals.r")
+set.seed(5300)
+```
+
+:::
+
+{{< include ../dsan-globals/_globals-tex.qmd >}}
+
+# Roadmap {.smaller .title-10 data-stack-name="Extended Recap"}
+
+* [Week 4] Oh no! When we go beyond linear models, we have to worry about **overfitting**!
+    * $\implies$ New goal! Maximize **generalizability** rather than **accuracy**
+    * $\implies$ Evaluate models on ***unseen* test data** rather than training data
+* [Week 5] **Cross-Validation (CV)** as a tool for **Model Assessment**: For more complex, non-linear models, is there some way we can try to... "foresee" how well a trained model will **generalize?**
+    * Answer: **Yes!** Cross-validation!
+* [Week 6] **Regularization** as a tool for **Model Selection**: Now that we have a method (CV) for *imperfectly* measuring "generalizability", is there some way we can try to... **allow** models to optimize CV but **penalize** them for unnecessary complexity?
+    * Answer: **Yes!** Regularization methods like LASSO and Elastic Net!
+
+## [Reminder (W04)] New Goal: *Generalizability* {.smaller .crunch-title .crunch-callout .crunch-ul .title-11}
+
+::: {.callout-tip .r-fit-text title="<i class='bi bi-info-circle'></i> Goal 2.0: Statistical Learning" icon="false"}
+
+Find...
+
+* A function $\widehat{y} = f(x)$ ✅
+* That best predicts $Y$ for given values of $X$ ✅
+* For data that has not yet been observed! 😳❓
+
+:::
+
+## Clarification: Target Diagrams {.smaller .table-va}
+
+::: {#fig-bias-variance}
+
+| | **Low Variance** | **High Variance** |
+| -:|:-:|:-:|
+| **Low Bias** | ![](images/var-low-bias-low.svg) | ![](images/var-high-bias-low.svg) |
+| **High Bias**  | ![](images/var-low-bias-high.svg) | ![](images/var-high-bias-high.svg) |
+
+Adapted from Fortmann-Roe (2012), <a href='https://scott.fortmann-roe.com/docs/BiasVariance.html' target='_blank'>"Understanding the Bias-Variance Tradeoff"</a>
+:::
+
+## Why Was This Helpful for 5100? {.crunch-title .crunch-ul}
+
+* Law of Large Numbers:
+    * Avg(many sample means $s$) $\leadsto$ true mean $\mu$
+* $\widehat{\theta}$ **unbiased** estimator for $\theta$:
+    * Avg(Estimates $\widehat{\theta}$) $\leadsto$ true $\theta$
+
+![The Low Bias, High Variance case](images/var-high-bias-low.svg){fig-align="center"}
+
+## Relevance for CV Error {.smaller .crunch-title .crunch-ul}
+
+* In Goal 2.0 world, we **choose** models on the basis of **estimated test error** (before, with Goal 1.0, we only used e.g. MSE, RSS, $R^2$, which was fine for linear regression)
+* Data $\mathbf{D}$ = single realization of DGP [(for 5300, only relevance is why we don't look at test set)]{style="font-size: 16pt;"}
+* $\left[ \mathbf{D}_{\text{Train}} \middle| \mathbf{D}_{\text{Test}} \right]$ = random permutation of $\mathbf{D}$
+* Bullseye on target = **true** test error<br>[(We *could* compute this, but then we'd have to end the study, collect more data... better alternative on next slide!)]{style="font-size: 14pt;"}
+* Darts thrown around bullseye = **estimated** test errors (CV fold errors!)
+    * They don't hit bullseye because we're **inferring DGP from from *sample***
+* True test error = $f(\mathbf{D}) = f\left( \left[ \mathbf{D}_{\text{Train}} \middle| \mathbf{D}_{\text{Test}} \right] \right)$
+* Validation error = $f(\mathbf{D}_{\text{Train}}) = f\left( \left[ \mathbf{D}_{\text{SubTr}} \middle| \mathbf{D}_{\text{Val}} \right] \right)$,
+    * $\implies$ Validation error is an *estimate*, using a **smaller sample** $\mathbf{D}_{\text{Train}}$ drawn from the **same distribution (DGP)** as true test error!
+
+## True Test Error vs. CV Error {.smaller .crunch-title .crunch-img .crunch-p-5 .crunch-p-bpad .crunch-callout .inline-95}
+
+[*Note the icons! **Test set** = **Lake monster**: pulling out of water to evaluate kills it* 😵]{style="margin-top: 0px; margin-bottom: 0px; font-size: 80%"}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+::: {.callout-note title="![](images/ogopogo_crop.svg) True Test Error $\varepsilon_{\text{Test}} = \text{Err}_{\text{Test}}$" icon="false"}
+
+<i class='bi bi-1-circle'></i> Data $\mathbf{D}$ "arises" out of (unobservable) DGP
+
+<i class='bi bi-2-circle'></i> Randomly chop $\mathbf{D}$ into $\left[ \mathbf{D}_{\text{Train}} \mid \mathbf{D}_{\text{Test}} \right]$
+
+<i class='bi bi-3-circle'></i> $\underbrace{\text{Err}_{\text{Test}}}_{\substack{\text{Test error,} \\ \text{no cap}}} = f(\mathbf{D}_{\text{Train}} \overset{\text{fit}}{\longrightarrow} \underbrace{\mathcal{M}_{\theta} \overset{\text{eval}}{\longrightarrow} \mathbf{D}_{\text{Test}}}_{\text{This kills monster 😢}})$
+
+**Issue: can only be evaluated *once*, ever 😱**
+
+:::
+
+:::
+::: {.column width="50%"}
+
+::: {.callout-note title="<i class='bi bi-water'></i> Validation Set Error $\varepsilon_{\text{Val}} = \widehat{\varepsilon}_{\text{Test}} = \widehat{\text{Err}}_{\text{Test}}$" icon="false"}
+
+<i class='bi bi-1-circle'></i> $\text{DGP} \rightarrow \mathbf{D}$; <i class='bi bi-2-circle'></i> Randomly chop into $[\mathbf{D}_{\text{Train}} \mid \mathbf{D}_{\text{Test}}]$
+
+<i class='bi bi-3-circle'></i> Leave $\mathbf{D}_{\text{Test}}$ alone until end of study
+
+<i class='bi bi-4-circle'></i> Randomly chop $\mathbf{D}_{\text{Train}}$ into $[\mathbf{D}_{\text{SubTr}} \mid \mathbf{D}_{\text{Val}}]$
+
+<i class='bi bi-5-circle'></i> $\underbrace{\widehat{\text{Err}}_{\text{Test}}}_{\substack{\text{Test error,} \\ \text{capping a bit}}} = f(\mathbf{D}_{\text{SubTr}} \overset{\text{fit}}{\longrightarrow} \underbrace{\mathcal{M}_{\theta} \overset{\text{eval}}{\longrightarrow} \mathbf{D}_{\text{Val}}}_{\text{Monster still alive!}})$
+
+:::
+
+:::
+::::
+
+::: {.callout-note title="<i class='bi bi-water'></i> $K$-Fold Cross-Validation Error $\varepsilon_{(K)} = \widehat{\varepsilon}_{\text{Test}} = \widehat{\text{E}}\text{rr}_{\text{Test}}$" icon="false"}
+
+<i class='bi bi-1-circle'></i> $\text{DGP} \rightarrow \mathbf{D}$; <i class='bi bi-2-circle'></i> Randomly chop into $[\mathbf{D}_{\text{Train}} \mid \mathbf{D}_{\text{Test}}]$; <i class='bi bi-3-circle'></i> Leave $\mathbf{D}_{\text{Test}}$ for end of study
+
+<i class='bi bi-4-circle'></i> Randomly chop $\mathbf{D}_{\text{Train}}$ into $\left[ \mathbf{D}_{\text{TrFold}}^{(1)} \middle| \mathbf{D}_{\text{TrFold}}^{(2)} \middle| \cdots \middle| \mathbf{D}_{\text{TrFold}}^{(K)} \right]$
+
+<i class='bi bi-5-circle'></i> **For** $i \in \{1, \ldots, K\}$:
+
+&nbsp;&nbsp;&nbsp;&nbsp;<i class='bi bi-6-circle'></i> $\varepsilon_{\text{ValFold}}^{(i)} = f\left( \mathbf{D}_{\text{TrFold}}^{(-i)} \overset{\text{fit}}{\longrightarrow} \mathcal{M}_{\theta} \overset{\text{eval}}{\longrightarrow} \mathbf{D}_{\text{TrFold}}^{(i)} \right)$
+
+<i class='bi bi-7-circle'></i> $\underbrace{\widehat{\text{E}}\text{rr}_{\text{Test}}}_{\substack{\text{Test error,} \\ \text{less cap!}}} = \boxed{\frac{1}{K}\sum_{i=1}^{K}\varepsilon^{(i)}_{\text{ValFold}}}~$ (*...monster still alive, even after all that!*)
+
+:::
+
+## General Issue with CV: It's... Halfway There {.smaller .crunch-title .title-11 .crunch-ul .crunch-p}
+
+CV plots will often look like (complexity on $x$-axis and CV error on $y$-axis):
+
+```{r}
+#| label: cv-plot-general
+library(tidyverse) |> suppressPackageStartupMessages()
+library(latex2exp) |> suppressPackageStartupMessages()
+cpl_label <- TeX("$M_0$")
+sim1k_delta_df <- tibble(
+    complexity=1:7,
+    cv_err=c(8, 2, 1, 1, 1, 1, 2),
+    label=c("","",TeX("$M_3$"),"","",TeX("$M_6$"),"")
+)
+sim1k_delta_df |> ggplot(aes(x=complexity, y=cv_err, label=label)) +
+  geom_line(linewidth=1) +
+  geom_point(size=(2/3)*g_pointsize) +
+  geom_text(vjust=-0.7, size=10, parse=TRUE) +
+  scale_x_continuous(
+    breaks=seq(from=1,to=7,by=1)
+  ) +
+  theme_dsan(base_size=22) +
+  labs(
+    title="Generic CV Error Plot",
+    x = "Complexity",
+    y = "CV Error"
+  )
+```
+
+* We "know" $\mathcal{M}_3$ preferable to $\mathcal{M}_6$ (same error yet, less overfitting) $\implies$ "1SE rule"
+* But... heuristic $\;\nimplies$ optimal! What are we gaining/losing as we move $\mathcal{M}_6 \rightarrow \mathcal{M}_3$?
+* Enter **REGULARIZATION!**
+
+## CV Now Goes Into Your Toolbox {.smaller}
+
+![](images/sin_bin.jpg){fig-align="center"}
+
+*(We will take it back out later, I promise!)*
+
+# Model Selection {data-stack-name="Model Selection"}
+
+* [Week 5 ✅] We have a metric (CV error) for **evaluating** different models w.r.t. Goal 2.0...
+* [Week 6 so far] It gets us halfway to what we want, by showing us a "basin" of models with low CV error
+* [Now] **Statistically-principled approach** to overfitting that
+  * <i class='bi bi-1-circle'></i> Shows us **why** the 1SE rule "works"
+  * <i class='bi bi-2-circle'></i> Quantifies tradeoff: if I only have enough data to estimate $\beta_j$ for $J_0 < J$ feats, which $J_0$ should I choose?
+
+## Optimal but Infeasible: Best Subset Selection {.title-07}
+
+::: {.callout title="Algorithm: Best Subset Selection"}
+
+<i class='bi bi-1-circle'></i> Let $\mathcal{M}^*_0$ be *null model*: Predicts $\widehat{y}(x_i) = \overline{y}$ for any $x_i$
+
+<i class='bi bi-2-circle'></i> For $k = 1, 2, \ldots, J$:
+
+&nbsp;&nbsp;&nbsp;&nbsp;<i class='bi bi-3-circle'></i> Fit all $\binom{J}{k}$ possible models with $k$ predictors, $\mathcal{M}^*_k$ is model with lowest RSS
+
+<i class='bi bi-4-circle'></i> Choose from $\mathcal{M}^*_0, \ldots, \mathcal{M}^*_J$ using **CV** or heuristics: AIC, BIC, adjusted $R^2$
+
+:::
+
+![](images/islr_6-1.svg){fig-align="center"}
+
+## Feasible but Suboptimal: Stepwise Selection {.crunch-title .title-08}
+
+::: {.callout title="Algorithm: *Forward* Stepwise Selection"}
+
+<i class='bi bi-1-circle'></i> Let $\mathcal{M}_0$ be *null model*: Predicts $\widehat{y}(x_i) = \overline{y}$ for any $x_i$
+
+<i class='bi bi-2-circle'></i> For $k = 0, 1, \ldots, J - 1$:
+
+&nbsp;&nbsp;&nbsp;&nbsp;<i class='bi bi-3-circle'></i> Fit $J - k$ models, each adds single feature to $\mathcal{M}_k$; call "best" model $\mathcal{M}_{k+1}$
+
+<i class='bi bi-4-circle'></i> Choose from $\mathcal{M}_0, \ldots, \mathcal{M}_J$ using CV error (or heuristics: AIC, BIC, adjusted $R^2$)
+
+:::
+
+::: {.callout title="Algorithm: *Backward* Stepwise Selection"}
+
+<i class='bi bi-1-circle'></i> Let $\mathcal{M}_J$ be *full model*: Contains all features
+
+<i class='bi bi-2-circle'></i> For $k = J, J - 1, \ldots, 1$:
+
+&nbsp;&nbsp;&nbsp;&nbsp;<i class='bi bi-3-circle'></i> Fit $k$ models, each removes single feature from $\mathcal{M}_k$; call "best" model $\mathcal{M}_{k-1}$
+
+<i class='bi bi-4-circle'></i> Choose from $\mathcal{M}_0, \ldots, \mathcal{M}_J$ using CV error (or heuristics: AIC, BIC, adjusted $R^2$)
+
+:::
+
+## Stepwise Selection Algorithms are *Greedy* {.title-08 .crunch-title .table-80 .inline-90 .crunch-ul .crunch-quarto-figure .code-80 .crunch-li-8 .crunch-img .crunch-p}
+
+```{=html}
+<style>
+#mousetrap {
+  vertical-align: bottom !important;
+}
+</style>
+```
+
+:::: {.columns}
+::: {.column width="60%"}
+
+* Like a mouse who chases *closest* cheese $\neq$ path with *most* cheese
+* Can get "trapped" in sub-optimal model, if (e.g.) feature is in $\mathcal{M}^*_4$ but **not** in $\mathcal{M}^*_1, \mathcal{M}^*_2, \mathcal{M}^*_3$!
+
+:::
+::: {.column width="40%"}
+
+![](images/mouse_cheese.png)
+
+:::
+::::
+
+| $k$ | $\mathcal{M}^*_k$ (Best Subset) | $\mathcal{M}_k$ (Forward Stepwise) ![](images/cheese.jpg){#mousetrap width="45"} |
+| - | - | - |
+| 1 | `rating` | `rating` |
+| 2 | `rating`, `income` | `rating`, `income` |
+| 3 | `rating`, `income`, `student` | `rating`, `income`, `student` |
+| 4 | **`cards`**, `income`, `student`, `limit` | `rating`, `income`, `student`, `limit` |
+
+: {tbl-colwidths="[4,48,48]"}
+
+# Regularization for *Automatic* Model Selection {data-stack-name="Regularization"}
+
+* Ridge Regression
+* Lasso
+* Elastic Net
+
+## Key Building Block: $L^p$ Norms {.crunch-title .crunch-ul .math-90 .inline-90 .smaller .crunch-math}
+
+* Technically you have seen these before: **distance metrics!**
+
+$$
+\textsf{sim}(\mathbf{u}, \mathbf{v}) \triangleq \underbrace{\| \mathbf{v} - \mathbf{u} \|_p}_{L^p\text{ norm of }\mathbf{u} - \mathbf{v}} = \left( \sum_{i=1}^{n} |v_i - u_i|^p \right)^{1/p}
+$$
+
+* $\implies$ **Euclidean** distance is $L^2$ norm: if $\mathbf{u} = (0,0)$ and $\mathbf{v} = (3,4)$,
+
+$$
+\| \mathbf{v} - \mathbf{u} \|_2 = \left( |3-0|^2 + |4-0|^2 \right)^{1/2} = 25^{1/2} = \sqrt{25} = 5
+$$
+
+* We'll use even simpler form: **distance of coefficients $\boldsymbol\beta$ from zero** (so, $\mathbf{u} = \vec{\mathbf{0}}$)
+
+$$
+\| \boldsymbol\beta \|_p = \left( \sum_{j=1}^{J} |\beta_j|^p \right)^{1/p}
+$$
+
+## $L^1$ and $L^2$ Norms {.smaller .crunch-title .crunch-math .crunch-ul .title-12 .math-90}
+
+* $L^1$ norm has a nice closed form expression as a sum (efficient, vectorizable!):
+
+$$
+\| \boldsymbol\beta \|_1 = \left( \sum_{j=1}^{J}|\beta_j|^1 \right)^{1/1} = \boxed{\sum_{j=1}^{J}|\beta_j|}
+$$
+
+* $L^2$ norm *almost* a similarly nice expression, besides this zigzag line thing ($\sqrt{~}$)
+
+$$
+\| \boldsymbol\beta \|_2 = \left( \sum_{j=1}^{J}|\beta_j|^2 \right)^{1/2} = \sqrt{\sum_{j=1}^{J}\beta_j^2} \; \; 🤨
+$$
+
+* Can always convert bound on *true* Euclidean distance like $\| \boldsymbol\beta \|_2 \leq 10$ into bound on *squared* Euclidean distance like $\| \boldsymbol\beta \|_2^2 \leq 100$. Hence we'll use **squared $L^p$ norm**:
+
+$$
+\| \boldsymbol\beta \|_2^2 = \left( \left( \sum_{j=1}^{J}|\beta_j|^p \right)^{1/2} \right)^{2} = \boxed{\sum_{j=1}^{J}\beta_j^2} \; \; 💆
+$$
+
+## Different Norms $\leftrightarrow$ Different Distances from $\vec{\mathbf{0}}$ {.smaller .crunch-title .title-10}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+* Unit Disk in $L^2$: All points $\mathbf{v} = (v_x,v_y) \in \mathbb{R}^2$ such that
+
+$$
+\| \mathbf{v} \|_2 \leq 1 \iff \| \mathbf{v} \|_2^2 \leq 1
+$$
+
+![](images/unit_circle_l2.svg){fig-align="center" width="380"}
+
+:::
+::: {.column width="50%"}
+
+* Unit Disk in $L^1$: All points $\mathbf{v} = (v_x, v_y) \in \mathbf{R}^2$ such that
+
+$$
+\| \mathbf{v} \|_1 \leq 1
+$$
+
+![](images/unit_circle_l1.svg){fig-align="center" width="380"}
+
+:::
+::::
+
+## Regularized Regression (Finally!) {.crunch-title .math-95}
+
+General Form:
+
+$$
+\boldsymbol\beta^*_{\text{reg}} = \argmin_{\boldsymbol\beta}\left[ \overbrace{\frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2}^{\text{MSE from before}} \; \; + \; \; \overbrace{\lambda}^{\mathclap{\text{Penalty for}}} \underbrace{\| \boldsymbol\beta \|_{2}^{2}}_{\mathclap{\text{Dist from }\mathbf{0}}} \; \; \; \right]
+$$
+
+## Three Main Types of Regularized Regression {.smaller .crunch-title .title-11}
+
+Ridge Regression:
+
+$$
+\boldsymbol\beta^*_{\text{ridge}} = \argmin_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 + \lambda \| \boldsymbol\beta \|_{2}^{2} \right]
+$$
+
+LASSO:
+
+$$
+\boldsymbol\beta^*_{\text{lasso}} = \argmin_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 + \lambda \| \boldsymbol\beta \|_{1} \right]
+$$
+
+Elastic Net:
+
+$$
+\boldsymbol\beta^*_{\text{EN}} = \argmin_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 + \lambda_2 \| \boldsymbol\beta \|_{2}^{2} + \lambda_1 \| \boldsymbol\beta \|_{1} \right]
+$$
+
+*(Does anyone recognize $\lambda$ from **Lagrange multipliers**?)*
+
+## Top Secret Equivalent Forms {.smaller}
+
+Ridge Regression:
+
+$$
+\boldsymbol\beta^*_{\text{ridge}} = \arg \left\{\min_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right] \; \text{ subject to } \; \| \boldsymbol\beta \|_{2}^{2} \leq s \right\}
+$$
+
+LASSO:
+
+$$
+\boldsymbol\beta^*_{\text{lasso}} = \arg \left\{\min_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right] \; \text{ subject to } \; \| \boldsymbol\beta \|_{1} \leq s \right\}
+$$
+
+Elastic Net:
+
+$$
+\boldsymbol\beta^*_{\text{EN}} = \arg \left\{\min_{\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right] \; \text{ subject to } \; \begin{matrix}
+  \| \boldsymbol\beta \|_{2}^{2} \leq s_2 \\
+  \| \boldsymbol\beta \|_{1} \leq s_1
+  \end{matrix}
+\right\}
+$$
+
+## The Key Plot {.smaller .crunch-title .title-11}
+
+```{r}
+#| label: lasso-plot
+#| crop: false
+library(tidyverse) |> suppressPackageStartupMessages()
+library(latex2exp) |> suppressPackageStartupMessages()
+library(ggforce) |> suppressPackageStartupMessages()
+library(patchwork) |> suppressPackageStartupMessages()
+# Bounding the space
+xbound <- c(-1, 1)
+ybound <- c(0, 1.65)
+stepsize <- 0.05
+dx <- 0.605
+dy <- 1.6
+# The actual function we're plotting contours for
+b_inter <- 1.5
+my_f <- function(x,y) 8^(b_inter*(x-dx)*(y-dy) - (x-dx)^2 - (y-dy)^2)
+x_vals <- seq(from=xbound[1], to=xbound[2], by=stepsize)
+y_vals <- seq(from=ybound[1], to=ybound[2], by=stepsize)
+data_df <- expand_grid(x=x_vals, y=y_vals)
+data_df <- data_df |> mutate(
+  z = my_f(x, y)
+)
+# Optimal beta df
+beta_opt_df <- tibble(
+  x=121/200, y=8/5, label=c(TeX("$\\beta^*_{OLS}$"))
+)
+# Ridge optimal beta
+ridge_opt_df <- tibble(
+  x=0.111, y=0.998, label=c(TeX("$\\beta^*_{ridge}$"))
+)
+# Lasso diamond
+lasso_df <- tibble(x=c(1,0,-1,0,1), y=c(0,1,0,-1,0), z=c(1,1,1,1,1))
+lasso_opt_df <- tibble(x=0, y=1, label=c(TeX("$\\beta^*_{lasso}$")))
+
+# And plot
+base_plot <- ggplot() +
+  geom_contour_filled(
+    data=data_df, aes(x=x, y=y, z=z),
+    alpha=0.8, binwidth = 0.04, color='black', linewidth=0.65
+  ) +
+  # y-axis
+  geom_segment(aes(x=0, xend=0, y=-Inf, yend=Inf), color='white', linewidth=0.5, linetype="solid") +
+  # Unconstrained optimal beta
+  geom_point(data=beta_opt_df, aes(x=x, y=y), size=2) +
+  geom_label(
+    data=beta_opt_df, aes(x=x, y=y, label=label),
+    hjust=-0.45, vjust=0.65, parse=TRUE, alpha=0.9
+  ) +
+  scale_fill_viridis_d(option="C") +
+  #coord_equal() +
+  labs(
+    #title = "Model Selection: Ridge vs. Lasso Constraints",
+    x = TeX("$\\beta_1$"),
+    y = TeX("$\\beta_2$")
+  )
+ridge_plot <- base_plot +
+  geom_circle(
+    aes(x0=0, y0=0, r=1, alpha=I(0.1), linetype="circ", color='circ'), fill=NA, linewidth=0.5
+  )
+  # geom_point(
+  #   data=data.frame(x=0, y=0), aes(x=x, y=y),
+  #   shape=21, size=135.8, color='white', stroke=1.2, linestyle="dashed"
+  # )
+lasso_plot <- ridge_plot +
+  geom_polygon(
+    data=lasso_df, aes(x=x, y=y, linetype="diamond", color="diamond"),
+    fill='white',
+    alpha=0.5,
+    linewidth=1
+  ) +
+  # Ridge beta
+  geom_point(data=ridge_opt_df, aes(x=x, y=y), size=2) +
+  geom_label(
+    data=ridge_opt_df, aes(x=x, y=y, label=label),
+    hjust=2, vjust=-0.15, parse=TRUE, alpha=0.9
+  ) +
+  # Lasso beta
+  geom_point(data=lasso_opt_df, aes(x=x, y=y), size=2) +
+  geom_label(
+    data=lasso_opt_df, aes(x=x, y=y, label=label),
+    hjust=-0.75, vjust=-0.15, parse=TRUE, alpha=0.9
+  ) +
+  ylim(ybound[1], ybound[2]) +
+  # xlim(xbound[1], xbound[2]) +
+  scale_linetype_manual("Line", values=c("diamond"="solid", "circ"="dashed"), labels=c("a","b")) +
+  scale_color_manual("Color", values=c("diamond"="white", "circ"="white"), labels=c("c","d")) +
+  # scale_fill_manual("Test") +
+  # x-axis
+  geom_segment(aes(x=-Inf, xend=Inf, y=0, yend=0), color='white') +
+  theme_dsan(base_size=16) +
+  coord_fixed() +
+  theme(
+    legend.position = "none",
+    axis.line = element_blank(),
+    axis.ticks = element_blank()
+  )
+lasso_plot
+```
+
+## Bayesian Interpretation {.smaller .crunch-title .crunch-quarto-figure .crunch-ul .math-90 .crunch-math .inline-90 .crunch-p .title-11 .crunch-li-8}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+* Belief $A$: **Most/all of** the features you included have important effect on $Y$
+* $A \implies$ **Gaussian prior** on $\beta_j$, $\mu = 0$
+* If $X \sim \mathcal{N}(\mu, \sigma^2)$, pdf of $X$ is
+
+$$
+f_X(x) = \frac{1}{\sqrt{2\pi \sigma^2}}\exp\left[ -\frac{1}{2}\left( \frac{x-\mu}{\sigma}\right)^2 \right]
+$$
+
+```{r}
+#| label: gaussian-prior
+#| fig-width: 11
+#| crop: false
+library(tidyverse) |> suppressPackageStartupMessages()
+library(latex2exp) |> suppressPackageStartupMessages()
+prior_labs <- labs(
+  x = TeX("$\\beta_j$"),
+  y = TeX("$f(\\beta_j)$")
+)
+ggplot() +
+  stat_function(fun=dnorm, linewidth=1) +
+  xlim(-3, 3) +
+  theme_dsan(base_size=28) +
+  prior_labs
+```
+
+* Gaussian prior $\leadsto$ **Ridge Regression!**<br>(High complexity penalty $\lambda$ $\leftrightarrow$ low $\sigma^2$)
+
+:::
+::: {.column width="50%"}
+
+* Belief $B$: **Only a few** of the features you included have important effect on $Y$
+* $B \implies$ **Laplacian prior** on $\beta_j$, $\mu = 0$
+* If $X \sim \mathcal{L}(\mu, b)$, pdf of $X$ is
+
+$$
+f(x) = \frac{1}{2b}\exp\left[ -\left| \frac{x - \mu}{b} \right| \right]
+$$
+
+```{r}
+#| label: laplace-prior
+#| crop: false
+library(tidyverse) |> suppressPackageStartupMessages()
+library(latex2exp) |> suppressPackageStartupMessages()
+library(extraDistr) |> suppressPackageStartupMessages()
+ggplot() +
+  stat_function(fun=dlaplace, linewidth=1) +
+  xlim(-3, 3) +
+  theme_dsan(base_size=28) +
+  prior_labs
+```
+
+* Laplacian prior $\leadsto$ **Lasso!**<br>(High complexity penalty $\lambda$ $\leftrightarrow$ low $b$)
+
+:::
+::::
+
+## Ok So... How Do We Find These Magical $\lambda$ Values?
+
+* Cross-Validation!
+* (...that's, uh, that's it! That's the whole slide!)
+* (But let's look at what we find when we use CV...)
+
+## Varying $\lambda$ $\leadsto$ Tradeoff Curve! {.smaller .inline-90}
+
+<center>
+**Ridge Regression Case:**
+</center>
+
+![](images/islr_6-4.svg){fig-align="center"}
+
+:::: {.columns}
+::: {.column width="48%"}
+
+<center>
+Increasing $\lambda$ in $\displaystyle \min_{\boldsymbol\beta}\left[\text{RSS} + \lambda \| \boldsymbol\beta \|_2^2 \right]$
+</center>
+
+:::
+::: {.column width="4%"}
+
+<center>
+$\equiv$
+</center>
+
+:::
+::: {.column width="48%"}
+
+<center>
+Decreasing $s$ in $\displaystyle \min_{\boldsymbol\beta}\left[ \text{RSS} \right] \text{ s.t. }\|\boldsymbol\beta\|_2^2 \leq s$
+</center>
+
+:::
+::::
+
+## Only Change: $L^1$ instead of $L^2$ Norm 🤯 {.smaller .inline-90 .title-12}
+
+<center>
+**Lasso Case:**
+</center>
+
+![](images/islr_6-6.svg){fig-align="center"}
+
+:::: {.columns}
+::: {.column width="48%"}
+
+<center>
+Increasing $\lambda$ in $\displaystyle \min_{\boldsymbol\beta}\left[\text{RSS} + \lambda \| \boldsymbol\beta \|_1\right]$
+</center>
+
+:::
+::: {.column width="4%"}
+
+<center>
+$\equiv$
+</center>
+
+:::
+::: {.column width="48%"}
+
+<center>
+Decreasing $s$ in $\displaystyle \min_{\boldsymbol\beta}\left[ \text{RSS} \right] \text{ s.t. }\|\boldsymbol\beta\|_1 \leq s$
+</center>
+
+:::
+::::
+
+## Week 7 Preview: [Linear]{.noodle-jj} Functions {.crunch-title .crunch-ul .crunch-math .math-80}
+
+```{=html}
+<style>
+@font-face {
+    font-family: Noodle;
+    src: url('/assets/Kbnoodlemonster.ttf');
+}
+.workbench-jj {
+  font-family: "Workbench", serif;
+  /* font-optical-sizing: auto; */
+  font-weight: 400;
+  font-style: normal;
+  font-size: 96pt !important;
+}
+.noodle-jj {
+    font-family: "Noodle", serif;
+    font-size: 56pt !important;
+}
+</style>
+```
+
+* You've already seen **polynomial regression**:
+
+$$
+Y = \beta_0 + \beta_1X + \beta_2X^2 + \beta_3X^3 + \cdots + \beta_d X^d
+$$
+
+* Plus (technically) [**"Fourier regression"**](https://www.youtube.com/watch?v=r6sGWTCMz2k&t=21s):
+
+$$
+\begin{align*}
+Y = \beta_0 + \beta_1 \cos(\pi X) + \beta_2 \sin(\pi X) + \cdots + \beta_{2d-1}\cos(\pi d X) + \beta_{2d}\sin(\pi d X)
+\end{align*}
+$$
+
+![[Image source](https://www.cs.princeton.edu/courses/archive/fall18/cos324/files/basis-functions.pdf)](images/fourier.svg){fig-align="center"}
+
+## New Regression Just Dropped {.crunch-title .inline-90 .crunch-ul .crunch-quarto-figure}
+
+**Piecewise** regression:
+
+<i class='bi bi-1-circle'></i> Choose $K$ cutpoints $c_1, \ldots, c_K$
+
+<i class='bi bi-2-circle'></i> Let $C_k(X) = \mathbb{1}[c_{k-1} \leq X < c_k]$, ($c_0 \equiv -\infty$, $c_{K+1} \equiv \infty$)
+
+$$
+Y = \beta_0 + \beta_1C_1(X) + \beta_2C_2(X) + \cdots + \beta_KC_K(X)
+$$
+
+![](images/islr_7-2.svg){fig-align="center"}
+
+## Decomposing Fancy Regressions into Core "Pieces" {.crunch-title .crunch-ul .inline-90 .math-90}
+
+* Q: What do **all** these types of regression have in common?
+* A: They can all be written in the form
+  
+  $$
+  Y = \beta_0 + \beta_1 b_1(X) + \beta_2 b_2(X) + \cdots + \beta_d b_d(X)
+  $$
+
+* Where $b(\cdot)$ is called a **basis function**
+  * Linear ($d = 1$): $b_1(X) = X$
+  * Polynomial: $b_j(X) = X^j$
+  * Piecewise: $b_j(X) = \mathbb{1}[c_{j-1} \leq X < c_j]$
+
+

@@ -1,0 +1,78 @@
+
+```{r}
+#| label: default-boxplot-balance
+default_df |> ggplot(aes(x=default, y=balance, fill=default)) +
+  geom_boxplot() +
+  theme_classic()
+```
+
+```{r}
+#| label: default-boxplot-income
+default_df |> ggplot(aes(x=default, y=income, fill=default)) +
+  geom_boxplot() +
+  theme_classic()
+```
+
+:::
+::::
+
+---
+
+
+Here's what lines look like for this dataset:
+
+```{r}
+#| label: random-lines-origin
+library(latex2exp)
+set.seed(5300)
+# rand_slope <- log(runif(80, min=0, max=1))
+# rand_slope[41:80] <- -rand_slope[41:80]
+# rand_lines <- tibble::tibble(
+#   id=1:80, slope=rand_slope, intercept=0
+# )
+# angles <- runif(100, -pi/2, pi/2)
+angles <- seq(from=-pi/2, to=pi/2, length.out=50)
+possible_lines <- tibble::tibble(
+  slope=tan(angles), intercept=0
+)
+num_points <- 30
+x_vals <- runif(num_points, 0, 1)
+y0_vals <- 0.5 * x_vals + 0.25
+y_noise <- rnorm(num_points, 0, 0.07)
+y_vals <- y0_vals + y_noise
+rand_df <- tibble::tibble(x=x_vals, y=y_vals)
+title_exp <- latex2exp("Parameter Space ($\\beta_1$)")
+# Main plot object
+gen_lines_plot <- function(point_size=2.5) {
+  lines_plot <- rand_df |> ggplot(aes(x=x, y=y)) +
+    geom_point(size=point_size) +
+    geom_hline(yintercept=0, linewidth=1.5) +
+    geom_vline(xintercept=0, linewidth=1.5) +
+    # Point at origin
+    geom_point(data=data.frame(x=0, y=0), aes(x=x, y=y), size=4) +
+    xlim(-1,1) +
+    ylim(-1,1) +
+    # coord_fixed() +
+    theme_dsan_min(base_size=28)
+  return(lines_plot)
+}
+main_lines_plot <- gen_lines_plot()
+main_lines_plot +
+  # Parameter space of possible lines
+  geom_abline(
+    data=possible_lines,
+    aes(slope=slope, intercept=intercept, color='possible'),
+    # linetype="dotted",
+    # linewidth=0.75,
+    alpha=0.25
+  ) +
+  scale_color_manual(
+    element_blank(),
+    values=c('possible'="black", 'true'=cb_palette[2]),
+    labels=c('possible'="Possible Fits", 'true'="True DGP")
+  ) +
+  remove_legend_title() +
+  labs(
+    title=title_exp
+  )
+```

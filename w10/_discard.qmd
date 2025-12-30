@@ -1,0 +1,36 @@
+
+## What Do the Nodes Do?
+
+Each node $\nu_i^{[\ell]}$ in the network:
+
+* Takes in an **input**,
+* Transforms it using a **weight** $w^{[\ell]}_i$ and **bias** $b^{[\ell]}_i$, and
+* Produces an **output**, typically using a **sigmoid function** like $\sigma(x) = \frac{1}{1+e^{-x}}$:
+
+$$
+\text{output}^{[\ell]}_i = \sigma(w^{[\ell]}_i \cdot \text{input} + b^{[\ell]}_i)
+$$
+
+## How Does it "Learn"?
+
+* Need a **loss function** $\mathcal{L}(\widehat{y}, y)$
+* Starting from the end, we **backpropagate** the loss, updating **weights** and **biases** as we go
+* Higher loss $\implies$ greater change to weights and biases
+
+---
+
+## How Many Parameters?
+
+:::: {.columns}
+::: {.column width="40%"}
+
+* $\mathbf{W}_1$?
+* $\mathbf{W}_2$?
+
+:::
+::: {.column width="60%"}
+
+![](images/nn_multilayer.svg){fig-align="center" width="100%"}
+
+:::
+::::

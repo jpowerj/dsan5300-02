@@ -1,0 +1,345 @@
+---
+title: "Getting Started with HW 1"
+subtitle: "DSAN 5300: Statistical Learning"
+sidebar: mainnav
+weeknum: 3
+assignment: "HW 1"
+date: last-modified
+date-format: full
+cache: true
+categories:
+  - "Extra Writeups"
+format:
+  html:
+    echo: true
+    code-fold: true
+    html-math-method: mathjax
+    df-print: kable
+    toc: true
+---
+
+::: {.callout-note title="Update Log" collapse="false"}
+
+* Section on [Least Squares Derivation](#least-squares-derivation) added **1 Feb 2025, 1:00am**
+* Original version posted **31 Jan 2025, 2:30am**
+
+:::
+
+As with the [Lab 1 getting-started guide](../lab-1/), here we don't give away the answers but do provide as much background as possible to nudge you up to the starting line!
+
+## Sums $\leftrightarrows$ Linear-Algebraic Operations
+
+One key motivation for this section is for you to see how all of the regression model's mathematical details can be represented in **two equally valid ways**:
+
+* First, using a "standard" calculus approach, where you will end up with lots of sums ($\Sigma$ symbols) in your derivations because (for example) the **loss function** used by regression is itself a **sum of squares** (specifically, a **sum of squared residuals**). However, there is also...
+* Second, using a **linear algebra**-heavy approach, where in place of the sums you will now have lots of vector-vector, matrix-vector, and matrix-matrix products.
+
+To see how the second approach "replaces" the sums with linear-algebraic operations, as a basic example you can use to remind yourself of these two different representations (and then think about which one feels more clear to you, and then use that one), consider a scenario where you have a set of **datapoints** (scalars for now):
+
+$$
+\mathbf{x} = (x_1, x_2, \ldots, x_n),
+$$
+
+and a set of **weights**, with one weight per datapoint (so that the subscripts "match up": $w_1$ is the weight to be applied to $x_1$, $w_2$ is the weight to be applied to $x_2$, and so on):
+
+$$
+\mathbf{w} = (w_1, w_2, \ldots, w_n).
+$$
+
+Now, if we wanted to write out the **weighted sum** $S$ of these datapoints $\mathbf{x}$, with the weights given by $\mathbf{w}$, the "straightforward" way (at least, in the sense that it's probably the approach you learned earlier on in your math-class-taking career) would look like:
+
+$$
+S = w_1x_1 + w_2x_2 + \cdots + w_nx_n = \sum_{i=1}^{n}w_ix_i,
+$$
+
+which is why that $\Sigma$ notation will appear all over the place when you are working through the early parts of the homework.
+
+However, now consider the fact that you know about some fancier mathematical objects---**vectors** and **matrices**---and how they can help us in terms of providing an alternative representation of this same sum! Instead of "zooming in" on the individual elements to write out the weighted sum, we could just as easily treat them as unitary objects---**vectors**---and apply the binary [**dot product**](https://en.wikipedia.org/wiki/Dot_product) operator from Linear Algebra to achieve the same weighted sum!
+
+To see this, recall how the dot product of two vectors is defined, and then work out what (e.g.) $\mathbf{w} \cdot \mathbf{x}^{\top}$ looks like:
+
+$$
+\begin{align*}
+\mathbf{w} \cdot \mathbf{x} &= (w_1, w_2, \ldots, w_n) \cdot (x_1, x_2, \ldots, x_n) \\
+&= w_1x_1 + w_2x_2 + \cdots + w_nx_n = \sum_{i=1}^{n}w_ix_i = S ~ ✅
+\end{align*}
+$$ {#eq-weighted-sum}
+
+And so we see that, indeed, we can obtain this same sum $S$ by considering the datapoints and weights as **vectors** and then using the **dot product** as our key operator for combining these vectors (rather than thinking of $S$ on the level of individual multiplications and additions).
+
+## The Regression Model's Linear Algebraic Representation
+
+That all may be obvious to you, if you've taken Linear Algebra for example, but now to foreshadow some of the later portions of the homework, let's look at how this idea can help us when e.g. we're working with the math of regression models.
+
+Consider the non-Linear-Algebraic way we've been writing out the basic pieces of the regression model thus far in the class. The **Multiple Linear Regression** model, for example, is typically written out in a form like this (where here I'm writing out the model we'd use to predict **one** particular label, $y_i$, as a function of **one** observation's features, $x_{i,1}$ through $x_{i,m}$).
+
+$$
+\widehat{y}_i = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \cdots + \beta_M x_{i,M}
+$$ {#eq-mlr}
+
+If we look at this representation, we can see how it *almost* perfectly matches the type of weighted sum we re-wrote using the dot product in @eq-weighted-sum above. The only difference, in fact, is that the pesky $\beta_0$ coefficient has no corresponding $x_{i,0}$ term...
+
+...But, what if we just **defined** an $x_{i,0}$, to just always take on the numeric value $1$? This would provide the "missing piece" which would allow us to write the Multiple Linear Regression model as a dot product! That is: once we define $x_{i,0} \triangleq 1$, we can now write the data for this observation as as vector $\mathbf{x}_i$ like:
+
+$$
+\mathbf{x}_i = (x_{i,0}, x_{i,1}, x_{i,2}, \ldots, x_{i,M}) = (1, x_{i,1}, x_{i,2}, \ldots, x_{i,M}),
+$$
+
+and we can write the coefficients as a vector $\boldsymbol\beta$ like:
+
+$$
+\boldsymbol\beta = (\beta_0, \beta_1, \ldots, \beta_M),
+$$
+
+and we achieve the same type of result as in the previous section---that the Multiple Linear Regression model itself (modeling the prediction for one observation, for now) can be written as a dot product:
+
+$$
+\begin{align*}
+\widehat{y}_i &= \boldsymbol\beta \cdot \mathbf{x}_i = (\beta_0, \beta_1, \ldots, \beta_M) \cdot (1, x_{i,1}, \ldots, x_{i,M}) \\
+&= \beta_0 + \beta_1 x_{i,1} + \cdots + \beta_M x_{i,M} ~ ✅
+\end{align*}
+$$
+
+## From Vectors to Matrices
+
+The final step, in terms of representing the **full** MLR model using objects from Linear Algebra (rather than just its prediction for one particular observation $i$), requires us to think about **matrices** rather than just the **vectors** we've used thus far. However, just as we thought of:
+
+* **Vectors** as objects allowing us to group individual **scalars** together into a single object, here we can also retain our sanity by thinking of
+* **Matrices** as objects allowing us to group individual **vectors** together into a single object!
+
+To see how this way of thinking can help us here, notice how if we have $N$ labels ($y_1$ through $y_n$) for $N$ datapoints ($\mathbf{x}_1$ through $\mathbf{x}_n$), then our model is going to generate $N$ predictions, using @eq-mlr above $N$ times:
+
+$$
+\begin{align*}
+\widehat{y}_1 &= \beta_0 + \beta_1 x_{1,1} + \cdots + \beta_m x_{1,m} \\
+\widehat{y}_2 &= \beta_0 + \beta_1 x_{2,1} + \cdots + \beta_m x_{2,m} \\
+\phantom{y_3} &~~\vdots \\
+\widehat{y}_n &= \beta_0 + \beta_1 x_{n,1} + \dots + \beta_m x_{n,m}
+\end{align*}
+$$
+
+So, if you squint your eyes while looking at this **system of equations**, and you keep in mind the above point about defining $x_{i,0}$ to just be the value $1$ for every observation $i$, hopefully you can start to see how that whole thing could be re-written as a single **matrix equation**!
+
+To start off, for example, we could gather all of the $\widehat{y}_i$ terms on the left-hand side of each equation into a single **column vector**:
+
+$$
+\widehat{\mathbf{y}} = \begin{bmatrix}
+\widehat{y}_1 \\
+\vdots \\
+\widehat{y}_n
+\end{bmatrix}
+$$
+
+And, next, we already saw how weighted sums like the ones we see on the right-hand side of each equation can be re-written as **vector-vector products** (dot products). So, in the same way that we "stacked" the individual $\widehat{y}_i$ terms into a single column vector just now, we can also look at these right-hand side expressions as a "stack" of such products, like:
+
+$$
+\begin{bmatrix}
+\beta_0 x_{1,0} + \beta_1x_{1,1} + \cdots + \beta_m x_{1,m} \\
+\vdots \\
+\beta_0 x_{n,0} + \beta_1x_{n,1} + \cdots + \beta_m x_{n,m}
+\end{bmatrix} = \begin{bmatrix}
+\boldsymbol\beta \cdot \mathbf{x}_1 \\
+\vdots \\
+\boldsymbol\beta \cdot \mathbf{x}_n
+\end{bmatrix}
+$$ {#eq-rhs-stack}
+
+The final leap, which I think is most helpful if you try to work it out yourself (like, as in, by trying different guesses and multiplying them out to see if you get the desired result), is to take this almost-there representation where we've stacked the dot products ($\boldsymbol\beta \cdot \mathbf{x}_1$, $\boldsymbol\beta \cdot \mathbf{x}_2$, and so on) into a column vector, and turn it into a product of **only** "base" Linear Algebra objects: **vectors** and/or **matrices**.
+
+In other words, right now we have a column-vector-of-dot-products, which is not exactly what we think of when we think of "a vector" or "a matrix" (it's... a hybrid of the two, in a sense). To make progress, take note of the fact that:
+
+* $\boldsymbol\beta$ appears in **every row**, whereas
+* For a given index $i$, $\mathbf{x}_i$ only appears in **one row**.
+
+So (here's where you can pause and try to work it out on paper, before reading on!), the second bullet point provides us with a hint that it may be helpful to construct a **data matrix** $\mathbf{X}$, where **each row $i$** contains **all of the terms in $\mathbf{x}_i$**:
+
+$$
+\begin{align*}
+\mathbf{X} &= \begin{bmatrix}
+\mathbf{x}_1 \\
+\mathbf{x}_2 \\
+\vdots \\
+\mathbf{x}_n
+\end{bmatrix} = \begin{bmatrix}
+x_{1,0} & x_{1,1} & x_{1,2} & \cdots & x_{1,m} \\
+x_{2,0} & x_{2,1} & x_{2,2} & \cdots & x_{2,m} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+x_{n,0} & x_{n,1} & x_{n,2} & \cdots & x_{n,m}
+\end{bmatrix} \\
+&= \begin{bmatrix}
+1 & x_{1,1} & x_{1,2} & \cdots & x_{1,m} \\
+1 & x_{2,1} & x_{2,2} & \cdots & x_{2,m} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & x_{n,1} & x_{n,2} & \cdots & x_{n,m}
+\end{bmatrix}
+\end{align*}
+$$
+
+And finally, the first bullet point gives us a hint that we don't need a full **matrix** to represent $\boldsymbol\beta$, since the same set of parameters $\boldsymbol\beta$ is used across **all** predictions from $\widehat{y}_1$ to $\widehat{y}_n$. Instead, to ensure that it "combines with" our data matrix $\mathbf{X}$ to produce the desired final system of equations, we can represent it as a **column vector**:
+
+$$
+\boldsymbol\beta = \begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_m
+\end{bmatrix}
+$$
+
+Though the choice of a **column** vector rather than a row vector here might seem arbitrary at first, the point is exactly what I mentioned above, that you can try the two different representations and see which one is more helpful for what we're trying to do. It turns out that, with this column vector representation, we can combine $\mathbf{X}$ with $\boldsymbol\beta$ using a simple **matrix-vector multiplication** to obtain the final result we've been looking for:
+
+$$
+\begin{align*}
+\mathbf{X}\boldsymbol\beta &= \begin{bmatrix}
+1 & x_{1,1} & x_{1,2} & \cdots & x_{1,m} \\
+1 & x_{2,1} & x_{2,2} & \cdots & x_{2,m} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+1 & x_{n,1} & x_{n,2} & \cdots & x_{n,m}
+\end{bmatrix} \begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_m
+\end{bmatrix} \\
+&= \begin{bmatrix}
+\beta_0 x_{1,0} + \beta_1x_{1,1} + \cdots + \beta_m x_{1,m} \\
+\vdots \\
+\beta_0 x_{n,0} + \beta_1x_{n,1} + \cdots + \beta_m x_{n,m}
+\end{bmatrix}
+\end{align*}
+$$
+
+Which is precisely the stack-of-weighted-sums we were hoping to "decompose" into Linear Algebraic operations in @eq-rhs-stack above!
+
+So, combining all this together, if we want a representation of our MLR model without **any** sums (since the sums are all performed *implicitly* via the vector-vector and matrix-vector operations), we can now just use the following ultra-shorthand Linear Algebraic form!
+
+$$
+\widehat{\mathbf{y}} = \mathbf{X}\boldsymbol\beta
+$$
+
+## Sanity Check: How Do We Know These Operations Will Be Well-Defined?
+
+This is kind of... shoved in here, since it's **generally** super useful imo, across any situation where you're using matrices and/or vectors, but I may as well introduce it here!
+
+There is a "sanity check" you can perform, whenever you're doing math **or** writing code that involves matrices/vectors, that instantly gives you two pieces of information:
+
+* A verification of whether or not the matrix-matrix or matrix-vector product is **well-defined**, but also
+* The specific **dimensions** that the **result** of the matrix-matrix or matrix-vector product will have!
+
+In general, this sanity check involves just checking how many **rows** and **columns** are in the two objects you're hoping to multiply, and writing these two dimensions (number of rows and number of columns) underneath each object. So, for example, if we're thinking about right-multiplying a $3 \times 2$ matrix $A$ by a $2 \times 4$ matrix $B$, we can write the two matrices out like:
+
+$$
+AB =
+\underbrace{\begin{bmatrix}
+a_{11} & a_{12} \\
+a_{21} & a_{22} \\
+a_{31} & a_{32}
+\end{bmatrix}}_{3 \times 2} \underbrace{\begin{bmatrix}
+b_{11} & b_{12} & b_{13} & b_{14} \\
+b_{21} & b_{22} & b_{23} & b_{24}
+\end{bmatrix}}_{2 \times 4}
+$$
+
+And now, the **first** piece of information this gives us: how do we know whether or not this multiplication is well-defined?
+
+* The multiplication is well-defined **if the two "inner" numbers written under the matrices are equal**: in this case, the operation is well-defined because the number of **columns** in the first matrix $A$ ($2$) is equal to the number of **rows** in the second matrix $B$ ($2$)!
+
+I call these the "inner" numbers because, if we simplified the above to just have the shapes written out, we'd get
+
+$$
+[3 \times 2][2 \times 4],
+$$
+
+in which the "well-defined test" can now be read off from the two numbers ($2]$ and $[2$) on the "inside" of this 4-number representation.
+
+Next, we get the **second** piece of information: what dimensions will the resulting product have?
+
+* If the multiplication is well-defined, then the result will have a shape given by the **two outer numbers** written underneath the matrices above: In this case, the result have a number of rows equal to the number of rows in $A$ ($3$) and a number of columns equal to the number of columns in $B$ ($4$), i.e., the result will be a $3 \times 4$ matrix.
+
+We can verify this, for example, if we know the procedure for matrix-matrix multiplication from Linear Algebra:
+
+$$
+\begin{align*}
+AB &= \underbrace{\begin{bmatrix}
+a_{11} & a_{12} \\
+a_{21} & a_{22} \\
+a_{31} & a_{32}
+\end{bmatrix}}_{3 \times 2} \underbrace{\begin{bmatrix}
+b_{11} & b_{12} & b_{13} & b_{14} \\
+b_{21} & b_{22} & b_{23} & b_{24}
+\end{bmatrix}}_{2 \times 4} \\
+&= \underbrace{\begin{bmatrix}
+a_{11}b_{11} + a_{12}b_{21} & a_{11}b_{12} + a_{12}b_{22} & a_{11}b_{13} + a_{12}b_{23} & a_{11}b_{14} + a_{12}b_{24} \\
+a_{21}b_{11} + a_{22}b_{21} & a_{21}b_{12} + a_{22}b_{22} & a_{21}b_{13} + a_{22}b_{23} & a_{21}b_{14} + a_{22}b_{24} \\
+a_{31}b_{11} + a_{32}b_{21} & a_{31}b_{12} + a_{32}b_{22} & a_{31}b_{13} + a_{32}b_{23} & a_{31}b_{14} + a_{32}b_{24}
+\end{bmatrix}}_{3 \times 4}
+\end{align*}
+$$
+
+And we can see that the result is a $3 \times 4$ matrix, as expected given the pair of "outer" numbers $[3$ and $4]$ in the shape representation
+
+$$
+[3 \times 2][2 \times 4].
+$$
+
+In my head, once I got used to it, this boiled down to something like the following "rule": given a $r_A \times c_A$ matrix $A$ and a $r_B \times c_B$ matrix $B$, their matrix-matrix product $AB$ can be sanity-checked using a "diagram" like:
+
+$$
+[\underline{r_A} \times \overset{✅}{c_A}][\overset{✅}{r_B} \times \underline{c_B}] = [r_A \times c_B]
+$$
+
+## Least Squares Derivation
+
+For this part, the truth is you're mainly going to have to wade through a lot of algebra---the idea is to get comfortable with the use/manipulation of the kinds of quantities that will probably come up again and again as you absorb fancier and fancier regression and ML models!
+
+So, if your derivation has lots of terms that look like $\sum_{i=1}^{N}x_iy_i$, $\sum_{i=1}^{N}x_i^2$, and so on, that is a good sign (and relates to the points in the previous sections about turning sums into Linear Algebraic operations)!
+
+Probably the most concrete advice I can give, for those of you still wrestling with this part, is that at least for the way my brain works it helps to "compartmentalize" the derivation into two chunks:
+
+**First** (again, for me, though this division may not be helpful for everyone), I find it helpful to split the terms we might see into (a) terms which arise from treating it like a "pure" **calculus** problem that we solve by taking derivatives and setting them equal to zero, and then (b) terms/definitions which we bring in from **statistics** (the definitions which are given in the problem) which can help us interpret what we find. So, for this derivation, that split would look like:
+
+| (a) Calculus/Algebra Thing | (b) Statistics Thing |
+| - | - |
+| $\sum_{i=1}^{N}x_i$ | $\overline{x} = \frac{1}{N}\sum_{i=1}^{N}x_i$ |
+| $\sum_{i=1}^{N}y_i$ | $\overline{y} = \frac{1}{N}\sum_{i=1}^{N}y_i$ |
+| $\sum_{i=1}^{N}x_iy_i$ | $\text{Cov}[X, Y] = \frac{1}{N}\sum_{i=1}^{N}(x_i-\overline{x})(y_i - \overline{y})$ |
+| $\sum_{i=1}^{N}x_i^2$ | $\text{Var}[X] = \frac{1}{N}\sum_{i=1}^{N}(x_i-\overline{x})^2$ |
+
+**Then**, I like to think of the first actual doing-math step as the step where I treat is as a "pure" calculus problem. Mainly because my brain starts to hurt if I switch back-and-forth between Calculus/Algebra Things and Statistics Things, I find it more comfortable to forget about the right column in the above table and just solve:
+
+$$
+\begin{align*}
+\min_{m,b}\left[ L(m,b) \right] &= \min_{m,b}\left[ \sum_{i=1}^{N} (\widehat{y}(m,b) - y)^2 \right] \\
+&= \min_{m,b}\left[ \sum_{i=1}^{N}((mx_i + b) - y)^2 \right]
+\end{align*}
+$$
+
+The way I learned to solve minimization problems in calculus: by taking the thing inside the square brackets, computing its derivative(s) with respect to the maximand(s) ($m$ and $b$ in this case), and then solving the system of equations which in some classes would be called the "First-Order Conditions" that are necessary (but not sufficient) for some chosen values $m^*$ and $b^*$ to minimize the function:
+
+$$
+\left. \frac{\partial L}{\partial m}\right|_{\substack{m=m^* \\ b=b^*}} = 0 \wedge \left. \frac{\partial L}{\partial b}\right|_{\substack{m=m^* \\ b=b^*}} = 0
+$$
+
+The goal, once you take these two derivatives and set them equal to zero, is to use algebraic manipulations to eventually arrive at **closed-form solutions** for $m$ and $b$. In this case, what would a closed-form solution look like?
+
+* A closed-form solution for $m$ would be an expression like
+
+  $$
+  m = [\text{stuff}],
+  $$
+  
+  where everything on the right-hand side is a function of only $x_i$, $y_i$, and $N$. Meaning, if $b$ or $m$ itself appear on the right-hand side, you have not yet arrived at a closed-form solution for $m$!
+* A closed-form solution for $b$ would be an expression like
+
+  $$
+  b = [\text{stuff}],
+  $$
+
+  where everything on the right-hand side here is a function of only $x_i$, $y_i$, and $N$. So, if $m$ or $b$ itself appear on the right-hand side, you have not yet arrived at a closed-form solution for $b$!
+
+**Finally**, once I have these two **closed-form solutions** for $m$ and $b$, I then take the Statistics Things back out and try to rewrite the terms in this closed form solution in terms of $\overline{x}$, $\overline{y}$, $\text{Var}[X]$, $\text{Var}[Y]$, and $\text{Cov}[X,Y]$.
+
+This may not help in terms of the particular point at which you may be stuck, in which case I'm sorry in advance! But, it's the... division-of-tasks that tended to help me when deriving closed-form solutions like this in e.g. econometrics classes!
+
+<!-- ## Part 2: What is it asking, how do you know your implementation is correct? -->
+

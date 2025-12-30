@@ -1,0 +1,253 @@
+---
+title: "Week 9: Generative vs. Discriminative Models"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+author: "Jeff Jacobs"
+institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
+bibliography: "../_DSAN5300.bib"
+date: 2025-03-17
+date-format: full
+lecnum: 9
+categories:
+  - "Class Sessions"
+format:
+  revealjs:
+    df-print: kable
+    footer: "DSAN 5300-01 Week 9: {{< var w09.footer >}}"
+    output-file: "slides.html"
+    html-math-method: mathjax
+    scrollable: true
+    theme: [default, "../dsan-globals/jjquarto.scss"]
+    slide-number: true
+    echo: true
+    code-fold: true
+    link-external-icon: true
+    link-external-newwindow: true
+    include-in-header:
+      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
+    simplemenu:
+      flat: true
+      barhtml:
+        header: "<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>"
+      scale: 0.5
+    revealjs-plugins:
+      - simplemenu
+  html:
+    df-print: kable
+    output-file: "index.html"
+    html-math-method: mathjax
+    echo: true
+    code-fold: true
+---
+
+::: {.content-visible unless-format="revealjs"}
+
+<center class='mb-3'>
+<a class="h2" href="./slides.html" target="_blank">Open slides in new tab &rarr;</a>
+</center>
+
+:::
+
+# Schedule {.smaller .small-title .crunch-title .crunch-callout data-stack-name="Schedule"}
+
+Today's Planned Schedule:
+
+| | Start | End | Topic |
+|:- |:- |:- |:- |
+| **Lecture** | 6:30pm | 7:00pm | [Separating Hyperplanes &rarr;](#learning-decision-boundaries) |
+| | 7:00pm | 7:20pm | [Max-Margin Classifiers &rarr;](#max-margin-classifiers) | 
+| | 7:20pm | 8:00pm | [Support Vector *Classifiers* &rarr;](#support-vector-classifiers) |
+| **Break!** | 8:00pm | 8:10pm | |
+| | 8:10pm | 9:00pm | [Quiz 2 &rarr;](#quiz-time) |
+
+: {tbl-colwidths="[12,12,12,64]"}
+
+::: {.hidden}
+
+```{r}
+#| label: r-source-globals
+source("../dsan-globals/_globals.r")
+set.seed(5300)
+```
+
+:::
+
+{{< include ../dsan-globals/_globals-tex.qmd >}}
+
+## Quick Roadmap {.crunch-title .crunch-ul .text-90 .crunch-li-first}
+
+* Weeks 8-9: Shift from focus on **regression** to focus on **classification** (Though we use lessons from regression!)
+* Last Week (W08): SVMs as *new method* with this focus
+  * Emphasis on **boundary between classes** $\leadsto$ 2.5hrs on **separating hyperplanes**: in original feature space (Max-Margin, SVCs) or derived feature spaces (SVMs)
+* Now: Wait, didn't we discuss a classification method before, though its name confusingly had "regression" in it? 🤔
+  * Take **logistic regression** but use Bayes rule to "flip" from **regression[+thresholding]** task to **class-separation** task (think of SVM's max-width-of-"slab" objective!)
+
+<!-- * Best way I can summarize: logistic regression is great if we **care about $\beta_j$ values** (effect of $\uparrow X$ on $\Pr(Y = 1)$)... 
+  * Otherwise, if we care about best **separating** $Y = 0$ from $Y = 1$ (think of SVM's max-width-of-"slab" objective), we can optimize **separation boundary**, point where $\Pr(Y = 1) = \Pr(Y = 0)$ directly
+-->
+
+## Logistic Regression Refresher {.crunch-title .math-90 .crunch-math .crunch-li .title-09 .crunch-ul}
+
+* We don't have time for full refresher, but just remember how it involves learning $\beta_j$ values to minimize **loss** w.r.t.
+
+$$
+\begin{align*}
+&\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
+&\iff \Pr(Y = 1 \mid X = x_i) = \frac{e^{\beta_0 + \beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}}
+\end{align*}
+$$
+
+* And then, if we want to **classify $x$** rather than just **predict** $\Pr(Y = 1 \mid X = x)$, we apply a threshold $t \in [0,1]$:
+
+$$
+\widehat{y} = \begin{cases}
+1 &\text{if }\Pr(Y = 1 \mid X = x) = \frac{e^{\beta_0 + \beta_1 x}}{1 + e^{\beta_0 + \beta_1 x}} > t \\
+0 &\text{otherwise}
+\end{cases}
+$$
+
+## Intuition {.crunch-title .crunch-ul .title-09 .inline-90}
+
+* Logistic regression is called a **discriminative model**, since we are learning parameters $\beta_j$ that best produce a predicted **class** $\widehat{y_i}$ from **features** $\mathbf{x}_i$...
+* We're modeling $\Pr(Y = k \mid X)$ (for two classes, $k = 0$ and $k = 1$), hence the LHS of the Logistic Regression formula
+* But there are cases where we can **do better**^[*(More normally-distributed $X$ $\implies$ more likely to "beat" Logistic Regression)*] by instead modeling (learning parameters for) $\Pr(X \mid Y = k)$, for each $k$, then using Bayes rule to "flip" back to $\Pr(Y = k \mid X)$!<br>$\leadsto$ **LDA**, **QDA**, and **Naïve Bayes** classifiers
+
+# Linear Discriminant Analysis (LDA) {data-stack-name="LDA"}
+
+* *Not to be confused with the NLP model called "LDA"!*
+* *In that case LDA = "Latent Dirichlet Allocation"*
+
+## Bayes' Rule {.smaller .math-90 .crunch-ul}
+
+* First things first, we generalize from $Y \in \{0, 1\}$ to $K$ possible classes (labels), since the notation for $K$ classes here is not much more complex than 2 classes!
+* We label the pieces using ISLR's notation to make our lives easier:
+
+$$
+\underbrace{\Pr(Y = k \mid X = x)}_{p_k(x)} = \frac{
+  \overbrace{\Pr(X = x \mid Y = k)}^{f_k(x)} \overbrace{\Pr(Y = k)}^{\pi_k}
+}{
+  \sum_{\ell = 1}^{K} \underbrace{\Pr(X = x \mid Y = \ell)}_{f_{\ell}(x)} \underbrace{\Pr(Y = \ell)}_{\pi_{\ell}}
+} = \frac{f_k(x) \overbrace{\pi_k}^{\mathclap{\text{Prior}(k)}}}{\sum_{\ell = 1}^{K}f_{\ell}(x) \underbrace{\pi_\ell}_{\mathclap{\text{Prior}(\ell)}}}
+$$
+
+* So if we do have only two classes, $K = 2$ and $p_1(x) = \frac{f_1(x)\pi_1}{f_1(x)\pi_1 + f_0(x)\pi_0}$
+
+* Priors can be estimated as $n_k / n$. The hard work is in modeling $f_k(x)$! With estimates of these two "pieces" for each $k$, we can derive a classifier $\widehat{y}(x) = \argmax_k p_k(x)$
+
+## The LDA Assumption (One Feature $x$) {.smaller .crunch-title .title-11 .math-90 .crunch-ul .crunch-li-5}
+
+* Within each class $k$, values of $x$ are **normally distributed**:
+  
+$$
+(X \mid Y = k) \sim \mathcal{N}(\param{\mu_k}, \param{\sigma^2}) \iff f_k(x) = \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_k}{\sigma} \right)^2\right]
+$$
+
+* Plugging back into (notationally-simplified) classifier, we get
+
+$$
+\widehat{y}(x) = \argmax_{k}\left[ \frac{
+  \pi_k \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_k}{\sigma} \right)^2\right]
+}{
+  \sum_{\ell = 1}^{K}\pi_{\ell} \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_\ell}{\sigma} \right)^2\right]
+}\right],
+$$
+
+* Gross, BUT $\argmax_k p_k(x) = \argmax_k \log(p_k(x)) \leadsto$ "linear" discriminant $\delta_k(x)$:
+
+$$
+\widehat{y}(x) = \argmax_k[\delta_k(x)] = \argmax_{k}\left[ \overbrace{\frac{\mu_k}{\sigma^2}}^{\smash{m}} x ~ \overbrace{- \frac{\mu_k^2}{2\sigma^2} + \log(\pi_k)}^{\smash{b}} \right]
+$$
+
+## Decision Boundaries {.smaller .crunch-title .crunch-ul .crunch-math .math-90}
+
+* The **boundary** between two classes $k$ and $k'$ will be the point at which $\delta_k(x) = \delta_{k'}(x)$
+* For two classes, can solve $\delta_0(x) = \delta_1(x)$ for $x$ to obtain $x = \frac{\mu_0 + \mu_1}{2}$
+
+* To derive a boundary from **data**: $x = \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}$ $\Rightarrow$ Predict $1$ if $x > \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}$, $0$ otherwise
+
+![ISLR Figure 4.4: Estimating the Decision Boundary from data. The dashed line is the "true" boundary $x = \frac{\mu_0 + \mu_1}{2}$, while the solid line in the right panel is the boundary **estimated from data** as $x = \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}$.](images/4_4.svg){fig-align="center"}
+
+## Number of Parameters {.smaller .crunch-title}
+
+* $K = 2$ is special case, since lots of things cancel out, but in general need to estimate:
+
+| English | Notation | How Many | Formula |
+| - | - | - | - |
+| Prior for class $k$ | $\widehat{\pi}_k$ | $K - 1$ | $\widehat{\pi}_k = n_k / n$ |
+| Estimated mean for class $k$ | $\widehat{\mu}_k$ | $K$ | $\widehat{\mu}_k = \displaystyle \frac{1}{n_k}\sum_{\{i \mid y_i = k\}}x_i$ |
+| Estimated (shared) variance | $\widehat{\sigma}^2$ | 1 | $\widehat{\sigma}^2 = \displaystyle \frac{1}{n - K}\sum_{k = 1}^{K}\sum_{i:y_i = k}(x_i - \widehat{\mu}_k)^2$ |
+| | **Total:** | $2K$ | |
+
+* *(Keep in mind for fancier methods! This may blow up to be much larger than $n$)*
+
+## LDA with Multiple Features (Here $p = 2$) {.smaller .crunch-title .title-11 .crunch-ul}
+
+* Within each class $k$, values of $\mathbf{x}$ are **(multivariate) normally distributed**:
+  
+$$
+\left( \begin{bmatrix}X_1 \\ X_2\end{bmatrix} \middle| ~ Y = k \right) \sim \mathbf{\mathcal{N}}_2(\param{\boldsymbol\mu_k}, \param{\mathbf{\Sigma}})
+$$
+
+* Increasing $p$ to 2 and $K$ to 3 means more parameters, but still **linear boundaries**. It turns out: shared variance ($\sigma^2$ or $\mathbf{\Sigma}$) will **always** produce linear boundaries 🤔
+
+![ISLR Figure 4.6: Like before, dashed lines are "true" boundaries while solid lines are boundaries **estimated from data**](images/4_6.svg){fig-align="center"}
+
+## Quadratic Class Boundaries {.smaller .crunch-title .title-12 .crunch-ul .math-90 .crunch-math}
+
+* To achieve **non-linear** boundaries, estimate covariance matrix $\mathbf{\Sigma}_k$ for each class $k$:
+
+$$
+\left( \begin{bmatrix}X_1 \\ X_2\end{bmatrix} \middle| ~ Y = k \right) \sim \mathbf{\mathcal{N}}_2(\param{\boldsymbol\mu_k}, \param{\mathbf{\Sigma}_k})
+$$
+
+* Pros: Non-linear class boundaries! Cons: More parameters to estimate, does worse than LDA if data linearly-separable (or nearly linearly-separable). 
+* Deciding factor: do you think DGP produces normal classes with same variance?
+
+![ISLR Figure 4.9: Dashed [**purple**]{style='color: #b97dc3'} line is "true" boundary (Bayes decision boundary), dotted **black** line is LDA boundary, solid [**green**]{style='color: #009f86'} line is QDA boundary ](images/4_9.svg){fig-align="center"}
+
+## Key Advantage of Generative Model {.smaller .crunch-title .crunch-ul .table-va .title-11 .inline-90 .crunch-quarto-figure .crunch-td}
+
+* You get an actual "picture" of **what the data looks like!**
+
+| | |
+|:-:|:-:|:-:|:-:|
+| | $\widehat{f}_k(X_1)$ | $\widehat{f}_k(X_2)$ | $\widehat{f}_k(X_3)$ |
+| $k = 1$ | ![](images/4_10a1.svg){fig-align="center" width="70%"} | ![](images/4_10a2.svg){fig-align="center" width="70%"} | ![](images/4_10a3.svg){fig-align="center" width="70%"} |
+| $k = 2$ | ![](images/4_10b1.svg){fig-align="center" width="70%"} | ![](images/4_10b2.svg){fig-align="center" width="70%"} | ![](images/4_10b3.svg){fig-align="center" width="70%"} |
+
+: {tbl-colwidths="[10,30,30,30]"}
+
+## Classifying New Points {.smaller .crunch-title .crunch-ul .table-va .title-11 .inline-90 .crunch-quarto-figure .crunch-td}
+
+* For new feature values $x_{ij}$, compare **how likely** this value is under $k = 1$ vs. $k = 2$
+* Example: $\mathbf{x} = (0.4, 1.5, 1)^{\top}$
+
+| | |
+|:-:|:-:|:-:|:-:|
+| | $\widehat{f}_k(X_1)$ | $\widehat{f}_k(X_2)$ | $\widehat{f}_k(X_3)$ |
+| $k = 1$ | ![](images/4_10a1.svg){fig-align="center" width="50%"} | ![](images/4_10a2.svg){fig-align="center" width="50%"} | ![](images/4_10a3.svg){fig-align="center" width="50%"} |
+| | $f_1(0.4) = 0.368$ | $f_1(1.5) = 0.484$ | $f_1(1) = 0.226$ |
+| $k = 2$ | ![](images/4_10b1.svg){fig-align="center" width="50%"} | ![](images/4_10b2.svg){fig-align="center" width="50%"} | ![](images/4_10b3.svg){fig-align="center" width="50%"} |
+| | $f_2(0.4) = 0.030$ | $f_2(1.5) = 0.130$ | $f_2(1) = 0.616$ |
+
+: {tbl-colwidths="[10,30,30,30]"}
+
+# Quiz Time! {data-stack-name="Quiz"}
+
+## Appendix: Fuller Logistic Derivation {.smaller .crunch-title .title-09}
+
+$$
+\begin{align*}
+&\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
+&\iff \frac{\Pr(Y = 1 \mid X = x_i)}{1 - \Pr(Y = 1\ \mid X = x_i)} = e^{\beta_0 + \beta_1 X} \\
+&\iff \Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X}(1 - \Pr(Y = 1 \mid X)) \\
+&\iff \Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X} - e^{\beta_0 + \beta_1 X}\Pr(Y = 1 \mid X) \\
+&\iff \Pr(Y = 1 \mid X) + e^{\beta_0 + \beta_1 X}\Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X} \\
+&\iff \Pr(Y = 1 \mid X)(1 + e^{\beta_0 + \beta_1 X}) = e^{\beta_0 + \beta_1 X} \\
+&\iff \Pr(Y = 1 \mid X) = \frac{e^{\beta_0 + \beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}}
+\end{align*}
+$$
+
+## References
+
+::: {#refs}
+:::

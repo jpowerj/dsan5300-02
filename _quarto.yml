@@ -1,0 +1,76 @@
+project:
+  type: website
+  output-dir: docs
+  pre-render: _pre-set-updated.py
+
+website:
+  title: "DSAN 5300-01"
+  favicon: favicon.png
+  repo-url: "https://github.com/jpowerj/dsan5300-01"
+  repo-actions: [source]
+  repo-link-target: "_blank"
+  sidebar:
+    id: mainnav
+    title: "DSAN 5300-01: Statistical Learning"
+    footer: "*Updated {{< env DSAN5300_LAST_UPDATED \"2025-01-08\" >}}*"
+    contents:
+      - text: "<i class='bi bi-house pe-1'></i> Home"
+        href: index.qmd
+      - text: "Zoom Link"
+        href: "https://georgetown.zoom.us/j/91911785762?pwd=poQh2m4AiSYWaDudp7hPLDEszWgBuG.1"
+        target: "_blank"
+      - text: "Writeups"
+        href: writeups/index.qmd
+      - text: "Recordings <i class='bi bi-box-arrow-up-right ps-1'></i>"
+        href: "https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=07b596c2-6a0e-4302-a186-b25c00b555ce"
+        target: "_blank"
+      - "---"
+      - text: "Week 1: {{< var w01.date-md >}}"
+        href: "w01/index.qmd"
+      - text: "Week 2: {{< var w02.date-md >}}"
+        href: "w02/index.qmd"
+      - text: "Week 3: {{< var w03.date-md >}}"
+        href: "w03/index.qmd"
+      - text: "Week 4: {{< var w04.date-md >}}"
+        href: "w04/index.qmd"
+      - text: "Week 5: {{< var w05.date-md >}}"
+        href: "w05/index.qmd"
+      - text: "Week 6: {{< var w06.date-md >}}"
+        href: "w06/index.qmd"
+      - text: "Week 7: {{< var w07.date-md >}}"
+        href: "w07/index.qmd"
+      - text: "Week 8: {{< var w08.date-md >}}"
+        href: "w08/index.qmd"
+      - text: "Week 9: {{< var w09.date-md >}}"
+        href: "w09/index.qmd"
+      - text: "Week 10: {{< var w10.date-md >}}"
+        href: "w10/index.qmd"
+      - text: "Week 11: {{< var w11.date-md >}}"
+        href: "w11/index.qmd"
+      - text: "Week 12: {{< var w12.date-md >}}"
+        href: "w12/index.qmd"
+      - text: "Week 13: {{< var w13.date-md >}}"
+        href: "w13/index.qmd"
+      # - text: "Week 14: {{< var w14.date-md >}}"
+      #   href: "w14/index.qmd"
+      # - "---"
+      # - text: "Anonymous Suggestions<i class='bi bi-box-arrow-up-right ps-1'></i>"
+      #   href: "https://forms.gle/s35xJBf8Dj6XR5pr8"
+      #   target: "_blank"
+      - "---"
+      - text: "Canvas <i class='bi bi-box-arrow-up-right ps-1'></i>"
+        href: "https://georgetown.instructure.com/courses/203361"
+        target: "_blank"
+      - text: "Office Hours <i class='bi bi-box-arrow-up-right ps-1'></i>"
+        href: "https://jjacobs.me/meet"
+        target: "_blank"
+
+format:
+  html:
+    theme:
+      light: [default, "./dsan-globals/jjquarto.scss"]
+      dark: [darkly, "./dsan-globals/jjquarto.scss"]
+    # css: "/dsan-globals/jjstyles.css"
+    toc: true
+    include-in-header:
+      text: "<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js' integrity='sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==' crossorigin='anonymous' referrerpolicy='no-referrer'></script><link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'><script src='/sidebar.js'></script>"

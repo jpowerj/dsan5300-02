@@ -1,0 +1,436 @@
+---
+title: "Week 13: Machine Learning for Causal Inference"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+author: "Jeff Jacobs"
+institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
+bibliography: "../_DSAN5300.bib"
+date: 2025-04-14
+date-format: full
+lecnum: 12
+categories:
+  - "Class Sessions"
+format:
+  revealjs:
+    df-print: kable
+    footer: "DSAN 5300-01 Week 13: {{< var w13.footer >}}"
+    output-file: "slides.html"
+    html-math-method: mathjax
+    scrollable: true
+    theme: [default, "../dsan-globals/jjquarto.scss"]
+    slide-number: true
+    echo: true
+    code-fold: true
+    link-external-icon: true
+    link-external-newwindow: true
+    include-in-header:
+      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
+    simplemenu:
+      flat: true
+      barhtml:
+        header: "<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>"
+      scale: 0.5
+    revealjs-plugins:
+      - simplemenu
+  html:
+    df-print: kable
+    output-file: "index.html"
+    html-math-method: mathjax
+    echo: true
+    code-fold: true
+---
+
+::: {.content-visible unless-format="revealjs"}
+
+<center class='mb-3'>
+<a class="h2" href="./slides.html" target="_blank">Open slides in new tab &rarr;</a>
+</center>
+
+:::
+
+# Schedule {.smaller .small-title .crunch-title .crunch-callout data-stack-name="Schedule"}
+
+Today's Planned Schedule:
+
+| | Start | End | Topic |
+|:- |:- |:- |:- |
+| **Lecture** | 6:30pm | 7:00pm | [Fundamental Problem of Causal Inference &rarr;](#learning-decision-boundaries) |
+| | 7:00pm | 7:20pm | [Apples to Apples &rarr;](#comparing-survival-curves) | 
+| | 7:20pm | 8:00pm | [How Can Machine Learning Help? &rarr;](#regression-with-survival-response) |
+| **Break!** | 8:00pm | 8:10pm | |
+| | 8:10pm | 9:00pm | [Causal Forests &rarr;](#quiz-time) |
+
+: {tbl-colwidths="[12,12,12,64]"}
+
+::: {.hidden}
+
+```{r}
+#| label: r-source-globals
+source("../dsan-globals/_globals.r")
+set.seed(5300)
+```
+
+:::
+
+{{< include ../dsan-globals/_globals-tex.qmd >}}
+
+## Roadmap {.crunch-title .crunch-ul-full .title-10 .text-80 .crunch-li-8 .crunch-li-last}
+
+::: {.callout-note title="<i class='bi bi-1-circle'></i> What makes **causation** different from correlation?" icon="false"}
+
+* Why can't we use, e.g., Regression to infer **causal effects**? *$\uparrow X$ by 1 unit ~~causes~~ $\uparrow Y$ by $\beta$ units*?
+* $\leadsto$ Fundamental Problem of Causal Inference
+
+:::
+
+::: {.callout-note title="<i class='bi bi-2-circle'></i> Key to resolving Fundamental Problem: *Match* similar observations" icon="false"}
+
+* **Apples to apples**: If $j$ receives drug while $i$ doesn't, and they're $s_{ij}\%$ similar otherwise (age, height)...
+* Higher $s_{ij}$ $\implies$ more confidence in attributing difference in outcomes $\boxed{\Delta y = y_j - y_i}$ to drug!
+* $\leadsto$ Propensity Score Matching ($\approx$ Logistic Regression)
+
+:::
+
+::: {.callout-note title="<i class='bi bi-3-circle'></i> How can ML help us infer **counterfactual** effects?" icon="false"}
+
+* Patient *$i$ didn't receive treatment, reported [VAS pain level](https://www.physio-pedia.com/McGill_Pain_Questionnaire) $y^0_i = 80$...*
+* *If $i$ **had** received treatment, what would their pain level $y_i^1$ be?*
+* $\leadsto$ Causal Forests, to estimate $\boxed{\Delta y_i = y^1_i - y^0_i}$
+
+:::
+
+# The Fundamental Problem of Causal Inference {data-stack-name="Fundamental Problem"}
+
+
+## The *Fundamental* Problem of Causal Inference {.crunch-title .crunch-ul .crunch-callout .title-07}
+
+The only workable definition of "$X$ causes $Y$":
+
+::: {.callout-note icon="false" title="<i class='bi bi-info-circle pe-1'></i> Defining Causality [@hume_treatise_1739]"}
+
+$X$ causes $Y$ if and only if:
+
+1. $X$ **temporally precedes** $Y$ and
+2. 
+    * In **two worlds** $W_0$ and $W_1$ where everything is **exactly the same**...
+    * ...**except that** $\boxed{X = 0 \text{  in  } W_0}$ and $\boxed{X = 1 \text{  in  } W_1}$,
+    * $\boxed{Y = 0 \text{  in  } W_0}$ and $\boxed{Y = 1 \text{  in  } W_1}$.
+
+:::
+
+* The problem? We live in **one** world, not two simultaneous worlds 😭
+
+## Can't We Just Use Temporal Precedence? {.title-08 .crunch-title}
+
+* Can't we just pretend that $W_0$ is our world at time $t$ and $W_1$ is our world at time $t + 1$?
+* Did throwing the eraser at Sam at time $t$ **cause** him to be upset at time $t + 1$?
+* No, because at time $t$, simultaneous with my eraser-throwing, a **cockroach** scuttled across his foot, the *true* cause of him being upset at time $t + 1$
+* Without knowing that the worlds are **identical except for the posited cause-event**, we can't exclude the possibility of some other cause-event
+
+## Extreme Example: Super Mario 64 Speedrunning {.smaller .crunch-title .title-10 .crunch-quarto-figure .crunch-blockquote .crunch-p .crunch-img}
+
+Seemingly-reasonable assumption: Button-pushes cause outcomes in games...
+
+:::: {.columns}
+::: {.column width="50%"}
+
+> During the race, an ionizing particle from outer space collided with DOTA_Teabag's N64, flipping the eighth bit of Mario's first height byte. Specifically, it flipped the byte from 11000101 to 11000100, from "C5" to "C4". This resulted in a height change from C5837800 to C4837800, which by complete chance, happened to be the exact amount needed to warp Mario up to the higher floor at that exact moment.
+
+:::
+::: {.column width="50%"}
+
+![[Article from TheGamer.com](https://www.thegamer.com/how-ionizing-particle-outer-space-helped-super-mario-64-speedrunner-save-time/)](images/sm64.jpg){fig-align="center"}
+
+:::
+::::
+
+> This was tested by pannenkoek12 - the same person who put up the bounty - using a script that manually flipped that particular bit at the right time, confirming the suspicion of a bit flip.
+
+## What About A-B Testing? {.crunch-title .title-09 .crunch-li-8}
+
+* Gets us significantly closer, but methods for **recovering** causal effect require a condition called **SUTVA**
+* **S**table **U**nit **T**reatment **V**alue **A**ssumption: Treatment applied to $i$ does not affect outcome for another person $j$
+* If we A-B test an **app redesign** (A = old design, B = new design), and outcome = length of time spent on app...
+* Person $i$ seeing design A may like the new design, causing them to spend more time on the app
+* Person $i$ may then **message** person $j$ *"Check out [app], they redesigned everything!"*, causing $j$ to spend more time on app regardless of treatment (network spillover ❌)
+
+## What Is To Be Done?
+
+![](images/face_everything_and_rise.jpg){fig-align="center"}
+
+# Matching Estimators {.crunch-title data-stack-name="Matching Estimators"}
+
+![[Image Source](https://shirt.woot.com/offers/comparing-apples-to-oranges)](images/fruit.png){fig-align="center"}
+
+## Case Study: Military Inequality $\leadsto$ Military Success {.smaller .crunch-title .title-09 .crunch-ul .crunch-blockquote .crunch-li-8}
+
+* @lyall_divided_2020: "Treating certain ethnic groups as second-class citizens [...] leads victimized soldiers to subvert military authorities once war begins. The higher an army's inequality, the greater its rates of desertion, side-switching, and casualties"
+
+> Matching constructs **pairs of belligerents** that are **similar** across a wide range of traits thought to dictate battlefield performance but that **vary** in levels of prewar inequality. The more similar the belligerents, the better our estimate of inequality's effects, as all other traits are shared and thus cannot explain observed differences in performance, helping assess how battlefield performance **would have** improved (declined) if the belligerent had a lower (higher) level of prewar inequality.
+> 
+> Since [non-matched] cases are **dropped** [...] selected cases are more representative of average belligerents/wars than outliers with few or no matches, [providing] surer ground for testing generalizability of the book's claims than focusing solely on canonical but unrepresentative usual suspects (Germany, the United States, Israel)
+
+## Does Inequality Cause Poor Military Performance? {.smaller .crunch-title .title-10 .table-80 .text-60}
+
+| <br>Covariates | Sultanate of Morocco<br> *Spanish-Moroccan War, 1859-60* | Khanate of Kokand<br> *War with Russia, 1864-65* |
+| - | - | - |
+| **$X$: Military Inequality** | Low (0.01) | Extreme (0.70) |
+| **$\mathbf{Z}$: Matched Covariates:** | | |
+| Initial relative power | 66% | 66% |
+| Total fielded force | 55,000 | 50,000 |
+| Regime type | Absolutist Monarchy (−6) | Absolute Monarchy (−7) |
+| Distance from capital | 208km | 265km |
+| Standing army | Yes | Yes |
+| Composite military | Yes | Yes |
+| Initiator | No | No |
+| Joiner | No | No |
+| Democratic opponent | No | No |
+| Great Power | No | No |
+| Civil war | No | No |
+| Combined arms | Yes | Yes |
+| Doctrine | Offensive | Offensive |
+| Superior weapons | No | No |
+| Fortifications | Yes | Yes |
+| Foreign advisors | Yes | Yes |
+| Terrain | Semiarid coastal plain | Semiarid grassland plain |
+| Topography | Rugged | Rugged |
+| War duration | 126 days | 378 days |
+| Recent war history w/opp | Yes | Yes |
+| Facing colonizer | Yes | Yes |
+| Identity dimension | Sunni Islam/Christian | Sunni Islam/Christian |
+| New leader | Yes | Yes |
+| Population | 8–8.5 million | 5–6 million |
+| Ethnoling fractionalization (ELF) | High | High |
+| Civ-mil relations | Ruler as commander | Ruler as commander |
+| **$Y$: Battlefield Performance:** | | |
+| Loss-exchange ratio | 0.43 | 0.02 |
+| Mass desertion | No | Yes |
+| Mass defection | No | No |
+| Fratricidal violence | No | Yes |
+
+## ...Glorified Logistic Regression! {.smaller .crunch-title .title-11 .crunch-ul .cols-va .crunch-details}
+
+```{=html}
+<style>
+.vil-table th {
+  background-color: white !important;
+}
+.vil-table tr:nth-child(1), .vil-table tr:nth-child(2), .vil-table tr:nth-child(3), .vil-table tr:nth-child(4) {
+  background-color: rgba(230, 159, 0, 0.333) !important;
+  text-align: center !important;
+}
+.vil-table tr:nth-child(5), .vil-table tr:nth-child(6), .vil-table tr:nth-child(7), .vil-table tr:nth-child(8), .vil-table tr:nth-child(9) {
+    background-color: rgba(86, 180, 233, 0.333) !important;
+    text-align: center !important;
+}
+.vil-sum-table th {
+  background-color: white !important;
+}
+.vil-sum-table tr:nth-child(1) {
+  background-color: rgba(230, 159, 0, 0.333) !important;
+  text-align: center !important;
+}
+.vil-sum-table tr:nth-child(2) {
+  background-color: rgba(86, 180, 233, 0.333) !important;
+  text-align: center !important;
+}
+</style>
+```
+
+* Similarity score via Logistic Regression! Let's look at a [program](https://www.youtube.com/watch?v=ACVyPp1Fy6Y) that built health clinics in several villages: did health clinics **cause** lower infant mortality?
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r}
+#| label: village-overview
+#| classes: vil-table
+library(tidyverse)
+village_df <- tribble(
+  ~village_id, ~T, ~inf_mortality, 
+  1, 1, 10,
+  2, 1, 15,
+  3, 1, 22,
+  4, 1, 19,
+  5, 0, 25,
+  6, 0, 19,
+  7, 0, 4,
+  8, 0, 8,
+  9, 0, 6
+) |> mutate(T = factor(T))
+village_df
+```
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| label: mort-comparison
+#| classes: vil-sum-table
+village_df |> group_by(T) |>
+  summarize(mean_mortality = mean(inf_mortality)) |>
+  arrange(desc(T))
+```
+
+Health clinics **increased** mortality by 4.1?
+
+:::
+::::
+
+## From "Controlling For" to "*How Well* Are We Controlling For?" {.smaller .crunch-title .title-10 .crunch-ul .crunch-details}
+
+* By introducing covariates, we can see the **selection bias** at play...
+
+```{r}
+#| label: covars
+#| classes: vil-table
+covar_df <- tribble(
+  ~poverty_rate, ~docs_per_capita,
+  0.5, 0.01,
+  0.6, 0.02,
+  0.7, 0.01,
+  0.6, 0.02,
+  0.6, 0.01,
+  0.5, 0.02,
+  0.1, 0.04,
+  0.3, 0.05,
+  0.2, 0.04,
+)
+village_df <- bind_cols(village_df, covar_df)
+village_df
+```
+
+## Selection Bias {.smaller .crunch-title}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r}
+#| label: selection-bias-pov
+#| fig-width: 9
+#| fig-height: 8
+village_df |> ggplot(aes(x = poverty_rate, fill=T)) +
+  geom_density(alpha=0.5) +
+  theme_dsan(base_size=30) +
+  labs(
+    title = "Poverty Rate by Treatment",
+    x = "Poverty Rate"
+  )
+```
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| label: selection-bias-doctors
+#| fig-width: 9
+#| fig-height: 8
+village_df |> ggplot(aes(x = docs_per_capita, fill=T)) +
+  geom_density(alpha=0.5) +
+  theme_dsan(base_size=30) +
+  labs(
+    title = "Doctors per Capita by Treatment",
+    x = "Doctors per Capita"
+  )
+```
+
+:::
+::::
+
+* $\leadsto$ We're not comparing **apples to apples**! (*"Well, we're both villages"*)
+
+## Logistic Regression of Treatment {.smaller .title-10 .crunch-title}
+
+```{r}
+#| label: prop-score-glm
+#| code-fold: show
+prop_model <- glm(
+  T ~ poverty_rate + docs_per_capita,
+  data=village_df, family="binomial"
+)
+summary(prop_model)
+```
+
+* We now have a **model of selection bias!** $\leadsto$ **match** observations with similar $\Pr(T)$
+
+## Propensity Score = Logistic Regression Estimate {.smaller .crunch-title .title-10}
+
+```{r}
+#| label: prop-score-predict
+#| code-fold: show
+#| classes: vil-table
+village_df$ps <- predict(prop_model, village_df, type="response")
+village_df
+```
+
+## Propensity Score *Matching* = Distance Metric! {.smaller .crunch-title .title-10}
+
+```{=html}
+<style>
+.vil-match tr:nth-child(2) {
+  background-color: rgba(0, 158, 115, 0.333) !important;
+  text-align: center !important;
+}
+.vil-match tr:nth-child(2) td:nth-child(6) {
+  font-weight: bold;
+}
+</style>
+```
+
+```{r}
+#| label: prop-score-match
+#| code-fold: show
+#| classes: vil-match
+cur_T <- village_df[1,"T"] |> pull()
+cur_ps <- village_df[1,"ps"] |> pull()
+writeLines(paste0("Current village: T = ",cur_T,", ps = ",cur_ps))
+other_df <- village_df |> filter(T != cur_T) |>
+  mutate(
+    ps_dist = abs(ps - cur_ps)
+  )
+other_df |> select(-c(inf_mortality))
+```
+
+## Now in a For Loop... {.smaller .crunch-title .title-11}
+
+```{r}
+#| label: r-all-matches
+#| classes: vil-table
+for (i in 1:9) {
+  cur_T <- village_df[i,"T"] |> pull()
+  cur_ps <- village_df[i,"ps"] |> pull()
+  # writeLines(paste0("Current village: T = ",cur_T,", ps = ",cur_ps))
+  other_df <- village_df |> filter(T != cur_T) |>
+    mutate(
+      ps_dist = abs(ps - cur_ps)
+    )
+  match_id <- names(which.min(other_df$ps_dist))
+  village_df[i,"match"] <- as.numeric(match_id)
+}
+village_df |> select(-inf_mortality)
+```
+
+## And Now We Compare Apples to Apples... {.smaller .crunch-title .title-11}
+
+```{r}
+#| label: matching-estimator
+#| classes: vil-table
+#| code-fold: show
+treated_df <- village_df |> filter(T == 1)
+(matched_df <- treated_df |> left_join(village_df, join_by(match == village_id)))
+```
+
+```{r}
+#| label: apples-to-apples
+#| code-fold: show
+matched_df |> summarize(
+  mean_tr = mean(inf_mortality.x),
+  mean_control = mean(inf_mortality.y)
+)
+```
+
+* $\leadsto$ Treatment effect $\approx$ **-7** 🥳
+
+## References
+
+::: {#refs}
+:::

@@ -1,0 +1,30 @@
+---
+title: "DSAN 5300-01: Statistical Learning"
+subtitle: "Mondays 6:30-9pm, Car Barn 203"
+author: "Jeff Jacobs ([`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu))"
+institute: "Georgetown University, Spring 2025"
+listing:
+  sort-ui: false
+  filter-ui: false
+  type: table
+  include:
+    categories: "{Class Sessions}"
+  fields: [title,date]
+  sort: "lecnum asc"
+  table-hover: true
+#  date-format: full
+  date-format: "MMMM D"
+format:
+  html:
+    link-external-icon: true
+    link-external-newwindow: true
+---
+
+Welcome to the homepage for **Section 01** (Mondays 6:30-9pm in Car Barn 203) of ***DSAN 5300: Statistical Learning*** at Georgetown University, for the Spring 2025 semester!
+
+If you're looking to book an office hour with Jeff, you can use the link in the sidebar, or [this direct link](https://jjacobs.me/meet): the office hour blocks for Spring 2025 are held from **3:30-6:30pm every Tuesday**.
+
+Use the following links to view notes and lecture slides for individual weeks:
+
+::: {#listing}
+:::

@@ -1,0 +1,473 @@
+---
+title: "Week 3: Getting Fancy with Regression"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+author: "Jeff Jacobs"
+institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
+bibliography: "../_DSAN5300.bib"
+date: 2025-01-27
+date-format: full
+lecnum: 3
+cache: true
+categories:
+  - "Class Sessions"
+format:
+  revealjs:
+    df-print: kable
+    footer: "DSAN 5300-01 Week 3: {{< var w03.footer >}}"
+    output-file: "slides.html"
+    html-math-method: mathjax
+    scrollable: true
+    css: "../dsan-globals/jjstyles.css"
+    slide-number: true
+    echo: true
+    code-fold: true
+    include-in-header:
+      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
+    simplemenu:
+      flat: true
+      barhtml:
+        header: "<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>"
+      scale: 0.5
+    revealjs-plugins:
+      - simplemenu
+  html:
+    df-print: kable
+    output-file: "index.html"
+    html-math-method: mathjax
+    echo: true
+    code-fold: true
+    include-in-header:
+      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
+---
+
+::: {.content-visible unless-format="revealjs"}
+
+<center class='mb-3'>
+<a class="h2" href="./slides.html" target="_blank">Open slides in new tab &rarr;</a>
+</center>
+
+:::
+
+# Recap Linear Regression {data-stack-name="Recap"}
+
+* What happens to my **dependent variable** $Y$ when my **independent variable** $X$ changes by **1 unit**?
+* Whenever you carry out a regression, keep the **goal** in the front of your mind:
+
+  ::: {.callout-tip .r-fit-text title="<i class='bi bi-info-circle'></i> The Goal of Regression" icon="false"}
+
+  **Find a line $\widehat{y} = mx + b$ that best *predicts* $Y$ for given values of $X$**
+
+  :::
+
+::: {.hidden}
+
+```{r}
+#| label: r-source-globals
+source("../dsan-globals/_globals.r")
+set.seed(5300)
+```
+
+:::
+
+{{< include ../dsan-globals/_globals-tex.qmd >}}
+
+## What Regression is *Not* {.crunch-title .math-90 .crunch-ul .crunch-math-15}
+
+* Final reminder that Regression, PCA have **different goals!**
+* If your goal was to, e.g., generate **realistic $(x,y)$ pairs**, then (mathematically) you want PCA! Roughly:
+
+  $$
+  \widehat{f}_{\text{PCA}} = \min_{\mathbf{c}}\left[ \sum_{i=1}^{n} (\widehat{x}_i(\mathbf{c}) - x_i)^2 + (\widehat{y}_i(\mathbf{c}) - y_i)^2 \right]
+  $$
+
+* Our goal is a **good predictor of $Y$**:
+
+  $$
+  \widehat{f}_{\text{Reg}} = \min_{\beta_0, \beta_1}\left[ \sum_{i=1}^{n} (\widehat{y}_i(\beta) - y_i)^2 \right]
+  $$
+
+## How Do We Define "Best"? {.smaller}
+
+* Intuitively, two different ways to measure **how well a line fits the data**:
+
+::: {layout="[1,1]" layout-valign="center"}
+
+```{r}
+#| label: pc-line
+#| fig-width: 6
+library(tidyverse)
+set.seed(5321)
+N <- 11
+x <- seq(from = 0, to = 1, by = 1 / (N - 1))
+y <- x + rnorm(N, 0, 0.2)
+mean_y <- mean(y)
+spread <- y - mean_y
+df <- tibble(x = x, y = y, spread = spread)
+ggplot(df, aes(x=x, y=y)) +
+  geom_abline(slope=1, intercept=0, linetype="dashed", color=cbPalette[1], linewidth=g_linewidth*2) +
+  geom_segment(xend=(x+y)/2, yend=(x+y)/2, linewidth=g_linewidth*2, color=cbPalette[2]) +
+  geom_point(size=g_pointsize) +
+  coord_equal() +
+  xlim(0, 1) + ylim(0, 1) +
+  dsan_theme("half") +
+  labs(
+    title = "Principal Component Line"
+  )
+```
+
+```{r}
+#| label: reg-line
+#| fig-width: 6
+ggplot(df, aes(x=x, y=y)) +
+  geom_abline(slope=1, intercept=0, linetype="dashed", color=cbPalette[1], linewidth=g_linewidth*2) +
+  geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +
+  geom_point(size=g_pointsize) +
+  coord_equal() +
+  xlim(0, 1) + ylim(0, 1) +
+  dsan_theme("half") +
+  labs(
+    title = "Regression Line"
+  )
+```
+
+:::
+
+::: {.aside}
+On the difference between these two lines, and why it matters, I cannot recommend @gelman_data_2007 enough!
+:::
+
+# Multiple Linear Regression (MLR) {data-stack-name="MLR"}
+
+## Multiple Linear Regression (MLR) Model
+
+* Notation: $x_{i,j}$ = value of independent variable $j$ for person/observation $i$
+* $M$ = total number of independent variables
+
+$$
+\widehat{y}_i = \beta_0 + \beta_1x_{i,1} + \beta_2x_{i,2} + \cdots + \beta_M x_{i,M}
+$$
+
+* $\beta_j$ interpretation: a one-unit increase in $x_{i,j}$ is associated with a $\beta_j$ unit increase in $y_i$, **holding all other independent variables constant**
+
+## Visualizing Multiple Linear Regression
+
+![(ISLR, Fig 3.5): *A pronounced non-linear relationship. Positive residuals (visible above the surface) tend to lie along the 45-degree line, where budgets are split evenly. Negative residuals (most not visible) tend to be away from this line, where budgets are more lopsided.*](images/3_5.svg){fig-align="center"}
+
+## Interpreting MLR {.smaller .crunch-title .crunch-ul .output-center}
+
+```{python}
+#| label: mlr-results-setup
+#| echo: false
+#| code-fold: false
+import pandas as pd
+import statsmodels.formula.api as smf
+ad_df = pd.read_csv("assets/Advertising.csv")
+ad_df = ad_df.rename(columns={'Unnamed: 0': 'id'})
+```
+
+```{python}
+#| label: mlr-results-py
+#| code-fold: show
+mlr_model = smf.ols(
+  formula="sales ~ TV + radio + newspaper",
+  data=ad_df
+)
+mlr_result = mlr_model.fit()
+print(mlr_result.summary().tables[1])
+```
+
+:::: {.columns}
+::: {.column width="50%"}
+
+* **Holding `radio` and `newspaper` spending constant**...
+  * An **increase of $1K** in spending on `TV` advertising is associated with
+  * An **increase in sales of about 46 units**
+
+:::
+::: {.column width="50%"}
+
+* **Holding `TV` and `newspaper` spending constant**...
+  * An **increase of $1K** in spending on `radio` advertising is associated with
+  * An **increase in sales of about 189 units**
+
+:::
+::::
+
+## But Wait... {.smaller .output-75 .output-nowrap}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{python}
+#| label: mlr-result-side
+#| code-overflow: scroll
+#| classes: code-output-scroll
+# print(mlr_result.summary2(float_format='%.3f'))
+print(mlr_result.summary2())
+```
+
+:::
+::: {.column width="50%"}
+
+```{python}
+#| label: lr-result-side
+slr_model = smf.ols(
+  formula="sales ~ newspaper",
+  data=ad_df
+)
+slr_result = slr_model.fit()
+print(slr_result.summary2())
+```
+
+:::
+::::
+
+* MLR results can be **drastically different** from SLR results, because of **correlations** (next slide)
+* This is a good thing! It's how we're able to **control for** confounding variables!
+
+## Correlations Among Features {.smaller}
+
+```{python}
+#| label: feature-corr-matrix
+ad_df.drop(columns="id").corr()
+```
+
+* Observe how $\text{cor}(\texttt{radio}, \texttt{newspaper}) \approx 0.35$ 
+* In markets where we spend more on `radio` our sales will tend to be higher...
+* Corr matrix $\implies$ we spend more on `newspaper` in those same markets...
+* In SLR which only examines `sales` vs. `newspaper`, we (**correctly!**) observe that higher values of `newspaper` are associated with higher values of `sales`...
+* In essence, `newspaper` advertising is a surrogate for `radio` advertising $\implies$ in our SLR, `newspaper` "gets credit" for the association between `radio` and `sales`
+
+## Another MLR Superpower: Incorporating Categorical Vars {.smaller .title-09 .math-90}
+
+:::: {.columns}
+::: {.column width="48%"}
+
+$$
+\begin{align*}
+Y &= \beta_0 + \beta_1 \times \texttt{income} \\
+&\phantom{Y}
+\end{align*}
+$$
+
+```{r}
+#| label: credit-plot-slr
+credit_df <- read_csv("assets/Credit.csv")
+credit_plot <- credit_df |> ggplot(aes(x=Income, y=Balance)) +
+  geom_point(size=0.5*g_pointsize) +
+  geom_smooth(method='lm', formula="y ~ x", linewidth=1) +
+  theme_dsan() +
+  labs(
+    title="Credit Card Balance vs. Income Level",
+    x="Income ($1K)",
+    y="Credit Card Balance ($)"
+  )
+credit_plot
+```
+
+:::
+::: {.column width="52%"}
+
+$$
+\begin{align*}
+Y = &\beta_0 + \beta_1 \times \texttt{income} + \beta_2 \times \texttt{Student} \\
+&+ \beta_3 \times (\texttt{Student} \times \texttt{Income})
+\end{align*}
+$$
+
+```{r}
+#| label: credit-plot-students
+student_plot <- credit_df |> ggplot(aes(x=Income, y=Balance, color=Student)) +
+  geom_point(size=0.5*g_pointsize) +
+  geom_smooth(method='lm', formula="y ~ x", linewidth=1) +
+  theme_dsan() +
+  labs(
+    title="Credit Card Balance vs. Income Level",
+    x="Income ($1K)",
+    y="Credit Card Balance ($)"
+  )
+student_plot
+```
+
+:::
+::::
+
+* Why do we need the $\texttt{Student} \times \texttt{Income}$ term?
+* Understanding this setup will open up a **vast** array of possibilities for regression 😎
+* (Dear future Jeff, let's go through this on the board! Sincerely, past Jeff)
+
+# Logistic Regression {data-stack-name="Logistic Regression"}
+
+## From MLR to Logistic Regression {.crunch-title .math-90 .crunch-ul .crunch-quarto-figure .cols-va}
+
+* As DSAN students, you know that we're still sweeping **classification** under the rug!
+* We saw how to include binary/multiclass **covariates**, but what if the actual **thing we're trying to predict** is binary?
+* The **wrong** approach is the "Linear Probability Model":
+
+:::: {.columns}
+::: {.column width="60%"}
+
+$$
+\Pr(Y \mid X) = \beta_0 + \beta_1 X + \varepsilon
+$$
+
+:::
+::: {.column width="40%"}
+
+![](images/egg_head.jpg){fig-align="center" width="500"}
+
+:::
+::::
+
+## Credit Default
+
+```{r}
+#| label: default-dataset
+library(tidyverse)
+library(ggExtra)
+default_df <- read_csv("assets/Default.csv") |>
+  mutate(default_num = ifelse(default=="Yes",1,0))
+default_plot <- default_df |> ggplot(aes(x=balance, y=income, color=default, shape=default)) +
+  geom_point(alpha=0.6) +
+  theme_classic(base_size=16) +
+  labs(
+    title="Credit Defaults by Income and Account Balance",
+    x = "Account Balance",
+    y = "Income"
+  )
+default_mplot <- default_plot |> ggMarginal(type="boxplot", groupColour=FALSE, groupFill=TRUE)
+default_mplot
+```
+
+## Lines vs. Sigmoids(!) {.smaller .math-90}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+Here's what lines look like for this dataset:
+
+```{r}
+#| label: linear-prob-model
+#lpm_model <- lm(default ~ balance, data=default_df)
+default_df |> ggplot(
+    aes(
+      x=balance, y=default_num
+    )
+  ) +
+  geom_point(aes(color=default)) +
+  stat_smooth(method="lm", formula=y~x, color='black') +
+  theme_classic(base_size=16)
+```
+
+:::
+::: {.column width="50%"}
+
+Here's what sigmoids look like:
+
+```{r}
+#| label: plot-sigmoids
+#| code-fold: true
+library(tidyverse)
+logistic_model <- glm(default_num ~ balance, family=binomial(link='logit'),data=default_df)
+default_df$predictions <- predict(logistic_model, newdata = default_df, type = "response")
+my_sigmoid <- function(x) 1 / (1+exp(-x))
+default_df |> ggplot(aes(x=balance, y=default_num)) +
+  #stat_function(fun=my_sigmoid) +
+  geom_point(aes(color=default)) +
+  geom_line(
+    data=default_df,
+    aes(x=balance, y=predictions),
+    linewidth=1
+  ) +
+  theme_classic(base_size=16)
+```
+
+:::
+::::
+
+<div class='cols-va'>
+
+:::: {.columns}
+::: {.column width="50%"}
+
+$$
+\Pr(Y \mid X) = \beta_0 + \beta_1 X + \varepsilon
+$$
+
+:::
+::: {.column width="50%"}
+
+$$
+\log\underbrace{\left[ \frac{\Pr(Y \mid X)}{1 - \Pr(Y \mid X)} \right]}_{\mathclap{\smash{\text{Odds Ratio}}}} = \beta_0 + \beta_1 X + \varepsilon
+$$
+
+:::
+::::
+
+</div>
+
+## But Let's *Derive* This!
+
+$$
+\begin{align*}
+\Pr(Y \mid X) &= \frac{e^{\beta_0 + \beta_1X}}{1 + e^{\beta_0 + \beta_1X}} \\
+\iff \underbrace{\frac{\Pr(Y \mid X)}{1 - \Pr(Y \mid X)}}_{\text{Odds Ratio}} &= e^{\beta_0 + \beta_1X} \\
+\iff \underbrace{\log\left[ \frac{\Pr(Y \mid X)}{1 - \Pr(Y \mid X)} \right]}_{\text{Log-Odds Ratio}} &= \beta_0 + \beta_1X
+\end{align*}
+$$
+
+## *Now* How Will We Ever Find "Good" Parameter Values? {.smaller}
+
+* If only we had some sort of **estimator**... One that would choose $\beta_0$ and $\beta_1$ so as to **maximize** the **likelihood** of seeing some data...
+
+$$
+L(\beta_0, \beta_1) = \prod_{\{i \mid y_i = 1\}}\Pr(Y = 1 \mid X) \prod_{\{i \mid y_i = 0\}}(1-\Pr(Y = 1 \mid X))
+$$
+
+* (Much more on this later 😸)
+
+## The Interpretation Problem {.smaller}
+
+```{r}
+#| label: logistic-default
+options(scipen = 999)
+print(summary(logistic_model))
+```
+
+* Slope is no longer the same everywhere! It **varies** across different values of $x$...
+* Let's brainstorm some possible ways to make our lives easier when interpreting these coefficients!
+
+## References
+
+::: {#refs}
+:::
+
+## Appendix: MLR in R {.smaller}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r}
+#| label: mlr-results-r
+#| code-fold: show
+library(tidyverse)
+ad_df <- read_csv("assets/Advertising.csv") |> rename(id=`...1`)
+mlr_model <- lm(
+  sales ~ TV + radio + newspaper,
+  data=ad_df
+)
+print(summary(mlr_model))
+```
+
+:::
+::: {.column width="50%"}
+
+* **Holding `radio` and `newspaper` spending constant**...
+  * An **increase of $1K** in spending on `TV` advertising is associated with
+  * An **increase in sales of about 46 units**
+* **Holding `TV` and `newspaper` spending constant**...
+  * An **increase of $1K** in spending on `radio` advertising is associated with
+  * An **increase in sales of about 189 units**
+
+:::
+::::

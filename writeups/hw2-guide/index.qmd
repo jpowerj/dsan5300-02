@@ -1,0 +1,58 @@
+---
+title: "Getting Started with HW 2"
+subtitle: "DSAN 5300: Statistical Learning"
+sidebar: mainnav
+weeknum: 5
+assignment: "HW 2"
+date: last-modified
+date-format: full
+categories:
+  - "Extra Writeups"
+cache: true
+format:
+  html:
+    echo: true
+    code-fold: true
+    html-math-method: mathjax
+    df-print: kable
+    toc: true
+    link-external-newwindow: true
+    link-external-icon: true
+---
+
+::: {.callout-note title="Update Log" collapse="false" icon="false"}
+
+* Original version posted **10 Feb 2025, 10:00pm**
+
+:::
+
+## Full Text for HW-2.5: ISLR-6.8 #8(a-d)
+
+Here, for ease of access (since the problem in this case is from the previous edition of ISLR, pdf [here](https://static1.squarespace.com/static/5ff2adbe3fe4fe33db902812/t/6009dd9fa7bc363aa822d2c7/1611259312432/ISLR+Seventh+Printing.pdf)---thank you Prof. James for the PDF link!), is the full text of Section 6.8 Problem 8. Remember that you only need to do (a) through (d)! The full problem is here just for completeness (you can think about how you'd approach parts (e) and (f)).
+
+::: {.callout-tip title="ISLR Section 6.8, Exercise #8"}
+
+In this exercise, we will generate simulated data, and will then use this data to perform best subset selection.
+
+(a) Use the `rnorm()` function to generate a predictor $X$ of length $n = 100$, as well as a noise vector $\epsilon$ of length $n = 100$.
+(b) Generate a response vector $Y$ of length $n = 100$ according to the model
+
+    $$
+    Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon,
+    $$
+
+    where $\beta_0$, $\beta_1$, $\beta_2$, and $\beta_3$ are constants of your choice.
+(c) Use the `regsubsets()` function to perform best subset selection in order to choose the best model containing the predictors $X, X^2, \ldots, X^{10}$. What is the best model obtained according to $C_p$, BIC, and adjusted $R^2$? Show some plots to provide evidence for your answer, and report the coefficients of the best model obtained. Note you will need to use the `data.frame()` function to create a single data set containing both $X$ and $Y$.
+(d) Repeat (c), using forward stepwise selection and also using backwards stepwise selection. How does your answer compare to the results in (c)?
+(e) Now fit a lasso model to the simulated data, again using $X, X^2, \ldots, X^{10}$ as predictors. Use cross-validation to select the optimal value of $\lambda$. Create plots of the cross-validation error as a function of $\lambda$. Report the resulting coefficient estimates, and discuss the results obtained.
+(f) Now generate a response vector $Y$ according to the model
+
+    $$
+    Y = \beta_0 + \beta_7 X^7 + \epsilon,
+    $$
+
+    and perform best subset selection and the lasso. Discuss the results obtained.
+
+:::
+
+

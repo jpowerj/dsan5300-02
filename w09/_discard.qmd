@@ -1,0 +1,18 @@
+<!-- 
+
+learn parameters that best produce a (simulated) **datapoint** $\widehat{\mathbf{x}_i}$, the "most representative" point for each possible label $k$
+  * This would allow us to (say) classify new points via **similarity** to representative class-$k$ datapoint $\mathbf{x}^{(k)}$
+
+-->
+
+
+----
+
+## The Bayes Classifier
+
+
+
+* Bayes' rule lets us go back and forth between $\Pr(\text{class} \mid \text{features})$ and $\Pr(\text{features} \mid \text{class})$
+* Logistic Regression models $\Pr(Y = k \mid X = x)$... "Bayes classifier" is the theoretical classifier $\widehat{y} = \argmax_{k}\Pr(Y = k \mid X = x)$
+* (The 400th Use of "Bayes" in Statistics)
+* Hence, if we're not getting good results from logistic regression ($\leftarrow$ the problem that LDA/QDA solves), it turns out this is often due to weaknesses in that approach that are precisely the **strong points** of LDA/QDA! 🤑 (related to the maximal *margin of separation* between classes 🤔)

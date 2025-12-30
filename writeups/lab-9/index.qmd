@@ -1,0 +1,169 @@
+---
+title: "Getting Started with Lab 9"
+subtitle: "DSAN 5300: Statistical Learning"
+sidebar: mainnav
+weeknum: 11
+assignment: "Lab 9"
+date: last-modified
+date-format: full
+categories:
+  - "Extra Writeups"
+cache: true
+format:
+  html:
+    echo: true
+    code-fold: show
+    html-math-method: mathjax
+    df-print: paged
+    toc: true
+    link-external-newwindow: true
+    link-external-icon: true
+---
+
+::: {.callout-note title="Update Log" collapse="false" icon="false"}
+
+* Original version posted **1 Apr 2025, 9:00pm**
+
+:::
+
+::: {.hidden}
+
+```{r}
+#| label: source-globals
+source("../../dsan-globals/_globals.r")
+```
+
+:::
+
+## Practice Code for `nnet` in R
+
+Since the [ISLR](https://hastie.su.domains/ISLR2/ISLRv2_corrected_June_2023.pdf.download.html) lab within the Deep Learning chapter uses R's `keras` library rather than `nnet`^[Keras is a more complex, heavy-duty neural network library, but for the purposes of the lab (showing how models like logistic regression can be "reconceptualized" as simple neural networks) the simpler `nnet` library has a less-steep learning curve!], here are some quick examples of how `nnet` works that may help you get started on the R portion of Lab 9.
+
+### Load Data
+
+Here we'll load the `Advertising.csv` dataset used in the beginning of ISLR:
+
+```{r}
+#| label: load-islr-data
+library(tidyverse) |> suppressPackageStartupMessages()
+ad_df <- read_csv("https://www.statlearning.com/s/Advertising.csv", show_col_types = FALSE)
+colnames(ad_df) <- c("id", colnames(ad_df)[2:5])
+ad_df |> head()
+```
+
+A scatterplot of `TV` vs. `sales` looks as follows:
+
+```{r}
+#| label: tv-sales-scatter
+ad_df |> ggplot(aes(x = TV, y = sales)) +
+  geom_point() +
+  theme_dsan()
+```
+
+### Standard Linear (Regression) Model
+
+Here we use `lm()`, also used near the beginning of ISLR, to obtain OLS estimates of the coefficients relating `TV`, `radio`, and `newspaper` to `sales`:
+
+```{r}
+#| label: lin-model
+reg_model <- lm(
+    sales ~ TV + radio + newspaper,
+    data=ad_df
+)
+print(summary(reg_model))
+```
+
+While we can't really "fully" visualize the model in 2D or even 3D (since there are 3 features and 1 label, which would require a 4D visualization), we can still obtain a helpful 2D visualization that broadly resembles the above visualization of `TV` vs. `sales`.
+
+To achieve this, we **freeze** two of the feature values (`radio` and `newspaper`) at their means and then plot what our model says about the relation between `TV` and `sales` at these held-constant `radio` and `newspaper` values:
+
+```{r}
+#| label: viz-lin-model
+# "Freeze" radio and newspaper values at their means
+radio_mean <- mean(ad_df$radio)
+news_mean <- mean(ad_df$newspaper)
+# Define the range of TV values over which we want to plot predictions
+TV_vals <- seq(0, 300, 10)
+# Extract all coefficients from our model
+reg_coefs <- reg_model$coef
+# For every value v in TV_vals, compute prediction
+# yhat(v, radio_mean, news_mean)
+get_prediction <- function(TV_val) {
+    intercept <- reg_coefs['(Intercept)']
+    TV_term <- reg_coefs['TV'] * TV_val
+    radio_term <- reg_coefs['radio'] * radio_mean
+    news_term <- reg_coefs['newspaper'] * news_mean
+    return(intercept + TV_term + radio_term + news_term)
+}
+# Compute predictions for each value of TV_vals
+pred_df <- tibble(TV=TV_vals) |> mutate(
+    sales_pred = get_prediction(TV)
+)
+ggplot() +
+  geom_point(data=ad_df, aes(x=TV, y=sales)) +
+  geom_line(
+    data=pred_df, aes(x=TV, y=sales_pred),
+    linewidth=1, color=cb_palette[2]
+  ) +
+  theme_dsan()
+```
+
+### `nnet` for (Simple) NN Model Weights
+
+Here, the reason I put "(Simple)" is because, for example, `nnet` only supports networks with either (a) **no** hidden layers at all, or (b) a **single** hidden layer.
+
+Here, to show you how to fit NN models using `nnet` (without giving away the full code required for this part of the lab), I am using just the default parameter settings for the `nnet()` function---on the Lab itself you'll need to read the instructions more carefully and think about how to modify this code to achieve the desired result.
+
+```{r}
+#| label: nnet-defaults
+library(nnet)
+nn_model <- nnet(
+    sales ~ TV + radio + newspaper,
+    size=10,
+    linout=TRUE,
+    data=ad_df
+)
+nn_model
+```
+
+From the second part of the output (the output from just the line `nn_model`), you should think through **why** it's called a *"3-10-1 network"*, and then why this architecture would require estimating *51 weights*.
+
+To visualize what's happening, we can take the same approach we took in the previous visualization: see what our NN predicts for `sales` across a range of `TV` values, with `radio` and `newspaper` held constant at their means.
+
+First, note that R's `predict()` function takes in (1) a fitted model and (2) a `data.frame` where each row is a vector of values you want to generate a prediction for. So, for example, we can obtain a **single** prediction for a **specific** set of `TV`, `radio`, and `newspaper` values like:
+
+```{r}
+#| label: single-pred
+predict(nn_model, data.frame(TV=10, radio=23, newspaper=30))
+```
+
+So, for ease-of-use with this `predict()` functionality, we first construct a `tibble` where each row represents a tuple `(TV_val, radio_mean, news_mean)`:
+
+```{r}
+#| label: nn-input-df
+nn_input_df <- data.frame(TV=TV_vals, radio=radio_mean, newspaper=news_mean)
+as.data.frame(nn_input_df)
+```
+
+And now, by plugging this `tibble` into `predict()`, we obtain our NN's prediction for the inputs in each row:
+
+```{r}
+#| label: nn-pred-df
+nn_pred_df <- nn_input_df
+nn_pred_df$sales_pred <- predict(nn_model, nn_input_df)
+as.data.frame(nn_pred_df)
+```
+
+Which we can visualize using the same approach we used for the linear model above (the non-linearity is subtle, but we can see the line varying in a way that a straight line $y = mx + b$ would not!)
+
+```{r}
+#| label: nn-viz
+ggplot() +
+  geom_point(data=ad_df, aes(x=TV, y=sales)) +
+  geom_line(
+    data=nn_pred_df, aes(x=TV, y=sales_pred),
+    linewidth=1, color=cb_palette[2]
+  ) +
+  theme_dsan()
+```
+

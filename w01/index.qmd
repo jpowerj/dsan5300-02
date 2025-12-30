@@ -1,0 +1,34 @@
+---
+title: "Week 1: Introduction to the Course"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+author: "Jeff Jacobs"
+institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
+# bibliography: "../_DSAN5300.bib"
+date: 2025-01-08
+lecnum: 1
+categories:
+  - "Class Sessions"
+format:
+  revealjs:
+    df-print: kable
+    footer: "DSAN 5300-01 Week 1: {{< var w01.footer >}}"
+    output-file: "slides.html"
+    html-math-method: mathjax
+    scrollable: true
+    css: "../dsan-globals/jjstyles.css"
+    slide-number: true
+    simplemenu:
+      flat: true
+      barhtml:
+        header: "<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>"
+      scale: 0.5
+    revealjs-plugins:
+      - simplemenu
+  html:
+    df-print: kable
+    output-file: "index.html"
+    html-math-method: mathjax
+---
+
+* Week 1 was held on Zoom as a **combined session** of the three sections of DSAN 5300
+* The recording can be found [here](https://georgetown.zoom.us/rec/share/nkNzHSblgm8sesz-Zq5MyGGLRNAYLyoQomiQ36Kk76zCn2cmto5ta2UbGDzWL_2o.SZUEM4C11AOq8G0Q?startTime=1736454758000)

@@ -1,0 +1,21 @@
+---
+title: "Extra Writeups"
+sidebar: mainnav
+listing:
+  sort-ui: true
+  filter-ui: true
+  type: table
+  include:
+    categories: "{Extra Writeups,Clarifications}"
+  fields: [title,weeknum,assignment]
+  field-display-names: 
+    title: "Title"
+    weeknum: "Week"
+    # categories: "Category"
+    assignment: "Assignment"
+  sort: "weeknum desc"
+  table-hover: true
+  date-format: medium
+  categories: true
+---
+

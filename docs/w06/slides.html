@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<link href="../favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.6.40">
+
+  <meta name="author" content="Jeff Jacobs">
+  <title>DSAN 5300-01 – Week 6: Regularization for Model Selection</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-8f68bdfe1fab35e4f5fa44ba3024eea8.css">
+  <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/simplemenu/simplemenu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Week 6: Regularization for Model Selection</h1>
+  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2025, Georgetown University</span></p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Jeff Jacobs 
+</div>
+        <p class="quarto-title-affiliation">
+            <a href="mailto:jj1088@georgetown.edu"><code>jj1088@georgetown.edu</code></a>
+          </p>
+    </div>
+</div>
+
+  <p class="date">Tuesday, February 18, 2025</p>
+</section>
+<section id="schedule" class="title-slide slide level1 smaller small-title crunch-title crunch-callout center" data-name="Schedule">
+<h1>Schedule</h1>
+<p>Today’s Planned Schedule:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 64%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Start</th>
+<th style="text-align: left;">End</th>
+<th style="text-align: left;">Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Lecture</strong></td>
+<td style="text-align: left;">6:30pm</td>
+<td style="text-align: left;">7:00pm</td>
+<td style="text-align: left;"><a href="#/roadmap">Extended Recap / Clarification →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7:00pm</td>
+<td style="text-align: left;">7:20pm</td>
+<td style="text-align: left;"><a href="#/model-selection">“Manual” Model Selection: Subsets →</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7:20pm</td>
+<td style="text-align: left;">7:40pm</td>
+<td style="text-align: left;"><a href="#/regularization-for-automatic-model-selection">Key Regularization Building Block: <span class="math inline">\(L^p\)</span> Norm →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7:40pm</td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;"><a href="#/regularized-regression-(finally)">Regularized Regression Intro →</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Break!</strong></td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;">8:50pm</td>
+<td style="text-align: left;"><a href="#/the-key-plot">Basically Lasso is the Coolest Thing Ever →</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">8:50pm</td>
+<td style="text-align: left;">9:00pm</td>
+<td style="text-align: left;"><a href="#/week-7-preview-linear.noodle-jj-functions">Scary-Looking But Actually-Fun W07 Preview →</a></td>
+</tr>
+</tbody>
+</table>
+<div class="hidden">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
+<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+<div class="hidden">
+<p><span class="math display">\[
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\bigexp}[1]{\exp\mkern-4mu\left[ #1 \right]}
+\newcommand{\bigexpect}[1]{\mathbb{E}\mkern-4mu \left[ #1 \right]}
+\newcommand{\definedas}{\overset{\small\text{def}}{=}}
+\newcommand{\definedalign}{\overset{\phantom{\text{defn}}}{=}}
+\newcommand{\eqeventual}{\overset{\text{eventually}}{=}}
+\newcommand{\Err}{\text{Err}}
+\newcommand{\expect}[1]{\mathbb{E}[#1]}
+\newcommand{\expectsq}[1]{\mathbb{E}^2[#1]}
+\newcommand{\fw}[1]{\texttt{#1}}
+\newcommand{\given}{\mid}
+\newcommand{\green}[1]{\color{green}{#1}}
+\newcommand{\heads}{\outcome{heads}}
+\newcommand{\iid}{\overset{\text{\small{iid}}}{\sim}}
+\newcommand{\lik}{\mathcal{L}}
+\newcommand{\loglik}{\ell}
+\DeclareMathOperator*{\maximize}{maximize}
+\DeclareMathOperator*{\minimize}{minimize}
+\newcommand{\mle}{\textsf{ML}}
+\newcommand{\nimplies}{\;\not\!\!\!\!\implies}
+\newcommand{\orange}[1]{\color{orange}{#1}}
+\newcommand{\outcome}[1]{\textsf{#1}}
+\newcommand{\param}[1]{{\color{purple} #1}}
+\newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
+\newcommand{\prob}[1]{P\left( #1 \right)}
+\newcommand{\purp}[1]{\color{purple}{#1}}
+\newcommand{\sign}{\text{Sign}}
+\newcommand{\spacecap}{\; \cap \;}
+\newcommand{\spacewedge}{\; \wedge \;}
+\newcommand{\tails}{\outcome{tails}}
+\newcommand{\Var}[1]{\text{Var}[#1]}
+\newcommand{\bigVar}[1]{\text{Var}\mkern-4mu \left[ #1 \right]}
+\]</span></p>
+</div>
+</section>
+
+<section>
+<section id="roadmap" class="title-slide slide level1 smaller title-10 center" data-stack-name="Extended Recap">
+<h1>Roadmap</h1>
+<ul>
+<li>[Week 4] Oh no! When we go beyond linear models, we have to worry about <strong>overfitting</strong>!
+<ul>
+<li><span class="math inline">\(\implies\)</span> New goal! Maximize <strong>generalizability</strong> rather than <strong>accuracy</strong></li>
+<li><span class="math inline">\(\implies\)</span> Evaluate models on <strong><em>unseen</em> test data</strong> rather than training data</li>
+</ul></li>
+<li>[Week 5] <strong>Cross-Validation (CV)</strong> as a tool for <strong>Model Assessment</strong>: For more complex, non-linear models, is there some way we can try to… “foresee” how well a trained model will <strong>generalize?</strong>
+<ul>
+<li>Answer: <strong>Yes!</strong> Cross-validation!</li>
+</ul></li>
+<li>[Week 6] <strong>Regularization</strong> as a tool for <strong>Model Selection</strong>: Now that we have a method (CV) for <em>imperfectly</em> measuring “generalizability”, is there some way we can try to… <strong>allow</strong> models to optimize CV but <strong>penalize</strong> them for unnecessary complexity?
+<ul>
+<li>Answer: <strong>Yes!</strong> Regularization methods like LASSO and Elastic Net!</li>
+</ul></li>
+</ul>
+</section>
+<section id="reminder-w04-new-goal-generalizability" class="slide level2 smaller crunch-title crunch-callout crunch-ul title-11">
+<h2>[Reminder (W04)] New Goal: <em>Generalizability</em></h2>
+<div class="r-fit-text" title="<i class='bi bi-info-circle'></i> Goal 2.0: Statistical Learning">
+<div class="callout callout-tip no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong><i class="bi bi-info-circle"></i> Goal 2.0: Statistical Learning</strong></p>
+</div>
+<div class="callout-content">
+<p>Find…</p>
+<ul>
+<li>A function <span class="math inline">\(\widehat{y} = f(x)\)</span> ✅</li>
+<li>That best predicts <span class="math inline">\(Y\)</span> for given values of <span class="math inline">\(X\)</span> ✅</li>
+<li>For data that has not yet been observed! 😳❓</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="clarification-target-diagrams" class="slide level2 smaller table-va">
+<h2>Clarification: Target Diagrams</h2>
+<div id="fig-bias-variance" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-bias-variance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 37%">
+<col style="width: 37%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;"></th>
+<th style="text-align: center;"><strong>Low Variance</strong></th>
+<th style="text-align: center;"><strong>High Variance</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><strong>Low Bias</strong></td>
+<td style="text-align: center;"><img data-src="images/var-low-bias-low.svg"></td>
+<td style="text-align: center;"><img data-src="images/var-high-bias-low.svg"></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><strong>High Bias</strong></td>
+<td style="text-align: center;"><img data-src="images/var-low-bias-high.svg"></td>
+<td style="text-align: center;"><img data-src="images/var-high-bias-high.svg"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bias-variance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Adapted from Fortmann-Roe (2012), <a href="https://scott.fortmann-roe.com/docs/BiasVariance.html" target="_blank">“Understanding the Bias-Variance Tradeoff”</a>
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="why-was-this-helpful-for-5100" class="slide level2 crunch-title crunch-ul">
+<h2>Why Was This Helpful for 5100?</h2>
+<ul>
+<li>Law of Large Numbers:
+<ul>
+<li>Avg(many sample means <span class="math inline">\(s\)</span>) <span class="math inline">\(\leadsto\)</span> true mean <span class="math inline">\(\mu\)</span></li>
+</ul></li>
+<li><span class="math inline">\(\widehat{\theta}\)</span> <strong>unbiased</strong> estimator for <span class="math inline">\(\theta\)</span>:
+<ul>
+<li>Avg(Estimates <span class="math inline">\(\widehat{\theta}\)</span>) <span class="math inline">\(\leadsto\)</span> true <span class="math inline">\(\theta\)</span></li>
+</ul></li>
+</ul>
+
+<img data-src="images/var-high-bias-low.svg" class="r-stretch quarto-figure-center"><p class="caption">The Low Bias, High Variance case</p></section>
+<section id="relevance-for-cv-error" class="slide level2 smaller crunch-title crunch-ul">
+<h2>Relevance for CV Error</h2>
+<ul>
+<li>In Goal 2.0 world, we <strong>choose</strong> models on the basis of <strong>estimated test error</strong> (before, with Goal 1.0, we only used e.g.&nbsp;MSE, RSS, <span class="math inline">\(R^2\)</span>, which was fine for linear regression)</li>
+<li>Data <span class="math inline">\(\mathbf{D}\)</span> = single realization of DGP <span style="font-size: 16pt;">(for 5300, only relevance is why we don’t look at test set)</span></li>
+<li><span class="math inline">\(\left[ \mathbf{D}_{\text{Train}} \middle| \mathbf{D}_{\text{Test}} \right]\)</span> = random permutation of <span class="math inline">\(\mathbf{D}\)</span></li>
+<li>Bullseye on target = <strong>true</strong> test error<br><span style="font-size: 14pt;">(We <em>could</em> compute this, but then we’d have to end the study, collect more data… better alternative on next slide!)</span></li>
+<li>Darts thrown around bullseye = <strong>estimated</strong> test errors (CV fold errors!)
+<ul>
+<li>They don’t hit bullseye because we’re <strong>inferring DGP from from <em>sample</em></strong></li>
+</ul></li>
+<li>True test error = <span class="math inline">\(f(\mathbf{D}) = f\left( \left[ \mathbf{D}_{\text{Train}} \middle| \mathbf{D}_{\text{Test}} \right] \right)\)</span></li>
+<li>Validation error = <span class="math inline">\(f(\mathbf{D}_{\text{Train}}) = f\left( \left[ \mathbf{D}_{\text{SubTr}} \middle| \mathbf{D}_{\text{Val}} \right] \right)\)</span>,
+<ul>
+<li><span class="math inline">\(\implies\)</span> Validation error is an <em>estimate</em>, using a <strong>smaller sample</strong> <span class="math inline">\(\mathbf{D}_{\text{Train}}\)</span> drawn from the <strong>same distribution (DGP)</strong> as true test error!</li>
+</ul></li>
+</ul>
+</section>
+<section id="true-test-error-vs.-cv-error" class="slide level2 smaller crunch-title crunch-img crunch-p-5 crunch-p-bpad crunch-callout inline-95">
+<h2>True Test Error vs.&nbsp;CV Error</h2>
+<p><span style="margin-top: 0px; margin-bottom: 0px; font-size: 80%"><em>Note the icons! <strong>Test set</strong> = <strong>Lake monster</strong>: pulling out of water to evaluate kills it</em> 😵</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div title="![](images/ogopogo_crop.svg) True Test Error $\varepsilon_{\text{Test}} = \text{Err}_{\text{Test}}$">
+<div class="callout callout-note no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong><img data-src="images/ogopogo_crop.svg"> True Test Error <span class="math inline">\(\varepsilon_{\text{Test}} = \text{Err}_{\text{Test}}\)</span></strong></p>
+</div>
+<div class="callout-content">
+<p><i class="bi bi-1-circle"></i> Data <span class="math inline">\(\mathbf{D}\)</span> “arises” out of (unobservable) DGP</p>
+<p><i class="bi bi-2-circle"></i> Randomly chop <span class="math inline">\(\mathbf{D}\)</span> into <span class="math inline">\(\left[ \mathbf{D}_{\text{Train}} \mid \mathbf{D}_{\text{Test}} \right]\)</span></p>
+<p><i class="bi bi-3-circle"></i> <span class="math inline">\(\underbrace{\text{Err}_{\text{Test}}}_{\substack{\text{Test error,} \\ \text{no cap}}} = f(\mathbf{D}_{\text{Train}} \overset{\text{fit}}{\longrightarrow} \underbrace{\mathcal{M}_{\theta} \overset{\text{eval}}{\longrightarrow} \mathbf{D}_{\text{Test}}}_{\text{This kills monster 😢}})\)</span></p>
+<p><strong>Issue: can only be evaluated <em>once</em>, ever 😱</strong></p>
+</div>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div title="<i class='bi bi-water'></i> Validation Set Error $\varepsilon_{\text{Val}} = \widehat{\varepsilon}_{\text{Test}} = \widehat{\text{Err}}_{\text{Test}}$">
+<div class="callout callout-note no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong><i class="bi bi-water"></i> Validation Set Error <span class="math inline">\(\varepsilon_{\text{Val}} = \widehat{\varepsilon}_{\text{Test}} = \widehat{\text{Err}}_{\text{Test}}\)</span></strong></p>
+</div>
+<div class="callout-content">
+<p><i class="bi bi-1-circle"></i> <span class="math inline">\(\text{DGP} \rightarrow \mathbf{D}\)</span>; <i class="bi bi-2-circle"></i> Randomly chop into <span class="math inline">\([\mathbf{D}_{\text{Train}} \mid \mathbf{D}_{\text{Test}}]\)</span></p>
+<p><i class="bi bi-3-circle"></i> Leave <span class="math inline">\(\mathbf{D}_{\text{Test}}\)</span> alone until end of study</p>
+<p><i class="bi bi-4-circle"></i> Randomly chop <span class="math inline">\(\mathbf{D}_{\text{Train}}\)</span> into <span class="math inline">\([\mathbf{D}_{\text{SubTr}} \mid \mathbf{D}_{\text{Val}}]\)</span></p>
+<p><i class="bi bi-5-circle"></i> <span class="math inline">\(\underbrace{\widehat{\text{Err}}_{\text{Test}}}_{\substack{\text{Test error,} \\ \text{capping a bit}}} = f(\mathbf{D}_{\text{SubTr}} \overset{\text{fit}}{\longrightarrow} \underbrace{\mathcal{M}_{\theta} \overset{\text{eval}}{\longrightarrow} \mathbf{D}_{\text{Val}}}_{\text{Monster still alive!}})\)</span></p>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div title="<i class='bi bi-water'></i> $K$-Fold Cross-Validation Error $\varepsilon_{(K)} = \widehat{\varepsilon}_{\text{Test}} = \widehat{\text{E}}\text{rr}_{\text{Test}}$">
+<div class="callout callout-note no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong><i class="bi bi-water"></i> <span class="math inline">\(K\)</span>-Fold Cross-Validation Error <span class="math inline">\(\varepsilon_{(K)} = \widehat{\varepsilon}_{\text{Test}} = \widehat{\text{E}}\text{rr}_{\text{Test}}\)</span></strong></p>
+</div>
+<div class="callout-content">
+<p><i class="bi bi-1-circle"></i> <span class="math inline">\(\text{DGP} \rightarrow \mathbf{D}\)</span>; <i class="bi bi-2-circle"></i> Randomly chop into <span class="math inline">\([\mathbf{D}_{\text{Train}} \mid \mathbf{D}_{\text{Test}}]\)</span>; <i class="bi bi-3-circle"></i> Leave <span class="math inline">\(\mathbf{D}_{\text{Test}}\)</span> for end of study</p>
+<p><i class="bi bi-4-circle"></i> Randomly chop <span class="math inline">\(\mathbf{D}_{\text{Train}}\)</span> into <span class="math inline">\(\left[ \mathbf{D}_{\text{TrFold}}^{(1)} \middle| \mathbf{D}_{\text{TrFold}}^{(2)} \middle| \cdots \middle| \mathbf{D}_{\text{TrFold}}^{(K)} \right]\)</span></p>
+<p><i class="bi bi-5-circle"></i> <strong>For</strong> <span class="math inline">\(i \in \{1, \ldots, K\}\)</span>:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<i class="bi bi-6-circle"></i> <span class="math inline">\(\varepsilon_{\text{ValFold}}^{(i)} = f\left( \mathbf{D}_{\text{TrFold}}^{(-i)} \overset{\text{fit}}{\longrightarrow} \mathcal{M}_{\theta} \overset{\text{eval}}{\longrightarrow} \mathbf{D}_{\text{TrFold}}^{(i)} \right)\)</span></p>
+<p><i class="bi bi-7-circle"></i> <span class="math inline">\(\underbrace{\widehat{\text{E}}\text{rr}_{\text{Test}}}_{\substack{\text{Test error,} \\ \text{less cap!}}} = \boxed{\frac{1}{K}\sum_{i=1}^{K}\varepsilon^{(i)}_{\text{ValFold}}}~\)</span> (<em>…monster still alive, even after all that!</em>)</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="general-issue-with-cv-its-halfway-there" class="slide level2 smaller crunch-title title-11 crunch-ul crunch-p">
+<h2>General Issue with CV: It’s… Halfway There</h2>
+<p>CV plots will often look like (complexity on <span class="math inline">\(x\)</span>-axis and CV error on <span class="math inline">\(y\)</span>-axis):</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-2"><a></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-3"><a></a>cpl_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="st">"$M_0$"</span>)</span>
+<span id="cb2-4"><a></a>sim1k_delta_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb2-5"><a></a>    <span class="at">complexity=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>,</span>
+<span id="cb2-6"><a></a>    <span class="at">cv_err=</span><span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb2-7"><a></a>    <span class="at">label=</span><span class="fu">c</span>(<span class="st">""</span>,<span class="st">""</span>,<span class="fu">TeX</span>(<span class="st">"$M_3$"</span>),<span class="st">""</span>,<span class="st">""</span>,<span class="fu">TeX</span>(<span class="st">"$M_6$"</span>),<span class="st">""</span>)</span>
+<span id="cb2-8"><a></a>)</span>
+<span id="cb2-9"><a></a>sim1k_delta_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>complexity, <span class="at">y=</span>cv_err, <span class="at">label=</span>label)) <span class="sc">+</span></span>
+<span id="cb2-10"><a></a>  <span class="fu">geom_line</span>(<span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb2-11"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span>(<span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>)<span class="sc">*</span>g_pointsize) <span class="sc">+</span></span>
+<span id="cb2-12"><a></a>  <span class="fu">geom_text</span>(<span class="at">vjust=</span><span class="sc">-</span><span class="fl">0.7</span>, <span class="at">size=</span><span class="dv">10</span>, <span class="at">parse=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb2-13"><a></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb2-14"><a></a>    <span class="at">breaks=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="dv">1</span>,<span class="at">to=</span><span class="dv">7</span>,<span class="at">by=</span><span class="dv">1</span>)</span>
+<span id="cb2-15"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb2-16"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>) <span class="sc">+</span></span>
+<span id="cb2-17"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb2-18"><a></a>    <span class="at">title=</span><span class="st">"Generic CV Error Plot"</span>,</span>
+<span id="cb2-19"><a></a>    <span class="at">x =</span> <span class="st">"Complexity"</span>,</span>
+<span id="cb2-20"><a></a>    <span class="at">y =</span> <span class="st">"CV Error"</span></span>
+<span id="cb2-21"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="index_files/figure-revealjs/cv-plot-general-1.png" width="960" class="r-stretch"><ul>
+<li>We “know” <span class="math inline">\(\mathcal{M}_3\)</span> preferable to <span class="math inline">\(\mathcal{M}_6\)</span> (same error yet, less overfitting) <span class="math inline">\(\implies\)</span> “1SE rule”</li>
+<li>But… heuristic <span class="math inline">\(\;\nimplies\)</span> optimal! What are we gaining/losing as we move <span class="math inline">\(\mathcal{M}_6 \rightarrow \mathcal{M}_3\)</span>?</li>
+<li>Enter <strong>REGULARIZATION!</strong></li>
+</ul>
+</section>
+<section id="cv-now-goes-into-your-toolbox" class="slide level2 smaller">
+<h2>CV Now Goes Into Your Toolbox</h2>
+
+<img data-src="images/sin_bin.jpg" class="quarto-figure quarto-figure-center r-stretch"><p><em>(We will take it back out later, I promise!)</em></p>
+</section></section>
+<section>
+<section id="model-selection" class="title-slide slide level1 center" data-stack-name="Model Selection">
+<h1>Model Selection</h1>
+<ul>
+<li>[Week 5 ✅] We have a metric (CV error) for <strong>evaluating</strong> different models w.r.t. Goal 2.0…</li>
+<li>[Week 6 so far] It gets us halfway to what we want, by showing us a “basin” of models with low CV error</li>
+<li>[Now] <strong>Statistically-principled approach</strong> to overfitting that
+<ul>
+<li><i class="bi bi-1-circle"></i> Shows us <strong>why</strong> the 1SE rule “works”</li>
+<li><i class="bi bi-2-circle"></i> Quantifies tradeoff: if I only have enough data to estimate <span class="math inline">\(\beta_j\)</span> for <span class="math inline">\(J_0 &lt; J\)</span> feats, which <span class="math inline">\(J_0\)</span> should I choose?</li>
+</ul></li>
+</ul>
+</section>
+<section id="optimal-but-infeasible-best-subset-selection" class="slide level2 title-07">
+<h2>Optimal but Infeasible: Best Subset Selection</h2>
+<div title="Algorithm: Best Subset Selection">
+<div class="callout callout-none no-icon callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Algorithm: Best Subset Selection</strong></p>
+</div>
+<div class="callout-content">
+<p><i class="bi bi-1-circle"></i> Let <span class="math inline">\(\mathcal{M}^*_0\)</span> be <em>null model</em>: Predicts <span class="math inline">\(\widehat{y}(x_i) = \overline{y}\)</span> for any <span class="math inline">\(x_i\)</span></p>
+<p><i class="bi bi-2-circle"></i> For <span class="math inline">\(k = 1, 2, \ldots, J\)</span>:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<i class="bi bi-3-circle"></i> Fit all <span class="math inline">\(\binom{J}{k}\)</span> possible models with <span class="math inline">\(k\)</span> predictors, <span class="math inline">\(\mathcal{M}^*_k\)</span> is model with lowest RSS</p>
+<p><i class="bi bi-4-circle"></i> Choose from <span class="math inline">\(\mathcal{M}^*_0, \ldots, \mathcal{M}^*_J\)</span> using <strong>CV</strong> or heuristics: AIC, BIC, adjusted <span class="math inline">\(R^2\)</span></p>
+</div>
+</div>
+</div>
+</div>
+
+<img data-src="images/islr_6-1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="feasible-but-suboptimal-stepwise-selection" class="slide level2 crunch-title title-08">
+<h2>Feasible but Suboptimal: Stepwise Selection</h2>
+<div title="Algorithm: *Forward* Stepwise Selection">
+<div class="callout callout-none no-icon callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Algorithm: <em>Forward</em> Stepwise Selection</strong></p>
+</div>
+<div class="callout-content">
+<p><i class="bi bi-1-circle"></i> Let <span class="math inline">\(\mathcal{M}_0\)</span> be <em>null model</em>: Predicts <span class="math inline">\(\widehat{y}(x_i) = \overline{y}\)</span> for any <span class="math inline">\(x_i\)</span></p>
+<p><i class="bi bi-2-circle"></i> For <span class="math inline">\(k = 0, 1, \ldots, J - 1\)</span>:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<i class="bi bi-3-circle"></i> Fit <span class="math inline">\(J - k\)</span> models, each adds single feature to <span class="math inline">\(\mathcal{M}_k\)</span>; call “best” model <span class="math inline">\(\mathcal{M}_{k+1}\)</span></p>
+<p><i class="bi bi-4-circle"></i> Choose from <span class="math inline">\(\mathcal{M}_0, \ldots, \mathcal{M}_J\)</span> using CV error (or heuristics: AIC, BIC, adjusted <span class="math inline">\(R^2\)</span>)</p>
+</div>
+</div>
+</div>
+</div>
+<div title="Algorithm: *Backward* Stepwise Selection">
+<div class="callout callout-none no-icon callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Algorithm: <em>Backward</em> Stepwise Selection</strong></p>
+</div>
+<div class="callout-content">
+<p><i class="bi bi-1-circle"></i> Let <span class="math inline">\(\mathcal{M}_J\)</span> be <em>full model</em>: Contains all features</p>
+<p><i class="bi bi-2-circle"></i> For <span class="math inline">\(k = J, J - 1, \ldots, 1\)</span>:</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;<i class="bi bi-3-circle"></i> Fit <span class="math inline">\(k\)</span> models, each removes single feature from <span class="math inline">\(\mathcal{M}_k\)</span>; call “best” model <span class="math inline">\(\mathcal{M}_{k-1}\)</span></p>
+<p><i class="bi bi-4-circle"></i> Choose from <span class="math inline">\(\mathcal{M}_0, \ldots, \mathcal{M}_J\)</span> using CV error (or heuristics: AIC, BIC, adjusted <span class="math inline">\(R^2\)</span>)</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="stepwise-selection-algorithms-are-greedy" class="slide level2 title-08 crunch-title table-80 inline-90 crunch-ul crunch-quarto-figure code-80 crunch-li-8 crunch-img crunch-p">
+<h2>Stepwise Selection Algorithms are <em>Greedy</em></h2>
+<style>
+#mousetrap {
+  vertical-align: bottom !important;
+}
+</style>
+<div class="columns">
+<div class="column" style="width:60%;">
+<ul>
+<li>Like a mouse who chases <em>closest</em> cheese <span class="math inline">\(\neq\)</span> path with <em>most</em> cheese</li>
+<li>Can get “trapped” in sub-optimal model, if (e.g.) feature is in <span class="math inline">\(\mathcal{M}^*_4\)</span> but <strong>not</strong> in <span class="math inline">\(\mathcal{M}^*_1, \mathcal{M}^*_2, \mathcal{M}^*_3\)</span>!</li>
+</ul>
+</div><div class="column" style="width:40%;">
+<p><img data-src="images/mouse_cheese.png"></p>
+</div></div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 48%">
+<col style="width: 48%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(k\)</span></th>
+<th><span class="math inline">\(\mathcal{M}^*_k\)</span> (Best Subset)</th>
+<th><span class="math inline">\(\mathcal{M}_k\)</span> (Forward Stepwise) <img data-src="images/cheese.jpg" id="mousetrap" width="45"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><code>rating</code></td>
+<td><code>rating</code></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><code>rating</code>, <code>income</code></td>
+<td><code>rating</code>, <code>income</code></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><code>rating</code>, <code>income</code>, <code>student</code></td>
+<td><code>rating</code>, <code>income</code>, <code>student</code></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><strong><code>cards</code></strong>, <code>income</code>, <code>student</code>, <code>limit</code></td>
+<td><code>rating</code>, <code>income</code>, <code>student</code>, <code>limit</code></td>
+</tr>
+</tbody>
+</table>
+</section></section>
+<section>
+<section id="regularization-for-automatic-model-selection" class="title-slide slide level1 center" data-stack-name="Regularization">
+<h1>Regularization for <em>Automatic</em> Model Selection</h1>
+<ul>
+<li>Ridge Regression</li>
+<li>Lasso</li>
+<li>Elastic Net</li>
+</ul>
+</section>
+<section id="key-building-block-lp-norms" class="slide level2 crunch-title crunch-ul math-90 inline-90 smaller crunch-math">
+<h2>Key Building Block: <span class="math inline">\(L^p\)</span> Norms</h2>
+<ul>
+<li>Technically you have seen these before: <strong>distance metrics!</strong></li>
+</ul>
+<p><span class="math display">\[
+\textsf{sim}(\mathbf{u}, \mathbf{v}) \triangleq \underbrace{\| \mathbf{v} - \mathbf{u} \|_p}_{L^p\text{ norm of }\mathbf{u} - \mathbf{v}} = \left( \sum_{i=1}^{n} |v_i - u_i|^p \right)^{1/p}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\implies\)</span> <strong>Euclidean</strong> distance is <span class="math inline">\(L^2\)</span> norm: if <span class="math inline">\(\mathbf{u} = (0,0)\)</span> and <span class="math inline">\(\mathbf{v} = (3,4)\)</span>,</li>
+</ul>
+<p><span class="math display">\[
+\| \mathbf{v} - \mathbf{u} \|_2 = \left( |3-0|^2 + |4-0|^2 \right)^{1/2} = 25^{1/2} = \sqrt{25} = 5
+\]</span></p>
+<ul>
+<li>We’ll use even simpler form: <strong>distance of coefficients <span class="math inline">\(\boldsymbol\beta\)</span> from zero</strong> (so, <span class="math inline">\(\mathbf{u} = \vec{\mathbf{0}}\)</span>)</li>
+</ul>
+<p><span class="math display">\[
+\| \boldsymbol\beta \|_p = \left( \sum_{j=1}^{J} |\beta_j|^p \right)^{1/p}
+\]</span></p>
+</section>
+<section id="l1-and-l2-norms" class="slide level2 smaller crunch-title crunch-math crunch-ul title-12 math-90">
+<h2><span class="math inline">\(L^1\)</span> and <span class="math inline">\(L^2\)</span> Norms</h2>
+<ul>
+<li><span class="math inline">\(L^1\)</span> norm has a nice closed form expression as a sum (efficient, vectorizable!):</li>
+</ul>
+<p><span class="math display">\[
+\| \boldsymbol\beta \|_1 = \left( \sum_{j=1}^{J}|\beta_j|^1 \right)^{1/1} = \boxed{\sum_{j=1}^{J}|\beta_j|}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(L^2\)</span> norm <em>almost</em> a similarly nice expression, besides this zigzag line thing (<span class="math inline">\(\sqrt{~}\)</span>)</li>
+</ul>
+<p><span class="math display">\[
+\| \boldsymbol\beta \|_2 = \left( \sum_{j=1}^{J}|\beta_j|^2 \right)^{1/2} = \sqrt{\sum_{j=1}^{J}\beta_j^2} \; \; 🤨
+\]</span></p>
+<ul>
+<li>Can always convert bound on <em>true</em> Euclidean distance like <span class="math inline">\(\| \boldsymbol\beta \|_2 \leq 10\)</span> into bound on <em>squared</em> Euclidean distance like <span class="math inline">\(\| \boldsymbol\beta \|_2^2 \leq 100\)</span>. Hence we’ll use <strong>squared <span class="math inline">\(L^p\)</span> norm</strong>:</li>
+</ul>
+<p><span class="math display">\[
+\| \boldsymbol\beta \|_2^2 = \left( \left( \sum_{j=1}^{J}|\beta_j|^p \right)^{1/2} \right)^{2} = \boxed{\sum_{j=1}^{J}\beta_j^2} \; \; 💆
+\]</span></p>
+</section>
+<section id="different-norms-leftrightarrow-different-distances-from-vecmathbf0" class="slide level2 smaller crunch-title title-10">
+<h2>Different Norms <span class="math inline">\(\leftrightarrow\)</span> Different Distances from <span class="math inline">\(\vec{\mathbf{0}}\)</span></h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>Unit Disk in <span class="math inline">\(L^2\)</span>: All points <span class="math inline">\(\mathbf{v} = (v_x,v_y) \in \mathbb{R}^2\)</span> such that</li>
+</ul>
+<p><span class="math display">\[
+\| \mathbf{v} \|_2 \leq 1 \iff \| \mathbf{v} \|_2^2 \leq 1
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/unit_circle_l2.svg" class="quarto-figure quarto-figure-center" width="380"></p>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
+<li>Unit Disk in <span class="math inline">\(L^1\)</span>: All points <span class="math inline">\(\mathbf{v} = (v_x, v_y) \in \mathbf{R}^2\)</span> such that</li>
+</ul>
+<p><span class="math display">\[
+\| \mathbf{v} \|_1 \leq 1
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/unit_circle_l1.svg" class="quarto-figure quarto-figure-center" width="380"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="regularized-regression-finally" class="slide level2 crunch-title math-95">
+<h2>Regularized Regression (Finally!)</h2>
+<p>General Form:</p>
+<p><span class="math display">\[
+\boldsymbol\beta^*_{\text{reg}} = \argmin_{\boldsymbol\beta}\left[ \overbrace{\frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2}^{\text{MSE from before}} \; \; + \; \; \overbrace{\lambda}^{\mathclap{\text{Penalty for}}} \underbrace{\| \boldsymbol\beta \|_{2}^{2}}_{\mathclap{\text{Dist from }\mathbf{0}}} \; \; \; \right]
+\]</span></p>
+</section>
+<section id="three-main-types-of-regularized-regression" class="slide level2 smaller crunch-title title-11">
+<h2>Three Main Types of Regularized Regression</h2>
+<p>Ridge Regression:</p>
+<p><span class="math display">\[
+\boldsymbol\beta^*_{\text{ridge}} = \argmin_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 + \lambda \| \boldsymbol\beta \|_{2}^{2} \right]
+\]</span></p>
+<p>LASSO:</p>
+<p><span class="math display">\[
+\boldsymbol\beta^*_{\text{lasso}} = \argmin_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 + \lambda \| \boldsymbol\beta \|_{1} \right]
+\]</span></p>
+<p>Elastic Net:</p>
+<p><span class="math display">\[
+\boldsymbol\beta^*_{\text{EN}} = \argmin_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 + \lambda_2 \| \boldsymbol\beta \|_{2}^{2} + \lambda_1 \| \boldsymbol\beta \|_{1} \right]
+\]</span></p>
+<p><em>(Does anyone recognize <span class="math inline">\(\lambda\)</span> from <strong>Lagrange multipliers</strong>?)</em></p>
+</section>
+<section id="top-secret-equivalent-forms" class="slide level2 smaller">
+<h2>Top Secret Equivalent Forms</h2>
+<p>Ridge Regression:</p>
+<p><span class="math display">\[
+\boldsymbol\beta^*_{\text{ridge}} = \arg \left\{\min_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right] \; \text{ subject to } \; \| \boldsymbol\beta \|_{2}^{2} \leq s \right\}
+\]</span></p>
+<p>LASSO:</p>
+<p><span class="math display">\[
+\boldsymbol\beta^*_{\text{lasso}} = \arg \left\{\min_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right] \; \text{ subject to } \; \| \boldsymbol\beta \|_{1} \leq s \right\}
+\]</span></p>
+<p>Elastic Net:</p>
+<p><span class="math display">\[
+\boldsymbol\beta^*_{\text{EN}} = \arg \left\{\min_{\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right] \; \text{ subject to } \; \begin{matrix}
+  \| \boldsymbol\beta \|_{2}^{2} \leq s_2 \\
+  \| \boldsymbol\beta \|_{1} \leq s_1
+  \end{matrix}
+\right\}
+\]</span></p>
+</section>
+<section id="the-key-plot" class="slide level2 smaller crunch-title title-11">
+<h2>The Key Plot</h2>
+<div class="cell" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb3-2"><a></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb3-3"><a></a><span class="fu">library</span>(ggforce) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb3-4"><a></a><span class="fu">library</span>(patchwork) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb3-5"><a></a><span class="co"># Bounding the space</span></span>
+<span id="cb3-6"><a></a>xbound <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb3-7"><a></a>ybound <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">1.65</span>)</span>
+<span id="cb3-8"><a></a>stepsize <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
+<span id="cb3-9"><a></a>dx <span class="ot">&lt;-</span> <span class="fl">0.605</span></span>
+<span id="cb3-10"><a></a>dy <span class="ot">&lt;-</span> <span class="fl">1.6</span></span>
+<span id="cb3-11"><a></a><span class="co"># The actual function we're plotting contours for</span></span>
+<span id="cb3-12"><a></a>b_inter <span class="ot">&lt;-</span> <span class="fl">1.5</span></span>
+<span id="cb3-13"><a></a>my_f <span class="ot">&lt;-</span> <span class="cf">function</span>(x,y) <span class="dv">8</span><span class="sc">^</span>(b_inter<span class="sc">*</span>(x<span class="sc">-</span>dx)<span class="sc">*</span>(y<span class="sc">-</span>dy) <span class="sc">-</span> (x<span class="sc">-</span>dx)<span class="sc">^</span><span class="dv">2</span> <span class="sc">-</span> (y<span class="sc">-</span>dy)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb3-14"><a></a>x_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span>xbound[<span class="dv">1</span>], <span class="at">to=</span>xbound[<span class="dv">2</span>], <span class="at">by=</span>stepsize)</span>
+<span id="cb3-15"><a></a>y_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span>ybound[<span class="dv">1</span>], <span class="at">to=</span>ybound[<span class="dv">2</span>], <span class="at">by=</span>stepsize)</span>
+<span id="cb3-16"><a></a>data_df <span class="ot">&lt;-</span> <span class="fu">expand_grid</span>(<span class="at">x=</span>x_vals, <span class="at">y=</span>y_vals)</span>
+<span id="cb3-17"><a></a>data_df <span class="ot">&lt;-</span> data_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb3-18"><a></a>  <span class="at">z =</span> <span class="fu">my_f</span>(x, y)</span>
+<span id="cb3-19"><a></a>)</span>
+<span id="cb3-20"><a></a><span class="co"># Optimal beta df</span></span>
+<span id="cb3-21"><a></a>beta_opt_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb3-22"><a></a>  <span class="at">x=</span><span class="dv">121</span><span class="sc">/</span><span class="dv">200</span>, <span class="at">y=</span><span class="dv">8</span><span class="sc">/</span><span class="dv">5</span>, <span class="at">label=</span><span class="fu">c</span>(<span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">beta^*_{OLS}$"</span>))</span>
+<span id="cb3-23"><a></a>)</span>
+<span id="cb3-24"><a></a><span class="co"># Ridge optimal beta</span></span>
+<span id="cb3-25"><a></a>ridge_opt_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb3-26"><a></a>  <span class="at">x=</span><span class="fl">0.111</span>, <span class="at">y=</span><span class="fl">0.998</span>, <span class="at">label=</span><span class="fu">c</span>(<span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">beta^*_{ridge}$"</span>))</span>
+<span id="cb3-27"><a></a>)</span>
+<span id="cb3-28"><a></a><span class="co"># Lasso diamond</span></span>
+<span id="cb3-29"><a></a>lasso_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>), <span class="at">z=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb3-30"><a></a>lasso_opt_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x=</span><span class="dv">0</span>, <span class="at">y=</span><span class="dv">1</span>, <span class="at">label=</span><span class="fu">c</span>(<span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">beta^*_{lasso}$"</span>)))</span>
+<span id="cb3-31"><a></a></span>
+<span id="cb3-32"><a></a><span class="co"># And plot</span></span>
+<span id="cb3-33"><a></a>base_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb3-34"><a></a>  <span class="fu">geom_contour_filled</span>(</span>
+<span id="cb3-35"><a></a>    <span class="at">data=</span>data_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">z=</span>z),</span>
+<span id="cb3-36"><a></a>    <span class="at">alpha=</span><span class="fl">0.8</span>, <span class="at">binwidth =</span> <span class="fl">0.04</span>, <span class="at">color=</span><span class="st">'black'</span>, <span class="at">linewidth=</span><span class="fl">0.65</span></span>
+<span id="cb3-37"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb3-38"><a></a>  <span class="co"># y-axis</span></span>
+<span id="cb3-39"><a></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="dv">0</span>, <span class="at">xend=</span><span class="dv">0</span>, <span class="at">y=</span><span class="sc">-</span><span class="cn">Inf</span>, <span class="at">yend=</span><span class="cn">Inf</span>), <span class="at">color=</span><span class="st">'white'</span>, <span class="at">linewidth=</span><span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">"solid"</span>) <span class="sc">+</span></span>
+<span id="cb3-40"><a></a>  <span class="co"># Unconstrained optimal beta</span></span>
+<span id="cb3-41"><a></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>beta_opt_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb3-42"><a></a>  <span class="fu">geom_label</span>(</span>
+<span id="cb3-43"><a></a>    <span class="at">data=</span>beta_opt_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">label=</span>label),</span>
+<span id="cb3-44"><a></a>    <span class="at">hjust=</span><span class="sc">-</span><span class="fl">0.45</span>, <span class="at">vjust=</span><span class="fl">0.65</span>, <span class="at">parse=</span><span class="cn">TRUE</span>, <span class="at">alpha=</span><span class="fl">0.9</span></span>
+<span id="cb3-45"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb3-46"><a></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="at">option=</span><span class="st">"C"</span>) <span class="sc">+</span></span>
+<span id="cb3-47"><a></a>  <span class="co">#coord_equal() +</span></span>
+<span id="cb3-48"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-49"><a></a>    <span class="co">#title = "Model Selection: Ridge vs. Lasso Constraints",</span></span>
+<span id="cb3-50"><a></a>    <span class="at">x =</span> <span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">beta_1$"</span>),</span>
+<span id="cb3-51"><a></a>    <span class="at">y =</span> <span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">beta_2$"</span>)</span>
+<span id="cb3-52"><a></a>  )</span>
+<span id="cb3-53"><a></a>ridge_plot <span class="ot">&lt;-</span> base_plot <span class="sc">+</span></span>
+<span id="cb3-54"><a></a>  <span class="fu">geom_circle</span>(</span>
+<span id="cb3-55"><a></a>    <span class="fu">aes</span>(<span class="at">x0=</span><span class="dv">0</span>, <span class="at">y0=</span><span class="dv">0</span>, <span class="at">r=</span><span class="dv">1</span>, <span class="at">alpha=</span><span class="fu">I</span>(<span class="fl">0.1</span>), <span class="at">linetype=</span><span class="st">"circ"</span>, <span class="at">color=</span><span class="st">'circ'</span>), <span class="at">fill=</span><span class="cn">NA</span>, <span class="at">linewidth=</span><span class="fl">0.5</span></span>
+<span id="cb3-56"><a></a>  )</span>
+<span id="cb3-57"><a></a>  <span class="co"># geom_point(</span></span>
+<span id="cb3-58"><a></a>  <span class="co">#   data=data.frame(x=0, y=0), aes(x=x, y=y),</span></span>
+<span id="cb3-59"><a></a>  <span class="co">#   shape=21, size=135.8, color='white', stroke=1.2, linestyle="dashed"</span></span>
+<span id="cb3-60"><a></a>  <span class="co"># )</span></span>
+<span id="cb3-61"><a></a>lasso_plot <span class="ot">&lt;-</span> ridge_plot <span class="sc">+</span></span>
+<span id="cb3-62"><a></a>  <span class="fu">geom_polygon</span>(</span>
+<span id="cb3-63"><a></a>    <span class="at">data=</span>lasso_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">linetype=</span><span class="st">"diamond"</span>, <span class="at">color=</span><span class="st">"diamond"</span>),</span>
+<span id="cb3-64"><a></a>    <span class="at">fill=</span><span class="st">'white'</span>,</span>
+<span id="cb3-65"><a></a>    <span class="at">alpha=</span><span class="fl">0.5</span>,</span>
+<span id="cb3-66"><a></a>    <span class="at">linewidth=</span><span class="dv">1</span></span>
+<span id="cb3-67"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb3-68"><a></a>  <span class="co"># Ridge beta</span></span>
+<span id="cb3-69"><a></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>ridge_opt_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb3-70"><a></a>  <span class="fu">geom_label</span>(</span>
+<span id="cb3-71"><a></a>    <span class="at">data=</span>ridge_opt_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">label=</span>label),</span>
+<span id="cb3-72"><a></a>    <span class="at">hjust=</span><span class="dv">2</span>, <span class="at">vjust=</span><span class="sc">-</span><span class="fl">0.15</span>, <span class="at">parse=</span><span class="cn">TRUE</span>, <span class="at">alpha=</span><span class="fl">0.9</span></span>
+<span id="cb3-73"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb3-74"><a></a>  <span class="co"># Lasso beta</span></span>
+<span id="cb3-75"><a></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>lasso_opt_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb3-76"><a></a>  <span class="fu">geom_label</span>(</span>
+<span id="cb3-77"><a></a>    <span class="at">data=</span>lasso_opt_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">label=</span>label),</span>
+<span id="cb3-78"><a></a>    <span class="at">hjust=</span><span class="sc">-</span><span class="fl">0.75</span>, <span class="at">vjust=</span><span class="sc">-</span><span class="fl">0.15</span>, <span class="at">parse=</span><span class="cn">TRUE</span>, <span class="at">alpha=</span><span class="fl">0.9</span></span>
+<span id="cb3-79"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb3-80"><a></a>  <span class="fu">ylim</span>(ybound[<span class="dv">1</span>], ybound[<span class="dv">2</span>]) <span class="sc">+</span></span>
+<span id="cb3-81"><a></a>  <span class="co"># xlim(xbound[1], xbound[2]) +</span></span>
+<span id="cb3-82"><a></a>  <span class="fu">scale_linetype_manual</span>(<span class="st">"Line"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"diamond"</span><span class="ot">=</span><span class="st">"solid"</span>, <span class="st">"circ"</span><span class="ot">=</span><span class="st">"dashed"</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"a"</span>,<span class="st">"b"</span>)) <span class="sc">+</span></span>
+<span id="cb3-83"><a></a>  <span class="fu">scale_color_manual</span>(<span class="st">"Color"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"diamond"</span><span class="ot">=</span><span class="st">"white"</span>, <span class="st">"circ"</span><span class="ot">=</span><span class="st">"white"</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"c"</span>,<span class="st">"d"</span>)) <span class="sc">+</span></span>
+<span id="cb3-84"><a></a>  <span class="co"># scale_fill_manual("Test") +</span></span>
+<span id="cb3-85"><a></a>  <span class="co"># x-axis</span></span>
+<span id="cb3-86"><a></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">x=</span><span class="sc">-</span><span class="cn">Inf</span>, <span class="at">xend=</span><span class="cn">Inf</span>, <span class="at">y=</span><span class="dv">0</span>, <span class="at">yend=</span><span class="dv">0</span>), <span class="at">color=</span><span class="st">'white'</span>) <span class="sc">+</span></span>
+<span id="cb3-87"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">16</span>) <span class="sc">+</span></span>
+<span id="cb3-88"><a></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span></span>
+<span id="cb3-89"><a></a>  <span class="fu">theme</span>(</span>
+<span id="cb3-90"><a></a>    <span class="at">legend.position =</span> <span class="st">"none"</span>,</span>
+<span id="cb3-91"><a></a>    <span class="at">axis.line =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb3-92"><a></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb3-93"><a></a>  )</span>
+<span id="cb3-94"><a></a>lasso_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+
+</div>
+<img data-src="index_files/figure-revealjs/lasso-plot-1.png" width="960" class="r-stretch"></section>
+<section id="bayesian-interpretation" class="slide level2 smaller crunch-title crunch-quarto-figure crunch-ul math-90 crunch-math inline-90 crunch-p title-11 crunch-li-8">
+<h2>Bayesian Interpretation</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>Belief <span class="math inline">\(A\)</span>: <strong>Most/all of</strong> the features you included have important effect on <span class="math inline">\(Y\)</span></li>
+<li><span class="math inline">\(A \implies\)</span> <strong>Gaussian prior</strong> on <span class="math inline">\(\beta_j\)</span>, <span class="math inline">\(\mu = 0\)</span></li>
+<li>If <span class="math inline">\(X \sim \mathcal{N}(\mu, \sigma^2)\)</span>, pdf of <span class="math inline">\(X\)</span> is</li>
+</ul>
+<p><span class="math display">\[
+f_X(x) = \frac{1}{\sqrt{2\pi \sigma^2}}\exp\left[ -\frac{1}{2}\left( \frac{x-\mu}{\sigma}\right)^2 \right]
+\]</span></p>
+<div class="cell" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb4-2"><a></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb4-3"><a></a>prior_labs <span class="ot">&lt;-</span> <span class="fu">labs</span>(</span>
+<span id="cb4-4"><a></a>  <span class="at">x =</span> <span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">beta_j$"</span>),</span>
+<span id="cb4-5"><a></a>  <span class="at">y =</span> <span class="fu">TeX</span>(<span class="st">"$f(</span><span class="sc">\\</span><span class="st">beta_j)$"</span>)</span>
+<span id="cb4-6"><a></a>)</span>
+<span id="cb4-7"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb4-8"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun=</span>dnorm, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb4-9"><a></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb4-10"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb4-11"><a></a>  prior_labs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/gaussian-prior-1.png" width="1056"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Gaussian prior <span class="math inline">\(\leadsto\)</span> <strong>Ridge Regression!</strong><br>(High complexity penalty <span class="math inline">\(\lambda\)</span> <span class="math inline">\(\leftrightarrow\)</span> low <span class="math inline">\(\sigma^2\)</span>)</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<ul>
+<li>Belief <span class="math inline">\(B\)</span>: <strong>Only a few</strong> of the features you included have important effect on <span class="math inline">\(Y\)</span></li>
+<li><span class="math inline">\(B \implies\)</span> <strong>Laplacian prior</strong> on <span class="math inline">\(\beta_j\)</span>, <span class="math inline">\(\mu = 0\)</span></li>
+<li>If <span class="math inline">\(X \sim \mathcal{L}(\mu, b)\)</span>, pdf of <span class="math inline">\(X\)</span> is</li>
+</ul>
+<p><span class="math display">\[
+f(x) = \frac{1}{2b}\exp\left[ -\left| \frac{x - \mu}{b} \right| \right]
+\]</span></p>
+<div class="cell" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb5-2"><a></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb5-3"><a></a><span class="fu">library</span>(extraDistr) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb5-4"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb5-5"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun=</span>dlaplace, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb5-6"><a></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb5-7"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb5-8"><a></a>  prior_labs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/laplace-prior-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Laplacian prior <span class="math inline">\(\leadsto\)</span> <strong>Lasso!</strong><br>(High complexity penalty <span class="math inline">\(\lambda\)</span> <span class="math inline">\(\leftrightarrow\)</span> low <span class="math inline">\(b\)</span>)</li>
+</ul>
+</div></div>
+</section>
+<section id="ok-so-how-do-we-find-these-magical-lambda-values" class="slide level2">
+<h2>Ok So… How Do We Find These Magical <span class="math inline">\(\lambda\)</span> Values?</h2>
+<ul>
+<li>Cross-Validation!</li>
+<li>(…that’s, uh, that’s it! That’s the whole slide!)</li>
+<li>(But let’s look at what we find when we use CV…)</li>
+</ul>
+</section>
+<section id="varying-lambda-leadsto-tradeoff-curve" class="slide level2 smaller inline-90">
+<h2>Varying <span class="math inline">\(\lambda\)</span> <span class="math inline">\(\leadsto\)</span> Tradeoff Curve!</h2>
+<center>
+<strong>Ridge Regression Case:</strong>
+</center>
+
+<img data-src="images/islr_6-4.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="columns">
+<div class="column" style="width:48%;">
+<center>
+Increasing <span class="math inline">\(\lambda\)</span> in <span class="math inline">\(\displaystyle \min_{\boldsymbol\beta}\left[\text{RSS} + \lambda \| \boldsymbol\beta \|_2^2 \right]\)</span>
+</center>
+</div><div class="column" style="width:4%;">
+<center>
+<span class="math inline">\(\equiv\)</span>
+</center>
+</div><div class="column" style="width:48%;">
+<center>
+Decreasing <span class="math inline">\(s\)</span> in <span class="math inline">\(\displaystyle \min_{\boldsymbol\beta}\left[ \text{RSS} \right] \text{ s.t. }\|\boldsymbol\beta\|_2^2 \leq s\)</span>
+</center>
+</div></div>
+</section>
+<section id="only-change-l1-instead-of-l2-norm" class="slide level2 smaller inline-90 title-12">
+<h2>Only Change: <span class="math inline">\(L^1\)</span> instead of <span class="math inline">\(L^2\)</span> Norm 🤯</h2>
+<center>
+<strong>Lasso Case:</strong>
+</center>
+
+<img data-src="images/islr_6-6.svg" class="quarto-figure quarto-figure-center r-stretch"><div class="columns">
+<div class="column" style="width:48%;">
+<center>
+Increasing <span class="math inline">\(\lambda\)</span> in <span class="math inline">\(\displaystyle \min_{\boldsymbol\beta}\left[\text{RSS} + \lambda \| \boldsymbol\beta \|_1\right]\)</span>
+</center>
+</div><div class="column" style="width:4%;">
+<center>
+<span class="math inline">\(\equiv\)</span>
+</center>
+</div><div class="column" style="width:48%;">
+<center>
+Decreasing <span class="math inline">\(s\)</span> in <span class="math inline">\(\displaystyle \min_{\boldsymbol\beta}\left[ \text{RSS} \right] \text{ s.t. }\|\boldsymbol\beta\|_1 \leq s\)</span>
+</center>
+</div></div>
+</section>
+<section id="week-7-preview-linear-functions" class="slide level2 crunch-title crunch-ul crunch-math math-80">
+<h2>Week 7 Preview: <span class="noodle-jj">Linear</span> Functions</h2>
+<style>
+@font-face {
+    font-family: Noodle;
+    src: url('../assets/Kbnoodlemonster.ttf');
+}
+.workbench-jj {
+  font-family: "Workbench", serif;
+  /* font-optical-sizing: auto; */
+  font-weight: 400;
+  font-style: normal;
+  font-size: 96pt !important;
+}
+.noodle-jj {
+    font-family: "Noodle", serif;
+    font-size: 56pt !important;
+}
+</style>
+<ul>
+<li>You’ve already seen <strong>polynomial regression</strong>:</li>
+</ul>
+<p><span class="math display">\[
+Y = \beta_0 + \beta_1X + \beta_2X^2 + \beta_3X^3 + \cdots + \beta_d X^d
+\]</span></p>
+<ul>
+<li>Plus (technically) <a href="https://www.youtube.com/watch?v=r6sGWTCMz2k&amp;t=21s"><strong>“Fourier regression”</strong></a>:</li>
+</ul>
+<p><span class="math display">\[
+\begin{align*}
+Y = \beta_0 + \beta_1 \cos(\pi X) + \beta_2 \sin(\pi X) + \cdots + \beta_{2d-1}\cos(\pi d X) + \beta_{2d}\sin(\pi d X)
+\end{align*}
+\]</span></p>
+
+<img data-src="images/fourier.svg" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://www.cs.princeton.edu/courses/archive/fall18/cos324/files/basis-functions.pdf">Image source</a></p></section>
+<section id="new-regression-just-dropped" class="slide level2 crunch-title inline-90 crunch-ul crunch-quarto-figure">
+<h2>New Regression Just Dropped</h2>
+<p><strong>Piecewise</strong> regression:</p>
+<p><i class="bi bi-1-circle"></i> Choose <span class="math inline">\(K\)</span> cutpoints <span class="math inline">\(c_1, \ldots, c_K\)</span></p>
+<p><i class="bi bi-2-circle"></i> Let <span class="math inline">\(C_k(X) = \mathbb{1}[c_{k-1} \leq X &lt; c_k]\)</span>, (<span class="math inline">\(c_0 \equiv -\infty\)</span>, <span class="math inline">\(c_{K+1} \equiv \infty\)</span>)</p>
+<p><span class="math display">\[
+Y = \beta_0 + \beta_1C_1(X) + \beta_2C_2(X) + \cdots + \beta_KC_K(X)
+\]</span></p>
+
+<img data-src="images/islr_7-2.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="decomposing-fancy-regressions-into-core-pieces" class="slide level2 crunch-title crunch-ul inline-90 math-90">
+<h2>Decomposing Fancy Regressions into Core “Pieces”</h2>
+<ul>
+<li><p>Q: What do <strong>all</strong> these types of regression have in common?</p></li>
+<li><p>A: They can all be written in the form</p>
+<p><span class="math display">\[
+Y = \beta_0 + \beta_1 b_1(X) + \beta_2 b_2(X) + \cdots + \beta_d b_d(X)
+\]</span></p></li>
+<li><p>Where <span class="math inline">\(b(\cdot)\)</span> is called a <strong>basis function</strong></p>
+<ul>
+<li>Linear (<span class="math inline">\(d = 1\)</span>): <span class="math inline">\(b_1(X) = X\)</span></li>
+<li>Polynomial: <span class="math inline">\(b_j(X) = X^j\)</span></li>
+<li>Piecewise: <span class="math inline">\(b_j(X) = \mathbb{1}[c_{j-1} \leq X &lt; c_j]\)</span></li>
+</ul></li>
+</ul>
+
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>DSAN 5300-01 Week 6: Regularization for Model Selection</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/simplemenu/simplemenu.js"></script>
+  <script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'simplemenu': {"menubarclass":"menubar","menuclass":"menu","activeclass":"active","activeelement":"li","flat":true,"barhtml":{"header":"<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>","footer":""},"scale":0.5},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, Simplemenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const onCopySuccess = function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
+      });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp('/' + window.location.host + '/');
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+              // target, if specified
+              link.setAttribute("target", "_blank");
+              if (link.getAttribute("rel") === null) {
+                link.setAttribute("rel", "noopener");
+              }
+              // default icon
+              link.classList.add("external");
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>

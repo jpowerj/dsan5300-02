@@ -1,0 +1,20 @@
+Here, as a more specific clarification, the way that I know how to specify a regression spline in R, in general, is with a line that looks like the following:
+
+``` {.r}
+library(gam)
+gam_model <- gam(
+    dependent ~ s(indep1, k = degree1) + s(indep2, k = degree2) + s(indep3, k = degree3),
+    data=train_df
+)
+```
+
+There *are* other ways to achieve this kind of degree-`k` spline, but, this is the most direct way I know of to specify the degree.
+
+However, **to get this to work, in terms of making sure that the `s()` function allows the degree argument `k`, you'll need to load the [`mgcv` library](https://www.maths.ed.ac.uk/~swood34/mgcv/) in addition to [`gam`](https://cran.r-project.org/web/packages/gam/gam.pdf)** (which is already loaded for you in a cell near the top of the distributed homework files). In other words, if you just copy-and-paste the previous code, you'll get an error (at least in my version of R) that looks like
+
+```
+Error in s(indep1, k = degree1) : unused argument (k = degree1)
+```
+
+So, here, the `mgcv` library essentially adds in this new `k` argument that can be passed to `s()` (which is from `gam` itself) to specify the degree parameter.
+

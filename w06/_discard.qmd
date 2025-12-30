@@ -1,0 +1,98 @@
+
+## The Key Plot
+
+```{r}
+#| label: lasso-plot
+library(tidyverse)
+library(latex2exp)
+ridge_constraint <- function(x, y) {
+  return(x^2 + y^2 <= 1)
+}
+b1_vals <- seq(from=-2, to=2, by=0.025)
+b2_vals <- seq(from=-2, to=2, by=0.025)
+plane_df <- expand.grid(b1=b1_vals, b2=b2_vals) |> as_tibble()
+#print(plane_vals)
+plane_df <- plane_df |> mutate(
+  satis = ridge_constraint(b1, b2)
+)
+satis_df <- plane_df |> filter(satis)
+satis_df |> ggplot(aes(x=b1, y=b2, color=satis)) +
+  geom_point(alpha=0.333) +
+  geom_vline(xintercept=0, arrow = grid::arrow(
+        length = unit(0.1, "cm"),
+        ends = "both"
+      )) +
+  geom_hline(yintercept=0) +
+  coord_equal() +
+  xlim(-2, 2) + ylim(-2, 2) +
+  theme_dsan() +
+  theme(
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.line.x = element_blank(),
+    axis.line.y = element_blank(),
+    # axis.line.y = element_line(
+    #   arrow = grid::arrow(
+    #     length = unit(0.3, "cm"),
+    #     ends = "both"
+    #   )
+    # )
+  ) +
+  labs(
+    title="Ridge Regression Constraint",
+    x = TeX("$\\beta_1$"),
+    y = TeX("$\\beta_2$")
+  )
+```
+
+---
+
+
+```{r}
+#| label: unit-disk-l2
+library(tidyverse) |> suppressPackageStartupMessages()
+library(latex2exp) |> suppressPackageStartupMessages()
+ridge_constraint <- function(x, y) {
+  return(x^2 + y^2 <= 1)
+}
+b1_vals <- seq(from=-2, to=2, by=0.025)
+b2_vals <- seq(from=-2, to=2, by=0.025)
+plane_df <- expand.grid(b1=b1_vals, b2=b2_vals) |> as_tibble()
+#print(plane_vals)
+plane_df <- plane_df |> mutate(
+  satis = ridge_constraint(b1, b2)
+)
+satis_df <- plane_df |> filter(satis)
+satis_df |> ggplot(aes(x=b1, y=b2, color=satis)) +
+  geom_point(alpha=0.333) +
+  geom_vline(xintercept=0, arrow = grid::arrow(
+        length = unit(0.1, "cm"),
+        ends = "both"
+      )) +
+  geom_hline(yintercept=0) +
+  coord_equal() +
+  xlim(-2, 2) + ylim(-2, 2) +
+  theme_dsan() +
+  theme(
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.line.x = element_blank(),
+    axis.line.y = element_blank(),
+    # axis.line.y = element_line(
+    #   arrow = grid::arrow(
+    #     length = unit(0.3, "cm"),
+    #     ends = "both"
+    #   )
+    # )
+  ) +
+  labs(
+    title="Ridge Regression Constraint",
+    x = TeX("$v_x$"),
+    y = TeX("$v_y$")
+  )
+```
+

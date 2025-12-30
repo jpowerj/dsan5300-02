@@ -1,0 +1,9 @@
+## Incorporating Time-Dependent Covariates {.smaller .crunch-title .title-12 .crunch-blockquote}
+
+*(This goes slightly beyond ISLR's coverage, but (a) super important and (b) get it for "free" due to properties of Cox model!)*
+
+> A naïve approach would use a fixed covariate to represent transplant status: that is, $x_i = 1$ if the $i$th patient ever received a transplant, and $x_i = 0$ otherwise.
+> 
+> But this approach overlooks the fact that patients had to live long enough to get a transplant, and hence, on average, healthier patients received transplants.
+> 
+> This problem can be solved by using a time-dependent covariate for transplant: $x_i(t) = 1$ if the patient received a transplant by time $t$, and $x_i(t) = 0$ otherwise.

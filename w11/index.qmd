@@ -1,0 +1,273 @@
+---
+title: "Week 11: How Do Neural Networks Deep-Learn?"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+author: "Jeff Jacobs"
+institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
+bibliography: "../_DSAN5300.bib"
+date: 2025-03-31
+date-format: full
+lecnum: 11
+categories:
+  - "Class Sessions"
+format:
+  revealjs:
+    df-print: kable
+    footer: "DSAN 5300-01 Week 11: {{< var w11.footer >}}"
+    output-file: "slides.html"
+    html-math-method: mathjax
+    scrollable: true
+    theme: [default, "../dsan-globals/jjquarto.scss"]
+    slide-number: true
+    echo: true
+    code-fold: true
+    link-external-icon: true
+    link-external-newwindow: true
+    include-in-header:
+      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
+    simplemenu:
+      flat: true
+      barhtml:
+        header: "<div class='menubar'><span style='position: absolute; left: 8; padding-left: 8px;'><a href='./index.html'>&larr; Return to Notes</a></span><ul class='menu'></ul></div>"
+      scale: 0.5
+    revealjs-plugins:
+      - simplemenu
+  html:
+    df-print: kable
+    output-file: "index.html"
+    html-math-method: mathjax
+    echo: true
+    code-fold: true
+---
+
+::: {.content-visible unless-format="revealjs"}
+
+<center class='mb-3'>
+<a class="h2" href="./slides.html" target="_blank">Open slides in new tab &rarr;</a>
+</center>
+
+:::
+
+# Schedule {.smaller .small-title .crunch-title .crunch-callout data-stack-name="Schedule"}
+
+Today's Planned Schedule:
+
+| | Start | End | Topic |
+|:- |:- |:- |:- |
+| **Lecture** | 6:30pm | 7:00pm | [Single Layer Neural Networks &rarr;](#learning-decision-boundaries) |
+| | 7:00pm | 7:20pm | [Max-Margin Classifiers &rarr;](#max-margin-classifiers) | 
+| | 7:20pm | 8:00pm | [Support Vector *Classifiers* &rarr;](#support-vector-classifiers) |
+| **Break!** | 8:00pm | 8:10pm | |
+| | 8:10pm | 9:00pm | [Fancier Neural Networks &rarr;](#quiz-time) |
+
+: {tbl-colwidths="[12,12,12,64]"}
+
+::: {.hidden}
+
+```{r}
+#| label: r-source-globals
+source("../dsan-globals/_globals.r")
+set.seed(5300)
+```
+
+:::
+
+{{< include ../dsan-globals/_globals-tex.qmd >}}
+
+## Quick Roadmap {.smaller .crunch-title .title-12 .crunch-ul .text-90 .crunch-li-first}
+
+* **Last week:** Examples of how NNs are **capable** of learning...
+* The types of features that let us learn fancy non-linear DGPs: $Y = {\color{#e69f00} X_1 X_2 }$ [✅]{.text-80}, $Y = {\color{#56b4e9} X_1^2 + X_2^2 }$ [✅]{.text-80}, $Y = {\color{#009E73} X_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} X_2}$ [✅]{.text-80}
+
+* Multi-layer networks like CNNs for "pooling" low-level/fine-grained information into high-level/coarse-grained information
+  * Ex: Early layers detect **lines**, later layers figure out whether they're **brows** or **smiles**
+* **This week:** How do we actually **learn** the weights/biases which **enable these capabilities?**
+  * The answer is (🙈) **calculus** (chain rule)
+
+## Step-by-Step {.crunch-title .crunch-ul .text-90 .crunch-p}
+
+::: {.callout-note title="Neural Network Training Procedure" style="font-size: 130%;"}
+For each training observation $(\mathbf{x}_i, y_i)$...
+
+<i class='bi bi-1-circle'></i> Predict $\widehat{y}_i$ from $\mathbf{x}_i$
+
+<i class='bi bi-2-circle'></i> Evaluate loss $\mathcal{L}(\widehat{y}_i, y_i)$: **Cross-Entropy Loss**
+
+<i class='bi bi-3-circle'></i> Update parameters (weights/biases): **Backpropagation**
+
+:::
+
+Key for success of NNs: Non-linear **but differentiable**
+
+* $\Rightarrow$ parameters $w^*$ **most responsible** for the loss value can be
+  (a) **identified**: $w^* = \argmax_w\left[ \frac{\partial \mathcal{L}}{\partial w} \right]$, then
+  (b) **changed the most** $w^*_t \rightarrow w^*_{t+1}$
+
+# Recall: MNIST Digits {.smaller .title-12 data-stack-name="Cross-Entropy Loss"}
+
+![Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4](images/nn_multilayer.svg){fig-align="center"}
+
+## How Do We Evaluate Output? {.smaller .title-12 data-stack-name="Cross-Entropy Loss"}
+
+![Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4](images/nn_multilayer_output.svg){fig-align="center"}
+
+## Entropy in General
+
+![](images/entropy_general.svg){fig-align="center"}
+
+## "Entropy Loss": Output Layer Uncertainty {.smaller .crunch-title .title-10 .math-80 .text-70 .crunch-quarto-figure .crunch-math .crunch-p}
+
+:::: {layout="[1,1,1]"}
+::: {#maxent-img}
+
+<center>
+
+[Max entropy = **max** uncertainty]{style="font-size: 80%;"}
+
+</center>
+
+![Step 1: NN has no idea, guesses (via softmax) $\widehat{y}_d = \Pr(y = d) = 0.1 \; \forall d$](images/nn_crossent_eq.svg){fig-align="center"}
+
+:::
+::: {#mident-img}
+
+<center>
+
+[Less entropy = less uncertainty]{style="font-size: 80%;"}
+
+</center>
+
+![Step 2: NN starting to converge: $\Pr(Y = 9)$ high, $\Pr(Y = 3)$ medium, $\Pr(Y = d)$ low for all other $d$](images/nn_crossent_mident.svg){fig-align="center"}
+
+:::
+::: {#minent-img}
+
+<center>
+
+[Min entropy = **no** uncertainty]{style="font-size: 80%;"}
+
+</center>
+
+![Step 3: NN has converged to predicting ultra-high $\widehat{y}_9 = \Pr(y = 9 \mid X)$](images/nn_minent.svg){fig-align="center"}
+
+:::
+::::
+
+## The Problem With Entropy Loss {.smaller .crunch-title .title-10 .math-80 .text-70 .crunch-p .crunch-quarto-figure}
+
+:::: {layout="[1,1,1]"}
+::: {#maxent-problem}
+
+<center>
+
+[Max entropy = **max** uncertainty]{style="font-size: 80%;"}
+
+</center>
+
+![Step 1: NN has no idea, guesses (via softmax) $\Pr(y = d) = 0.1$ for every $d$](images/nn_crossent_eq.svg){fig-align="center"}
+
+:::
+::: {#mident-problem}
+
+<center>
+
+[Less entropy = less uncertainty]{style="font-size: 80%;"}
+
+</center>
+
+![Step 2: NN starting to converge: probably $d = 3$, maybe $d = 9$, low probability on all other values](images/nn_crossent_miderr.svg){fig-align="center"}
+
+:::
+::: {#minent-problem}
+
+<center>
+
+[Min entropy = **no** uncertainty]{style="font-size: 80%;"}
+
+</center>
+
+![Step 3: NN has converged to predicting ultra-high $\Pr(y = 3)$](images/nn_minent_err.svg){fig-align="center"}
+
+:::
+::::
+
+## *Cross*-Entropy Loss: Output Layer vs. Truth {.smaller .crunch-title .title-10 .math-80 .text-70}
+
+:::: {layout="[1,1,1]"}
+::: {#crossent-max}
+
+<center>
+
+[Max entropy = **max** uncertainty]{style="font-size: 80%;"}
+
+</center>
+
+![Step 1: $H(y, \widehat{y}) = -1\cdot \log_2(0.1) \approx 3.32$](images/nn_crossent_eq.svg){fig-align="center"}
+
+:::
+::: {#crossent-mid}
+
+<center>
+
+[Less entropy = less uncertainty]{style="font-size: 80%;"}
+
+</center>
+
+![Step 2: $H(y,\widehat{y}) = -1\cdot \log_2(0.4) \approx 1.32$](images/nn_crossent_mident.svg){fig-align="center"}
+
+:::
+::: {#crossent-min}
+
+<center>
+
+[Min entropy = **no** uncertainty]{style="font-size: 80%;"}
+
+</center>
+
+![Step 3: $H(y,\widehat{y}) = -1\cdot \log_2(1) = 0$](images/nn_minent.svg){fig-align="center"}
+
+:::
+::::
+
+## It's Not as Silly as You Think! {.smaller .title-12 .crunch-title .crunch-ul .crunch-quarto-figure}
+
+* In our example, we **know** the **true** digit... But remember the **origin of the dataset**: postal workers trying to figure out handwritten digits
+* May not **know** with certainty, but may be able to say, e.g., "It's either a 1 or a 7"
+
+![From [*Perceptions of Probability* Dataset](https://github.com/zonination/perceptions)](images/word-prob-joy.png){fig-align="center"}
+
+# Ok But How Do We *Learn* The Weights? {data-stack-name="Backpropagation"}
+
+* ...**Backpropagation!**
+
+## Backpropagation: Simple Example {.smaller .crunch-title .title-11}
+
+* Literally just **one** neuron (which is the output layer), $\mathcal{L}(\widehat{y},y) = (\widehat{y} - y)^2$
+* Consider a training datapoint $(x,y) = (2,10)$
+* And say our current parameters are $\beta_0 = 1, \beta_1 = 3$
+* Predicted output: $\widehat{y} = \beta_0 + \beta_1 x = 1 + 3\cdot 2 = 7$
+* Since true output is $y = 10$, we have loss $\mathcal{L} = (10-7)^2 = 9$
+* Now, let's **backpropagate** to update $\beta_1$ (on the board!)
+  * (Using learning rate of $0.1$)
+
+## Top Secret Answer Slide
+
+* Weight $\beta_1$ becomes 4.2...
+* New prediction: $\widehat{y} = 1 + 4.2\cdot 2 = 9.4$
+* New loss: $(10-9.4)^2 = 0.36$ 🥳
+
+## Backpropagation Deeper Dive {.smaller}
+
+![[Backpropagation!](https://youtu.be/tIeHLnjs5U8?si=0CSS66763D5s5UVt) (3Blue1Brown Again!)](images/backprop.jpg){fig-align="center"}
+
+*(Full NN playlist [here](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi))*
+
+## Simplest Possible Backprop
+
+* One input unit, one hidden unit, one output unit
+
+
+
+## References
+
+::: {#refs}
+:::

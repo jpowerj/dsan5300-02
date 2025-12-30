@@ -1,0 +1,9 @@
+```{r}
+#| label: quadratic-boundary
+x1 <- runif(100)
+x2 <- runif(100)
+z <- ifelse(x2 > 2 * (x1 - .5)^2 + .5, 1, 0)
+plot(x1, x2, col = ifelse(z, "red", "blue"))
+x <- seq(0, 1, len = 101)
+lines(x, 2 * (x - .5)^2 + .5, lty = 2)
+```
