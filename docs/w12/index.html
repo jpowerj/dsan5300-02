@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.40">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Jeff Jacobs">
 
-<title>Week 12: Survival Analysis – DSAN 5300-01</title>
+<title>Week 12: Machine Learning for Causal Inference – DSAN 5300-02</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,8 +22,9 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -34,7 +35,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -55,7 +56,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -66,17 +87,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
 <link href="../favicon.png" rel="icon" type="image/png">
-<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ea72dc5fed832574809a9c94082fbbb.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8230effed8f06b34674e4faf57934fd7.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-156c7c3fe023434b5d29d53166ac0fae.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-8dd781863cc3818dd1a4e77d1a1c4e8a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-6d737dfaa55c80161abe34f9a32bb0e2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-8dd781863cc3818dd1a4e77d1a1c4e8a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -120,7 +145,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -138,7 +163,169 @@ window.Quarto = {
 
 </head>
 
-<body class="nav-sidebar floating">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -162,7 +349,7 @@ window.Quarto = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="../">DSAN 5300-01: Statistical Learning</a> 
+      <a href="../">DSAN 5300-02: Statistical Learning</a> 
         <div class="sidebar-tools-main">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
@@ -183,7 +370,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="https://georgetown.zoom.us/j/91911785762?pwd=poQh2m4AiSYWaDudp7hPLDEszWgBuG.1" class="sidebar-item-text sidebar-link" target="_blank">
+  <a href="https://georgetown.zoom.us/j/97371877594?pwd=oT8FiCC0RAhl8bHRsOuoZuRBzxJNQj.1" class="sidebar-item-text sidebar-link" target="_blank">
  <span class="menu-text">Zoom Link</span></a>
   </div>
 </li>
@@ -195,7 +382,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=07b596c2-6a0e-4302-a186-b25c00b555ce" class="sidebar-item-text sidebar-link" target="_blank">
+  <a href="https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=e60c1880-ba36-462c-b8e9-b3c301796e7a" class="sidebar-item-text sidebar-link" target="_blank">
  <span class="menu-text">Recordings <i class="bi bi-box-arrow-up-right ps-1"></i></span></a>
   </div>
 </li>
@@ -203,79 +390,79 @@ window.Quarto = {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w01/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 1: Jan 9</span></a>
+ <span class="menu-text">Week 1: Jan 7</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w02/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 2: Jan 13</span></a>
+ <span class="menu-text">Week 2: Jan 12</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w03/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 3: Jan 27</span></a>
+ <span class="menu-text">Week 3: Jan 26</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w04/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 4: Feb 3</span></a>
+ <span class="menu-text">Week 4: Feb 2</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w05/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 5: Feb 10</span></a>
+ <span class="menu-text">Week 5: Feb 9</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w06/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 6: Feb 18</span></a>
+ <span class="menu-text">Week 6: Feb 17</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w07/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 7: Feb 24</span></a>
+ <span class="menu-text">Week 7: Feb 23</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w08/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 8: Mar 10</span></a>
+ <span class="menu-text">Week 8: Mar 9</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w09/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 9: Mar 17</span></a>
+ <span class="menu-text">Week 9: Mar 16</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w10/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 10: Mar 24</span></a>
+ <span class="menu-text">Week 10: Mar 23</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w11/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 11: Mar 31</span></a>
+ <span class="menu-text">Week 11: Mar 23</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w12/index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Week 12: Apr 7</span></a>
+ <span class="menu-text">Week 12: Apr 13</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../w13/index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Week 13: Apr 14</span></a>
+ <span class="menu-text">Week 13: Apr 20</span></a>
   </div>
 </li>
         <li class="px-0"><hr class="sidebar-divider hi "></li>
@@ -291,10 +478,16 @@ window.Quarto = {
  <span class="menu-text">Office Hours <i class="bi bi-box-arrow-up-right ps-1"></i></span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=07b596c2-6a0e-4302-a186-b25c00b555ce" class="sidebar-item-text sidebar-link" target="_blank">
+ <span class="menu-text">2025 Recordings <i class="bi bi-box-arrow-up-right ps-1"></i></span></a>
+  </div>
+</li>
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2025-04-14, 05:59:03 PM</em></p>
+<p><em>Updated 2025-12-30, 07:22:04 PM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -307,44 +500,39 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#roadmap" id="toc-roadmap" class="nav-link" data-scroll-target="#roadmap">Roadmap</a></li>
   </ul></li>
-  <li><a href="#survival-analysis-basics" id="toc-survival-analysis-basics" class="nav-link" data-scroll-target="#survival-analysis-basics">Survival Analysis Basics</a>
+  <li><a href="#the-fundamental-problem-of-causal-inference" id="toc-the-fundamental-problem-of-causal-inference" class="nav-link" data-scroll-target="#the-fundamental-problem-of-causal-inference">The Fundamental Problem of Causal Inference</a>
   <ul class="collapse">
-  <li><a href="#read-left-to-right-rightarrow-sequence-of-events" id="toc-read-left-to-right-rightarrow-sequence-of-events" class="nav-link" data-scroll-target="#read-left-to-right-rightarrow-sequence-of-events">Read Left to Right <span class="math inline">\(\Rightarrow\)</span> Sequence of Events</a></li>
-  <li><a href="#slice-at-deaths-rightarrow-at-risk-observations" id="toc-slice-at-deaths-rightarrow-at-risk-observations" class="nav-link" data-scroll-target="#slice-at-deaths-rightarrow-at-risk-observations">“Slice” at Deaths <span class="math inline">\(\Rightarrow\)</span> At-Risk Observations</a></li>
-  <li><a href="#the-actual-dataset-we-get" id="toc-the-actual-dataset-we-get" class="nav-link" data-scroll-target="#the-actual-dataset-we-get">The Actual Dataset We Get</a></li>
-  <li><a href="#the-dataset-we-can-infer" id="toc-the-dataset-we-can-infer" class="nav-link" data-scroll-target="#the-dataset-we-can-infer">The Dataset We Can Infer</a></li>
-  <li><a href="#measuring-effect-of-treatment" id="toc-measuring-effect-of-treatment" class="nav-link" data-scroll-target="#measuring-effect-of-treatment">Measuring Effect of Treatment!</a></li>
-  <li><a href="#basic-question-1-survival" id="toc-basic-question-1-survival" class="nav-link" data-scroll-target="#basic-question-1-survival">Basic Question 1: Survival</a></li>
-  <li><a href="#kaplan-meier-estimator-intuition" id="toc-kaplan-meier-estimator-intuition" class="nav-link" data-scroll-target="#kaplan-meier-estimator-intuition">Kaplan-Meier Estimator: Intuition</a></li>
-  <li><a href="#kaplan-meier-estimator" id="toc-kaplan-meier-estimator" class="nav-link" data-scroll-target="#kaplan-meier-estimator">Kaplan-Meier Estimator</a></li>
-  <li><a href="#kaplan-meier-estimator-for-our-example" id="toc-kaplan-meier-estimator-for-our-example" class="nav-link" data-scroll-target="#kaplan-meier-estimator-for-our-example">Kaplan-Meier Estimator for our Example</a></li>
+  <li><a href="#the-fundamental-problem-of-causal-inference-1" id="toc-the-fundamental-problem-of-causal-inference-1" class="nav-link" data-scroll-target="#the-fundamental-problem-of-causal-inference-1">The <em>Fundamental</em> Problem of Causal Inference</a></li>
+  <li><a href="#cant-we-just-use-temporal-precedence" id="toc-cant-we-just-use-temporal-precedence" class="nav-link" data-scroll-target="#cant-we-just-use-temporal-precedence">Can’t We Just Use Temporal Precedence?</a></li>
+  <li><a href="#extreme-example-super-mario-64-speedrunning" id="toc-extreme-example-super-mario-64-speedrunning" class="nav-link" data-scroll-target="#extreme-example-super-mario-64-speedrunning">Extreme Example: Super Mario 64 Speedrunning</a></li>
+  <li><a href="#what-about-a-b-testing" id="toc-what-about-a-b-testing" class="nav-link" data-scroll-target="#what-about-a-b-testing">What About A-B Testing?</a></li>
+  <li><a href="#what-is-to-be-done" id="toc-what-is-to-be-done" class="nav-link" data-scroll-target="#what-is-to-be-done">What Is To Be Done?</a></li>
   </ul></li>
-  <li><a href="#comparing-survival-curves" id="toc-comparing-survival-curves" class="nav-link" data-scroll-target="#comparing-survival-curves">Comparing Survival Curves</a>
+  <li><a href="#matching-estimators" id="toc-matching-estimators" class="nav-link" data-scroll-target="#matching-estimators">Matching Estimators</a>
   <ul class="collapse">
-  <li><a href="#log-rank-test" id="toc-log-rank-test" class="nav-link" data-scroll-target="#log-rank-test">Log-Rank Test</a></li>
-  <li><a href="#log-rank-test-statistic" id="toc-log-rank-test-statistic" class="nav-link" data-scroll-target="#log-rank-test-statistic">Log-Rank Test Statistic</a></li>
+  <li><a href="#case-study-military-inequality-leadsto-military-success" id="toc-case-study-military-inequality-leadsto-military-success" class="nav-link" data-scroll-target="#case-study-military-inequality-leadsto-military-success">Case Study: Military Inequality <span class="math inline">\(\leadsto\)</span> Military Success</a></li>
+  <li><a href="#does-inequality-cause-poor-military-performance" id="toc-does-inequality-cause-poor-military-performance" class="nav-link" data-scroll-target="#does-inequality-cause-poor-military-performance">Does Inequality Cause Poor Military Performance?</a></li>
+  <li><a href="#glorified-logistic-regression" id="toc-glorified-logistic-regression" class="nav-link" data-scroll-target="#glorified-logistic-regression">…Glorified Logistic Regression!</a></li>
+  <li><a href="#from-controlling-for-to-how-well-are-we-controlling-for" id="toc-from-controlling-for-to-how-well-are-we-controlling-for" class="nav-link" data-scroll-target="#from-controlling-for-to-how-well-are-we-controlling-for">From “Controlling For” to “<em>How Well</em> Are We Controlling For?”</a></li>
+  <li><a href="#selection-bias" id="toc-selection-bias" class="nav-link" data-scroll-target="#selection-bias">Selection Bias</a></li>
+  <li><a href="#logistic-regression-of-treatment" id="toc-logistic-regression-of-treatment" class="nav-link" data-scroll-target="#logistic-regression-of-treatment">Logistic Regression of Treatment</a></li>
+  <li><a href="#propensity-score-logistic-regression-estimate" id="toc-propensity-score-logistic-regression-estimate" class="nav-link" data-scroll-target="#propensity-score-logistic-regression-estimate">Propensity Score = Logistic Regression Estimate</a></li>
+  <li><a href="#propensity-score-matching-distance-metric" id="toc-propensity-score-matching-distance-metric" class="nav-link" data-scroll-target="#propensity-score-matching-distance-metric">Propensity Score <em>Matching</em> = Distance Metric!</a></li>
+  <li><a href="#now-in-a-for-loop" id="toc-now-in-a-for-loop" class="nav-link" data-scroll-target="#now-in-a-for-loop">Now in a For Loop…</a></li>
+  <li><a href="#and-now-we-compare-apples-to-apples" id="toc-and-now-we-compare-apples-to-apples" class="nav-link" data-scroll-target="#and-now-we-compare-apples-to-apples">And Now We Compare Apples to Apples…</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul></li>
-  <li><a href="#regression-with-survival-response" id="toc-regression-with-survival-response" class="nav-link" data-scroll-target="#regression-with-survival-response">Regression with Survival Response</a>
-  <ul class="collapse">
-  <li><a href="#the-hazard-function" id="toc-the-hazard-function" class="nav-link" data-scroll-target="#the-hazard-function">The Hazard Function</a></li>
-  <li><a href="#proportional-hazard-assumption" id="toc-proportional-hazard-assumption" class="nav-link" data-scroll-target="#proportional-hazard-assumption">Proportional Hazard Assumption</a></li>
-  <li><a href="#cox-proportional-hazard-model" id="toc-cox-proportional-hazard-model" class="nav-link" data-scroll-target="#cox-proportional-hazard-model">Cox Proportional Hazard Model</a></li>
-  <li><a href="#in-code" id="toc-in-code" class="nav-link" data-scroll-target="#in-code">In Code</a></li>
-  <li><a href="#coxph-estimation" id="toc-coxph-estimation" class="nav-link" data-scroll-target="#coxph-estimation"><code>coxph()</code> Estimation</a></li>
-  <li><a href="#survival-curves-for-each-diagnosis" id="toc-survival-curves-for-each-diagnosis" class="nav-link" data-scroll-target="#survival-curves-for-each-diagnosis">Survival Curves for Each Diagnosis</a></li>
-  <li><a href="#less-straightforward-curves-for-each-ki-gtv-val" id="toc-less-straightforward-curves-for-each-ki-gtv-val" class="nav-link" data-scroll-target="#less-straightforward-curves-for-each-ki-gtv-val">Less Straightforward: Curves for Each <code>ki</code>, <code>gtv</code> Val</a></li>
-  </ul></li>
-  <li><a href="#quiz-3" id="toc-quiz-3" class="nav-link" data-scroll-target="#quiz-3">Quiz 3</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/jpowerj/dsan5300-01/blob/main/w12/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="slides.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/w12/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="slides.html"><i class="bi bi-file-slides"></i>RevealJS</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
+
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Week 12: Survival Analysis</h1>
-<p class="subtitle lead"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2025, Georgetown University</span></p>
+<h1 class="title">Week 12: Machine Learning for Causal Inference</h1>
+<p class="subtitle lead"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2026, Georgetown University</span></p>
   <div class="quarto-categories">
     <div class="quarto-category">Class Sessions</div>
   </div>
@@ -371,7 +559,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Monday, April 7, 2025</p>
+      <p class="date">Monday, April 13, 2026</p>
     </div>
   </div>
   
@@ -409,19 +597,19 @@ window.Quarto = {
 <td style="text-align: left;"><strong>Lecture</strong></td>
 <td style="text-align: left;">6:30pm</td>
 <td style="text-align: left;">7:00pm</td>
-<td style="text-align: left;"><a href="#learning-decision-boundaries">Estimating Survival Curves →</a></td>
+<td style="text-align: left;"><a href="#learning-decision-boundaries">Fundamental Problem of Causal Inference →</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
 <td style="text-align: left;">7:00pm</td>
 <td style="text-align: left;">7:20pm</td>
-<td style="text-align: left;"><a href="#comparing-survival-curves">Comparing Between Groups →</a></td>
+<td style="text-align: left;"><a href="#comparing-survival-curves">Apples to Apples →</a></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
 <td style="text-align: left;">7:20pm</td>
 <td style="text-align: left;">8:00pm</td>
-<td style="text-align: left;"><a href="#regression-with-survival-response">Regression (Cox Proportional Hazard Model) →</a></td>
+<td style="text-align: left;"><a href="#regression-with-survival-response">How Can Machine Learning Help? →</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Break!</strong></td>
@@ -433,7 +621,7 @@ window.Quarto = {
 <td style="text-align: left;"></td>
 <td style="text-align: left;">8:10pm</td>
 <td style="text-align: left;">9:00pm</td>
-<td style="text-align: left;"><a href="#quiz-time">Quiz 3 →</a></td>
+<td style="text-align: left;"><a href="#quiz-time">Causal Forests →</a></td>
 </tr>
 </tbody>
 </table>
@@ -441,8 +629,8 @@ window.Quarto = {
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </div>
@@ -473,7 +661,10 @@ window.Quarto = {
 \newcommand{\outcome}[1]{\textsf{#1}}
 \newcommand{\param}[1]{{\color{purple} #1}}
 \newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
-\newcommand{\prob}[1]{P\left( #1 \right)}
+\newcommand{\pedge}[2]{\require{enclose}\enclose{circle}{~{#1}~} \rightarrow \; \enclose{circle}{\kern.01em {#2}~\kern.01em}}
+\newcommand{\pnode}[1]{\require{enclose}\enclose{circle}{\kern.1em {#1} \kern.1em}}
+\newcommand{\ponode}[1]{\require{enclose}\enclose{box}[background=lightgray]{{#1}}}
+\newcommand{\pnodesp}[1]{\require{enclose}\enclose{circle}{~{#1}~}}
 \newcommand{\purp}[1]{\color{purple}{#1}}
 \newcommand{\sign}{\text{Sign}}
 \newcommand{\spacecap}{\; \cap \;}
@@ -483,1270 +674,1404 @@ window.Quarto = {
 \newcommand{\bigVar}[1]{\text{Var}\mkern-4mu \left[ #1 \right]}
 \]</span></p>
 </div>
-<section id="roadmap" class="level2 crunch-title crunch-ul">
-<h2 class="crunch-title crunch-ul anchored" data-anchor-id="roadmap">Roadmap</h2>
+<section id="roadmap" class="level2 crunch-title crunch-ul-full title-10 text-80 crunch-li-8 crunch-li-last">
+<h2 class="crunch-title crunch-ul-full title-10 text-80 crunch-li-8 crunch-li-last anchored" data-anchor-id="roadmap">Roadmap</h2>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="<i class='bi bi-1-circle'></i> What makes **causation** different from correlation?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span><i class="bi bi-1-circle"></i> What makes <strong>causation</strong> different from correlation?
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li><i class="bi bi-1-circle"></i> Basic tool: <strong>survival curve</strong> <span class="math inline">\(S(t)\)</span> = probability of surviving past period <span class="math inline">\(t\)</span></li>
-<li>Complicating factor: <strong>Censored</strong> obs (e.g., drop out of study)</li>
-<li><span class="math inline">\(\Rightarrow\)</span> Need to think about <strong>DGP</strong>: <em>Why</em> is observation <span class="math inline">\(i\)</span> censored while <span class="math inline">\(j\)</span> is observed?
+<li>Why can’t we use, e.g., Regression to infer <strong>causal effects</strong>? <em><span class="math inline">\(\uparrow X\)</span> by 1 unit <del>causes</del> <span class="math inline">\(\uparrow Y\)</span> by <span class="math inline">\(\beta\)</span> units</em>?</li>
+<li><span class="math inline">\(\leadsto\)</span> Fundamental Problem of Causal Inference</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="<i class='bi bi-2-circle'></i> Key to resolving Fundamental Problem: *Match* similar observations">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span><i class="bi bi-2-circle"></i> Key to resolving Fundamental Problem: <em>Match</em> similar observations
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li>Basic estimators only valid if censoring <span class="math inline">\(\perp\)</span> survival time</li>
+<li><strong>Apples to apples</strong>: If <span class="math inline">\(j\)</span> receives drug while <span class="math inline">\(i\)</span> doesn’t, and they’re <span class="math inline">\(s_{ij}\%\)</span> similar otherwise (age, height)…</li>
+<li>Higher <span class="math inline">\(s_{ij}\)</span> <span class="math inline">\(\implies\)</span> more confidence in attributing difference in outcomes <span class="math inline">\(\boxed{\Delta y = y_j - y_i}\)</span> to drug!</li>
+<li><span class="math inline">\(\leadsto\)</span> Propensity Score Matching (<span class="math inline">\(\approx\)</span> Logistic Regression)</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="<i class='bi bi-3-circle'></i> How can ML help us infer **counterfactual** effects?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span><i class="bi bi-3-circle"></i> How can ML help us infer <strong>counterfactual</strong> effects?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Patient <em><span class="math inline">\(i\)</span> didn’t receive treatment, reported <a href="https://www.physio-pedia.com/McGill_Pain_Questionnaire">VAS pain level</a> <span class="math inline">\(y^0_i = 80\)</span>…</em></li>
+<li><em>If <span class="math inline">\(i\)</span> <strong>had</strong> received treatment, what would their pain level <span class="math inline">\(y_i^1\)</span> be?</em></li>
+<li><span class="math inline">\(\leadsto\)</span> Causal Forests, to estimate <span class="math inline">\(\boxed{\Delta y_i = y^1_i - y^0_i}\)</span></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="the-fundamental-problem-of-causal-inference" class="level1" data-stack-name="Fundamental Problem">
+<h1 data-stack-name="Fundamental Problem">The Fundamental Problem of Causal Inference</h1>
+<section id="the-fundamental-problem-of-causal-inference-1" class="level2 crunch-title crunch-ul crunch-callout title-07">
+<h2 class="crunch-title crunch-ul crunch-callout title-07 anchored" data-anchor-id="the-fundamental-problem-of-causal-inference-1">The <em>Fundamental</em> Problem of Causal Inference</h2>
+<p>The only workable definition of “<span class="math inline">\(X\)</span> causes <span class="math inline">\(Y\)</span>”:</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="<i class='bi bi-info-circle pe-1'></i> Defining Causality [@hume_treatise_1739]">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span><i class="bi bi-info-circle pe-1"></i> Defining Causality <span class="citation" data-cites="hume_treatise_1739">(<a href="#ref-hume_treatise_1739" role="doc-biblioref">Hume 1739</a>)</span>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="math inline">\(X\)</span> causes <span class="math inline">\(Y\)</span> if and only if:</p>
+<ol type="1">
+<li><span class="math inline">\(X\)</span> <strong>temporally precedes</strong> <span class="math inline">\(Y\)</span> and</li>
+<li><ul>
+<li>In <strong>two worlds</strong> <span class="math inline">\(W_0\)</span> and <span class="math inline">\(W_1\)</span> where everything is <strong>exactly the same</strong>…</li>
+<li>…<strong>except that</strong> <span class="math inline">\(\boxed{X = 0 \text{  in  } W_0}\)</span> and <span class="math inline">\(\boxed{X = 1 \text{  in  } W_1}\)</span>,</li>
+<li><span class="math inline">\(\boxed{Y = 0 \text{  in  } W_0}\)</span> and <span class="math inline">\(\boxed{Y = 1 \text{  in  } W_1}\)</span>.</li>
 </ul></li>
-<li><i class="bi bi-2-circle"></i> How to compare survival <strong>between two groups</strong></li>
-<li><i class="bi bi-3-circle"></i> Regression: Effect of features <span class="math inline">\(X_1, \ldots, X_p\)</span> on survival</li>
-</ul>
-</section>
-</section>
-<section id="survival-analysis-basics" class="level1 smaller title-12" data-stack-name="Survival Curve Estimation">
-<h1 class="smaller title-12" data-stack-name="Survival Curve Estimation">Survival Analysis Basics</h1>
+</ol>
+</div>
+</div>
 <ul>
-<li>Lots of information crunched into this one figure!</li>
+<li>The problem? We live in <strong>one</strong> world, not two simultaneous worlds 😭</li>
 </ul>
+</section>
+<section id="cant-we-just-use-temporal-precedence" class="level2 title-08 crunch-title">
+<h2 class="title-08 crunch-title anchored" data-anchor-id="cant-we-just-use-temporal-precedence">Can’t We Just Use Temporal Precedence?</h2>
+<ul>
+<li>Can’t we just pretend that <span class="math inline">\(W_0\)</span> is our world at time <span class="math inline">\(t\)</span> and <span class="math inline">\(W_1\)</span> is our world at time <span class="math inline">\(t + 1\)</span>?</li>
+<li>Did throwing the eraser at Sam at time <span class="math inline">\(t\)</span> <strong>cause</strong> him to be upset at time <span class="math inline">\(t + 1\)</span>?</li>
+<li>No, because at time <span class="math inline">\(t\)</span>, simultaneous with my eraser-throwing, a <strong>cockroach</strong> scuttled across his foot, the <em>true</em> cause of him being upset at time <span class="math inline">\(t + 1\)</span></li>
+<li>Without knowing that the worlds are <strong>identical except for the posited cause-event</strong>, we can’t exclude the possibility of some other cause-event</li>
+</ul>
+</section>
+<section id="extreme-example-super-mario-64-speedrunning" class="level2 smaller crunch-title title-10 crunch-quarto-figure crunch-blockquote crunch-p crunch-img">
+<h2 class="smaller crunch-title title-10 crunch-quarto-figure crunch-blockquote crunch-p crunch-img anchored" data-anchor-id="extreme-example-super-mario-64-speedrunning">Extreme Example: Super Mario 64 Speedrunning</h2>
+<p>Seemingly-reasonable assumption: Button-pushes cause outcomes in games…</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<blockquote class="blockquote">
+<p>During the race, an ionizing particle from outer space collided with DOTA_Teabag’s N64, flipping the eighth bit of Mario’s first height byte. Specifically, it flipped the byte from 11000101 to 11000100, from “C5” to “C4”. This resulted in a height change from C5837800 to C4837800, which by complete chance, happened to be the exact amount needed to warp Mario up to the higher floor at that exact moment.</p>
+</blockquote>
+</div><div class="column" style="width:50%;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/11_1.svg" class="img-fluid figure-img"></p>
-<figcaption>ISLR Figure 11.1</figcaption>
+<p><img src="images/sm64.jpg" class="img-fluid figure-img"></p>
+<figcaption><a href="https://www.thegamer.com/how-ionizing-particle-outer-space-helped-super-mario-64-speedrunner-save-time/">Article from TheGamer.com</a></figcaption>
 </figure>
 </div>
-<section id="read-left-to-right-rightarrow-sequence-of-events" class="level2 smaller crunch-title title-11">
-<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="read-left-to-right-rightarrow-sequence-of-events">Read Left to Right <span class="math inline">\(\Rightarrow\)</span> Sequence of Events</h2>
+</div>
+</div>
+<blockquote class="blockquote">
+<p>This was tested by pannenkoek12 - the same person who put up the bounty - using a script that manually flipped that particular bit at the right time, confirming the suspicion of a bit flip.</p>
+</blockquote>
+</section>
+<section id="what-about-a-b-testing" class="level2 crunch-title title-09 crunch-li-8">
+<h2 class="crunch-title title-09 crunch-li-8 anchored" data-anchor-id="what-about-a-b-testing">What About A-B Testing?</h2>
+<ul>
+<li>Gets us significantly closer, but methods for <strong>recovering</strong> causal effect require a condition called <strong>SUTVA</strong></li>
+<li><strong>S</strong>table <strong>U</strong>nit <strong>T</strong>reatment <strong>V</strong>alue <strong>A</strong>ssumption: Treatment applied to <span class="math inline">\(i\)</span> does not affect outcome for another person <span class="math inline">\(j\)</span></li>
+<li>If we A-B test an <strong>app redesign</strong> (A = old design, B = new design), and outcome = length of time spent on app…</li>
+<li>Person <span class="math inline">\(i\)</span> seeing design A may like the new design, causing them to spend more time on the app</li>
+<li>Person <span class="math inline">\(i\)</span> may then <strong>message</strong> person <span class="math inline">\(j\)</span> <em>“Check out [app], they redesigned everything!”</em>, causing <span class="math inline">\(j\)</span> to spend more time on app regardless of treatment (network spillover ❌)</li>
+</ul>
+</section>
+<section id="what-is-to-be-done" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-to-be-done">What Is To Be Done?</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/Survival_Plot.png" class="img-fluid figure-img"></p>
-<figcaption>Modified ISLR Figure 11.1</figcaption>
+<p><img src="images/face_everything_and_rise.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
 </figure>
 </div>
 </section>
-<section id="slice-at-deaths-rightarrow-at-risk-observations" class="level2 smaller crunch-title title-11">
-<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="slice-at-deaths-rightarrow-at-risk-observations">“Slice” at Deaths <span class="math inline">\(\Rightarrow\)</span> At-Risk Observations</h2>
+</section>
+<section id="matching-estimators" class="level1 crunch-title" data-stack-name="Matching Estimators">
+<h1 class="crunch-title" data-stack-name="Matching Estimators">Matching Estimators</h1>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/Survival_Plot_Slices.png" class="img-fluid figure-img"></p>
-<figcaption>Modified ISLR Figure 11.1</figcaption>
+<p><img src="images/fruit.png" class="img-fluid figure-img"></p>
+<figcaption><a href="https://shirt.woot.com/offers/comparing-apples-to-oranges">Image Source</a></figcaption>
 </figure>
 </div>
+<section id="case-study-military-inequality-leadsto-military-success" class="level2 smaller crunch-title title-09 crunch-ul crunch-blockquote crunch-li-8">
+<h2 class="smaller crunch-title title-09 crunch-ul crunch-blockquote crunch-li-8 anchored" data-anchor-id="case-study-military-inequality-leadsto-military-success">Case Study: Military Inequality <span class="math inline">\(\leadsto\)</span> Military Success</h2>
+<ul>
+<li><span class="citation" data-cites="lyall_divided_2020">Lyall (<a href="#ref-lyall_divided_2020" role="doc-biblioref">2020</a>)</span>: “Treating certain ethnic groups as second-class citizens […] leads victimized soldiers to subvert military authorities once war begins. The higher an army’s inequality, the greater its rates of desertion, side-switching, and casualties”</li>
+</ul>
+<blockquote class="blockquote">
+<p>Matching constructs <strong>pairs of belligerents</strong> that are <strong>similar</strong> across a wide range of traits thought to dictate battlefield performance but that <strong>vary</strong> in levels of prewar inequality. The more similar the belligerents, the better our estimate of inequality’s effects, as all other traits are shared and thus cannot explain observed differences in performance, helping assess how battlefield performance <strong>would have</strong> improved (declined) if the belligerent had a lower (higher) level of prewar inequality.</p>
+<p>Since [non-matched] cases are <strong>dropped</strong> […] selected cases are more representative of average belligerents/wars than outliers with few or no matches, [providing] surer ground for testing generalizability of the book’s claims than focusing solely on canonical but unrepresentative usual suspects (Germany, the United States, Israel)</p>
+</blockquote>
 </section>
-<section id="the-actual-dataset-we-get" class="level2 smaller crunch-title title-11">
-<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="the-actual-dataset-we-get">The Actual Dataset We Get</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th style="text-align: center;">Patient (<span class="math inline">\(i\)</span>)</th>
-<th style="text-align: center;">Observed Outcome (<span class="math inline">\(Y_i\)</span>)</th>
-<th style="text-align: center;">Observed? (<span class="math inline">\(\delta_i\)</span>)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">300</td>
-<td style="text-align: center;">1</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">2</td>
-<td style="text-align: center;">365</td>
-<td style="text-align: center;">0</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">150</td>
-<td style="text-align: center;">1</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">4</td>
-<td style="text-align: center;">250</td>
-<td style="text-align: center;">0</td>
-</tr>
-</tbody>
-</table>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/11_1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-</section>
-<section id="the-dataset-we-can-infer" class="level2 smaller crunch-title title-11">
-<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="the-dataset-we-can-infer">The Dataset We Can Infer</h2>
+<section id="does-inequality-cause-poor-military-performance" class="level2 smaller crunch-title title-10 table-80 text-60">
+<h2 class="smaller crunch-title title-10 table-80 text-60 anchored" data-anchor-id="does-inequality-cause-poor-military-performance">Does Inequality Cause Poor Military Performance?</h2>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 20%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 30%">
-<col style="width: 30%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;">Patient (<span class="math inline">\(i\)</span>)</th>
-<th style="text-align: center;"><span class="math inline">\(Y_i\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(\delta_i\)</span></th>
-<th style="text-align: center;">Survival Time (<span class="math inline">\(T_i\)</span>)</th>
-<th style="text-align: center;">Censor Point (<span class="math inline">\(C_i\)</span>)</th>
+<th><br>Covariates</th>
+<th>Sultanate of Morocco<br> <em>Spanish-Moroccan War, 1859-60</em></th>
+<th>Khanate of Kokand<br> <em>War with Russia, 1864-65</em></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">300</td>
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">300</td>
-<td style="text-align: center;"><code>NA</code></td>
+<td><strong><span class="math inline">\(X\)</span>: Military Inequality</strong></td>
+<td>Low (0.01)</td>
+<td>Extreme (0.70)</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">2</td>
-<td style="text-align: center;">365</td>
-<td style="text-align: center;">0</td>
-<td style="text-align: center;"><code>NA</code></td>
-<td style="text-align: center;">365</td>
+<td><strong><span class="math inline">\(\mathbf{Z}\)</span>: Matched Covariates:</strong></td>
+<td></td>
+<td></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">150</td>
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">150</td>
-<td style="text-align: center;"><code>NA</code></td>
+<td>Initial relative power</td>
+<td>66%</td>
+<td>66%</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">4</td>
-<td style="text-align: center;">250</td>
-<td style="text-align: center;">0</td>
-<td style="text-align: center;"><code>NA</code></td>
-<td style="text-align: center;">250</td>
+<td>Total fielded force</td>
+<td>55,000</td>
+<td>50,000</td>
+</tr>
+<tr class="odd">
+<td>Regime type</td>
+<td>Absolutist Monarchy (−6)</td>
+<td>Absolute Monarchy (−7)</td>
+</tr>
+<tr class="even">
+<td>Distance from capital</td>
+<td>208km</td>
+<td>265km</td>
+</tr>
+<tr class="odd">
+<td>Standing army</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Composite military</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Initiator</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Joiner</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Democratic opponent</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Great Power</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Civil war</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Combined arms</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Doctrine</td>
+<td>Offensive</td>
+<td>Offensive</td>
+</tr>
+<tr class="even">
+<td>Superior weapons</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Fortifications</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Foreign advisors</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Terrain</td>
+<td>Semiarid coastal plain</td>
+<td>Semiarid grassland plain</td>
+</tr>
+<tr class="even">
+<td>Topography</td>
+<td>Rugged</td>
+<td>Rugged</td>
+</tr>
+<tr class="odd">
+<td>War duration</td>
+<td>126 days</td>
+<td>378 days</td>
+</tr>
+<tr class="even">
+<td>Recent war history w/opp</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Facing colonizer</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Identity dimension</td>
+<td>Sunni Islam/Christian</td>
+<td>Sunni Islam/Christian</td>
+</tr>
+<tr class="odd">
+<td>New leader</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Population</td>
+<td>8–8.5 million</td>
+<td>5–6 million</td>
+</tr>
+<tr class="odd">
+<td>Ethnoling fractionalization (ELF)</td>
+<td>High</td>
+<td>High</td>
+</tr>
+<tr class="even">
+<td>Civ-mil relations</td>
+<td>Ruler as commander</td>
+<td>Ruler as commander</td>
+</tr>
+<tr class="odd">
+<td><strong><span class="math inline">\(Y\)</span>: Battlefield Performance:</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Loss-exchange ratio</td>
+<td>0.43</td>
+<td>0.02</td>
+</tr>
+<tr class="odd">
+<td>Mass desertion</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Mass defection</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Fratricidal violence</td>
+<td>No</td>
+<td>Yes</td>
 </tr>
 </tbody>
 </table>
-<p>…If we’re testing effect of treatment, which column do we most care about?</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/11_1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
 </section>
-<section id="measuring-effect-of-treatment" class="level2 smaller crunch-title title-11">
-<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="measuring-effect-of-treatment">Measuring Effect of Treatment!</h2>
+<section id="glorified-logistic-regression" class="level2 smaller crunch-title title-11 crunch-ul cols-va crunch-details">
+<h2 class="smaller crunch-title title-11 crunch-ul cols-va crunch-details anchored" data-anchor-id="glorified-logistic-regression">…Glorified Logistic Regression!</h2>
 <style>
-.tab-surv tr td:nth-child(4), .tab-surv tr th:nth-child(4) {
-    border-left: 2px solid #E69F00 !important;
-    border-right: 2px solid #E69F00 !important;
-    background-color: #E69F0050 !important;
+.vil-table th {
+  background-color: white !important;
 }
-.tab-surv tr:first-child th:nth-child(4) {
-    border-top: 2px solid #E69F00 !important;
+.vil-table tr:nth-child(1), .vil-table tr:nth-child(2), .vil-table tr:nth-child(3), .vil-table tr:nth-child(4) {
+  background-color: rgba(230, 159, 0, 0.333) !important;
+  text-align: center !important;
 }
-.tab-surv tr:nth-child(4) td:nth-child(4) {
-    border-bottom: 2px solid #E69F00 !important;
+.vil-table tr:nth-child(5), .vil-table tr:nth-child(6), .vil-table tr:nth-child(7), .vil-table tr:nth-child(8), .vil-table tr:nth-child(9) {
+    background-color: rgba(86, 180, 233, 0.333) !important;
+    text-align: center !important;
+}
+.vil-sum-table th {
+  background-color: white !important;
+}
+.vil-sum-table tr:nth-child(1) {
+  background-color: rgba(230, 159, 0, 0.333) !important;
+  text-align: center !important;
+}
+.vil-sum-table tr:nth-child(2) {
+  background-color: rgba(86, 180, 233, 0.333) !important;
+  text-align: center !important;
 }
 </style>
-<table class="tab-surv caption-top table">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 30%">
-<col style="width: 30%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: center;">Patient (<span class="math inline">\(i\)</span>)</th>
-<th style="text-align: center;"><span class="math inline">\(Y_i\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(\delta_i\)</span></th>
-<th style="text-align: center;">Survival Time (<span class="math inline">\(T_i\)</span>)</th>
-<th style="text-align: center;">Censor Point (<span class="math inline">\(C_i\)</span>)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">300</td>
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">300</td>
-<td style="text-align: center;"><code>NA</code></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">2</td>
-<td style="text-align: center;">365</td>
-<td style="text-align: center;">0</td>
-<td style="text-align: center;"><code>NA</code></td>
-<td style="text-align: center;">365</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">3</td>
-<td style="text-align: center;">150</td>
-<td style="text-align: center;">1</td>
-<td style="text-align: center;">150</td>
-<td style="text-align: center;"><code>NA</code></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">4</td>
-<td style="text-align: center;">250</td>
-<td style="text-align: center;">0</td>
-<td style="text-align: center;"><code>NA</code></td>
-<td style="text-align: center;">250</td>
-</tr>
-</tbody>
-</table>
-<p>…If we’re testing effect of treatment, <span class="cb1a-bg" style="border: 2px solid #E69F00; padding: 5px !important;"><span class="math inline">\(T_i\)</span> is what we care about!</span></p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/11_1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-</section>
-<section id="basic-question-1-survival" class="level2 crunch-title math-90 inline-90">
-<h2 class="crunch-title math-90 inline-90 anchored" data-anchor-id="basic-question-1-survival">Basic Question 1: Survival</h2>
 <ul>
-<li>Let <span class="math inline">\(T\)</span> be a RV representing time of death for a patient</li>
-<li>What is probability that patient <strong>survives</strong> past given time <span class="math inline">\(t\)</span>?</li>
-</ul>
-<p><span class="math display">\[
-S_T(t) = \Pr(T &gt; t)
-\]</span></p>
-<ul>
-<li>Note relationship to something you saw in 5100!</li>
-<li><span class="math inline">\(S_T(t)\)</span> defined to be <span class="math inline">\(1 - F_T(t)\)</span>, where <span class="math inline">\(F_T(t)\)</span> is <strong>CDF</strong> of <span class="math inline">\(T\)</span>:</li>
-</ul>
-<p><span class="math display">\[
-F_T(t) = \Pr(T \leq t)
-\]</span></p>
-</section>
-<section id="kaplan-meier-estimator-intuition" class="level2 smaller crunch-title title-10 crunch-math crunch-ul crunch-quarto-figure crunch-img math-90 inline-90 crunch-li-5">
-<h2 class="smaller crunch-title title-10 crunch-math crunch-ul crunch-quarto-figure crunch-img math-90 inline-90 crunch-li-5 anchored" data-anchor-id="kaplan-meier-estimator-intuition">Kaplan-Meier Estimator: Intuition</h2>
-<p>Each death event <span class="math inline">\(d_k\)</span> gives us <strong>info</strong> that survival probability lower by some amount</p>
-<p><i class="bi bi-1-circle"></i> Break <span class="math inline">\(S(t)\)</span> into <strong>sequence of stepwise changes</strong> at <span class="math inline">\(d_1, \ldots, d_K\)</span>:</p>
-<p><span class="math display">\[
-\begin{align*}
-S(d_k) = \Pr(T &gt; d_k) &amp;\overset{\mathclap{\small\text{LTP}}}{=} \Pr(T &gt; d_k \mid T &gt; d_{k-1})\overbrace{\Pr(T &gt; d_{k-1})}^{S(d_{k-1})} \\
-&amp;\phantom{=} \; \; + \underbrace{\Pr(T &gt; d_k \mid T \leq d_{k-1})}_{\text{Contradiction} \implies \Pr = 0}\Pr(T \leq d_{k-1})
-\end{align*}
-\]</span></p>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><i class="bi bi-2-circle"></i> Gives us a <em>recurrence relation</em>:</p>
-<p><span class="math display">\[
-\begin{align*}
-S(d_k) &amp;= \Pr(T &gt; d_k \mid T &gt; d_{k-1})S(d_{k-1}) \\
-S(d_{k-1}) &amp;= \Pr(T &gt; d_{k-1} \mid T &gt; d_{k-2})S(d_{k-2}) \\
-%S(d_{k-2}) &amp;= \Pr(T &gt; d_{k-2} \mid T &gt; d_{k-3})S(d_{k-3}) \\
-&amp;\vdots \\
-S(d_2) &amp;= \Pr(T &gt; d_2 \mid T &gt; d_1)S(d_1) \\
-S(d_1) &amp;= \Pr(T &gt; d_1 \mid T &gt; d_0)S(d_0) = \Pr(T &gt; d_1)
-\end{align*}
-\]</span></p>
-</div><div class="column" style="width:50%;">
-<p><i class="bi bi-3-circle"></i> Plug each eq into eq above it to derive:</p>
-<p><span class="math display">\[
-\begin{align*}
-S(d_k) = &amp;\Pr(\underbrace{T &gt; d_k}_{\mathclap{\small\text{Survives past }d_k}} \; \mid \; \underbrace{T &gt; d_{k-1}}_{\mathclap{\small\text{Survives past }d_{k-1}}}) \\
-&amp;\times \Pr(\underbrace{T &gt; d_{k-1}}_{\small\text{Survives past }d_{k-1}} \mid \underbrace{T &gt; d_{k-2}}_{\small\text{Survives past }d_{k-2}}) \\
-&amp;\times \cdots \times \Pr(\underbrace{T &gt; d_2}_{\mathclap{\small\text{Survives past }d_2}} \; \mid \; \underbrace{T &gt; d_1}_{\mathclap{\small\text{Survives past }d_1}}) \\
-&amp;\times \Pr(\underbrace{T &gt; d_1}_{\mathclap{\small\text{Survives past }d_1}})
-\end{align*}
-\]</span></p>
-</div>
-</div>
-</section>
-<section id="kaplan-meier-estimator" class="level2 smaller crunch-title title-11 crunch-math crunch-ul crunch-quarto-figure crunch-img">
-<h2 class="smaller crunch-title title-11 crunch-math crunch-ul crunch-quarto-figure crunch-img anchored" data-anchor-id="kaplan-meier-estimator">Kaplan-Meier Estimator</h2>
-<ul>
-<li>Defined <strong>at</strong> death points <span class="math inline">\(d_k\)</span> as</li>
-</ul>
-<p><span class="math display">\[
-\widehat{S}(d_k) = \prod_{j=1}^{k} \Bigl(
-    \overbrace{
-        \frac{
-            r_j - q_j
-        }{
-            \underbrace{r_j}_{\mathclap{\small\text{Num At Risk}}}
-        }
-    }^{\mathclap{\small\text{Num Survived}}}
-\Bigr)
-\]</span></p>
-<ul>
-<li>Then, for <span class="math inline">\(t \in (d_k, d_{k+1})\)</span>, <span class="math inline">\(\widehat{S}(t) = \widehat{S}(d_k)\)</span>, producing <strong>stepwise</strong> survival function:</li>
-</ul>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/11_2.svg" class="img-fluid figure-img"></p>
-<figcaption>ISLR Figure 11.2</figcaption>
-</figure>
-</div>
-</section>
-<section id="kaplan-meier-estimator-for-our-example" class="level2 smaller crunch-title title-11 crunch-quarto-figure crunch-details math-80 inline-80">
-<h2 class="smaller crunch-title title-11 crunch-quarto-figure crunch-details math-80 inline-80 anchored" data-anchor-id="kaplan-meier-estimator-for-our-example">Kaplan-Meier Estimator for our Example</h2>
-<div class="columns">
-<div class="column" style="width:40%;">
-<p>Two death points: <span class="math inline">\(d_1 = 150, d_2 = 300\)</span> (plus start point <span class="math inline">\(d_0 = 0\)</span>)</p>
-<p><span class="math display">\[
-\begin{align*}
-{\color{#e69f00}\widehat{S}(d_0)} &amp;= \prod_{j=0}^{0}\left( \frac{r_k - q_k}{r_k} \right) = \left( \frac{4 - 0}{4} \right) = {\color{#e69f00}\boxed{1}} \\
-{\color{#56b4e9}\widehat{S}(d_1)} &amp;= \prod_{j=0}^{1}\left( \frac{r_k - q_k}{r_k} \right) = {\color{#e69f00}\boxed{1}} \cdot \left( \frac{r_1-q_1}{r_1} \right) \\
-&amp;= {\color{#e69f00}\boxed{1}} \cdot \left( \frac{4 - 1}{4} \right) = {\color{#56B4E9}\boxed{\frac{3}{4}}} \\
-{\color{#009e73}\widehat{S}(d_2)} &amp;= \prod_{j=0}^{2}\left( \frac{r_k - q_k}{r_k} \right) = {\color{#e69f00}\boxed{1}} \cdot {\color{#56b4e9}\boxed{\frac{3}{4}}} \cdot \left( \frac{r_2 - q_2}{r_2} \right) \\
-&amp;= {\color{#e69f00}\boxed{1}} \cdot {\color{#56b4e9}\boxed{\frac{3}{4}}} \cdot \left( \frac{2-1}{2} \right) = \frac{3}{4}\cdot \frac{1}{2} = {\color{#009e73}\boxed{\frac{3}{8}}}
-\end{align*}
-\]</span></p>
-</div><div class="column" style="width:60%;">
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>surv_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>id, <span class="sc">~</span>y, <span class="sc">~</span>delta,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span>, <span class="dv">300</span>, <span class="dv">1</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span>, <span class="dv">365</span>, <span class="dv">0</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="dv">3</span>, <span class="dv">150</span>, <span class="dv">1</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="dv">4</span>, <span class="dv">250</span>, <span class="dv">0</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>surv_obj <span class="ot">&lt;-</span> <span class="fu">Surv</span>(surv_df<span class="sc">$</span>y, <span class="at">event =</span> surv_df<span class="sc">$</span>delta)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>surv_model <span class="ot">&lt;-</span> <span class="fu">survfit</span>(surv_obj <span class="sc">~</span> <span class="dv">1</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot options</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="fl">1.25</span>,<span class="fl">1.0</span>)) <span class="co"># bltr</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>y_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">Pr(T &gt; t)$"</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  surv_model,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab=</span>y_label,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd=</span><span class="dv">1</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">main=</span><span class="st">"Survival Curve for 4-Patient Example"</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>) <span class="co"># conf.int=FALSE</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Add colors</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># lines(c(0, 150), c(1.0, 1.0), type='l', col='#E69F00', lwd=2)</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">0</span>, <span class="at">xright =</span> <span class="dv">150</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#E69F0040"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># lines(c(150, 300), c(3/4, 3/4), type='l', col='#56B4E9', lwd=2)</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">150</span>, <span class="at">xright =</span> <span class="dv">300</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#56B4E940"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co"># lines(c(300, 365), c(3/8, 3/8), type='l', col='#009E73', lwd=2)</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">300</span>, <span class="at">xright =</span> <span class="dv">365</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#009E7340"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="index_files/figure-html/kme-example-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="528"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Survival_Plot_Slices.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="comparing-survival-curves" class="level1 smaller crunch-title title-12 crunch-ul" data-stack-name="Comparing Groups">
-<h1 class="smaller crunch-title title-12 crunch-ul" data-stack-name="Comparing Groups">Comparing Survival Curves</h1>
-<ul>
-<li>Are female patients more likely to survive than male patients?</li>
-</ul>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/11_3.svg" class="img-fluid figure-img"></p>
-<figcaption>ISLR Figure 11.3</figcaption>
-</figure>
-</div>
-<section id="log-rank-test" class="level2 crunch-title title-09 crunch-ul crunch-li-8 math-90 inline-90 crunch-math text-90">
-<h2 class="crunch-title title-09 crunch-ul crunch-li-8 math-90 inline-90 crunch-math text-90 anchored" data-anchor-id="log-rank-test">Log-Rank Test</h2>
-<ul>
-<li>At each death event <span class="math inline">\(d_k\)</span>, construct a table like:</li>
-</ul>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th></th>
-<th style="text-align: center;">Group 1</th>
-<th style="text-align: center;">Group 2</th>
-<th style="text-align: center;">Total</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Died</strong></td>
-<td style="text-align: center;"><span class="math inline">\(q_{1k}\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(q_{2k}\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(q_k\)</span></td>
-</tr>
-<tr class="even">
-<td><strong>Survived</strong></td>
-<td style="text-align: center;"><span class="math inline">\(r_{1k} - q_{1k}\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(r_{2k} - q_{2k}\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(r_k - q_k\)</span></td>
-</tr>
-<tr class="odd">
-<td><strong>Total</strong></td>
-<td style="text-align: center;"><span class="math inline">\(r_{1k}\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(r_{2k}\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(r_k\)</span></td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>Focus on <span class="math inline">\(q_{1k}\)</span>! <strong>Null hypothesis</strong>: across all <span class="math inline">\(k \in \{1, \ldots, K\}\)</span>, <span class="math inline">\(q_{1k}\)</span> not systematically lower or higher than RHS:</li>
-</ul>
-<p><span class="math display">\[
-\mathbb{E}[ \underbrace{q_{1k}}_{\mathclap{\small\substack{\text{Group 1 deaths} \\ \text{at }d_k}}} ] =
-\overbrace{r_{1k}}^{\mathclap{\small\substack{\text{At risk in} \\[0.2em] \text{Group 1}}}} \cdot \underbrace{\left( \frac{q_k}{r_k} \right)}_{\mathclap{\small\text{Overall death rate at }d_k}}
-\]</span></p>
-</section>
-<section id="log-rank-test-statistic" class="level2 crunch-title title-09 math-75 crunch-ul crunch-li-8 inline-90">
-<h2 class="crunch-title title-09 math-75 crunch-ul crunch-li-8 inline-90 anchored" data-anchor-id="log-rank-test-statistic">Log-Rank Test Statistic</h2>
-<ul>
-<li>Test statistic <span class="math inline">\(W\)</span> should “detect” the alternative hypothesis, on basis of information <span class="math inline">\(X\)</span>… We can use <span class="math inline">\(\boxed{\textstyle X = \sum_{k=1}^{K}q_{1k}}\)</span>!</li>
-<li>Here, <strong>log-rank test statistic</strong> <span class="math inline">\(W\)</span> detects how much <span class="math inline">\(q_{1k}\)</span> <strong>deviates from expected value</strong> from prev slide:</li>
-</ul>
-<p><span class="math display">\[
-\begin{align*}
-W &amp;= \frac{X - \mathbb{E}[X]}{\sqrt{\text{Var}[X]}} = \frac{
-  \sum_{k=1}^{K}q_{1k} - \mathbb{E}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]
-}{
-  \sqrt{\text{Var}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]}
-} = \frac{
-  \sum_{k=1}^{K} \left( q_{1k} - \mathbb{E}[q_{1k}] \right)
-}{
-  \sqrt{\text{Var}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]}
-} \\
-&amp;= \frac{
-  \sum_{k=1}^{K}\left( q_{1k} - r_{1k}\cdot \frac{q_k}{r_k} \right)
-}{
-  \sqrt{\text{Var}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]}
-} \underset{\small\text{Ex 11.7}}{\overset{\small\text{ISLR}}{=}}
-\frac{
-  \sum_{k=1}^{K}\left( q_{1k} - r_{1k}\cdot \frac{q_k}{r_k} \right)
-}{
-  \sqrt{\sum_{k=1}^{K} \frac{
-    q_k(r_{1k}/r_k)(1 - r_{1k}/r_k)(r_k - q_k)
-  }{
-    r_k - 1
-  }}
-}
-\end{align*}
-\]</span></p>
-</section>
-</section>
-<section id="regression-with-survival-response" class="level1" data-stack-name="Regression">
-<h1 data-stack-name="Regression">Regression with Survival Response</h1>
-<section id="the-hazard-function" class="level2 crunch-title crunch-ul crunch-math math-90 inline-90 title-09 crunch-li-8">
-<h2 class="crunch-title crunch-ul crunch-math math-90 inline-90 title-09 crunch-li-8 anchored" data-anchor-id="the-hazard-function">The Hazard Function</h2>
-<ul>
-<li>Death rate at tiny <strong>instant after <span class="math inline">\(t\)</span></strong> (between <span class="math inline">\(t\)</span> and <span class="math inline">\(t + \Delta t\)</span>), <strong>given</strong> survival past <span class="math inline">\(t\)</span>:</li>
-</ul>
-<p><span class="math display">\[
-h(t) \definedas \lim_{\Delta t \rightarrow 0}\frac{\Pr(t &lt; T \leq t + \Delta t)}{\Delta t}
-\]</span></p>
-<ul>
-<li>If we define a RV <span class="math inline">\(T_{&gt;t} \definedas [T \mid T &gt; t]\)</span>, <span class="math inline">\(h(t)\)</span> is the <strong>pdf</strong> of <span class="math inline">\(T_{&gt;t}\)</span>!</li>
-<li>Can relate <span class="math inline">\(h(t)\)</span> to quantities we know (e.g., from 5100):</li>
-</ul>
-<p><span class="math display">\[
-\underbrace{h(t)}_{\small\text{pdf of }T_{&gt;t}} = \frac{\overbrace{f(t)}^{\small\text{pdf of }T}}{\underbrace{S(t)}_{\small \Pr(T &gt; t)}}
-\]</span></p>
-</section>
-<section id="proportional-hazard-assumption" class="level2 crunch-title crunch-math caption-smaller text-90 math-80 crunch-p crunch-quarto-figure cols-va">
-<h2 class="crunch-title crunch-math caption-smaller text-90 math-80 crunch-p crunch-quarto-figure cols-va anchored" data-anchor-id="proportional-hazard-assumption">Proportional Hazard Assumption</h2>
-<p><span class="math display">\[
-h(t \mid x_i) = h_0(t)\exp\left[ \sum_{j=1}^{p}\beta_j x_{ij} \right] \iff \underbrace{\log[h(t \mid x_i)]}_{\hbar(t \mid x_i)} = \underbrace{\log[h_0(t)]}_{\hbar_0(t)} + \sum_{j=1}^{p}\beta_j x_{ij}
-\]</span></p>
-<p>Basically: Features <span class="math inline">\(X_{j}\)</span> <strong>shift</strong> [log] baseline hazard function <span class="math inline">\(\hbar_0(t)\)</span> up and down by constant amounts, via multiplication by <span class="math inline">\(e^{\beta_j}\)</span></p>
-<div class="columns">
-<div class="column" style="width:45%;">
-<div id="prop-hazard-text" style="font-size: 80% !important;">
-<ul>
-<li><strong>Top row:</strong> <span class="math inline">\(\hbar_0(t)\)</span> in <strong>black</strong>, <span class="math inline">\(X_j = 1\)</span> shifts it down via multiplication by <span class="math inline">\(e^{\beta_j}\)</span> to form <span class="math inline">\(\hbar(t \mid X_j)\)</span> in <span class="cb3">green</span></li>
-<li><strong>Bottom row:</strong> Proportional hazard <em>violated</em>, since <span class="math inline">\(X_j = 1\)</span> associated with <strong>different</strong> changes to <span class="math inline">\(\hbar_0(t)\)</span> at <strong>different</strong> <span class="math inline">\(t\)</span> values</li>
-</ul>
-</div>
-</div><div class="column" style="width:55%;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/11_4.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="cox-proportional-hazard-model" class="level2 crunch-title crunch-math math-80">
-<h2 class="crunch-title crunch-math math-80 anchored" data-anchor-id="cox-proportional-hazard-model">Cox Proportional Hazard Model</h2>
-<ul>
-<li>Intuition: Best <span class="math inline">\(\beta\)</span>s are those which best predict <span class="math inline">\(i\)</span>’s death among all at risk at same time. Called “Partial Likelihood” <span class="math inline">\(\text{PL}(\boldsymbol\beta)\)</span> since we don’t need to estimate <span class="math inline">\(h_0(t)\)</span>!</li>
-</ul>
-<p><span class="math display">\[
-\prod_{i : \, \delta_i = 1} \; \frac{
-  {\color{red}\cancel{\color{black}h_0(t)}}\exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{ij} \right]
-}{
-  {\displaystyle \sum\limits_{\mathclap{i': \, y_{i'} \geq y_i}}} {\color{red}\cancel{\color{black}h_0(t)}}\exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{i'j} \right]
-} = \prod_{i : \, \delta_i = 1} \; \frac{
-  \exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{ij} \right]
-}{
-  {\displaystyle \sum\limits_{\mathclap{i': \, y_{i'} \geq y_i}}} \exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{i'j} \right]
-}
-\]</span></p>
-<ul>
-<li>Also note the missing intercept <span class="math inline">\(\beta_0\)</span>: handled by the baseline hazard function <span class="math inline">\(h_0(t)\)</span> (which we cancel out anyways!)</li>
-</ul>
-</section>
-<section id="in-code" class="level2 smaller crunch-title crunch-ul">
-<h2 class="smaller crunch-title crunch-ul anchored" data-anchor-id="in-code">In Code</h2>
-<ul>
-<li>We’ll use the <code>survival</code> library in R, very similar syntax to <code>lm()</code>, <code>glm()</code>, etc.!</li>
-</ul>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>bc_df <span class="ot">&lt;-</span> BrainCancer <span class="sc">|&gt;</span> <span class="fu">filter</span>(diagnosis <span class="sc">!=</span> <span class="st">"Other"</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>bc_df<span class="sc">$</span>diagnosis <span class="ot">=</span> <span class="fu">factor</span>(bc_df<span class="sc">$</span>diagnosis)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>bc_df<span class="sc">$</span>sex <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">substr</span>(bc_df<span class="sc">$</span>sex, <span class="dv">1</span>, <span class="dv">1</span>))</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>bc_df<span class="sc">$</span>loc <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">substr</span>(bc_df<span class="sc">$</span>loc, <span class="dv">1</span>, <span class="dv">5</span>))</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width=</span><span class="dv">130</span>)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bc_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code> sex         diagnosis     loc           ki              gtv         stereo       status           time      
- F:39   Meningioma:42   Infra:10   Min.   : 40.00   Min.   : 0.040   SRS:19   Min.   :0.000   Min.   : 0.07  
- M:34   LG glioma : 9   Supra:63   1st Qu.: 80.00   1st Qu.: 2.500   SRT:54   1st Qu.:0.000   1st Qu.: 9.77  
-        HG glioma :22              Median : 80.00   Median : 6.480            Median :0.000   Median :26.46  
-                                   Mean   : 81.37   Mean   : 8.297            Mean   :0.411   Mean   :27.83  
-                                   3rd Qu.: 90.00   3rd Qu.:11.380            3rd Qu.:1.000   3rd Qu.:41.44  
-                                   Max.   :100.00   Max.   :33.690            Max.   :1.000   Max.   :82.56  </code></pre>
-</div>
-</div>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>bc_df <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;">sex</th>
-<th style="text-align: left;">diagnosis</th>
-<th style="text-align: left;">loc</th>
-<th style="text-align: right;">ki</th>
-<th style="text-align: right;">gtv</th>
-<th style="text-align: left;">stereo</th>
-<th style="text-align: right;">status</th>
-<th style="text-align: right;">time</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">F</td>
-<td style="text-align: left;">Meningioma</td>
-<td style="text-align: left;">Infra</td>
-<td style="text-align: right;">90</td>
-<td style="text-align: right;">6.11</td>
-<td style="text-align: left;">SRS</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">57.64</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">M</td>
-<td style="text-align: left;">HG glioma</td>
-<td style="text-align: left;">Supra</td>
-<td style="text-align: right;">90</td>
-<td style="text-align: right;">19.35</td>
-<td style="text-align: left;">SRT</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">8.98</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">F</td>
-<td style="text-align: left;">Meningioma</td>
-<td style="text-align: left;">Infra</td>
-<td style="text-align: right;">70</td>
-<td style="text-align: right;">7.95</td>
-<td style="text-align: left;">SRS</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">26.46</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">F</td>
-<td style="text-align: left;">LG glioma</td>
-<td style="text-align: left;">Supra</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">7.61</td>
-<td style="text-align: left;">SRT</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">47.80</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">M</td>
-<td style="text-align: left;">HG glioma</td>
-<td style="text-align: left;">Supra</td>
-<td style="text-align: right;">90</td>
-<td style="text-align: right;">5.06</td>
-<td style="text-align: left;">SRT</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">6.30</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</section>
-<section id="coxph-estimation" class="level2 smaller crunch-title title-12 crunch-details table-90">
-<h2 class="smaller crunch-title title-12 crunch-details table-90 anchored" data-anchor-id="coxph-estimation"><code>coxph()</code> Estimation</h2>
-<style>
-.cox-table tr:nth-child(3) {
-  background-color: #e69f0040;
-  font-weight: bold;
-}
-.cox-table tr:nth-child(5) {
-  background-color: #56b4e940;
-  font-weight: bold;
-}
-</style>
-<div class="cell cox-table" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>full_cox_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Surv</span>(time, status) <span class="sc">~</span> sex <span class="sc">+</span> diagnosis <span class="sc">+</span> loc <span class="sc">+</span> ki <span class="sc">+</span> gtv <span class="sc">+</span> stereo,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span>bc_df</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>broom<span class="sc">::</span><span class="fu">tidy</span>(full_cox_model) <span class="sc">|&gt;</span> <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top table table-sm table-striped small">
-<thead>
-<tr class="header">
-<th style="text-align: left;">term</th>
-<th style="text-align: right;">estimate</th>
-<th style="text-align: right;">std.error</th>
-<th style="text-align: right;">statistic</th>
-<th style="text-align: right;">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">sexM</td>
-<td style="text-align: right;">0.456</td>
-<td style="text-align: right;">0.396</td>
-<td style="text-align: right;">1.154</td>
-<td style="text-align: right;">0.249</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">diagnosisLG glioma</td>
-<td style="text-align: right;">0.864</td>
-<td style="text-align: right;">0.641</td>
-<td style="text-align: right;">1.347</td>
-<td style="text-align: right;">0.178</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">diagnosisHG glioma</td>
-<td style="text-align: right;">2.116</td>
-<td style="text-align: right;">0.470</td>
-<td style="text-align: right;">4.504</td>
-<td style="text-align: right;">0.000</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">locSupra</td>
-<td style="text-align: right;">1.482</td>
-<td style="text-align: right;">1.105</td>
-<td style="text-align: right;">1.342</td>
-<td style="text-align: right;">0.180</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">ki</td>
-<td style="text-align: right;">-0.048</td>
-<td style="text-align: right;">0.020</td>
-<td style="text-align: right;">-2.406</td>
-<td style="text-align: right;">0.016</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">gtv</td>
-<td style="text-align: right;">0.036</td>
-<td style="text-align: right;">0.026</td>
-<td style="text-align: right;">1.361</td>
-<td style="text-align: right;">0.173</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">stereoSRT</td>
-<td style="text-align: right;">-0.475</td>
-<td style="text-align: right;">0.591</td>
-<td style="text-align: right;">-0.803</td>
-<td style="text-align: right;">0.422</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<ul>
-<li><span class="cb1a-bg"><strong>Diagnosis:</strong></span> Relative to <strong>baseline</strong> of Meningioma, HG (High-Grade) glioma associated with <span class="math inline">\(e^{2.155} \approx 8.628\)</span> times greater hazard</li>
-<li><span class="cb2a-bg"><strong>Karnofsky Index (<code>ki</code>):</strong></span> 1-unit increase associated with reduction of hazard to <span class="math inline">\(e^{-0.055} \approx 94.65\)</span>% of previous value [0-100 scale of self-functioning abilities]</li>
-</ul>
-</section>
-<section id="survival-curves-for-each-diagnosis" class="level2">
-<h2 class="anchored" data-anchor-id="survival-curves-for-each-diagnosis">Survival Curves for Each Diagnosis</h2>
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(extrafont) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">cex=</span><span class="fl">1.2</span>, <span class="at">family=</span><span class="st">"CMU Sans Serif"</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>diag_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Meningioma"</span>, <span class="st">"LG glioma"</span>, <span class="st">"HG glioma"</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>diag_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">diagnosis =</span> diag_levels,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">sex =</span> <span class="fu">rep</span>(<span class="st">"F"</span>, <span class="dv">3</span>),</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc =</span> <span class="fu">rep</span>(<span class="st">"Supra"</span>, <span class="dv">3</span>),</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ki =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>ki), <span class="dv">3</span>),</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">gtv =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>gtv), <span class="dv">3</span>),</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">stereo =</span> <span class="fu">rep</span>(<span class="st">"SRT"</span>, <span class="dv">3</span>)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>survplots <span class="ot">&lt;-</span> <span class="fu">survfit</span>(full_cox_model, <span class="at">newdata =</span> diag_df)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  survplots,</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Survival Curves by Diagnosis"</span>,</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Months"</span>, <span class="at">ylab =</span> <span class="st">"Survival Probability"</span>,</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette, <span class="at">lwd=</span><span class="fl">1.5</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"bottomleft"</span>,</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  diag_levels,</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd=</span><span class="fl">1.5</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="index_files/figure-html/diag-survival-curves-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="less-straightforward-curves-for-each-ki-gtv-val" class="level2 smaller crunch-title title-10 crunch-quarto-figure crunch-img crunch-ul">
-<h2 class="smaller crunch-title title-10 crunch-quarto-figure crunch-img crunch-ul anchored" data-anchor-id="less-straightforward-curves-for-each-ki-gtv-val">Less Straightforward: Curves for Each <code>ki</code>, <code>gtv</code> Val</h2>
-<ul>
-<li>Technically a different survival curve for each value of <code>ki</code> <span class="math inline">\(\in [0, 100]\)</span>, <code>gtv</code> <span class="math inline">\(\in (0, \infty)\)</span></li>
+<li>Similarity score via Logistic Regression! Let’s look at a <a href="https://www.youtube.com/watch?v=ACVyPp1Fy6Y">program</a> that built health clinics in several villages: did health clinics <strong>cause</strong> lower infant mortality?</li>
 </ul>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell vil-table" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>bc_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>ki)) <span class="sc">+</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth=</span>g_linewidth,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill=</span>cb_palette[<span class="dv">1</span>], <span class="at">alpha=</span><span class="fl">0.333</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Karnofsky Index Distribution"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="index_files/figure-html/ki-hist-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
-</figure>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ lubridate 1.9.4     ✔ tibble    3.3.0
+✔ purrr     1.0.4     ✔ tidyr     1.3.1
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 </div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>bc_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>gtv)) <span class="sc">+</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth=</span>g_linewidth,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill=</span>cb_palette[<span class="dv">1</span>], <span class="at">alpha=</span><span class="fl">0.333</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Gross Tumor Volume (GTV) Distribution"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="index_files/figure-html/gtv-hist-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</div>
-<ul>
-<li>One approach: <strong>bin</strong> into (low, medium, high) via terciles, one curve per bin median:</li>
-</ul>
-<div class="columns">
-<div class="column" style="width:40%;">
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ki_terciles <span class="ot">&lt;-</span> <span class="fu">quantile</span>(bc_df<span class="sc">$</span>ki, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>))</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>bc_df <span class="ot">&lt;-</span> bc_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">tercile =</span> <span class="fu">ifelse</span>(ki <span class="sc">&lt;</span> ki_terciles[<span class="dv">1</span>], <span class="dv">1</span>, <span class="fu">ifelse</span>(ki <span class="sc">&lt;</span> ki_terciles[<span class="dv">2</span>], <span class="dv">2</span>, <span class="dv">3</span>))</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>(terc_df <span class="ot">&lt;-</span> bc_df <span class="sc">|&gt;</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tercile) <span class="sc">|&gt;</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">med_ki=</span><span class="fu">median</span>(ki)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>village_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>village_id, <span class="sc">~</span>T, <span class="sc">~</span>inf_mortality, </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">10</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">15</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">22</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">19</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="dv">5</span>, <span class="dv">0</span>, <span class="dv">25</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="dv">6</span>, <span class="dv">0</span>, <span class="dv">19</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="dv">7</span>, <span class="dv">0</span>, <span class="dv">4</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="dv">8</span>, <span class="dv">0</span>, <span class="dv">8</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="dv">9</span>, <span class="dv">0</span>, <span class="dv">6</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">T =</span> <span class="fu">factor</span>(T))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>village_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="kable-table">
 <table class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th style="text-align: right;">tercile</th>
-<th style="text-align: right;">med_ki</th>
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">inf_mortality</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">70</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">80</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">90</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">6</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </div>
-</div><div class="column" style="width:60%;">
+</div><div class="column" style="width:50%;">
+<div class="cell vil-sum-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>village_df <span class="sc">|&gt;</span> <span class="fu">group_by</span>(T) <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">mean_mortality =</span> <span class="fu">mean</span>(inf_mortality)) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(T))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">mean_mortality</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">16.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">12.4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Health clinics <strong>increased</strong> mortality by 4.1?</p>
+</div>
+</div>
+</section>
+<section id="from-controlling-for-to-how-well-are-we-controlling-for" class="level2 smaller crunch-title title-10 crunch-ul crunch-details">
+<h2 class="smaller crunch-title title-10 crunch-ul crunch-details anchored" data-anchor-id="from-controlling-for-to-how-well-are-we-controlling-for">From “Controlling For” to “<em>How Well</em> Are We Controlling For?”</h2>
+<ul>
+<li>By introducing covariates, we can see the <strong>selection bias</strong> at play…</li>
+</ul>
+<div class="cell vil-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>covar_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>poverty_rate, <span class="sc">~</span>docs_per_capita,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.5</span>, <span class="fl">0.01</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.6</span>, <span class="fl">0.02</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.7</span>, <span class="fl">0.01</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.6</span>, <span class="fl">0.02</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.6</span>, <span class="fl">0.01</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.5</span>, <span class="fl">0.02</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.1</span>, <span class="fl">0.04</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.3</span>, <span class="fl">0.05</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.2</span>, <span class="fl">0.04</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>village_df <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(village_df, covar_df)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>village_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">inf_mortality</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="selection-bias" class="level2 smaller crunch-title">
+<h2 class="smaller crunch-title anchored" data-anchor-id="selection-bias">Selection Bias</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ki_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">diagnosis =</span> <span class="fu">rep</span>(<span class="st">"Meningioma"</span>, <span class="dv">3</span>),</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">sex =</span> <span class="fu">rep</span>(<span class="st">"F"</span>, <span class="dv">3</span>),</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc =</span> <span class="fu">rep</span>(<span class="st">"Supra"</span>, <span class="dv">3</span>),</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ki =</span> terc_df<span class="sc">$</span>med_ki,</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">gtv =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>gtv), <span class="dv">3</span>),</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">stereo =</span> <span class="fu">rep</span>(<span class="st">"SRT"</span>, <span class="dv">3</span>)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>ki_plots <span class="ot">&lt;-</span> <span class="fu">survfit</span>(full_cox_model, <span class="at">newdata =</span> ki_df)</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">mar=</span><span class="fu">c</span>(<span class="fl">4.0</span>,<span class="fl">4.0</span>,<span class="fl">1.2</span>,<span class="fl">0.5</span>),</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex=</span><span class="fl">1.2</span>,</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">family=</span><span class="st">"CMU Sans Serif"</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>) <span class="co"># bltr</span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  ki_plots,</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Survival Curves by KI Tercile"</span>,</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Months"</span>,</span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">Pr(T &gt; t)$"</span>),</span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd =</span> <span class="dv">1</span>,</span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette</span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>ki_labs <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 70 )$"</span>),</span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 80 )$"</span>),</span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 90 )$"</span>)</span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(</span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"bottomleft"</span>,</span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  ki_labs, <span class="at">lwd=</span><span class="dv">1</span>,</span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">cex=</span><span class="fl">0.8</span></span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>village_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> poverty_rate, <span class="at">fill=</span>T)) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Poverty Rate by Treatment"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Poverty Rate"</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="index_files/figure-html/ki-terciles-plot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="528"></p>
+<p><img src="index_files/figure-html/selection-bias-pov-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="864"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>village_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> docs_per_capita, <span class="at">fill=</span>T)) <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Doctors per Capita by Treatment"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Doctors per Capita"</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/selection-bias-doctors-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="864"></p>
 </figure>
 </div>
 </div>
 </div>
 </div>
 </div>
-</section>
-</section>
-<section id="quiz-3" class="level1" data-name="Quiz">
-<h1 data-name="Quiz">Quiz 3</h1>
 <ul>
-<li>Last one! You got this, حَبَائب!</li>
+<li><span class="math inline">\(\leadsto\)</span> We’re not comparing <strong>apples to apples</strong>! (<em>“Well, we’re both villages”</em>)</li>
 </ul>
+</section>
+<section id="logistic-regression-of-treatment" class="level2 smaller title-10 crunch-title">
+<h2 class="smaller title-10 crunch-title anchored" data-anchor-id="logistic-regression-of-treatment">Logistic Regression of Treatment</h2>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>prop_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  T <span class="sc">~</span> poverty_rate <span class="sc">+</span> docs_per_capita,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span>village_df, <span class="at">family=</span><span class="st">"binomial"</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(prop_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = T ~ poverty_rate + docs_per_capita, family = "binomial", 
+    data = village_df)
+
+Coefficients:
+                Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)       -7.498      8.992  -0.834    0.404
+poverty_rate      14.500     13.651   1.062    0.288
+docs_per_capita   -8.880    143.595  -0.062    0.951
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 12.3653  on 8  degrees of freedom
+Residual deviance:  6.9987  on 6  degrees of freedom
+AIC: 12.999
+
+Number of Fisher Scoring iterations: 6</code></pre>
+</div>
+</div>
+<ul>
+<li>We now have a <strong>model of selection bias!</strong> <span class="math inline">\(\leadsto\)</span> <strong>match</strong> observations with similar <span class="math inline">\(\Pr(T)\)</span></li>
+</ul>
+</section>
+<section id="propensity-score-logistic-regression-estimate" class="level2 smaller crunch-title title-10">
+<h2 class="smaller crunch-title title-10 anchored" data-anchor-id="propensity-score-logistic-regression-estimate">Propensity Score = Logistic Regression Estimate</h2>
+<div class="cell vil-table" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>village_df<span class="sc">$</span>ps <span class="ot">&lt;-</span> <span class="fu">predict</span>(prop_model, village_df, <span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>village_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 4%">
+<col style="width: 20%">
+<col style="width: 19%">
+<col style="width: 23%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">inf_mortality</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+<th style="text-align: right;">ps</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.4165712</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.9284516</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0016534</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0268029</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0070107</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="propensity-score-matching-distance-metric" class="level2 smaller crunch-title title-10">
+<h2 class="smaller crunch-title title-10 anchored" data-anchor-id="propensity-score-matching-distance-metric">Propensity Score <em>Matching</em> = Distance Metric!</h2>
+<style>
+.vil-match tr:nth-child(2) {
+  background-color: rgba(0, 158, 115, 0.333) !important;
+  text-align: center !important;
+}
+.vil-match tr:nth-child(2) td:nth-child(6) {
+  font-weight: bold;
+}
+</style>
+<div class="cell vil-match" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cur_T <span class="ot">&lt;-</span> village_df[<span class="dv">1</span>,<span class="st">"T"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cur_ps <span class="ot">&lt;-</span> village_df[<span class="dv">1</span>,<span class="st">"ps"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="fu">paste0</span>(<span class="st">"Current village: T = "</span>,cur_T,<span class="st">", ps = "</span>,cur_ps))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Current village: T = 1, ps = 0.416571242858422</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>other_df <span class="ot">&lt;-</span> village_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(T <span class="sc">!=</span> cur_T) <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">ps_dist =</span> <span class="fu">abs</span>(ps <span class="sc">-</span> cur_ps)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>other_df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(inf_mortality))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+<th style="text-align: right;">ps</th>
+<th style="text-align: right;">ps_dist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">0.3361428</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+<td style="text-align: right;">0.0214093</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0016534</td>
+<td style="text-align: right;">0.4149179</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0268029</td>
+<td style="text-align: right;">0.3897683</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0070107</td>
+<td style="text-align: right;">0.4095605</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="now-in-a-for-loop" class="level2 smaller crunch-title title-11">
+<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="now-in-a-for-loop">Now in a For Loop…</h2>
+<div class="cell vil-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  cur_T <span class="ot">&lt;-</span> village_df[i,<span class="st">"T"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  cur_ps <span class="ot">&lt;-</span> village_df[i,<span class="st">"ps"</span>] <span class="sc">|&gt;</span> <span class="fu">pull</span>()</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># writeLines(paste0("Current village: T = ",cur_T,", ps = ",cur_ps))</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  other_df <span class="ot">&lt;-</span> village_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(T <span class="sc">!=</span> cur_T) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">ps_dist =</span> <span class="fu">abs</span>(ps <span class="sc">-</span> cur_ps)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  match_id <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">which.min</span>(other_df<span class="sc">$</span>ps_dist))</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  village_df[i,<span class="st">"match"</span>] <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(match_id)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>village_df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>inf_mortality)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T</th>
+<th style="text-align: right;">poverty_rate</th>
+<th style="text-align: right;">docs_per_capita</th>
+<th style="text-align: right;">ps</th>
+<th style="text-align: right;">match</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.4165712</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.9284516</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.1</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0016534</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0268029</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.0070107</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="and-now-we-compare-apples-to-apples" class="level2 smaller crunch-title title-11">
+<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="and-now-we-compare-apples-to-apples">And Now We Compare Apples to Apples…</h2>
+<div class="cell vil-table" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>treated_df <span class="ot">&lt;-</span> village_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(T <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>(matched_df <span class="ot">&lt;-</span> treated_df <span class="sc">|&gt;</span> <span class="fu">left_join</span>(village_df, <span class="fu">join_by</span>(match <span class="sc">==</span> village_id)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 2%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 6%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 11%">
+<col style="width: 6%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">village_id</th>
+<th style="text-align: left;">T.x</th>
+<th style="text-align: right;">inf_mortality.x</th>
+<th style="text-align: right;">poverty_rate.x</th>
+<th style="text-align: right;">docs_per_capita.x</th>
+<th style="text-align: right;">ps.x</th>
+<th style="text-align: right;">match</th>
+<th style="text-align: left;">T.y</th>
+<th style="text-align: right;">inf_mortality.y</th>
+<th style="text-align: right;">poverty_rate.y</th>
+<th style="text-align: right;">docs_per_capita.y</th>
+<th style="text-align: right;">ps.y</th>
+<th style="text-align: right;">match.y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.4165712</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.3951619</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">0.7</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.9284516</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.7358171</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">0.6</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.7527140</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>matched_df <span class="sc">|&gt;</span> <span class="fu">summarize</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_tr =</span> <span class="fu">mean</span>(inf_mortality.x),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_control =</span> <span class="fu">mean</span>(inf_mortality.y)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">mean_tr</th>
+<th style="text-align: right;">mean_control</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">16.5</td>
+<td style="text-align: right;">23.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<ul>
+<li><span class="math inline">\(\leadsto\)</span> Treatment effect <span class="math inline">\(\approx\)</span> <strong>-7</strong> 🥳</li>
+</ul>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-hume_treatise_1739" class="csl-entry" role="listitem">
+Hume, David. 1739. <em>A <span>Treatise</span> of <span>Human Nature</span>: <span>Being</span> an <span>Attempt</span> to <span>Introduce</span> the <span>Experimental Method</span> of <span>Reasoning Into Moral Subjects</span>; and <span>Dialogues Concerning Natural Religion</span></em>. Longmans, Green.
+</div>
+<div id="ref-lyall_divided_2020" class="csl-entry" role="listitem">
+Lyall, Jason. 2020. <em>Divided <span>Armies</span>: <span>Inequality</span> and <span>Battlefield Performance</span> in <span>Modern War</span></em>. Princeton University Press. <a href="https://books.google.com?id=A32pDwAAQBAJ">https://books.google.com?id=A32pDwAAQBAJ</a>.
+</div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
     }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const disableStylesheet = (stylesheets) => {
-    for (let i=0; i < stylesheets.length; i++) {
-      const stylesheet = stylesheets[i];
-      stylesheet.rel = 'prefetch';
-    }
-  }
-  const enableStylesheet = (stylesheets) => {
-    for (let i=0; i < stylesheets.length; i++) {
-      const stylesheet = stylesheets[i];
-      stylesheet.rel = 'stylesheet';
-    }
-  }
-  const manageTransitions = (selector, allowTransitions) => {
-    const els = window.document.querySelectorAll(selector);
-    for (let i=0; i < els.length; i++) {
-      const el = els[i];
-      if (allowTransitions) {
-        el.classList.remove('notransition');
-      } else {
-        el.classList.add('notransition');
-      }
-    }
-  }
-  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
-    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
-    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
-    let newTheme = '';
-    if(darkModeDefault) {
-      newTheme = isAlternate ? baseTheme : alternateTheme;
-    } else {
-      newTheme = isAlternate ? alternateTheme : baseTheme;
-    }
-    const changeGiscusTheme = () => {
-      // From: https://github.com/giscus/giscus/issues/336
-      const sendMessage = (message) => {
-        const iframe = document.querySelector('iframe.giscus-frame');
-        if (!iframe) return;
-        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
-      }
-      sendMessage({
-        setConfig: {
-          theme: newTheme
-        }
-      });
-    }
-    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
-    if (isGiscussLoaded) {
-      changeGiscusTheme();
-    }
-  }
-  const toggleColorMode = (alternate) => {
-    // Switch the stylesheets
-    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
-    manageTransitions('#quarto-margin-sidebar .nav-link', false);
-    if (alternate) {
-      enableStylesheet(alternateStylesheets);
-      for (const sheetNode of alternateStylesheets) {
-        if (sheetNode.id === "quarto-bootstrap") {
-          toggleBodyColorMode(sheetNode);
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
         }
       }
-    } else {
-      disableStylesheet(alternateStylesheets);
-      toggleBodyColorPrimary();
-    }
-    manageTransitions('#quarto-margin-sidebar .nav-link', true);
-    // Switch the toggles
-    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
-    for (let i=0; i < toggles.length; i++) {
-      const toggle = toggles[i];
-      if (toggle) {
-        if (alternate) {
-          toggle.classList.add("alternate");     
-        } else {
-          toggle.classList.remove("alternate");
-        }
-      }
-    }
-    // Hack to workaround the fact that safari doesn't
-    // properly recolor the scrollbar when toggling (#1455)
-    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
-      manageTransitions("body", false);
-      window.scrollTo(0, 1);
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        manageTransitions("body", true);
-      }, 40);  
-    }
-  }
-  const isFileUrl = () => { 
-    return window.location.protocol === 'file:';
-  }
-  const hasAlternateSentinel = () => {  
-    let styleSentinel = getColorSchemeSentinel();
-    if (styleSentinel !== null) {
-      return styleSentinel === "alternate";
-    } else {
       return false;
     }
-  }
-  const setStyleSentinel = (alternate) => {
-    const value = alternate ? "alternate" : "default";
-    if (!isFileUrl()) {
-      window.localStorage.setItem("quarto-color-scheme", value);
-    } else {
-      localAlternateSentinel = value;
-    }
-  }
-  const getColorSchemeSentinel = () => {
-    if (!isFileUrl()) {
-      const storageValue = window.localStorage.getItem("quarto-color-scheme");
-      return storageValue != null ? storageValue : localAlternateSentinel;
-    } else {
-      return localAlternateSentinel;
-    }
-  }
-  const darkModeDefault = false;
-  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
-  // Dark / light mode switch
-  window.quartoToggleColorScheme = () => {
-    // Read the current dark / light value 
-    let toAlternate = !hasAlternateSentinel();
-    toggleColorMode(toAlternate);
-    setStyleSentinel(toAlternate);
-    toggleGiscusIfUsed(toAlternate, darkModeDefault);
-  };
-  // Ensure there is a toggle, if there isn't float one in the top right
-  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
-    const a = window.document.createElement('a');
-    a.classList.add('top-right');
-    a.classList.add('quarto-color-scheme-toggle');
-    a.href = "";
-    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
-    const i = window.document.createElement("i");
-    i.classList.add('bi');
-    a.appendChild(i);
-    window.document.body.appendChild(a);
-  }
-  // Switch to dark mode if need be
-  if (hasAlternateSentinel()) {
-    toggleColorMode(true);
-  } else {
-    toggleColorMode(false);
-  }
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
       }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
     }
-    return false;
-  }
-  const onCopySuccess = function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
         }
       }
       return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
-  });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
     });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
     }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-    const config = {
-      allowHTML: true,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start',
-    };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
-        }
-      }
-    }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
         }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
         }
-        return container.innerHTML
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
       } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
       }
     }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
           }
         } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
+            const note = htmlDoc.querySelector('main.content');
             if (note !== null) {
-              const html = processXRef(id, note);
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -1754,188 +2079,164 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             instance.show();
           });
         }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
-    });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            div.style.left = 0;
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
-    }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
-          }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+      }, function(instance) {
       });
     }
-  }
-});
-</script>
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
 </div> <!-- /content -->
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jpowerj/dsan5300-01/blob/main/w12/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/w12/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

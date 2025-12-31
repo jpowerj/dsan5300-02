@@ -7,11 +7,11 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.6.40">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.26">
 
   <meta name="author" content="Jeff Jacobs">
-  <title>DSAN 5300-01 – Week 7: Basis Functions and Splines</title>
+  <title>DSAN 5300-02 – Week 7: Support Vector Machines</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -30,8 +30,9 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -42,7 +43,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -98,6 +99,7 @@
     div.csl-bib-body { }
     div.csl-entry {
       clear: both;
+      margin-bottom: 0em;
     }
     .hanging-indent div.csl-entry {
       margin-left:2em;
@@ -114,7 +116,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-8f68bdfe1fab35e4f5fa44ba3024eea8.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-c59f08653608056fecc96b8077358242.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -208,15 +210,15 @@
       margin-right: 0; 
     }
   </style>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Kablammo&amp;family=Rubik+Puddles&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Workbench&amp;display=swap" rel="stylesheet"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
 </head>
 <body class="quarto-light">
   <div class="reveal">
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Week 7: Basis Functions and Splines</h1>
-  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2025, Georgetown University</span></p>
+  <h1 class="title">Week 7: Support Vector Machines</h1>
+  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2026, Georgetown University</span></p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -229,9 +231,10 @@ Jeff Jacobs
     </div>
 </div>
 
-  <p class="date">Monday, February 24, 2025</p>
+  <p class="date">Monday, February 23, 2026</p>
 </section>
-<section id="schedule" class="title-slide slide level1 smaller small-title crunch-title crunch-callout center" data-name="Schedule">
+<section>
+<section id="schedule" class="title-slide slide level1 smaller small-title crunch-title crunch-callout center" data-stack-name="Schedule">
 <h1>Schedule</h1>
 <p>Today’s Planned Schedule:</p>
 <table class="caption-top">
@@ -254,43 +257,31 @@ Jeff Jacobs
 <td style="text-align: left;"><strong>Lecture</strong></td>
 <td style="text-align: left;">6:30pm</td>
 <td style="text-align: left;">7:00pm</td>
-<td style="text-align: left;"><a href="#/roadmap">Roadmap: Even More Wiggly “Linearity” →</a></td>
+<td style="text-align: left;"><a href="#/learning-decision-boundaries">Separating Hyperplanes →</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
 <td style="text-align: left;">7:00pm</td>
 <td style="text-align: left;">7:20pm</td>
-<td style="text-align: left;"><a href="#/model-selection">“Manual” Model Selection: Subsets →</a></td>
+<td style="text-align: left;"><a href="#/max-margin-classifiers">Max-Margin Classifiers →</a></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
 <td style="text-align: left;">7:20pm</td>
-<td style="text-align: left;">7:40pm</td>
-<td style="text-align: left;"><a href="#/regularization-for-automatic-model-selection">Key Regularization Building Block: <span class="math inline">\(L^p\)</span> Norm →</a></td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;"><a href="#/support-vector-classifiers">Support Vector <em>Classifiers</em> →</a></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">7:40pm</td>
-<td style="text-align: left;">8:00pm</td>
-<td style="text-align: left;"><a href="#/regularized-regression-(finally)">Regularized Regression Intro →</a></td>
-</tr>
-<tr class="odd">
 <td style="text-align: left;"><strong>Break!</strong></td>
 <td style="text-align: left;">8:00pm</td>
 <td style="text-align: left;">8:10pm</td>
 <td style="text-align: left;"></td>
 </tr>
-<tr class="even">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">8:10pm</td>
-<td style="text-align: left;">8:50pm</td>
-<td style="text-align: left;"><a href="#/the-key-plot">Basically Lasso is the Coolest Thing Ever →</a></td>
-</tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">8:50pm</td>
+<td style="text-align: left;">8:10pm</td>
 <td style="text-align: left;">9:00pm</td>
-<td style="text-align: left;"><a href="#/week-7-preview-linear.noodle-jj-functions">Scary-Looking But Actually-Fun W07 Preview →</a></td>
+<td style="text-align: left;"><a href="#/support-vector-machines">Support Vector <em>Machines</em> →</a></td>
 </tr>
 </tbody>
 </table>
@@ -298,8 +289,8 @@ Jeff Jacobs
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
-<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
+<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </div>
@@ -330,7 +321,10 @@ Jeff Jacobs
 \newcommand{\outcome}[1]{\textsf{#1}}
 \newcommand{\param}[1]{{\color{purple} #1}}
 \newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
-\newcommand{\prob}[1]{P\left( #1 \right)}
+\newcommand{\pedge}[2]{\require{enclose}\enclose{circle}{~{#1}~} \rightarrow \; \enclose{circle}{\kern.01em {#2}~\kern.01em}}
+\newcommand{\pnode}[1]{\require{enclose}\enclose{circle}{\kern.1em {#1} \kern.1em}}
+\newcommand{\ponode}[1]{\require{enclose}\enclose{box}[background=lightgray]{{#1}}}
+\newcommand{\pnodesp}[1]{\require{enclose}\enclose{circle}{~{#1}~}}
 \newcommand{\purp}[1]{\color{purple}{#1}}
 \newcommand{\sign}{\text{Sign}}
 \newcommand{\spacecap}{\; \cap \;}
@@ -341,930 +335,981 @@ Jeff Jacobs
 \]</span></p>
 </div>
 </section>
-
+<section id="quick-roadmap" class="slide level2">
+<h2>Quick Roadmap</h2>
+<ul>
+<li>Weeks 1-7: <strong>Regression</strong> was central motivating problem
+<ul>
+<li>(Even when we looked at classification <em>via</em> Logistic Regression, it was regression and then a final <strong>thresholding</strong> step on the regression result)</li>
+</ul></li>
+<li>This Week:
+<ul>
+<li>On the one hand, we shift focus to <strong>binary classification</strong> through learning <strong>decision boundaries</strong></li>
+<li>On the other hand, <strong>everything we’ve discussed about handling non-linearity</strong> will come into play!</li>
+</ul></li>
+</ul>
+</section>
+<section id="decision-boundaries-leadsto-max-margin-classifiers" class="slide level2 title-07">
+<h2>Decision Boundaries <span class="math inline">\(\leadsto\)</span> Max-Margin Classifiers</h2>
+<ul>
+<li>Most important <strong>building block</strong> for SVMs…</li>
+<li>But should <strong>not</strong> be used on its own! For reasons we’ll see shortly
+<ul>
+<li>(Like “Linear Probability Models” or “Quadratic Splines”, MMCs highlight problem that [usable method] solves!)</li>
+</ul></li>
+<li>MMC <span class="math inline">\(\leadsto\)</span> Support Vector Classifiers (can be used)</li>
+<li>MMC <span class="math inline">\(\leadsto\)</span> Support Vector Machines (can be used)</li>
+</ul>
+</section></section>
 <section>
-<section id="roadmap" class="title-slide slide level1 smaller title-10 center" data-stack-name="Roadmap">
-<h1>Roadmap</h1>
+<section id="learning-decision-boundaries" class="title-slide slide level1 title-09 crunch-title crunch-quarto-figure crunch-ul crunch-li-8 crunch-p center" data-stack-name="Decision Boundaries">
+<h1>Learning Decision Boundaries</h1>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>How can we get our computer to “learn” which houses I like?</li>
+</ul>
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-2"><a></a>house_df <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb2-3"><a></a>  <span class="sc">~</span>sqm, <span class="sc">~</span>yrs, <span class="sc">~</span>Rating,</span>
+<span id="cb2-4"><a></a>  <span class="dv">10</span>, <span class="dv">5</span>, <span class="st">"Disliked"</span>,</span>
+<span id="cb2-5"><a></a>  <span class="dv">10</span>, <span class="dv">20</span>, <span class="st">"Disliked"</span>,</span>
+<span id="cb2-6"><a></a>  <span class="dv">20</span>, <span class="dv">22</span>, <span class="st">"Liked"</span>,</span>
+<span id="cb2-7"><a></a>  <span class="dv">25</span>, <span class="dv">12</span>, <span class="st">"Liked"</span>,</span>
+<span id="cb2-8"><a></a>  <span class="dv">11</span>, <span class="dv">15</span>, <span class="st">"Disliked"</span>,</span>
+<span id="cb2-9"><a></a>  <span class="fl">22.1</span>, <span class="dv">5</span>, <span class="st">"Liked"</span></span>
+<span id="cb2-10"><a></a>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb2-11"><a></a>  <span class="at">label =</span> <span class="fu">ifelse</span>(Rating <span class="sc">==</span> <span class="st">"Liked"</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb2-12"><a></a>)</span>
+<span id="cb2-13"><a></a>base_plot <span class="ot">&lt;-</span> house_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>sqm, <span class="at">y=</span>yrs)) <span class="sc">+</span></span>
+<span id="cb2-14"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb2-15"><a></a>    <span class="at">title =</span> <span class="st">"Jeff's House Search"</span>,</span>
+<span id="cb2-16"><a></a>    <span class="at">x =</span> <span class="st">"Square Meters"</span>,</span>
+<span id="cb2-17"><a></a>    <span class="at">y =</span> <span class="st">"Years Old"</span></span>
+<span id="cb2-18"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb2-19"><a></a>  <span class="fu">expand_limits</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">25</span>), <span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">25</span>)) <span class="sc">+</span></span>
+<span id="cb2-20"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb2-21"><a></a>  <span class="co"># 45 is minus sign, 95 is em-dash</span></span>
+<span id="cb2-22"><a></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb2-23"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">14</span>)</span>
+<span id="cb2-24"><a></a>base_plot <span class="sc">+</span></span>
+<span id="cb2-25"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb2-26"><a></a>    <span class="fu">aes</span>(<span class="at">color=</span>Rating, <span class="at">shape=</span>Rating), <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="fl">0.9</span>,</span>
+<span id="cb2-27"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb2-28"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb2-29"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>Rating), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">6</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/sup-data-plot-1.png" class="quarto-figure quarto-figure-center" width="432"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
+<li>Naïve idea: Try random lines (each forming a <strong>decision boundary</strong>), pick “best” one</li>
+</ul>
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
+<span id="cb3-2"><a></a>is_separating <span class="ot">&lt;-</span> <span class="cf">function</span>(beta_vec) {</span>
+<span id="cb3-3"><a></a>  beta_str <span class="ot">&lt;-</span> <span class="fu">paste0</span>(beta_vec, <span class="at">collapse=</span><span class="st">","</span>)</span>
+<span id="cb3-4"><a></a>  <span class="co"># print(paste0("is_separating: ",beta_str))</span></span>
+<span id="cb3-5"><a></a>  margins <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb3-6"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(house_df)) {</span>
+<span id="cb3-7"><a></a>    cur_data <span class="ot">&lt;-</span> house_df[i,]</span>
+<span id="cb3-8"><a></a>    <span class="co"># print(cur_data)</span></span>
+<span id="cb3-9"><a></a>    linear_comb <span class="ot">&lt;-</span> beta_vec[<span class="dv">1</span>] <span class="sc">+</span> beta_vec[<span class="dv">2</span>] <span class="sc">*</span> cur_data<span class="sc">$</span>sqm <span class="sc">+</span> beta_vec[<span class="dv">3</span>] <span class="sc">*</span> cur_data<span class="sc">$</span>yrs</span>
+<span id="cb3-10"><a></a>    cur_margin <span class="ot">&lt;-</span> cur_data<span class="sc">$</span>label <span class="sc">*</span> linear_comb</span>
+<span id="cb3-11"><a></a>    <span class="co"># print(cur_margin)</span></span>
+<span id="cb3-12"><a></a>    margins <span class="ot">&lt;-</span> <span class="fu">c</span>(margins, cur_margin)</span>
+<span id="cb3-13"><a></a>  }</span>
+<span id="cb3-14"><a></a>  <span class="co">#print(margins)</span></span>
+<span id="cb3-15"><a></a>  <span class="fu">return</span>(<span class="fu">all</span>(margins <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|</span> <span class="fu">all</span>(margins <span class="sc">&lt;</span> <span class="dv">0</span>))</span>
+<span id="cb3-16"><a></a>}</span>
+<span id="cb3-17"><a></a>cust_rand_lines_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb3-18"><a></a>  <span class="sc">~</span>b0, <span class="sc">~</span>b1, <span class="sc">~</span>b2,</span>
+<span id="cb3-19"><a></a>  <span class="co"># 41, -0.025, -1,</span></span>
+<span id="cb3-20"><a></a>  <span class="dv">165</span>, <span class="sc">-</span><span class="dv">8</span>, <span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb3-21"><a></a>  <span class="sc">-</span><span class="dv">980</span>, <span class="dv">62</span>, <span class="sc">-</span><span class="dv">1</span></span>
+<span id="cb3-22"><a></a>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb3-23"><a></a>  <span class="at">slope=</span><span class="sc">-</span>(b1<span class="sc">/</span>b2),</span>
+<span id="cb3-24"><a></a>  <span class="at">intercept=</span><span class="sc">-</span>(b0<span class="sc">/</span>b2)</span>
+<span id="cb3-25"><a></a>)</span>
+<span id="cb3-26"><a></a>num_lines <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb3-27"><a></a>rand_b0 <span class="ot">&lt;-</span> <span class="fu">runif</span>(num_lines, <span class="at">min=</span><span class="sc">-</span><span class="dv">40</span>, <span class="at">max=</span><span class="dv">40</span>)</span>
+<span id="cb3-28"><a></a>rand_b1 <span class="ot">&lt;-</span> <span class="fu">runif</span>(num_lines, <span class="at">min=</span><span class="sc">-</span><span class="dv">2</span>, <span class="at">max=</span><span class="dv">2</span>)</span>
+<span id="cb3-29"><a></a><span class="co"># rand_b2 &lt;- -1 + 2*rbernoulli(num_lines)</span></span>
+<span id="cb3-30"><a></a>rand_b2 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span></span>
+<span id="cb3-31"><a></a>rand_lines_df <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb3-32"><a></a>  <span class="at">id=</span><span class="dv">1</span><span class="sc">:</span>num_lines,</span>
+<span id="cb3-33"><a></a>  <span class="at">b0=</span>rand_b0,</span>
+<span id="cb3-34"><a></a>  <span class="at">b1=</span>rand_b1,</span>
+<span id="cb3-35"><a></a>  <span class="at">b2=</span>rand_b2</span>
+<span id="cb3-36"><a></a>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb3-37"><a></a>  <span class="at">slope=</span><span class="sc">-</span>(b1<span class="sc">/</span>b2),</span>
+<span id="cb3-38"><a></a>  <span class="at">intercept=</span><span class="sc">-</span>(b0<span class="sc">/</span>b2)</span>
+<span id="cb3-39"><a></a>)</span>
+<span id="cb3-40"><a></a>rand_lines_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(rand_lines_df, cust_rand_lines_df)</span>
+<span id="cb3-41"><a></a><span class="co"># Old school for loop</span></span>
+<span id="cb3-42"><a></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(rand_lines_df)) {</span>
+<span id="cb3-43"><a></a>  cur_line <span class="ot">&lt;-</span> rand_lines_df[i,]</span>
+<span id="cb3-44"><a></a>  cur_beta_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(cur_line<span class="sc">$</span>b0, cur_line<span class="sc">$</span>b1, cur_line<span class="sc">$</span>b2)</span>
+<span id="cb3-45"><a></a>  cur_is_sep <span class="ot">&lt;-</span> <span class="fu">is_separating</span>(cur_beta_vec)</span>
+<span id="cb3-46"><a></a>  rand_lines_df[i, <span class="st">"is_sep"</span>] <span class="ot">&lt;-</span> cur_is_sep</span>
+<span id="cb3-47"><a></a>}</span>
+<span id="cb3-48"><a></a>base_plot <span class="sc">+</span></span>
+<span id="cb3-49"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb3-50"><a></a>    <span class="at">data=</span>rand_lines_df, <span class="fu">aes</span>(<span class="at">slope=</span>slope, <span class="at">intercept=</span>intercept), <span class="at">linetype=</span><span class="st">"dashed"</span></span>
+<span id="cb3-51"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb3-52"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb3-53"><a></a>    <span class="fu">aes</span>(<span class="at">color=</span>Rating, <span class="at">shape=</span>Rating), <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="fl">0.9</span>,</span>
+<span id="cb3-54"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb3-55"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb3-56"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>Rating), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">6</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span>) <span class="sc">+</span></span>
+<span id="cb3-57"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-58"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"10 Boundary Guesses"</span>),</span>
+<span id="cb3-59"><a></a>    <span class="at">x =</span> <span class="st">"Square Meters"</span>,</span>
+<span id="cb3-60"><a></a>    <span class="at">y =</span> <span class="st">"Years Old"</span></span>
+<span id="cb3-61"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/random-lines-plot-1.png" class="quarto-figure quarto-figure-center" width="432"></p>
+</figure>
+</div>
+</div>
+</div>
+<center>
+<p><span style="font-size: 75%"><em>(…Which one is “best”?)</em></span></p>
+</center>
+</div></div>
+</section>
+<section id="separating-hyperplanes" class="slide level2 crunch-title title-09 crunch-quarto-figure crunch-ul">
+<h2>Separating Hyperplanes</h2>
+<ul>
+<li>Any line which <strong>perfectly separates</strong> positive from negative cases is a <strong>separating hyperplane</strong></li>
+</ul>
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>base_plot <span class="sc">+</span></span>
+<span id="cb4-2"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb4-3"><a></a>    <span class="at">data=</span>rand_lines_df, <span class="fu">aes</span>(<span class="at">slope=</span>slope, <span class="at">intercept=</span>intercept, <span class="at">linetype=</span>is_sep)</span>
+<span id="cb4-4"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb4-5"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb4-6"><a></a>    <span class="at">data=</span>rand_lines_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(is_sep),</span>
+<span id="cb4-7"><a></a>    <span class="fu">aes</span>(<span class="at">slope=</span>slope, <span class="at">intercept=</span>intercept),</span>
+<span id="cb4-8"><a></a>    <span class="at">linewidth=</span><span class="dv">3</span>, <span class="at">color=</span>cb_palette[<span class="dv">4</span>], <span class="at">alpha=</span><span class="fl">0.333</span></span>
+<span id="cb4-9"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb4-10"><a></a>  <span class="fu">scale_linetype_manual</span>(<span class="st">"Separating?"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"dotted"</span>, <span class="st">"dashed"</span>)) <span class="sc">+</span></span>
+<span id="cb4-11"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb4-12"><a></a>    <span class="fu">aes</span>(<span class="at">color=</span>Rating, <span class="at">shape=</span>Rating), <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="fl">0.9</span>,</span>
+<span id="cb4-13"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb4-14"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb4-15"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>Rating), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">6</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span>) <span class="sc">+</span></span>
+<span id="cb4-16"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-17"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"The Like vs. Dislike Boundary: 10 Guesses"</span>),</span>
+<span id="cb4-18"><a></a>    <span class="at">x =</span> <span class="st">"Square Meters"</span>,</span>
+<span id="cb4-19"><a></a>    <span class="at">y =</span> <span class="st">"Years Old"</span></span>
+<span id="cb4-20"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+
+</div>
+<img data-src="index_files/figure-revealjs/sep-lines-plot-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><ul>
+<li>Why might the <strong>left</strong> line be better? <em>(Think of DGP!)</em></li>
+</ul>
+</section>
+<section id="max-margin-hyperplanes" class="slide level2 crunch-title title-11 smaller crunch-quarto-figure crunch-ul crunch-li-8">
+<h2>Max-Margin Hyperplanes</h2>
+<ul>
+<li>Among the two, left hyperplane establishes a larger <strong>margin</strong> between the two classes!</li>
+<li><strong>Margin</strong> (of hyperplane) = <strong>Smallest distance</strong> to datapoint (Think of hyperplane as middle of separating <strong>slab</strong>: how wide is the slab?)</li>
+<li><strong>Important</strong>: Note how margin is <strong>not</strong> the same as <em>average</em> distance!</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>sep_lines_df <span class="ot">&lt;-</span> rand_lines_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(is_sep) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb5-2"><a></a>  <span class="at">norm_slope =</span> (<span class="sc">-</span><span class="dv">1</span>)<span class="sc">/</span>slope</span>
+<span id="cb5-3"><a></a>)</span>
+<span id="cb5-4"><a></a>cur_line_df <span class="ot">&lt;-</span> sep_lines_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(slope <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb5-5"><a></a><span class="co"># left_line_df</span></span>
+<span id="cb5-6"><a></a><span class="co"># And make one copy per point</span></span>
+<span id="cb5-7"><a></a>cur_sup_df <span class="ot">&lt;-</span> <span class="fu">uncount</span>(cur_line_df, <span class="fu">nrow</span>(house_df))</span>
+<span id="cb5-8"><a></a>cur_sup_df <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(cur_sup_df, house_df)</span>
+<span id="cb5-9"><a></a>cur_sup_df <span class="ot">&lt;-</span> cur_sup_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb5-10"><a></a>  <span class="at">norm_intercept =</span> yrs <span class="sc">-</span> norm_slope <span class="sc">*</span> sqm,</span>
+<span id="cb5-11"><a></a>  <span class="at">margin_intercept =</span> yrs <span class="sc">-</span> slope <span class="sc">*</span> sqm,</span>
+<span id="cb5-12"><a></a>  <span class="at">margin_intercept_gap =</span> intercept <span class="sc">-</span> margin_intercept,</span>
+<span id="cb5-13"><a></a>  <span class="at">margin_intercept_inv =</span> intercept <span class="sc">+</span> margin_intercept_gap,</span>
+<span id="cb5-14"><a></a>  <span class="at">norm_cross_x =</span> <span class="sc">-</span>(norm_intercept <span class="sc">-</span> intercept) <span class="sc">/</span> (norm_slope <span class="sc">-</span> slope),</span>
+<span id="cb5-15"><a></a>  <span class="at">x_gap =</span> norm_cross_x <span class="sc">-</span> sqm,</span>
+<span id="cb5-16"><a></a>  <span class="at">norm_cross_y =</span> yrs <span class="sc">+</span> x_gap <span class="sc">*</span> norm_slope,</span>
+<span id="cb5-17"><a></a>  <span class="at">vec_margin =</span> label <span class="sc">*</span> (b0 <span class="sc">+</span> b1 <span class="sc">*</span> sqm <span class="sc">+</span> b2 <span class="sc">*</span> yrs),</span>
+<span id="cb5-18"><a></a>  <span class="at">is_sv =</span> vec_margin <span class="sc">&lt;=</span> <span class="dv">240</span></span>
+<span id="cb5-19"><a></a>)</span>
+<span id="cb5-20"><a></a>base_plot <span class="sc">+</span></span>
+<span id="cb5-21"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb5-22"><a></a>    <span class="at">data=</span>cur_line_df, <span class="fu">aes</span>(<span class="at">slope=</span>slope, <span class="at">intercept=</span>intercept), <span class="at">linetype=</span><span class="st">"solid"</span></span>
+<span id="cb5-23"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb5-24"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb5-25"><a></a>    <span class="at">data=</span>cur_sup_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(is_sv),</span>
+<span id="cb5-26"><a></a>    <span class="fu">aes</span>(</span>
+<span id="cb5-27"><a></a>      <span class="at">slope=</span>slope,</span>
+<span id="cb5-28"><a></a>      <span class="at">intercept=</span>margin_intercept</span>
+<span id="cb5-29"><a></a>    ),</span>
+<span id="cb5-30"><a></a>    <span class="at">linetype=</span><span class="st">"dashed"</span></span>
+<span id="cb5-31"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb5-32"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb5-33"><a></a>    <span class="at">data=</span>cur_sup_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(is_sv),</span>
+<span id="cb5-34"><a></a>    <span class="fu">aes</span>(</span>
+<span id="cb5-35"><a></a>      <span class="at">slope=</span>slope,</span>
+<span id="cb5-36"><a></a>      <span class="at">intercept=</span>margin_intercept_inv</span>
+<span id="cb5-37"><a></a>    ),</span>
+<span id="cb5-38"><a></a>    <span class="at">linetype=</span><span class="st">"dashed"</span></span>
+<span id="cb5-39"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb5-40"><a></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb5-41"><a></a>    <span class="at">data=</span>cur_sup_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(is_sv),</span>
+<span id="cb5-42"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>sqm, <span class="at">y=</span>yrs, <span class="at">xend=</span>norm_cross_x, <span class="at">yend=</span>norm_cross_y),</span>
+<span id="cb5-43"><a></a>    <span class="at">color=</span>cb_palette[<span class="dv">4</span>], <span class="at">linewidth=</span><span class="dv">3</span></span>
+<span id="cb5-44"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb5-45"><a></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb5-46"><a></a>    <span class="at">data=</span>cur_sup_df,</span>
+<span id="cb5-47"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>sqm, <span class="at">y=</span>yrs, <span class="at">xend=</span>norm_cross_x, <span class="at">yend=</span>norm_cross_y, <span class="at">linetype=</span>is_sv)</span>
+<span id="cb5-48"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb5-49"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb5-50"><a></a>    <span class="fu">aes</span>(<span class="at">color=</span>Rating, <span class="at">shape=</span>Rating), <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="fl">0.9</span>,</span>
+<span id="cb5-51"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb5-52"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb5-53"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>Rating), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">6</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span>) <span class="sc">+</span></span>
+<span id="cb5-54"><a></a>  <span class="fu">scale_linetype_manual</span>(<span class="st">"Support</span><span class="sc">\n</span><span class="st">Vector?"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"dotted"</span>, <span class="st">"solid"</span>)) <span class="sc">+</span></span>
+<span id="cb5-55"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb5-56"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"Left Hyperplane Distances"</span>),</span>
+<span id="cb5-57"><a></a>    <span class="at">x =</span> <span class="st">"Square Meters"</span>,</span>
+<span id="cb5-58"><a></a>    <span class="at">y =</span> <span class="st">"Years Old"</span></span>
+<span id="cb5-59"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/left-sep-only-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="co"># New calculation: line with same slope but that hits the SV</span></span>
+<span id="cb6-2"><a></a><span class="co"># y - y1 = m(x - x1), so...</span></span>
+<span id="cb6-3"><a></a><span class="co"># y - yrs = m(x - sqm) &lt;=&gt; y = m(x-sqm) + yrs &lt;=&gt; y = mx  - m*sqm + yrs</span></span>
+<span id="cb6-4"><a></a><span class="co"># &lt;=&gt; b = yrs - -m*sqm</span></span>
+<span id="cb6-5"><a></a>cur_line_df <span class="ot">&lt;-</span> sep_lines_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(slope <span class="sc">&lt;</span> <span class="dv">0</span>)</span>
+<span id="cb6-6"><a></a><span class="co"># left_line_df</span></span>
+<span id="cb6-7"><a></a><span class="co"># And make one copy per point</span></span>
+<span id="cb6-8"><a></a>cur_sup_df <span class="ot">&lt;-</span> <span class="fu">uncount</span>(cur_line_df, <span class="fu">nrow</span>(house_df))</span>
+<span id="cb6-9"><a></a>cur_sup_df <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(cur_sup_df, house_df)</span>
+<span id="cb6-10"><a></a>cur_sup_df <span class="ot">&lt;-</span> cur_sup_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb6-11"><a></a>  <span class="at">norm_intercept =</span> yrs <span class="sc">-</span> norm_slope <span class="sc">*</span> sqm,</span>
+<span id="cb6-12"><a></a>  <span class="at">margin_intercept =</span> yrs <span class="sc">-</span> slope <span class="sc">*</span> sqm,</span>
+<span id="cb6-13"><a></a>  <span class="at">margin_intercept_gap =</span> intercept <span class="sc">-</span> margin_intercept,</span>
+<span id="cb6-14"><a></a>  <span class="at">margin_intercept_inv =</span> intercept <span class="sc">+</span> margin_intercept_gap,</span>
+<span id="cb6-15"><a></a>  <span class="at">norm_cross_x =</span> <span class="sc">-</span>(norm_intercept <span class="sc">-</span> intercept) <span class="sc">/</span> (norm_slope <span class="sc">-</span> slope),</span>
+<span id="cb6-16"><a></a>  <span class="at">x_gap =</span> norm_cross_x <span class="sc">-</span> sqm,</span>
+<span id="cb6-17"><a></a>  <span class="at">norm_cross_y =</span> yrs <span class="sc">+</span> x_gap <span class="sc">*</span> norm_slope,</span>
+<span id="cb6-18"><a></a>  <span class="at">vec_margin =</span> <span class="fu">abs</span>(label <span class="sc">*</span> (b0 <span class="sc">+</span> b1 <span class="sc">*</span> sqm <span class="sc">+</span> b2 <span class="sc">*</span> yrs)),</span>
+<span id="cb6-19"><a></a>  <span class="at">is_sv =</span> vec_margin <span class="sc">&lt;=</span> <span class="dv">25</span></span>
+<span id="cb6-20"><a></a>)</span>
+<span id="cb6-21"><a></a>base_plot <span class="sc">+</span></span>
+<span id="cb6-22"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb6-23"><a></a>    <span class="at">data=</span>cur_line_df, <span class="fu">aes</span>(<span class="at">slope=</span>slope, <span class="at">intercept=</span>intercept), <span class="at">linetype=</span><span class="st">"solid"</span></span>
+<span id="cb6-24"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb6-25"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb6-26"><a></a>    <span class="at">data=</span>cur_sup_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(is_sv),</span>
+<span id="cb6-27"><a></a>    <span class="fu">aes</span>(</span>
+<span id="cb6-28"><a></a>      <span class="at">slope=</span>slope,</span>
+<span id="cb6-29"><a></a>      <span class="at">intercept=</span>margin_intercept</span>
+<span id="cb6-30"><a></a>    ),</span>
+<span id="cb6-31"><a></a>    <span class="at">linetype=</span><span class="st">"dashed"</span></span>
+<span id="cb6-32"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb6-33"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb6-34"><a></a>    <span class="at">data=</span>cur_sup_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(is_sv),</span>
+<span id="cb6-35"><a></a>    <span class="fu">aes</span>(</span>
+<span id="cb6-36"><a></a>      <span class="at">slope=</span>slope,</span>
+<span id="cb6-37"><a></a>      <span class="at">intercept=</span>margin_intercept_inv</span>
+<span id="cb6-38"><a></a>    ),</span>
+<span id="cb6-39"><a></a>    <span class="at">linetype=</span><span class="st">"dashed"</span></span>
+<span id="cb6-40"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb6-41"><a></a>  <span class="co"># geom_abline(</span></span>
+<span id="cb6-42"><a></a>  <span class="co">#   data=cur_line_df,</span></span>
+<span id="cb6-43"><a></a>  <span class="co">#   aes(slope=slope, intercept=intercept),</span></span>
+<span id="cb6-44"><a></a>  <span class="co">#   linewidth=3, color=cb_palette[4], alpha=0.333</span></span>
+<span id="cb6-45"><a></a>  <span class="co"># ) +</span></span>
+<span id="cb6-46"><a></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb6-47"><a></a>    <span class="at">data=</span>cur_sup_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(vec_margin <span class="sc">&lt;=</span> <span class="dv">18</span>),</span>
+<span id="cb6-48"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>sqm, <span class="at">y=</span>yrs, <span class="at">xend=</span>norm_cross_x, <span class="at">yend=</span>norm_cross_y),</span>
+<span id="cb6-49"><a></a>    <span class="at">color=</span>cb_palette[<span class="dv">4</span>], <span class="at">linewidth=</span><span class="dv">3</span></span>
+<span id="cb6-50"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb6-51"><a></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb6-52"><a></a>    <span class="at">data=</span>cur_sup_df,</span>
+<span id="cb6-53"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>sqm, <span class="at">y=</span>yrs, <span class="at">xend=</span>norm_cross_x, <span class="at">yend=</span>norm_cross_y, <span class="at">linetype=</span>is_sv)</span>
+<span id="cb6-54"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb6-55"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb6-56"><a></a>    <span class="fu">aes</span>(<span class="at">color=</span>Rating, <span class="at">shape=</span>Rating), <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="fl">0.9</span>,</span>
+<span id="cb6-57"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb6-58"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb6-59"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>Rating), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">6</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span>) <span class="sc">+</span></span>
+<span id="cb6-60"><a></a>  <span class="fu">scale_linetype_manual</span>(<span class="st">"Support</span><span class="sc">\n</span><span class="st">Vector?"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"dotted"</span>, <span class="st">"solid"</span>)) <span class="sc">+</span></span>
+<span id="cb6-61"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-62"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"Right Hyperplane Margin"</span>),</span>
+<span id="cb6-63"><a></a>    <span class="at">x =</span> <span class="st">"Square Meters"</span>,</span>
+<span id="cb6-64"><a></a>    <span class="at">y =</span> <span class="st">"Years Old"</span></span>
+<span id="cb6-65"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/right-sep-only-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="optimal-max-margin-hyperplane" class="slide level2 crunch-title smaller crunch-quarto-figure">
+<h2><em>Optimal</em> Max-Margin Hyperplane</h2>
+<ul>
+<li>On previous slides we chose from a small set of <em>randomly-generated</em> lines…</li>
+<li>Now that we have <strong>max-margin objective</strong>, we can optimize over <strong>all possible lines!</strong></li>
+<li>Any hyperplane can be written as <span class="math inline">\(\beta_0 + \beta_1 x_{1} + \beta_2 x_{2} = 0\)</span></li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Let <span class="math inline">\(y_i = \begin{cases} +1 &amp;\text{if house }i\text{ Liked} \\ -1 &amp;\text{if house }i\text{ Disliked}\end{cases}\)</span></p>
+<p><span class="math display">\[
+\begin{align*}
+\underset{\beta_0, \beta_1, \beta_2, M}{\text{maximize}}\text{  } &amp; M \\
+\text{s.t.  } &amp; y_i(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \geq M, \\
+~ &amp; \beta_0^2 + \beta_1^2 + \beta_2^2 = 1
+\end{align*}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\beta_0^2 + \beta_1^2 + \beta_2^2 = 1\)</span> just ensures that <span class="math inline">\(y_i(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2})\)</span> gives <strong>distance from hyperplane to <span class="math inline">\(x_i\)</span></strong></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">library</span>(e1071)</span>
+<span id="cb7-2"><a></a>liked <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(house_df<span class="sc">$</span>Rating <span class="sc">==</span> <span class="st">"Liked"</span>)</span>
+<span id="cb7-3"><a></a>cent_df <span class="ot">&lt;-</span> house_df</span>
+<span id="cb7-4"><a></a>cent_df<span class="sc">$</span>sqm <span class="ot">&lt;-</span> <span class="fu">scale</span>(cent_df<span class="sc">$</span>sqm)</span>
+<span id="cb7-5"><a></a>cent_df<span class="sc">$</span>yrs <span class="ot">&lt;-</span> <span class="fu">scale</span>(cent_df<span class="sc">$</span>yrs)</span>
+<span id="cb7-6"><a></a>svm_model <span class="ot">&lt;-</span> <span class="fu">svm</span>(liked <span class="sc">~</span> sqm <span class="sc">+</span> yrs, <span class="at">data=</span>cent_df, <span class="at">kernel=</span><span class="st">"linear"</span>)</span>
+<span id="cb7-7"><a></a>cf <span class="ot">&lt;-</span> <span class="fu">coef</span>(svm_model)</span>
+<span id="cb7-8"><a></a>sep_intercept <span class="ot">&lt;-</span> <span class="sc">-</span>cf[<span class="dv">1</span>] <span class="sc">/</span> cf[<span class="dv">3</span>]</span>
+<span id="cb7-9"><a></a>sep_slope <span class="ot">&lt;-</span> <span class="sc">-</span>cf[<span class="dv">2</span>] <span class="sc">/</span> cf[<span class="dv">3</span>]</span>
+<span id="cb7-10"><a></a><span class="co"># Invert Z-scores</span></span>
+<span id="cb7-11"><a></a>sd_ratio <span class="ot">&lt;-</span> <span class="fu">sd</span>(house_df<span class="sc">$</span>yrs) <span class="sc">/</span> <span class="fu">sd</span>(house_df<span class="sc">$</span>sqm)</span>
+<span id="cb7-12"><a></a>inv_slope <span class="ot">&lt;-</span> sd_ratio <span class="sc">*</span> sep_slope</span>
+<span id="cb7-13"><a></a>inv_intercept <span class="ot">&lt;-</span> <span class="fu">mean</span>(house_df<span class="sc">$</span>yrs) <span class="sc">-</span> inv_slope <span class="sc">*</span> <span class="fu">mean</span>(house_df<span class="sc">$</span>sqm) <span class="sc">+</span> <span class="fu">sd</span>(house_df<span class="sc">$</span>yrs)<span class="sc">*</span>sep_intercept</span>
+<span id="cb7-14"><a></a><span class="co"># And the margin boundary</span></span>
+<span id="cb7-15"><a></a>sv_index <span class="ot">&lt;-</span> svm_model<span class="sc">$</span>index[<span class="dv">1</span>]</span>
+<span id="cb7-16"><a></a>sv_sqm <span class="ot">&lt;-</span> house_df<span class="sc">$</span>sqm[sv_index]</span>
+<span id="cb7-17"><a></a>sv_yrs <span class="ot">&lt;-</span> house_df<span class="sc">$</span>yrs[sv_index]</span>
+<span id="cb7-18"><a></a>margin_intercept <span class="ot">&lt;-</span> sv_yrs <span class="sc">-</span> inv_slope <span class="sc">*</span> sv_sqm</span>
+<span id="cb7-19"><a></a>margin_diff <span class="ot">&lt;-</span> inv_intercept <span class="sc">-</span> margin_intercept</span>
+<span id="cb7-20"><a></a>margin_intercept_inv <span class="ot">&lt;-</span> inv_intercept <span class="sc">+</span> margin_diff</span>
+<span id="cb7-21"><a></a>base_plot <span class="sc">+</span></span>
+<span id="cb7-22"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb7-23"><a></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb7-24"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb7-25"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb7-26"><a></a>    <span class="at">intercept=</span>inv_intercept, <span class="at">slope=</span>inv_slope, <span class="at">linetype=</span><span class="st">"solid"</span></span>
+<span id="cb7-27"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb7-28"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb7-29"><a></a>    <span class="at">intercept=</span>margin_intercept, <span class="at">slope=</span>inv_slope, <span class="at">linetype=</span><span class="st">"dashed"</span></span>
+<span id="cb7-30"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb7-31"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb7-32"><a></a>    <span class="at">intercept=</span>margin_intercept_inv, <span class="at">slope=</span>inv_slope, <span class="at">linetype=</span><span class="st">"dashed"</span></span>
+<span id="cb7-33"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb7-34"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb7-35"><a></a>    <span class="fu">aes</span>(<span class="at">color=</span>Rating, <span class="at">shape=</span>Rating), <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="fl">0.9</span>,</span>
+<span id="cb7-36"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb7-37"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb7-38"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>Rating), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">6</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span>) <span class="sc">+</span></span>
+<span id="cb7-39"><a></a>  <span class="fu">scale_linetype_manual</span>(<span class="st">"Support</span><span class="sc">\n</span><span class="st">Vector?"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"dotted"</span>, <span class="st">"solid"</span>)) <span class="sc">+</span></span>
+<span id="cb7-40"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-41"><a></a>    <span class="at">title =</span> <span class="st">"Optimal Max-Margin Hyperplane"</span>,</span>
+<span id="cb7-42"><a></a>    <span class="at">x =</span> <span class="st">"Square Meters"</span>,</span>
+<span id="cb7-43"><a></a>    <span class="at">y =</span> <span class="st">"Years Old"</span></span>
+<span id="cb7-44"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/optimal-mmh-1.png" class="quarto-figure quarto-figure-center" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="when-does-this-fail" class="slide level2 crunch-title crunch-ul">
+<h2>When Does This Fail?</h2>
+<ul>
+<li>What do we do in this case? (No separating hyperplane!)</li>
+</ul>
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="co"># Generate gaussian blob of disliked + gaussian</span></span>
+<span id="cb8-2"><a></a><span class="co"># blob of liked :3</span></span>
+<span id="cb8-3"><a></a><span class="fu">library</span>(mvtnorm) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb8-4"><a></a><span class="fu">set.seed</span>(<span class="dv">5304</span>)</span>
+<span id="cb8-5"><a></a>num_houses <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb8-6"><a></a><span class="co"># Shared covariance matrix</span></span>
+<span id="cb8-7"><a></a>Sigma_all <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">12</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">20</span>), <span class="at">nrow=</span><span class="dv">2</span>, <span class="at">ncol=</span><span class="dv">2</span>, <span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb8-8"><a></a><span class="co"># Negative datapoints</span></span>
+<span id="cb8-9"><a></a>mu_neg <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="fl">12.5</span>)</span>
+<span id="cb8-10"><a></a>neg_matrix <span class="ot">&lt;-</span> <span class="fu">rmvnorm</span>(num_houses<span class="sc">/</span><span class="dv">2</span>, <span class="at">mean=</span>mu_neg, <span class="at">sigma=</span>Sigma_all)</span>
+<span id="cb8-11"><a></a><span class="fu">colnames</span>(neg_matrix) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"sqm"</span>, <span class="st">"yrs"</span>)</span>
+<span id="cb8-12"><a></a>neg_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(neg_matrix) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">Rating=</span><span class="st">"Disliked"</span>)</span>
+<span id="cb8-13"><a></a><span class="co"># Positive datapoints</span></span>
+<span id="cb8-14"><a></a>mu_pos <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">21</span>, <span class="fl">12.5</span>)</span>
+<span id="cb8-15"><a></a>pos_matrix <span class="ot">&lt;-</span> <span class="fu">rmvnorm</span>(num_houses<span class="sc">/</span><span class="dv">2</span>, <span class="at">mean=</span>mu_pos, <span class="at">sigma=</span>Sigma_all)</span>
+<span id="cb8-16"><a></a><span class="fu">colnames</span>(pos_matrix) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"sqm"</span>, <span class="st">"yrs"</span>)</span>
+<span id="cb8-17"><a></a>pos_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(pos_matrix) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">Rating=</span><span class="st">"Liked"</span>)</span>
+<span id="cb8-18"><a></a><span class="co"># And combine</span></span>
+<span id="cb8-19"><a></a>nonsep_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(neg_df, pos_df)</span>
+<span id="cb8-20"><a></a>nonsep_df <span class="ot">&lt;-</span> nonsep_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(yrs <span class="sc">&gt;=</span> <span class="dv">5</span> <span class="sc">&amp;</span> sqm <span class="sc">&lt;=</span> <span class="dv">24</span> <span class="sc">&amp;</span> sqm <span class="sc">&gt;=</span> <span class="dv">7</span>)</span>
+<span id="cb8-21"><a></a><span class="co"># Plot</span></span>
+<span id="cb8-22"><a></a>nonsep_plot <span class="ot">&lt;-</span> nonsep_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>sqm, <span class="at">y=</span>yrs)) <span class="sc">+</span></span>
+<span id="cb8-23"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb8-24"><a></a>    <span class="at">title =</span> <span class="st">"Jeff's House Search"</span>,</span>
+<span id="cb8-25"><a></a>    <span class="at">x =</span> <span class="st">"Square Meters"</span>,</span>
+<span id="cb8-26"><a></a>    <span class="at">y =</span> <span class="st">"Years Old"</span></span>
+<span id="cb8-27"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb8-28"><a></a>  <span class="co"># xlim(6,25) + ylim(2,22) +</span></span>
+<span id="cb8-29"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb8-30"><a></a>  <span class="co"># 45 is minus sign, 95 is em-dash</span></span>
+<span id="cb8-31"><a></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb8-32"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span>
+<span id="cb8-33"><a></a>nonsep_plot <span class="sc">+</span></span>
+<span id="cb8-34"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb8-35"><a></a>    <span class="fu">aes</span>(<span class="at">color=</span>Rating, <span class="at">shape=</span>Rating), <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="fl">0.25</span>,</span>
+<span id="cb8-36"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb8-37"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb8-38"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>Rating), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">4</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+
+</div>
+<img data-src="index_files/figure-revealjs/house-df-nonsep-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><ul>
+<li>Here we need to keep in mind how our goal is relative to the <strong>Data-Generating Process!</strong></li>
+</ul>
+</section>
+<section id="no-separating-hyperplane" class="slide level2">
+<h2>No Separating Hyperplane? 😧</h2>
+
+<img data-src="images/fear.jpg" class="quarto-figure quarto-figure-center r-stretch"><ul>
+<li>Don’t let the <em>perfect</em> be the enemy of the <em>good</em>!</li>
+</ul>
+</section>
+<section id="perfect-vs.-good" class="slide level2">
+<h2>Perfect vs.&nbsp;Good</h2>
+<ul>
+<li>In fact, “sub-optimal” may be better than optimal, in terms of overfitting!</li>
+</ul>
+
+<img data-src="images/9_5.svg" class="r-stretch quarto-figure-center"><p class="caption">ISLR Figure 9.5: Notice how the dashed line on the right side may be better in terms of <strong>generalization</strong>, even though the solid line is the <strong>optimal</strong> Max-Margin Hyperplane!</p></section></section>
+<section>
+<section id="support-vector-classifiers" class="title-slide slide level1 center" data-stack-name="SVCs">
+<h1>Support Vector Classifiers</h1>
+<ul>
+<li>Max-Margin Classifier <strong>+ budget <span class="math inline">\(C\)</span> for errors</strong></li>
+</ul>
+</section>
+<section id="handling-non-linearly-separable-data" class="slide level2 title-09">
+<h2>Handling Non-Linearly-Separable Data</h2>
+<p><span class="math display">\[
+\begin{align*}
+\underset{\beta_0, \beta_1, \beta_2, \varepsilon_1, \ldots, \varepsilon_n, M}{\text{maximize}}\text{ } \; &amp; M \\
+\text{s.t. } \; &amp; y_i(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}) \geq M(1 - \varepsilon_i), \\
+~ &amp; \varepsilon_i \geq 0, \sum_{i=1}^{n}\varepsilon_i \leq C, \\
+~ &amp; \beta_0^2 + \beta_1^2 + \beta_2^2 = 1
+\end{align*}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(C = 0\)</span> <span class="math inline">\(\implies\)</span> Max-Margin Classifier</li>
+<li>We want to choose <span class="math inline">\(C\)</span> to optimize <strong>generalizability</strong> to unseen data… So, choose via <strong>Cross-Validation</strong></li>
+</ul>
+</section>
+<section id="slack-variables" class="slide level2 smaller">
+<h2>“Slack” Variables</h2>
+<ul>
+<li>The <span class="math inline">\(\varepsilon_i\)</span> values also give us valuable information!</li>
+<li><span class="math inline">\(\varepsilon_i = 0 \implies\)</span> observation <span class="math inline">\(i\)</span> on correct side of <strong>margin</strong></li>
+<li><span class="math inline">\(0 &lt; \varepsilon_i \leq 1 \implies\)</span> observation <span class="math inline">\(i\)</span> is <em>within</em> margin but on correct side of <strong>hyperplane</strong></li>
+<li><span class="math inline">\(\varepsilon_i &gt; 1 \implies\)</span> observation <span class="math inline">\(i\)</span> on wrong side of <strong>hyperplane</strong></li>
+</ul>
+
+<img data-src="images/slack.svg" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://www.researchgate.net/publication/228873365_Support_Vector_Machines_Applied_to_Handwritten_Numerals_Recognition">Image source</a></p></section>
+<section id="our-non-linearly-separable-example" class="slide level2 smaller crunch-title title-12">
+<h2>Our Non-Linearly-Separable Example</h2>
+<p>&nbsp;<br></p>
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">library</span>(e1071)</span>
+<span id="cb9-2"><a></a>liked <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(nonsep_df<span class="sc">$</span>Rating <span class="sc">==</span> <span class="st">"Liked"</span>)</span>
+<span id="cb9-3"><a></a>nonsep_cent_df <span class="ot">&lt;-</span> nonsep_df</span>
+<span id="cb9-4"><a></a>nonsep_cent_df<span class="sc">$</span>sqm <span class="ot">&lt;-</span> <span class="fu">scale</span>(nonsep_cent_df<span class="sc">$</span>sqm)</span>
+<span id="cb9-5"><a></a>nonsep_cent_df<span class="sc">$</span>yrs <span class="ot">&lt;-</span> <span class="fu">scale</span>(nonsep_cent_df<span class="sc">$</span>yrs)</span>
+<span id="cb9-6"><a></a><span class="co"># Compute boundary for different cost budgets</span></span>
+<span id="cb9-7"><a></a>budget_vals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="dv">1</span>, <span class="dv">5</span>)</span>
+<span id="cb9-8"><a></a>svm_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb9-9"><a></a>  <span class="at">sep_slope=</span><span class="fu">numeric</span>(), <span class="at">sep_intercept=</span><span class="fu">numeric</span>(),</span>
+<span id="cb9-10"><a></a>  <span class="at">inv_slope=</span><span class="fu">numeric</span>(), <span class="at">inv_intercept=</span><span class="fu">numeric</span>(),</span>
+<span id="cb9-11"><a></a>  <span class="at">margin_intercept=</span><span class="fu">numeric</span>(), <span class="at">margin_intercept_inv=</span><span class="fu">numeric</span>(),</span>
+<span id="cb9-12"><a></a>  <span class="at">budget=</span><span class="fu">numeric</span>(), <span class="at">budget_label=</span><span class="fu">character</span>()</span>
+<span id="cb9-13"><a></a>)</span>
+<span id="cb9-14"><a></a><span class="cf">for</span> (cur_c <span class="cf">in</span> budget_vals) {</span>
+<span id="cb9-15"><a></a>  <span class="co"># print(cur_c)</span></span>
+<span id="cb9-16"><a></a>  svm_model <span class="ot">&lt;-</span> <span class="fu">svm</span>(liked <span class="sc">~</span> sqm <span class="sc">+</span> yrs, <span class="at">data=</span>nonsep_cent_df, <span class="at">kernel=</span><span class="st">"linear"</span>, <span class="at">cost=</span>cur_c)</span>
+<span id="cb9-17"><a></a>  cf <span class="ot">&lt;-</span> <span class="fu">coef</span>(svm_model)</span>
+<span id="cb9-18"><a></a>  sep_intercept <span class="ot">&lt;-</span> <span class="sc">-</span>cf[<span class="dv">1</span>] <span class="sc">/</span> cf[<span class="dv">3</span>]</span>
+<span id="cb9-19"><a></a>  sep_slope <span class="ot">&lt;-</span> <span class="sc">-</span>cf[<span class="dv">2</span>] <span class="sc">/</span> cf[<span class="dv">3</span>]</span>
+<span id="cb9-20"><a></a>  <span class="co"># Invert Z-scores</span></span>
+<span id="cb9-21"><a></a>  sd_ratio <span class="ot">&lt;-</span> <span class="fu">sd</span>(nonsep_df<span class="sc">$</span>yrs) <span class="sc">/</span> <span class="fu">sd</span>(nonsep_df<span class="sc">$</span>sqm)</span>
+<span id="cb9-22"><a></a>  inv_slope <span class="ot">&lt;-</span> sd_ratio <span class="sc">*</span> sep_slope</span>
+<span id="cb9-23"><a></a>  inv_intercept <span class="ot">&lt;-</span> <span class="fu">mean</span>(nonsep_df<span class="sc">$</span>yrs) <span class="sc">-</span> inv_slope <span class="sc">*</span> <span class="fu">mean</span>(nonsep_df<span class="sc">$</span>sqm) <span class="sc">+</span> <span class="fu">sd</span>(nonsep_df<span class="sc">$</span>yrs)<span class="sc">*</span>sep_intercept</span>
+<span id="cb9-24"><a></a>  <span class="co"># And the margin boundary</span></span>
+<span id="cb9-25"><a></a>  sv_index <span class="ot">&lt;-</span> svm_model<span class="sc">$</span>index[<span class="dv">1</span>]</span>
+<span id="cb9-26"><a></a>  sv_sqm <span class="ot">&lt;-</span> nonsep_df<span class="sc">$</span>sqm[sv_index]</span>
+<span id="cb9-27"><a></a>  sv_yrs <span class="ot">&lt;-</span> nonsep_df<span class="sc">$</span>yrs[sv_index]</span>
+<span id="cb9-28"><a></a>  margin_intercept <span class="ot">&lt;-</span> sv_yrs <span class="sc">-</span> inv_slope <span class="sc">*</span> sv_sqm</span>
+<span id="cb9-29"><a></a>  margin_diff <span class="ot">&lt;-</span> inv_intercept <span class="sc">-</span> margin_intercept</span>
+<span id="cb9-30"><a></a>  margin_intercept_inv <span class="ot">&lt;-</span> inv_intercept <span class="sc">+</span> margin_diff</span>
+<span id="cb9-31"><a></a>  cur_svm_row <span class="ot">&lt;-</span> <span class="fu">tibble_row</span>(</span>
+<span id="cb9-32"><a></a>    <span class="at">budget =</span> cur_c,</span>
+<span id="cb9-33"><a></a>    <span class="at">budget_label =</span> <span class="fu">paste0</span>(<span class="st">"Penalty = "</span>,cur_c),</span>
+<span id="cb9-34"><a></a>    <span class="at">sep_slope =</span> sep_slope,</span>
+<span id="cb9-35"><a></a>    <span class="at">sep_intercept =</span> sep_intercept,</span>
+<span id="cb9-36"><a></a>    <span class="at">inv_slope =</span> inv_slope,</span>
+<span id="cb9-37"><a></a>    <span class="at">inv_intercept =</span> inv_intercept,</span>
+<span id="cb9-38"><a></a>    <span class="at">margin_intercept =</span> margin_intercept,</span>
+<span id="cb9-39"><a></a>    <span class="at">margin_intercept_inv =</span> margin_intercept_inv</span>
+<span id="cb9-40"><a></a>  )</span>
+<span id="cb9-41"><a></a>  svm_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(svm_df, cur_svm_row)</span>
+<span id="cb9-42"><a></a>}</span>
+<span id="cb9-43"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb9-44"><a></a>  <span class="co"># xlim(6,25) + ylim(2,22) +</span></span>
+<span id="cb9-45"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb9-46"><a></a>  <span class="co"># 45 is minus sign, 95 is em-dash</span></span>
+<span id="cb9-47"><a></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb9-48"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb9-49"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb9-50"><a></a>    <span class="at">data=</span>svm_df,</span>
+<span id="cb9-51"><a></a>    <span class="fu">aes</span>(<span class="at">intercept=</span>inv_intercept, <span class="at">slope=</span>inv_slope),</span>
+<span id="cb9-52"><a></a>    <span class="at">linetype=</span><span class="st">"solid"</span></span>
+<span id="cb9-53"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb9-54"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb9-55"><a></a>    <span class="at">data=</span>svm_df,</span>
+<span id="cb9-56"><a></a>    <span class="fu">aes</span>(<span class="at">intercept=</span>margin_intercept, <span class="at">slope=</span>inv_slope),</span>
+<span id="cb9-57"><a></a>    <span class="at">linetype=</span><span class="st">"dashed"</span></span>
+<span id="cb9-58"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb9-59"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb9-60"><a></a>    <span class="at">data=</span>svm_df,</span>
+<span id="cb9-61"><a></a>    <span class="fu">aes</span>(<span class="at">intercept=</span>margin_intercept_inv, <span class="at">slope=</span>inv_slope),</span>
+<span id="cb9-62"><a></a>    <span class="at">linetype=</span><span class="st">"dashed"</span></span>
+<span id="cb9-63"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb9-64"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb9-65"><a></a>    <span class="at">data=</span>nonsep_df,</span>
+<span id="cb9-66"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>sqm, <span class="at">y=</span>yrs, <span class="at">color=</span>Rating, <span class="at">shape=</span>Rating), <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="fl">0.1</span>,</span>
+<span id="cb9-67"><a></a>    <span class="at">stroke=</span><span class="dv">5</span></span>
+<span id="cb9-68"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb9-69"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb9-70"><a></a>    <span class="at">data=</span>nonsep_df,</span>
+<span id="cb9-71"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>sqm, <span class="at">y=</span>yrs, <span class="at">fill=</span>Rating), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">3</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span></span>
+<span id="cb9-72"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb9-73"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-74"><a></a>    <span class="at">title =</span> <span class="st">"Support Vector Classifier"</span>,</span>
+<span id="cb9-75"><a></a>    <span class="at">x =</span> <span class="st">"Square Meters"</span>,</span>
+<span id="cb9-76"><a></a>    <span class="at">y =</span> <span class="st">"Years Old"</span></span>
+<span id="cb9-77"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb9-78"><a></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(budget_label), <span class="at">nrow=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb9-79"><a></a>  <span class="fu">theme</span>(</span>
+<span id="cb9-80"><a></a>    <span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="cn">NA</span>, <span class="at">size =</span> <span class="fl">0.4</span>)</span>
+<span id="cb9-81"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+
+</div>
+<img data-src="index_files/figure-revealjs/nonsep-svm-houses-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="but-why-restrict-ourselves-to-lines" class="slide level2 math-70 crunch-title title-11 smaller">
+<h2>But… Why Restrict Ourselves to <em>Lines</em>?</h2>
+<ul>
+<li>We just spent 7 weeks learning how to move from linear to non-linear! Basic template:</li>
+</ul>
+<p><span class="math display">\[
+\text{Nonlinear model} = \text{Linear model} \underbrace{- \; \text{linearity restriction}}_{\text{Enables overfitting...}} \underbrace{+ \text{ Complexity penalty}}_{\text{Prevent overfitting}}
+\]</span></p>
+<ul>
+<li>So… We should be able to find reasonable <strong>non-linear</strong> boundaries!</li>
+</ul>
+
+<img data-src="images/overfitting.svg" class="r-stretch quarto-figure-center"><p class="caption">From <a href="https://www.mathworks.com/discovery/overfitting.html">MathWorks</a></p></section></section>
+<section>
+<section id="support-vector-machines" class="title-slide slide level1 center" data-stack-name="SVMs">
+<h1>Support Vector <em>Machines</em></h1>
 <style>
 @font-face {
     font-family: Noodle;
     src: url('../assets/Kbnoodlemonster.ttf');
 }
-.workbench-jj {
-  font-family: "Workbench", serif;
-  /* font-optical-sizing: auto; */
-  font-weight: 400;
-  font-style: normal;
-  font-size: 48pt !important;
-}
 .noodle-jj {
     font-family: "Noodle", serif;
-    font-size: 52pt !important;
+    font-size: 96pt !important;
 }
-.kablammo-jj {
-  font-family: "Kablammo", serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-  font-variation-settings:
-    "MORF" 0;
-  font-size: 48pt !important;
-}
-.rubik-jj {
-  font-family: "Rubik Puddles", serif;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 48pt !important;
+.noodle-jj-smaller {
+    font-family: "Noodle", serif;
+    font-size: 54pt !important;
 }
 </style>
+<p>This is where stuff gets <em>super…</em></p>
 <center>
-<p><strong>[Weeks 4-6]</strong></p>
+<p><span class="noodle-jj">Linear</span></p>
 </center>
+</section>
+<section id="linear-rightarrow-linear" class="slide level2 crunch-title inline-90 crunch-ul crunch-quarto-figure">
+<h2>Linear <span class="math inline">\(\rightarrow\)</span> <span class="noodle-jj-smaller">Linear</span></h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div id="fig-noodle" class="quarto-float quarto-figure quarto-figure-center">
-<figure class="quarto-float quarto-float-fig">
-<div aria-describedby="fig-noodle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<center>
-<p><em>Polynomial Regression</em></p>
-<p><span class="noodle-jj">Linear Models</span></p>
-</center>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-noodle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: <a href="http://keepinitkoolinkinderland.blogspot.com/p/fonts.html">Font Credit</a>
-</figcaption>
-</figure>
-</div>
+<ul>
+<li>Old feature space: <span class="math inline">\(\mathcal{S} = \{X_1, \ldots, X_J\}\)</span></li>
+<li>New feature space: <span class="math inline">\(\mathcal{S}^2 = \{X_1, X_1^2, \ldots, X_J, X_J^2\}\)</span></li>
+<li><strong>Linear</strong> boundary in <span class="math inline">\(\mathcal{S}^2\)</span> <span class="math inline">\(\implies\)</span> <strong>Quadratic</strong> boundary in <span class="math inline">\(\mathcal{S}\)</span></li>
+<li>Helpful example: Non-linearly separable in 1D <span class="math inline">\(\leadsto\)</span> Linearly separable in 2D</li>
+</ul>
 </div><div class="column" style="width:50%;">
-<div id="fig-workbench" class="quarto-float quarto-figure quarto-figure-center">
-<figure class="quarto-float quarto-float-fig">
-<div aria-describedby="fig-workbench-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<center>
-<p><em>Piecewise Regression</em></p>
-<p><span class="workbench-jj">Linear Models</span></p>
-</center>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-workbench-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: <a href="https://fonts.google.com/specimen/Workbench">Font Credit</a>
-</figcaption>
+<p>1D Hyperplane = <strong>point!</strong> But no separating point here 😰</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb10-2"><a></a>x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">50</span>, <span class="at">min=</span><span class="sc">-</span><span class="dv">9</span>, <span class="at">max=</span><span class="dv">9</span>)</span>
+<span id="cb10-3"><a></a>data_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x=</span>x_vals) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb10-4"><a></a>  <span class="at">label =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(<span class="fu">abs</span>(x) <span class="sc">&gt;=</span> <span class="dv">6</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>)),</span>
+<span id="cb10-5"><a></a>  <span class="at">x2 =</span> x<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb10-6"><a></a>)</span>
+<span id="cb10-7"><a></a>data_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span><span class="dv">0</span>, <span class="at">color=</span>label)) <span class="sc">+</span></span>
+<span id="cb10-8"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb10-9"><a></a>    <span class="fu">aes</span>(<span class="at">color=</span>label, <span class="at">shape=</span>label), <span class="at">size=</span>g_pointsize,</span>
+<span id="cb10-10"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb10-11"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb10-12"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb10-13"><a></a>    <span class="fu">aes</span>(<span class="at">fill=</span>label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">6</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span></span>
+<span id="cb10-14"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb10-15"><a></a>  <span class="co"># xlim(6,25) + ylim(2,22) +</span></span>
+<span id="cb10-16"><a></a>  <span class="co"># coord_equal() +</span></span>
+<span id="cb10-17"><a></a>  <span class="co"># 45 is minus sign, 95 is em-dash</span></span>
+<span id="cb10-18"><a></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb10-19"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb10-20"><a></a>  <span class="fu">theme</span>(</span>
+<span id="cb10-21"><a></a>    <span class="at">axis.line.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb10-22"><a></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb10-23"><a></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb10-24"><a></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb10-25"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb10-26"><a></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb10-27"><a></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb10-28"><a></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Non-Linearly-Separable Data"</span>) <span class="sc">+</span></span>
+<span id="cb10-29"><a></a>  <span class="fu">theme</span>(</span>
+<span id="cb10-30"><a></a>    <span class="at">plot.margin =</span> <span class="fu">unit</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">20</span>), <span class="st">"mm"</span>)</span>
+<span id="cb10-31"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/plot-1d-nonsep-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
-</div></div>
-<center>
-<p><strong>[Today]</strong></p>
-</center>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div id="fig-kablammo" class="quarto-float quarto-figure quarto-figure-center">
-<figure class="quarto-float quarto-float-fig">
-<div aria-describedby="fig-kablammo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<center>
-<p><em>Splines (Truncated Power Bases)</em></p>
-<p><span class="kablammo-jj">Linear Models</span></p>
-</center>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kablammo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: <a href="https://fonts.google.com/specimen/Kablammo">Font Credit</a>
-</figcaption>
+</div>
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>data_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>x2, <span class="at">color=</span>label)) <span class="sc">+</span></span>
+<span id="cb11-2"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb11-3"><a></a>    <span class="fu">aes</span>(<span class="at">color=</span>label, <span class="at">shape=</span>label), <span class="at">size=</span>g_pointsize,</span>
+<span id="cb11-4"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb11-5"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb11-6"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb11-7"><a></a>    <span class="fu">aes</span>(<span class="at">fill=</span>label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">6</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span></span>
+<span id="cb11-8"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb11-9"><a></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">36</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb11-10"><a></a>  <span class="co"># xlim(6,25) + ylim(2,22) +</span></span>
+<span id="cb11-11"><a></a>  <span class="co"># coord_equal() +</span></span>
+<span id="cb11-12"><a></a>  <span class="co"># 45 is minus sign, 95 is em-dash</span></span>
+<span id="cb11-13"><a></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb11-14"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb11-15"><a></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb11-16"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-17"><a></a>    <span class="at">title =</span> <span class="fu">TeX</span>(<span class="st">"...Linearly Separable in $R^2$!"</span>),</span>
+<span id="cb11-18"><a></a>    <span class="at">y =</span> <span class="fu">TeX</span>(<span class="st">"$x^2$"</span>)</span>
+<span id="cb11-19"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/lift-1d-to-2d-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
-</div><div class="column" style="width:50%;">
-<div id="fig-rubik" class="quarto-float quarto-figure quarto-figure-center">
-<figure class="quarto-float quarto-float-fig">
-<div aria-describedby="fig-rubik-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<center>
-<p><em>Natural Splines</em></p>
-<p><span class="rubik-jj">Linear Models</span></p>
-</center>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rubik-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: <a href="https://fonts.google.com/specimen/Rubik+Puddles">Font Credit</a>
-</figcaption>
-</figure>
 </div>
 </div></div>
 </section>
-<section id="what-problem-are-we-solving" class="slide level2 smaller">
-<h2>What Problem Are We Solving?</h2>
+<section id="and-in-3d" class="slide level2">
+<h2>And in 3D…</h2>
+<p>&nbsp;<br></p>
+
+<img data-src="images/kernel_trick.jpg" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://medium.com/@mehmetalitor/support-vector-machine-and-kernel-trick-45b122edc773">Image Source</a></p></section>
+<section id="taking-this-idea-and-running-with-it" class="slide level2 crunch-title title-09">
+<h2>Taking This Idea and Running With It</h2>
 <ul>
-<li>From W04-06, you are now really good at thinking through issues of <strong>non-linearity</strong> in terms of <strong>polynomial regression</strong>
-<ul>
-<li>(Hence, why I kept “plugging in” <strong>degree of polynomial</strong> as our measure of <strong>complexity</strong>)</li>
-</ul></li>
-<li>Now we want to move towards handling <strong>any kind of non-linearity</strong>
-<ul>
-<li>(Hence, why I kept reminding you how <strong>degree of polynomial</strong> is <em>only one possible measure</em> of <strong>complexity</strong>)</li>
-</ul></li>
+<li>The goal: find a <strong>transformation of the original space</strong> that the (non-linearly-separable) data lives in, such that data <strong><em>is</em> linearly separable</strong> in new space</li>
+<li>In theory, could just compute tons and tons of new features <span class="math inline">\(\{X_1, X_1^2, X_1^3, \ldots, X_1X_2, X_1X_3, \ldots, X_1^2X_2, X_1^2X_3, \ldots\}\)</span></li>
+<li>In practice this “blows up” the dimensionality of the feature space, making SVM slower and slower</li>
+<li>Weird trick (literally): turns out we only need <strong>inner products</strong> <span class="math inline">\(\langle x_i, x_j \rangle\)</span> between datapoints… <strong>“Kernel Trick”</strong></li>
 </ul>
 </section>
-<section id="whats-so-bad-about-polynomial-regression" class="slide level2 smaller title-11 crunch-title crunch-ul crunch-quarto-figure crunch-li-8 inline-90 math-90 crunch-p">
-<h2>What’s So Bad About Polynomial Regression?</h2>
-<ul>
-<li>Mathematically, <a href="https://en.wikipedia.org/wiki/Weierstrass_approximation_theorem">Weierstrass Approximation Theorem</a> says we can model <strong>any function</strong> as (possibly infinite) sum of polynomials</li>
-<li>In practice, this can be a <strong>horrifically bad</strong> way to actually model things:</li>
-</ul>
-<div class="columns text-90">
-<div class="column" style="width:32%;">
-<p><i class="bi bi-1-circle"></i> Raw data: <span class="math inline">\(y = \sin(x) + \varepsilon\)</span></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb2-2"><a></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb2-3"><a></a>N <span class="ot">&lt;-</span> <span class="dv">200</span></span>
-<span id="cb2-4"><a></a>x_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="sc">-</span><span class="dv">10</span>, <span class="at">to=</span><span class="dv">10</span>, <span class="at">length.out=</span>N)</span>
-<span id="cb2-5"><a></a>y_raw <span class="ot">&lt;-</span> <span class="fu">sin</span>(x_vals)</span>
-<span id="cb2-6"><a></a>y_noise <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(y_raw), <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fl">0.075</span>)</span>
-<span id="cb2-7"><a></a>y_vals <span class="ot">&lt;-</span> y_raw <span class="sc">+</span> y_noise</span>
-<span id="cb2-8"><a></a>dgp_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="st">"Raw Data"</span>)</span>
-<span id="cb2-9"><a></a>data_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x=</span>x_vals, <span class="at">y=</span>y_vals)</span>
-<span id="cb2-10"><a></a>base_plot <span class="ot">&lt;-</span> data_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
-<span id="cb2-11"><a></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb2-12"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>)</span>
-<span id="cb2-13"><a></a>base_plot <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">title=</span>dgp_label)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/sine-data-plot-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-<p><i class="bi bi-2-circle"></i> Bad (quadratic) model</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>quad_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">2</span>), <span class="at">data=</span>data_df)</span>
-<span id="cb3-2"><a></a>quad_rss <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">get_rss</span>(quad_model), <span class="dv">3</span>)</span>
-<span id="cb3-3"><a></a>poly_label_2 <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(<span class="st">"2 $</span><span class="sc">\\</span><span class="st">beta$ Coefficients: RSS = "</span>,quad_rss))</span>
-<span id="cb3-4"><a></a>base_plot <span class="sc">+</span></span>
-<span id="cb3-5"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">2</span>)) <span class="sc">+</span></span>
-<span id="cb3-6"><a></a>  <span class="fu">labs</span>(<span class="at">title=</span>poly_label_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/sine-poly2-fit-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:2%;">
-<p>&nbsp;</p>
-</div><div class="column" style="width:32%;">
-<p><i class="bi bi-3-circle"></i> Making it “better” with more complex polynomials</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>poly5_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">5</span>), <span class="at">data=</span>data_df)</span>
-<span id="cb4-2"><a></a>poly5_rss <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">get_rss</span>(poly5_model), <span class="dv">3</span>)</span>
-<span id="cb4-3"><a></a>poly5_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(<span class="st">"5 $</span><span class="sc">\\</span><span class="st">beta$ Coefficients: RSS = "</span>,poly5_rss))</span>
-<span id="cb4-4"><a></a>base_plot <span class="sc">+</span></span>
-<span id="cb4-5"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb4-6"><a></a>  <span class="fu">labs</span>(<span class="at">title=</span>poly5_label)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/sine-poly5-fit-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>poly8_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">8</span>), <span class="at">data=</span>data_df)</span>
-<span id="cb5-2"><a></a>poly8_rss <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">get_rss</span>(poly8_model), <span class="dv">3</span>)</span>
-<span id="cb5-3"><a></a>poly8_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(<span class="st">"8 $</span><span class="sc">\\</span><span class="st">beta$ Coefficients: RSS = "</span>,poly8_rss))</span>
-<span id="cb5-4"><a></a>base_plot <span class="sc">+</span></span>
-<span id="cb5-5"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">8</span>)) <span class="sc">+</span></span>
-<span id="cb5-6"><a></a>  <span class="fu">labs</span>(<span class="at">title=</span>poly8_label)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/sine-poly10-fit-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:2%;">
-<p>&nbsp;</p>
-</div><div class="column" style="width:32%;">
-<p><i class="bi bi-4-circle"></i> Using <em>all</em> data to estimate <strong>single</strong> parameter, by using the “correct” <strong>basis function</strong>!</p>
+<section id="the-magic-of-kernels" class="slide level2 smaller crunch-title title-12 math-90">
+<h2>The Magic of Kernels</h2>
+<p>Radial Basis Function (RBF) Kernel:</p>
 <p><span class="math display">\[
-Y = \beta_0 + \beta_1 \sin(x)
+K(x_i, x_{i'}) = \exp\left[ -\gamma \sum_{j=1}^{J} (x_{ij} - x_{i'j})^2 \right]
 \]</span></p>
-<div class="cell">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center" data-crop="false">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a>sine_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">sin</span>(x), <span class="at">data=</span>data_df)</span>
-<span id="cb6-2"><a></a>sine_rss <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">get_rss</span>(sine_model), <span class="dv">3</span>)</span>
-<span id="cb6-3"><a></a>sine_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(<span class="st">"Single sin(x) Coefficient: RSS = "</span>,sine_rss))</span>
-<span id="cb6-4"><a></a>base_plot <span class="sc">+</span></span>
-<span id="cb6-5"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">sin</span>(x)) <span class="sc">+</span></span>
-<span id="cb6-6"><a></a>  <span class="fu">labs</span>(<span class="at">title=</span>sine_label)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="fu">library</span>(kernlab) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb12-2"><a></a><span class="fu">library</span>(mlbench) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb12-3"><a></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(<span class="st">"assets/linspike_df.rds"</span>)) {</span>
+<span id="cb12-4"><a></a>  <span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
+<span id="cb12-5"><a></a>  N <span class="ot">&lt;-</span> <span class="dv">120</span></span>
+<span id="cb12-6"><a></a>  x1_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="at">min=</span><span class="sc">-</span><span class="dv">5</span>, <span class="at">max=</span><span class="dv">5</span>)</span>
+<span id="cb12-7"><a></a>  x2_raw <span class="ot">&lt;-</span> x1_vals</span>
+<span id="cb12-8"><a></a>  x2_noise <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fl">1.25</span>)</span>
+<span id="cb12-9"><a></a>  x2_vals <span class="ot">&lt;-</span> x2_raw <span class="sc">+</span> x2_noise</span>
+<span id="cb12-10"><a></a>  linspike_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x1=</span>x1_vals, <span class="at">x2=</span>x2_vals) <span class="sc">|&gt;</span></span>
+<span id="cb12-11"><a></a>    <span class="fu">mutate</span>(</span>
+<span id="cb12-12"><a></a>      <span class="at">label =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(x1<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> x2<span class="sc">^</span><span class="dv">2</span> <span class="sc">&lt;=</span> <span class="fl">2.75</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb12-13"><a></a>    )</span>
+<span id="cb12-14"><a></a>  linspike_svm <span class="ot">&lt;-</span> <span class="fu">ksvm</span>(</span>
+<span id="cb12-15"><a></a>    label <span class="sc">~</span> x1 <span class="sc">+</span> x2,</span>
+<span id="cb12-16"><a></a>    <span class="at">data =</span> linspike_df,</span>
+<span id="cb12-17"><a></a>    <span class="at">kernel =</span> <span class="st">"rbfdot"</span>,</span>
+<span id="cb12-18"><a></a>    <span class="at">C =</span> <span class="dv">500</span>,</span>
+<span id="cb12-19"><a></a>    <span class="at">prob.model =</span> <span class="cn">TRUE</span></span>
+<span id="cb12-20"><a></a>  )</span>
+<span id="cb12-21"><a></a>  <span class="co"># Grid over which to evaluate decision boundaries</span></span>
+<span id="cb12-22"><a></a>  npts <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb12-23"><a></a>  lsgrid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb12-24"><a></a>    <span class="at">x1 =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="at">length =</span> npts),</span>
+<span id="cb12-25"><a></a>    <span class="at">x2 =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="at">length =</span> npts)</span>
+<span id="cb12-26"><a></a>  )</span>
+<span id="cb12-27"><a></a>  <span class="co"># Predicted probabilities (as a two-column matrix)</span></span>
+<span id="cb12-28"><a></a>  prob_svm <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
+<span id="cb12-29"><a></a>    linspike_svm,</span>
+<span id="cb12-30"><a></a>    <span class="at">newdata =</span> lsgrid,</span>
+<span id="cb12-31"><a></a>    <span class="at">type =</span> <span class="st">"probabilities"</span></span>
+<span id="cb12-32"><a></a>  )</span>
+<span id="cb12-33"><a></a>  <span class="co"># Add predicted class probabilities</span></span>
+<span id="cb12-34"><a></a>  lsgrid2 <span class="ot">&lt;-</span> lsgrid <span class="sc">|&gt;</span></span>
+<span id="cb12-35"><a></a>    <span class="fu">cbind</span>(<span class="st">"SVM"</span> <span class="ot">=</span> prob_svm[, <span class="dv">1</span>L]) <span class="sc">|&gt;</span></span>
+<span id="cb12-36"><a></a>    tidyr<span class="sc">::</span><span class="fu">gather</span>(Model, Prob, <span class="sc">-</span>x1, <span class="sc">-</span>x2)</span>
+<span id="cb12-37"><a></a></span>
+<span id="cb12-38"><a></a>  <span class="co"># Serialize for quicker rendering</span></span>
+<span id="cb12-39"><a></a>  <span class="fu">saveRDS</span>(linspike_df, <span class="st">"assets/linspike_df.rds"</span>)</span>
+<span id="cb12-40"><a></a>  <span class="fu">saveRDS</span>(lsgrid2, <span class="st">"assets/lsgrid2.rds"</span>)</span>
+<span id="cb12-41"><a></a>} <span class="cf">else</span> {</span>
+<span id="cb12-42"><a></a>  linspike_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"assets/linspike_df.rds"</span>)</span>
+<span id="cb12-43"><a></a>  lsgrid2 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"assets/lsgrid2.rds"</span>)</span>
+<span id="cb12-44"><a></a>}</span>
+<span id="cb12-45"><a></a>linspike_df <span class="ot">&lt;-</span> linspike_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb12-46"><a></a>  <span class="at">Label =</span> label</span>
+<span id="cb12-47"><a></a>)</span>
+<span id="cb12-48"><a></a>linspike_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> x2)) <span class="sc">+</span></span>
+<span id="cb12-49"><a></a>  <span class="co"># geom_point(aes(shape = label, color = label), size = 3, alpha = 0.75) +</span></span>
+<span id="cb12-50"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">shape =</span> Label, <span class="at">color =</span> Label), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">stroke=</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb12-51"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>Label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">4</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb12-52"><a></a>  <span class="fu">xlab</span>(<span class="fu">expression</span>(X[<span class="dv">1</span>])) <span class="sc">+</span></span>
+<span id="cb12-53"><a></a>  <span class="fu">ylab</span>(<span class="fu">expression</span>(X[<span class="dv">2</span>])) <span class="sc">+</span></span>
+<span id="cb12-54"><a></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span></span>
+<span id="cb12-55"><a></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb12-56"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb12-57"><a></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb12-58"><a></a>  <span class="fu">stat_contour</span>(</span>
+<span id="cb12-59"><a></a>    <span class="at">data =</span> lsgrid2,</span>
+<span id="cb12-60"><a></a>    <span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> x2, <span class="at">z =</span> Prob),</span>
+<span id="cb12-61"><a></a>    <span class="at">breaks =</span> <span class="fl">0.5</span>,</span>
+<span id="cb12-62"><a></a>    <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb12-63"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb12-64"><a></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="index_files/figure-revealjs/sine-fit-1.png" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/linspike-svm-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(<span class="st">"assets/spiral_df.rds"</span>)) {</span>
+<span id="cb13-2"><a></a>  spiral_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(</span>
+<span id="cb13-3"><a></a>    <span class="fu">mlbench.spirals</span>(<span class="dv">300</span>, <span class="at">cycles =</span> <span class="dv">2</span>, <span class="at">sd =</span> <span class="fl">0.09</span>)</span>
+<span id="cb13-4"><a></a>  )</span>
+<span id="cb13-5"><a></a>  <span class="fu">names</span>(spiral_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x1"</span>, <span class="st">"x2"</span>, <span class="st">"label"</span>)</span>
+<span id="cb13-6"><a></a></span>
+<span id="cb13-7"><a></a>  <span class="co"># Fit SVM using a RBF kernel</span></span>
+<span id="cb13-8"><a></a>  spirals_svm <span class="ot">&lt;-</span> <span class="fu">ksvm</span>(</span>
+<span id="cb13-9"><a></a>    label <span class="sc">~</span> x1 <span class="sc">+</span> x2,</span>
+<span id="cb13-10"><a></a>    <span class="at">data =</span> spiral_df,</span>
+<span id="cb13-11"><a></a>    <span class="at">kernel =</span> <span class="st">"rbfdot"</span>,</span>
+<span id="cb13-12"><a></a>    <span class="at">C =</span> <span class="dv">500</span>,</span>
+<span id="cb13-13"><a></a>    <span class="at">prob.model =</span> <span class="cn">TRUE</span></span>
+<span id="cb13-14"><a></a>  )</span>
+<span id="cb13-15"><a></a></span>
+<span id="cb13-16"><a></a>  <span class="co"># Grid over which to evaluate decision boundaries</span></span>
+<span id="cb13-17"><a></a>  npts <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb13-18"><a></a>  xgrid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb13-19"><a></a>    <span class="at">x1 =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>, <span class="at">length =</span> npts),</span>
+<span id="cb13-20"><a></a>    <span class="at">x2 =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>, <span class="at">length =</span> npts)</span>
+<span id="cb13-21"><a></a>  )</span>
+<span id="cb13-22"><a></a></span>
+<span id="cb13-23"><a></a>  <span class="co"># Predicted probabilities (as a two-column matrix)</span></span>
+<span id="cb13-24"><a></a>  prob_svm <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
+<span id="cb13-25"><a></a>    spirals_svm,</span>
+<span id="cb13-26"><a></a>    <span class="at">newdata =</span> xgrid,</span>
+<span id="cb13-27"><a></a>    <span class="at">type =</span> <span class="st">"probabilities"</span></span>
+<span id="cb13-28"><a></a>  )</span>
+<span id="cb13-29"><a></a></span>
+<span id="cb13-30"><a></a>  <span class="co"># Add predicted class probabilities</span></span>
+<span id="cb13-31"><a></a>  xgrid2 <span class="ot">&lt;-</span> xgrid <span class="sc">|&gt;</span></span>
+<span id="cb13-32"><a></a>    <span class="fu">cbind</span>(<span class="st">"SVM"</span> <span class="ot">=</span> prob_svm[, <span class="dv">1</span>L]) <span class="sc">|&gt;</span></span>
+<span id="cb13-33"><a></a>    tidyr<span class="sc">::</span><span class="fu">gather</span>(Model, Prob, <span class="sc">-</span>x1, <span class="sc">-</span>x2)</span>
+<span id="cb13-34"><a></a></span>
+<span id="cb13-35"><a></a>  <span class="co"># Serialize for quicker rendering</span></span>
+<span id="cb13-36"><a></a>  <span class="fu">saveRDS</span>(spiral_df, <span class="st">"assets/spiral_df.rds"</span>)</span>
+<span id="cb13-37"><a></a>  <span class="fu">saveRDS</span>(xgrid2, <span class="st">"assets/xgrid2.rds"</span>)</span>
+<span id="cb13-38"><a></a>} <span class="cf">else</span> {</span>
+<span id="cb13-39"><a></a>  spiral_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"assets/spiral_df.rds"</span>)</span>
+<span id="cb13-40"><a></a>  xgrid2 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"assets/xgrid2.rds"</span>)</span>
+<span id="cb13-41"><a></a>}</span>
+<span id="cb13-42"><a></a><span class="co"># And plot</span></span>
+<span id="cb13-43"><a></a>spiral_df <span class="ot">&lt;-</span> spiral_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb13-44"><a></a>  <span class="at">Label =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(label <span class="sc">==</span> <span class="dv">2</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb13-45"><a></a>)</span>
+<span id="cb13-46"><a></a>spiral_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> x2)) <span class="sc">+</span></span>
+<span id="cb13-47"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">shape =</span> Label, <span class="at">color =</span> Label), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">stroke=</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb13-48"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>Label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">4</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb13-49"><a></a>  <span class="fu">xlab</span>(<span class="fu">expression</span>(X[<span class="dv">1</span>])) <span class="sc">+</span></span>
+<span id="cb13-50"><a></a>  <span class="fu">ylab</span>(<span class="fu">expression</span>(X[<span class="dv">2</span>])) <span class="sc">+</span></span>
+<span id="cb13-51"><a></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb13-52"><a></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb13-53"><a></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span></span>
+<span id="cb13-54"><a></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb13-55"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb13-56"><a></a>  <span class="fu">stat_contour</span>(</span>
+<span id="cb13-57"><a></a>    <span class="at">data =</span> xgrid2,</span>
+<span id="cb13-58"><a></a>    <span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> x2, <span class="at">z =</span> Prob),</span>
+<span id="cb13-59"><a></a>    <span class="at">breaks =</span> <span class="fl">0.5</span>,</span>
+<span id="cb13-60"><a></a>    <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb13-61"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb13-62"><a></a>  <span class="fu">scale_shape_manual</span>(<span class="st">"Label"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/spiral-svm-1.png" width="960"></p>
+<figcaption>Based on code from <span class="citation" data-cites="boehmke2019handson">Boehmke and Greenwell (<a href="#/references" role="doc-biblioref" onclick="">2019</a>)</span>, Ch 14</figcaption>
 </figure>
 </div>
 </div>
 </div>
 </div></div>
-</section></section>
-<section>
-<section id="basis-functions" class="title-slide slide level1 center" data-stack-name="Basis Functions">
-<h1>Basis Functions</h1>
+</section>
+<section id="how-is-this-possible" class="slide level2 smaller crunch-math crunch-title title-12">
+<h2>How Is This Possible?</h2>
 <ul>
-<li>Seems like it’ll help to have a toolkit filled with different <strong>basis functions</strong>, so we can use them with <code>lm()</code> 🤔</li>
-<li>…Let’s get into it!</li>
+<li>SVM prediction for an observation <span class="math inline">\(\mathbf{x}\)</span> can be rewritten as</li>
+</ul>
+<p><span class="math display">\[
+f(\mathbf{x}) = \beta_0 + \sum_{i=1}^{n} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle
+\]</span></p>
+<ul>
+<li>Rather than one parameter <span class="math inline">\(\beta_j\)</span> per <em>feature</em>, we have one parameter <span class="math inline">\(\alpha_i\)</span> per <em>observation</em></li>
+<li>At first this seems worse, since usually <span class="math inline">\(n &gt; p\)</span>… But we’re saved by <strong>support vectors!</strong></li>
+<li>Since the margin itself is only a function of the support vectors (not <em>every</em> vector—remember that margin <span class="math inline">\(\neq\)</span> average distance!), <span class="math inline">\(\alpha_i &gt; 0\)</span> only when <span class="math inline">\(\mathbf{x}_i\)</span> a support vector!</li>
+<li>Thus the equation becomes <span class="math inline">\(f(\mathbf{x}) = \beta_0 + \sum_{i \in \mathcal{SV}} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle\)</span>, and there’s one step left…</li>
+<li><strong>Kernel</strong> <span class="math inline">\(K\)</span> = <strong>similarity function</strong> (generalization of inner product!)</li>
+</ul>
+<p><span class="math display">\[
+f(\mathbf{x}) = \beta_0 + \sum_{i \in \mathcal{SV}} \alpha_i K(\mathbf{x}, \mathbf{x}_i)
+\]</span></p>
+</section>
+<section id="inner-products-are-already-similarities" class="slide level2 smaller crunch-title title-11">
+<h2>Inner Products are Already Similarities!</h2>
+<ul>
+<li>When linearly separable, this is exactly the property we use (by computing inner product of new vector <span class="math inline">\(\mathbf{x}\)</span> with support vectors <span class="math inline">\(\mathbf{x}_i\)</span>) to classify!</li>
+</ul>
+
+<img data-src="images/dot_product_crop.svg" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://mathinsight.org/dot_product">Interactive demo</a></p><ul>
+<li>Why restrict ourselves to <em>this</em> similarity function? Choosing <span class="math inline">\(K\)</span> <strong>converts the problem</strong>:
+<ul>
+<li>From finding <strong>transformation of <em>features</em></strong> allowing linear separability</li>
+<li>To finding <strong>similarity function for <em>observations</em></strong> allowing linear separability</li>
+</ul></li>
 </ul>
 </section>
-<section id="the-general-form" class="slide level2 crunch-title crunch-ul inline-90 math-90">
-<h2>The General Form</h2>
-<p><em>(Decomposing Fancy Regressions into Core “Pieces”)</em></p>
+<section id="kernel-trick-as-two-sided-swiss-army-knife" class="slide level2 smaller title-11 crunch-title crunch-math">
+<h2>Kernel Trick as Two-Sided Swiss Army Knife</h2>
 <ul>
-<li><p>Q: What do <strong>all</strong> these types of regression have in common?</p></li>
-<li><p>A: They can all be written in the form</p>
+<li><p><i class="bi bi-1-circle"></i> If we <em>have</em> a linearly-separating transformation (like <span class="math inline">\(f(x) = x^2\)</span>), can “encode” as kernel, saving computation</p></li>
+<li><p>Example: Transformation of features <span class="math inline">\(f(x) = x^2\)</span> equivalent to <strong>quadratic kernel:</strong></p>
 <p><span class="math display">\[
-Y = \beta_0 + \beta_1 b_1(X) + \beta_2 b_2(X) + \cdots + \beta_d b_d(X)
+K(x_i, x_{i'}) = (1 + \sum_{j = 1}^{p}x_{ij}x_{i'j})^2
 \]</span></p></li>
-<li><p>Where <span class="math inline">\(b(\cdot)\)</span> is called a <strong>basis function</strong></p>
-<ul>
-<li>Polynomial: <span class="math inline">\(b_j(X) = X^j\)</span></li>
-<li>Piecewise: <span class="math inline">\(b_j(X) = \mathbb{1}[c_{j-1} \leq X &lt; c_j]\)</span></li>
-<li>Earlier Example: <span class="math inline">\(b_1(X) = \sin(X)\)</span></li>
-</ul></li>
+<li><p><i class="bi bi-2-circle"></i> If we <em>don’t</em> have a transformation (and having trouble figuring it out), can <strong>change the problem</strong> into one of finding a “good” <strong>similarity function</strong></p></li>
+<li><p>Example: Look again at RBF Kernel:</p>
+<p><span class="math display">\[
+K(x_i, x_{i'}) = \exp\left[ -\gamma \sum_{j=1}^{J} (x_{ij} - x_{i'j})^2 \right]
+\]</span></p></li>
+<li><p>It turns out: <strong>no</strong> finite collection of transformed features is equivalent to this kernel! (Roughly: can keep adding transformed features to asymptotically approach it—space of SVMs w/kernel thus <span class="math inline">\(&gt;\)</span> space of SVMs w/transformed features)</p></li>
 </ul>
-</section></section>
-<section>
-<section id="segments-rightarrow-splines" class="title-slide slide level1 smaller crunch-title table-va center" data-stack-name="Segmented Regression">
-<h1>Segments <span class="math inline">\(\rightarrow\)</span> Splines</h1>
-<table class="caption-top">
-<colgroup>
-<col style="width: 4%">
-<col style="width: 28%">
-<col style="width: 38%">
-<col style="width: 30%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th>What we want</th>
-<th>How we do it</th>
-<th style="text-align: center;">Name for result</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><i class="bi bi-1-circle"></i></td>
-<td>Model <strong>sub-regions</strong> of <span class="math inline">\(\text{domain}(X)\)</span></td>
-<td>Chop <span class="math inline">\(\text{domain}(X)\)</span> into pieces, one regression per piece</td>
-<td style="text-align: center;"><em>Discontinuous Segmented Regression</em></td>
-</tr>
-<tr class="even">
-<td><i class="bi bi-2-circle"></i></td>
-<td><strong>Continuous</strong> prediction function</td>
-<td>Require pieces to <strong>join</strong> at chop points <span class="math inline">\(\{\xi_1, \ldots, \xi_K\}\)</span></td>
-<td style="text-align: center;"><em>Continuous Segmented Regression</em></td>
-</tr>
-<tr class="odd">
-<td><i class="bi bi-3-circle"></i></td>
-<td><strong>Smooth</strong> prediction function</td>
-<td>Require pieces to <strong>join</strong> and have <strong>equal derivatives</strong> at <span class="math inline">\(\xi_i\)</span></td>
-<td style="text-align: center;"><strong>Spline</strong></td>
-</tr>
-<tr class="even">
-<td><i class="bi bi-4-circle"></i></td>
-<td>Less jump in variance at <strong>boundaries</strong></td>
-<td>Reduce complexity of polynomials at endpoints</td>
-<td style="text-align: center;"><strong>Natural Spline</strong></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="discontinuous-segmented-regression" class="slide level2 smaller title-12">
-<h2>Discontinuous Segmented Regression</h2>
-<ul>
-<li>Here we see why our first two basis functions were <strong>polynomial</strong> and <strong>piecewise</strong>: most rudimentary spline fits a <strong>polynomial</strong> to each <strong>piece</strong></li>
-</ul>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb7-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
-<span id="cb7-3"><a></a>compute_y <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb7-4"><a></a>  <span class="fu">return</span>(x <span class="sc">*</span> <span class="fu">cos</span>(x<span class="sc">^</span><span class="dv">2</span>))</span>
-<span id="cb7-5"><a></a>}</span>
-<span id="cb7-6"><a></a>N <span class="ot">&lt;-</span> <span class="dv">500</span></span>
-<span id="cb7-7"><a></a>xmin <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">1.9</span></span>
-<span id="cb7-8"><a></a>xmax <span class="ot">&lt;-</span> <span class="fl">2.7</span></span>
-<span id="cb7-9"><a></a>x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="at">min=</span>xmin, <span class="at">max=</span>xmax)</span>
-<span id="cb7-10"><a></a>y_raw <span class="ot">=</span> <span class="fu">compute_y</span>(x_vals)</span>
-<span id="cb7-11"><a></a>y_noise <span class="ot">=</span> <span class="fu">rnorm</span>(N, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fl">0.5</span>)</span>
-<span id="cb7-12"><a></a>y_vals <span class="ot">&lt;-</span> y_raw <span class="sc">+</span> y_noise</span>
-<span id="cb7-13"><a></a>prod_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x=</span>x_vals, <span class="at">y=</span>y_vals)</span>
-<span id="cb7-14"><a></a>knot <span class="ot">&lt;-</span> (xmin <span class="sc">+</span> xmax) <span class="sc">/</span> <span class="dv">2</span></span>
-<span id="cb7-15"><a></a>prod_df <span class="ot">&lt;-</span> prod_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">segment =</span> x <span class="sc">&lt;=</span> knot)</span>
-<span id="cb7-16"><a></a><span class="co"># First segment model</span></span>
-<span id="cb7-17"><a></a><span class="co">#left_df &lt;- prod_df |&gt; filter(x &lt;= knot_point)</span></span>
-<span id="cb7-18"><a></a><span class="co">#left_model &lt;- lm(y ~ poly(x, 2), data=left_df)</span></span>
-<span id="cb7-19"><a></a>prod_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">group=</span>segment)) <span class="sc">+</span></span>
-<span id="cb7-20"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb7-21"><a></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>knot, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb7-22"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">2</span>), <span class="at">se=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb7-23"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="index_files/figure-revealjs/quad-naive-spline-1.png" width="960" class="r-stretch"><ul>
-<li>What’s the issue with this?</li>
-</ul>
-</section>
-<section id="forcing-continuity-at-knot-points" class="slide level2 smaller title-12">
-<h2>Forcing Continuity at Knot Points</h2>
-<ul>
-<li>Starting slow: let’s come back down to line world…</li>
-<li>Why are these two lines “allowed” to be non-continuous, under our current approach?</li>
-</ul>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><span class="math display">\[
-\hspace{6.5cm} Y^{\phantom{🧐}}_L = \beta_0 + \beta_1 X_L
-\]</span></p>
-</div><div class="column" style="width:50%;">
-<p><span class="math display">\[
-Y_R = \beta_0^{🧐} + \beta_1 X_R \hspace{5cm}
-\]</span></p>
-</div></div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
-<span id="cb8-2"><a></a>xmin_sub <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">1</span></span>
-<span id="cb8-3"><a></a>xmax_sub <span class="ot">&lt;-</span> <span class="fl">1.9</span></span>
-<span id="cb8-4"><a></a>sub_df <span class="ot">&lt;-</span> prod_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(x <span class="sc">&gt;=</span> xmin_sub <span class="sc">&amp;</span> x <span class="sc">&lt;=</span> xmax_sub)</span>
-<span id="cb8-5"><a></a>sub_knot <span class="ot">&lt;-</span> (xmin_sub <span class="sc">+</span> xmax_sub) <span class="sc">/</span> <span class="dv">2</span></span>
-<span id="cb8-6"><a></a>sub_df <span class="ot">&lt;-</span> sub_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">segment =</span> x <span class="sc">&lt;=</span> sub_knot)</span>
-<span id="cb8-7"><a></a><span class="co"># First segment model</span></span>
-<span id="cb8-8"><a></a>sub_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">group=</span>segment)) <span class="sc">+</span></span>
-<span id="cb8-9"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb8-10"><a></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>sub_knot, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb8-11"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span>y <span class="sc">~</span> x, <span class="at">se=</span><span class="cn">TRUE</span>, <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
-<span id="cb8-12"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">28</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="index_files/figure-revealjs/linear-continuity-1.png" width="960" class="r-stretch"><ul>
-<li>…We need <span class="math inline">\(X_R\)</span> to have its own slope but <strong>not</strong> its own intercept! Something like:</li>
-</ul>
-<p><span class="math display">\[
-Y = \beta_0 + \beta_1 (X \text{ before } \xi) + \beta_2 (X \text{ after } \xi)
-\]</span></p>
-</section>
-<section id="truncated-power-basis-relu-basis" class="slide level2 crunch-title math-80 inline-90 title-09">
-<h2>Truncated Power Basis (ReLU Basis)</h2>
-<p><span class="math display">\[
-\text{ReLU}(x) \definedas (x)_+ \definedas \begin{cases}
-0 &amp;\text{if }x \leq 0 \\
-x &amp;\text{if }x &gt; 0
-\end{cases} \implies (x - \xi)_+ = \begin{cases}
-0 &amp;\text{if }x \leq \xi \\
-x - \xi &amp;\text{if }x &gt; 0
-\end{cases}
-\]</span></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb9-2"><a></a>trunc_x <span class="ot">&lt;-</span> <span class="cf">function</span>(x, xi) {</span>
-<span id="cb9-3"><a></a>  <span class="fu">return</span>(<span class="fu">ifelse</span>(x <span class="sc">&lt;=</span> xi, <span class="dv">0</span>, x <span class="sc">-</span> xi))</span>
-<span id="cb9-4"><a></a>}</span>
-<span id="cb9-5"><a></a>trunc_x_05 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">trunc_x</span>(x, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>)</span>
-<span id="cb9-6"><a></a>trunc_title <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="st">"$(x - </span><span class="sc">\\</span><span class="st">xi)_+$ with $</span><span class="sc">\\</span><span class="st">xi = 0.5$"</span>)</span>
-<span id="cb9-7"><a></a>trunc_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="st">"$y = (x - </span><span class="sc">\\</span><span class="st">xi)_+$"</span>)</span>
-<span id="cb9-8"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb9-9"><a></a>  <span class="fu">stat_function</span>(</span>
-<span id="cb9-10"><a></a>    <span class="at">data=</span><span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>)),</span>
-<span id="cb9-11"><a></a>    <span class="at">fun=</span>trunc_x_05,</span>
-<span id="cb9-12"><a></a>    <span class="at">linewidth=</span>g_linewidth</span>
-<span id="cb9-13"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb9-14"><a></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">3</span>, <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb9-15"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
-<span id="cb9-16"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb9-17"><a></a>    <span class="at">title =</span> trunc_title,</span>
-<span id="cb9-18"><a></a>    <span class="at">x =</span> <span class="st">"x"</span>,</span>
-<span id="cb9-19"><a></a>    <span class="at">y =</span> trunc_label</span>
-<span id="cb9-20"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="index_files/figure-revealjs/truncated-power-1.png" width="960" class="r-stretch"><ul>
-<li><span class="math inline">\(\Rightarrow\)</span> we can include a <strong>“slope modifier”</strong> <span class="math inline">\(\beta_m (X - \xi)_+\)</span> that only <strong>“kicks in”</strong> once <span class="math inline">\(x\)</span> goes past <span class="math inline">\(\xi\)</span>! (Changing slope by <span class="math inline">\(\beta_m\)</span>)</li>
-</ul>
-</section>
-<section id="linear-segments-with-continuity-at-knot" class="slide level2 smaller title-12 math-80 table-80">
-<h2>Linear Segments with Continuity at Knot</h2>
-<div class="columns">
-<div class="column" style="width:40%;">
-<p>Our new (non-naïve) model:</p>
-<p><span class="math display">\[
-\begin{align*}
-Y &amp;= \beta_0 + \beta_1 X + \beta_2 (X - \xi)_+ \\
-&amp;= \beta_0 + \begin{cases}
-\beta_1 X &amp;\text{if }X \leq \xi \\
-(\beta_1 + \beta_2)X &amp;\text{if }X &gt; \xi
-\end{cases}
-\end{align*}
-\]</span></p>
-</div><div class="column" style="width:60%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a>sub_df <span class="ot">&lt;-</span> sub_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">x_tr =</span> <span class="fu">ifelse</span>(x <span class="sc">&lt;</span> sub_knot, <span class="dv">0</span>, x <span class="sc">-</span> sub_knot))</span>
-<span id="cb10-2"><a></a>linseg_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> x_tr, <span class="at">data=</span>sub_df)</span>
-<span id="cb10-3"><a></a>broom<span class="sc">::</span><span class="fu">tidy</span>(linseg_model) <span class="sc">|&gt;</span> <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>p.value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th style="text-align: left;">term</th>
-<th style="text-align: right;">estimate</th>
-<th style="text-align: right;">std.error</th>
-<th style="text-align: right;">statistic</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.187</td>
-<td style="text-align: right;">0.044</td>
-<td style="text-align: right;">4.255</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">x</td>
-<td style="text-align: right;">1.340</td>
-<td style="text-align: right;">0.093</td>
-<td style="text-align: right;">14.342</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">x_tr</td>
-<td style="text-align: right;">-2.868</td>
-<td style="text-align: right;">0.168</td>
-<td style="text-align: right;">-17.095</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div></div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>sub_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
-<span id="cb11-2"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb11-3"><a></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>sub_knot, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb11-4"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span>y <span class="sc">~</span> x <span class="sc">+</span> <span class="fu">ifelse</span>(x <span class="sc">&gt;</span> sub_knot, x<span class="sc">-</span>sub_knot, <span class="dv">0</span>), <span class="at">se=</span><span class="cn">TRUE</span>, <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
-<span id="cb11-5"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">28</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="index_files/figure-revealjs/linear-seg-plot-1.png" width="960" class="r-stretch"></section>
-<section id="continuous-segmented-regression" class="slide level2 smaller crunch-ul crunch-title title-12 math-80 table-80">
-<h2>Continuous Segmented Regression</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><span class="math display">\[
-\begin{align*}
-Y &amp;= \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 (X - \xi)_+ + \beta_4 (X - \xi)_+^2 \\[0.8em]
-&amp;= \beta_0 + \begin{cases}
-\beta_1 X + \beta_2 X^2 &amp;\text{if }X \leq \xi \\
-(\beta_1 + \beta_3) X + (\beta_2 + \beta_4) X^2 &amp;\text{if }X &gt; \xi
-\end{cases}
-\end{align*}
-\]</span></p>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a>prod_df <span class="ot">&lt;-</span> prod_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">x_tr =</span> <span class="fu">ifelse</span>(x <span class="sc">&gt;</span> knot, x <span class="sc">-</span> knot, <span class="dv">0</span>))</span>
-<span id="cb12-2"><a></a>seg_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
-<span id="cb12-3"><a></a>  y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">2</span>) <span class="sc">+</span> <span class="fu">poly</span>(x_tr, <span class="dv">2</span>),</span>
-<span id="cb12-4"><a></a>  <span class="at">data=</span>prod_df</span>
-<span id="cb12-5"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-</div></div>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>seg_model <span class="sc">|&gt;</span> broom<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">|&gt;</span> <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>p.value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="kable-table">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th style="text-align: left;">term</th>
-<th style="text-align: right;">estimate</th>
-<th style="text-align: right;">std.error</th>
-<th style="text-align: right;">statistic</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">(Intercept)</td>
-<td style="text-align: right;">0.104</td>
-<td style="text-align: right;">0.035</td>
-<td style="text-align: right;">2.961</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">poly(x, 2)1</td>
-<td style="text-align: right;">112.929</td>
-<td style="text-align: right;">6.824</td>
-<td style="text-align: right;">16.548</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">poly(x, 2)2</td>
-<td style="text-align: right;">64.558</td>
-<td style="text-align: right;">3.692</td>
-<td style="text-align: right;">17.484</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">poly(x_tr, 2)1</td>
-<td style="text-align: right;">-125.195</td>
-<td style="text-align: right;">7.690</td>
-<td style="text-align: right;">-16.281</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">poly(x_tr, 2)2</td>
-<td style="text-align: right;">1.526</td>
-<td style="text-align: right;">1.036</td>
-<td style="text-align: right;">1.473</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a>cont_seg_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb14-2"><a></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>prod_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb14-3"><a></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>knot, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb14-4"><a></a>  <span class="fu">stat_smooth</span>(</span>
-<span id="cb14-5"><a></a>    <span class="at">data=</span>prod_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y),</span>
-<span id="cb14-6"><a></a>    <span class="at">method=</span><span class="st">'lm'</span>,</span>
-<span id="cb14-7"><a></a>    <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">poly</span>(<span class="fu">ifelse</span>(x <span class="sc">&gt;</span> knot, (x <span class="sc">-</span> knot), <span class="dv">0</span>), <span class="dv">2</span>),</span>
-<span id="cb14-8"><a></a>    <span class="at">n =</span> <span class="dv">300</span></span>
-<span id="cb14-9"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb14-10"><a></a>  <span class="co">#geom_smooth(data=prod_df |&gt; filter(segment == FALSE), aes(x=x, y=y), method='lm', formula=y ~ poly(x,2)) +</span></span>
-<span id="cb14-11"><a></a>  <span class="co"># geom_smooth(method=segreg, formula=y ~ seg(x, npsi=1, fixed.psi=0.5)) + # + seg(I(x^2), npsi=1)) +</span></span>
-<span id="cb14-12"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span>
-<span id="cb14-13"><a></a>cont_seg_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/continuous-seg-plot-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-<ul>
-<li>There’s still a problem here… can you see what it is? (Hint: things that break calculus)</li>
-</ul>
-</section></section>
-<section>
-<section id="splines-the-moment-youve-been-waiting-for" class="title-slide slide level1 title-12 center" data-stack-name="Splines">
-<h1>Splines (The Moment You’ve Been Waiting For!)</h1>
-
-</section>
-<section id="constrained-derivatives-quadratic-splines" class="slide level2 smaller crunch-title title-10 crunch-quarto-figure crunch-math">
-<h2>Constrained Derivatives: “Quadratic Splines” (⚠️)</h2>
-<ul>
-<li>Like “Linear Probability Models”, “Quadratic Splines” are a <strong>red flag</strong></li>
-<li>Why? If we have leftmost plot below, but want it differentiable everywhere… only option is to fit a single quadratic, defeating the whole point of the “chopping”!</li>
-</ul>
-<p><span class="math display">\[
-\frac{\partial Y}{\partial X} = \beta_1 + 2\beta_2 X + \beta_3 + 2\beta_4 X
-\]</span></p>
-<div class="columns">
-<div class="column" style="width:30%;">
-<p>Continuous Segmented:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>cont_seg_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/quadratic-seg-plot-again-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:5%;">
-<p>&nbsp;</p>
-</div><div class="column" style="width:30%;">
-<p>“Quadratic Spline”:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb16-2"><a></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>prod_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb16-3"><a></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>knot, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb16-4"><a></a>  <span class="fu">stat_smooth</span>(</span>
-<span id="cb16-5"><a></a>    <span class="at">data=</span>prod_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y),</span>
-<span id="cb16-6"><a></a>    <span class="at">method=</span><span class="st">'lm'</span>,</span>
-<span id="cb16-7"><a></a>    <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">ifelse</span>(x <span class="sc">&gt;</span> knot, (x <span class="sc">-</span> knot)<span class="sc">^</span><span class="dv">2</span>, <span class="dv">0</span>),</span>
-<span id="cb16-8"><a></a>    <span class="at">n =</span> <span class="dv">300</span></span>
-<span id="cb16-9"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb16-10"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/deriv-contraints-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:5%;">
-<p>&nbsp;</p>
-</div><div class="column" style="width:30%;">
-<p><span class="math display">\[
-Y = \beta_0 + \beta_1 X + \beta_2 X^2
-\]</span></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb17-2"><a></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>prod_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb17-3"><a></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>knot, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb17-4"><a></a>  <span class="fu">stat_smooth</span>(</span>
-<span id="cb17-5"><a></a>    <span class="at">data=</span>prod_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y),</span>
-<span id="cb17-6"><a></a>    <span class="at">method=</span><span class="st">'lm'</span>,</span>
-<span id="cb17-7"><a></a>    <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">2</span>),</span>
-<span id="cb17-8"><a></a>    <span class="at">n =</span> <span class="dv">300</span></span>
-<span id="cb17-9"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb17-10"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/base-quadratic-reg-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-<ul>
-<li><span class="math inline">\(\implies\)</span> Least-complex function that allows smooth “joining” is <strong>cubic function</strong></li>
-</ul>
-</section>
-<section id="cubic-splines-aka-splines" class="slide level2 smaller crunch-title crunch-ul">
-<h2>Cubic Splines (aka, Splines)</h2>
-<p><em>(We did it, we finally did it)</em></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb18-2"><a></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>prod_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb18-3"><a></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>knot, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb18-4"><a></a>  <span class="fu">stat_smooth</span>(</span>
-<span id="cb18-5"><a></a>    <span class="at">data=</span>prod_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y),</span>
-<span id="cb18-6"><a></a>    <span class="at">method=</span><span class="st">'lm'</span>,</span>
-<span id="cb18-7"><a></a>    <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">3</span>) <span class="sc">+</span> <span class="fu">ifelse</span>(x <span class="sc">&gt;</span> knot, (x <span class="sc">-</span> knot)<span class="sc">^</span><span class="dv">3</span>, <span class="dv">0</span>),</span>
-<span id="cb18-8"><a></a>    <span class="at">n =</span> <span class="dv">300</span></span>
-<span id="cb18-9"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb18-10"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="index_files/figure-revealjs/cubic-spline-plot-1.png" width="960" class="r-stretch"></section>
-<section id="natural-splines-why-not-stop-there" class="slide level2 smaller crunch-title crunch-ul title-12">
-<h2>Natural Splines: Why Not Stop There?</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p>Polynomials start to BEHAVE BADLY as they go to <span class="math inline">\(-\infty\)</span> and <span class="math inline">\(\infty\)</span></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">library</span>(splines) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb19-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
-<span id="cb19-3"><a></a>N_sparse <span class="ot">&lt;-</span> <span class="dv">400</span></span>
-<span id="cb19-4"><a></a>x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(N_sparse, <span class="at">min=</span>xmin, <span class="at">max=</span>xmax)</span>
-<span id="cb19-5"><a></a>y_raw <span class="ot">=</span> <span class="fu">compute_y</span>(x_vals)</span>
-<span id="cb19-6"><a></a>y_noise <span class="ot">=</span> <span class="fu">rnorm</span>(N_sparse, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fl">1.0</span>)</span>
-<span id="cb19-7"><a></a>y_vals <span class="ot">&lt;-</span> y_raw <span class="sc">+</span> y_noise</span>
-<span id="cb19-8"><a></a>sparse_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x=</span>x_vals, <span class="at">y=</span>y_vals)</span>
-<span id="cb19-9"><a></a>knot_sparse <span class="ot">&lt;-</span> (xmin <span class="sc">+</span> xmax) <span class="sc">/</span> <span class="dv">2</span></span>
-<span id="cb19-10"><a></a>knot_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1.8</span>,<span class="sc">-</span><span class="fl">1.7</span>,<span class="sc">-</span><span class="fl">1.6</span>,<span class="sc">-</span><span class="fl">1.5</span>,<span class="sc">-</span><span class="fl">1.4</span>,<span class="sc">-</span><span class="fl">1.2</span>,<span class="sc">-</span><span class="fl">1.0</span>,<span class="sc">-</span><span class="fl">0.8</span>,<span class="sc">-</span><span class="fl">0.6</span>,<span class="sc">-</span><span class="fl">0.4</span>,<span class="sc">-</span><span class="fl">0.2</span>,<span class="dv">0</span>,knot_sparse,<span class="dv">1</span>,<span class="fl">1.5</span>,<span class="dv">2</span>)</span>
-<span id="cb19-11"><a></a>knot_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">knot=</span>knot_vec)</span>
-<span id="cb19-12"><a></a><span class="co"># Boundary lines</span></span>
-<span id="cb19-13"><a></a>left_bound_line <span class="ot">&lt;-</span> <span class="fu">geom_vline</span>(</span>
-<span id="cb19-14"><a></a>  <span class="at">xintercept =</span> xmin <span class="sc">+</span> <span class="fl">0.1</span>, <span class="at">linewidth=</span><span class="dv">1</span>,</span>
-<span id="cb19-15"><a></a>  <span class="at">color=</span><span class="st">"red"</span>, <span class="at">alpha=</span><span class="fl">0.8</span></span>
-<span id="cb19-16"><a></a>)</span>
-<span id="cb19-17"><a></a>right_bound_line <span class="ot">&lt;-</span> <span class="fu">geom_vline</span>(</span>
-<span id="cb19-18"><a></a>  <span class="at">xintercept =</span> xmax <span class="sc">-</span> <span class="fl">0.1</span>,</span>
-<span id="cb19-19"><a></a>  <span class="at">linewidth=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">"red"</span>, <span class="at">alpha=</span><span class="fl">0.8</span></span>
-<span id="cb19-20"><a></a>)</span>
-<span id="cb19-21"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb19-22"><a></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>sparse_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb19-23"><a></a>  <span class="fu">geom_vline</span>(</span>
-<span id="cb19-24"><a></a>    <span class="at">data=</span>knot_df, <span class="fu">aes</span>(<span class="at">xintercept=</span>knot),</span>
-<span id="cb19-25"><a></a>    <span class="at">linetype=</span><span class="st">"dashed"</span></span>
-<span id="cb19-26"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb19-27"><a></a>  <span class="fu">stat_smooth</span>(</span>
-<span id="cb19-28"><a></a>    <span class="at">data=</span>sparse_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y),</span>
-<span id="cb19-29"><a></a>    <span class="at">method=</span><span class="st">'lm'</span>,</span>
-<span id="cb19-30"><a></a>    <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">bs</span>(x, <span class="at">knots=</span><span class="fu">c</span>(knot_sparse), <span class="at">degree=</span><span class="dv">25</span>),</span>
-<span id="cb19-31"><a></a>    <span class="at">n=</span><span class="dv">300</span></span>
-<span id="cb19-32"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb19-33"><a></a>  left_bound_line <span class="sc">+</span></span>
-<span id="cb19-34"><a></a>  right_bound_line <span class="sc">+</span></span>
-<span id="cb19-35"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/cubic-spline-boundary-issue-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<p>Natural Splines: <strong>Force</strong> leftmost and rightmost pieces to be <strong>linear</strong></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="fu">library</span>(splines) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb20-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
-<span id="cb20-3"><a></a>N_sparse <span class="ot">&lt;-</span> <span class="dv">400</span></span>
-<span id="cb20-4"><a></a>x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(N_sparse, <span class="at">min=</span>xmin, <span class="at">max=</span>xmax)</span>
-<span id="cb20-5"><a></a>y_raw <span class="ot">=</span> <span class="fu">compute_y</span>(x_vals)</span>
-<span id="cb20-6"><a></a>y_noise <span class="ot">=</span> <span class="fu">rnorm</span>(N_sparse, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fl">1.0</span>)</span>
-<span id="cb20-7"><a></a>y_vals <span class="ot">&lt;-</span> y_raw <span class="sc">+</span> y_noise</span>
-<span id="cb20-8"><a></a>sparse_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x=</span>x_vals, <span class="at">y=</span>y_vals)</span>
-<span id="cb20-9"><a></a>knot_sparse <span class="ot">&lt;-</span> (xmin <span class="sc">+</span> xmax) <span class="sc">/</span> <span class="dv">2</span></span>
-<span id="cb20-10"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb20-11"><a></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>sparse_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb20-12"><a></a>  <span class="fu">stat_smooth</span>(</span>
-<span id="cb20-13"><a></a>    <span class="at">data=</span>sparse_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y),</span>
-<span id="cb20-14"><a></a>    <span class="at">method=</span><span class="st">'lm'</span>,</span>
-<span id="cb20-15"><a></a>    <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">ns</span>(x, <span class="at">knots=</span>knot_vec, <span class="at">Boundary.knots=</span><span class="fu">c</span>(xmin <span class="sc">+</span> <span class="fl">0.1</span>, xmax <span class="sc">-</span> <span class="fl">0.1</span>)),</span>
-<span id="cb20-16"><a></a>    <span class="at">n=</span><span class="dv">300</span></span>
-<span id="cb20-17"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb20-18"><a></a>  <span class="fu">geom_vline</span>(</span>
-<span id="cb20-19"><a></a>    <span class="at">data=</span>knot_df, <span class="fu">aes</span>(<span class="at">xintercept=</span>knot),</span>
-<span id="cb20-20"><a></a>    <span class="at">linetype=</span><span class="st">"dashed"</span></span>
-<span id="cb20-21"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb20-22"><a></a>  left_bound_line <span class="sc">+</span></span>
-<span id="cb20-23"><a></a>  right_bound_line <span class="sc">+</span></span>
-<span id="cb20-24"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/natural-spline-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-</section>
-<section id="how-do-we-find-the-magical-knot-points" class="slide level2">
-<h2>How Do We Find The Magical Knot Points?</h2>
-<ul>
-<li>Hyperparameter 0: Number of knots <span class="math inline">\(K\)</span></li>
-<li>Hyperparameters 1 to <span class="math inline">\(K\)</span>: <strong>Location</strong> <span class="math inline">\(\xi_k\)</span> for each knot</li>
-<li>Fear: Seems like we’re going to need a bunch of slides/lectures talking about this, right?
-<ul>
-<li>(e.g., if you really do have to manually choose them, heuristic is to place them in more “volatile” parts of <span class="math inline">\(D_X\)</span>)</li>
-</ul></li>
-<li>Reality: Nope, just use <strong>CV</strong>! 😉😎</li>
-</ul>
-</section></section>
-<section>
-<section id="even-cooler-alternative-approach-smoothing-splines" class="title-slide slide level1 center" data-stack-name="Smoothing Splines">
-<h1>Even Cooler Alternative Approach: Smoothing Splines</h1>
-<p><em>(Where “cooler” here really means “more statistically-principled”)</em></p>
-</section>
-<section id="reminder-w04-penalizing-complexity" class="slide level2 smaller title-12 crunch-img crunch-quarto-figure math-95">
-<h2>Reminder (W04): Penalizing Complexity</h2>
-<div class="columns">
-<div class="column" style="width:70%;">
-<p><em>Week 4 (General Form):</em></p>
-<p><span class="math display">\[
-\boldsymbol\theta^* = \underset{\boldsymbol\theta}{\operatorname{argmin}} \left[ \mathcal{L}(y, \widehat{y}; \boldsymbol\theta) + \lambda \cdot \mathsf{Complexity}(\boldsymbol\theta) \right]
-\]</span></p>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/porygon.png" class="quarto-figure quarto-figure-center" width="160"></p>
-</figure>
-</div>
-</div></div>
-<div class="columns">
-<div class="column" style="width:70%;">
-<p><em>Last Week (Penalizing Polynomials):</em></p>
-<p><span class="math display">\[
-\boldsymbol\beta^*_{\text{lasso}} = \underset{\boldsymbol\beta, \lambda}{\operatorname{argmin}} \left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 + \lambda \|\boldsymbol\beta\|_1 \right]
-\]</span></p>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/exeggcute.png" class="quarto-figure quarto-figure-center" width="180"></p>
-</figure>
-</div>
-</div></div>
-<div class="columns">
-<div class="column" style="width:70%;">
-<p><em>Now (Penalizing Sharp Change / Wigglyness):</em></p>
-<p><span class="math display">\[
-g^* = \underset{g, \lambda}{\operatorname{argmin}} \left[ \sum_{i=1}^{N}(g(x_i) - y_i)^2 + \lambda \overbrace{\int}^{\mathclap{\text{Sum of}}} [\underbrace{g''(t)}_{\mathclap{\text{Change in }g'(t)}}]^2 \mathrm{d}t \right]
-\]</span></p>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/wigglytuff.jpg" class="quarto-figure quarto-figure-center" width="170"></p>
-</figure>
-</div>
-</div></div>
-<aside class="notes">
-<p>Restricting the <em>first</em> derivative would optimize for a function that <strong>doesn’t change much at all</strong>. Restricting the <em>second</em> derivative just constrains <strong>sharpness</strong> of the changes.</p>
-<p>Think of an Uber driver: penalizing <strong>speed</strong> would just make them go slowly (ensuring slow ride). Penalizing <strong>acceleration</strong> ensures that they can travel whatever speed they want, as long as they smoothly accelerate and decelerate between those speeds (ensuring non-bumpy ride!).</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="penalizing-wiggles" class="slide level2 smaller crunch-title crunch-ul math-90 crunch-li-8">
-<h2>Penalizing Wiggles</h2>
-<p><span class="math display">\[
-g^* = \underset{g, \lambda}{\operatorname{argmin}} \left[ \sum_{i=1}^{N}(g(x_i) - y_i)^2 + \lambda \overbrace{\int}^{\mathclap{\text{Sum of}}} [\underbrace{g''(t)}_{\mathclap{\text{Change in }g'(t)}}]^2 \mathrm{d}t \right]
-\]</span></p>
-<ul>
-<li><em>(Note that we do <strong>not</strong> assume it’s a spline! We optimize over <span class="math inline">\(g\)</span> itself, not <span class="math inline">\(K\)</span>, <span class="math inline">\(\xi_k\)</span>)</em></li>
-<li>Penalizing <span class="math inline">\([g'(t)]^2\)</span> would mean: penalize function for <strong>changing</strong> over its domain</li>
-<li>Penalizing <span class="math inline">\([g''(t)]^2\)</span> means: it’s ok to change, but do so <strong>smoothly</strong></li>
-<li>Uber ride metaphor: remember how <span class="math inline">\(g'(t)\)</span> gives <strong>speed</strong> while <span class="math inline">\(g''(t)\)</span> gives <strong>acceleration</strong></li>
-<li>Penalizing <strong>speed</strong>… would just make driver go slowly (ensuring slow ride)</li>
-<li>Penalizing <strong>acceleration</strong>…
-<ul>
-<li>Ensures that they can fit the traffic pattern (can drive whatever speed they want)</li>
-<li>As long as they <strong>smoothly accelerate and decelerate</strong> between those speeds (ensuring non-bumpy ride!)</li>
-</ul></li>
-</ul>
-</section>
-<section id="three-mind-blowing-math-facts" class="slide level2">
-<h2>Three Mind-Blowing Math Facts</h2>
-<p><i class="bi bi-1-circle"></i> As <span class="math inline">\(\lambda \rightarrow 0\)</span>, <span class="math inline">\(g^*\)</span> will grow as wiggly as necessary to achieve <strong>zero</strong> RSS / MSE / <span class="math inline">\(R^2\)</span></p>
-<p><i class="bi bi-2-circle"></i> As <span class="math inline">\(\lambda \rightarrow \infty\)</span>, <span class="math inline">\(g^*\)</span> converges to <strong>OLS linear regression line</strong></p>
-<p><i class="bi bi-3-circle"></i> We didn’t optimize over splines, yet <strong>optimal <span class="math inline">\(g\)</span> is a spline!</strong></p>
-<p>Specifically, a <strong>Natural Cubic Spline</strong> with…</p>
-<ul>
-<li>Knots at <strong>every data point</strong> (<span class="math inline">\(K = N\)</span>, <span class="math inline">\(\xi_i = x_i\)</span>), but</li>
-<li>Penalized via (optimal) <span class="math inline">\(\lambda^*\)</span>, so not as wiggly as “free to wiggle” splines from previous approach: <strong>shrunken natural cubic spline</strong></li>
-</ul>
-</section>
-<section id="related-important-local-regression-at-x-x_0" class="slide level2 smaller">
-<h2>Related (Important!) Local Regression at <span class="math inline">\(X = x_0\)</span></h2>
-<p><i class="bi bi-1-circle"></i> Identify <span class="math inline">\(k\)</span> points closest to <span class="math inline">\(x_0\)</span></p>
-<p><i class="bi bi-2-circle"></i> Compute weights <span class="math inline">\(K_i = K(x_0, x_i)\)</span>, such that <span class="math inline">\(K_i = 0\)</span> for furthest <span class="math inline">\(i\)</span>, and <span class="math inline">\(K_i\)</span> increases as <span class="math inline">\(x_i\)</span> gets closer to <span class="math inline">\(x_0\)</span></p>
-<p><i class="bi bi-3-circle"></i> Compute <strong>Weighted Least Squares Estimate</strong></p>
-<p><span class="math display">\[
-\boldsymbol\beta^*_{\text{WLS}} = \underset{\boldsymbol\beta}{\operatorname{argmin}} \left[ \frac{1}{N}\sum_{i=1}^{N}K_i(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right]
-\]</span></p>
-<p><i class="bi bi-4-circle"></i> Estimate is ready! <span class="math inline">\(\widehat{f}(x_0) = \beta^{\text{WLS}}_0 + \beta^{\text{WLS}}_1 x_0\)</span>.</p>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>
-<div id="refs" role="list">
-
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-boehmke2019handson" class="csl-entry" role="listitem">
+Boehmke, Brad, and Brandon M. Greenwell. 2019. <em>Hands-<span>On Machine Learning</span> with <span>R</span></em>. CRC Press. <a href="https://books.google.com?id=aXC9DwAAQBAJ">https://books.google.com?id=aXC9DwAAQBAJ</a>.
+</div>
 </div>
 
 
@@ -1272,7 +1317,7 @@ g^* = \underset{g, \lambda}{\operatorname{argmin}} \left[ \sum_{i=1}^{N}(g(x_i) 
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
-<p>DSAN 5300-01 Week 7: Basis Functions and Splines</p>
+<p>DSAN 5300 Week 7: Support Vector Machines (SVMs)</p>
 </div>
 </div></div>
 
@@ -1525,197 +1570,180 @@ g^* = \underset{g, \lambda}{\operatorname{argmin}} \left[ \sum_{i=1}^{N}(g(x_i) 
     </script>
 
     <script id="quarto-html-after-body" type="application/javascript">
-    window.document.addEventListener("DOMContentLoaded", function (event) {
-      const toggleBodyColorMode = (bsSheetEl) => {
-        const mode = bsSheetEl.getAttribute("data-mode");
-        const bodyEl = window.document.querySelector("body");
-        if (mode === "dark") {
-          bodyEl.classList.add("quarto-dark");
-          bodyEl.classList.remove("quarto-light");
-        } else {
-          bodyEl.classList.add("quarto-light");
-          bodyEl.classList.remove("quarto-dark");
-        }
-      }
-      const toggleBodyColorPrimary = () => {
-        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-        if (bsSheetEl) {
-          toggleBodyColorMode(bsSheetEl);
-        }
-      }
-      toggleBodyColorPrimary();  
-      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
-      tabsets.forEach(function(tabset) {
-        const tabby = new Tabby('#' + tabset.id);
-      });
-      const isCodeAnnotation = (el) => {
-        for (const clz of el.classList) {
-          if (clz.startsWith('code-annotation-')) {                     
-            return true;
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
           }
+          return false;
         }
-        return false;
-      }
-      const onCopySuccess = function(e) {
-        // button target
-        const button = e.trigger;
-        // don't keep focus
-        button.blur();
-        // flash "checked"
-        button.classList.add('code-copy-button-checked');
-        var currentTitle = button.getAttribute("title");
-        button.setAttribute("title", "Copied!");
-        let tooltip;
-        if (window.bootstrap) {
-          button.setAttribute("data-bs-toggle", "tooltip");
-          button.setAttribute("data-bs-placement", "left");
-          button.setAttribute("data-bs-title", "Copied!");
-          tooltip = new bootstrap.Tooltip(button, 
-            { trigger: "manual", 
-              customClass: "code-copy-button-tooltip",
-              offset: [0, -8]});
-          tooltip.show();    
-        }
-        setTimeout(function() {
-          if (tooltip) {
-            tooltip.hide();
-            button.removeAttribute("data-bs-title");
-            button.removeAttribute("data-bs-toggle");
-            button.removeAttribute("data-bs-placement");
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
           }
-          button.setAttribute("title", currentTitle);
-          button.classList.remove('code-copy-button-checked');
-        }, 1000);
-        // clear code selection
-        e.clearSelection();
-      }
-      const getTextToCopy = function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
           for (const childEl of codeEl.children) {
             if (isCodeAnnotation(childEl)) {
               childEl.remove();
             }
           }
           return codeEl.innerText;
-      }
-      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-        text: getTextToCopy
-      });
-      clipboard.on('success', onCopySuccess);
-      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-          text: getTextToCopy,
-          container: window.document.getElementById('quarto-embedded-source-code-modal')
-        });
-        clipboardModal.on('success', onCopySuccess);
-      }
-        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-        var mailtoRegex = new RegExp(/^mailto:/);
-          var filterRegex = new RegExp('/' + window.location.host + '/');
-        var isInternal = (href) => {
-            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
-        // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-        for (var i=0; i<links.length; i++) {
-          const link = links[i];
-          if (!isInternal(link.href)) {
-            // undo the damage that might have been done by quarto-nav.js in the case of
-            // links that we want to consider external
-            if (link.dataset.originalHref !== undefined) {
-              link.href = link.dataset.originalHref;
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+                // target, if specified
+                link.setAttribute("target", "_blank");
+                if (link.getAttribute("rel") === null) {
+                  link.setAttribute("rel", "noopener");
+                }
+                // default icon
+                link.classList.add("external");
             }
-              // target, if specified
-              link.setAttribute("target", "_blank");
-              if (link.getAttribute("rel") === null) {
-                link.setAttribute("rel", "noopener");
-              }
-              // default icon
-              link.classList.add("external");
           }
-        }
-      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-        const config = {
-          allowHTML: true,
-          maxWidth: 500,
-          delay: 100,
-          arrow: false,
-          appendTo: function(el) {
-              return el.closest('section.slide') || el.parentElement;
-          },
-          interactive: true,
-          interactiveBorder: 10,
-          theme: 'light-border',
-          placement: 'bottom-start',
-        };
-        if (contentFn) {
-          config.content = contentFn;
-        }
-        if (onTriggerFn) {
-          config.onTrigger = onTriggerFn;
-        }
-        if (onUntriggerFn) {
-          config.onUntrigger = onUntriggerFn;
-        }
-          config['offset'] = [0,0];
-          config['maxWidth'] = 700;
-        window.tippy(el, config); 
-      }
-      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-      for (var i=0; i<noterefs.length; i++) {
-        const ref = noterefs[i];
-        tippyHover(ref, function() {
-          // use id or data attribute instead here
-          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-          try { href = new URL(href).hash; } catch {}
-          const id = href.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note) {
-            return note.innerHTML;
-          } else {
-            return "";
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
           }
-        });
-      }
-      const findCites = (el) => {
-        const parentEl = el.parentElement;
-        if (parentEl) {
-          const cites = parentEl.dataset.cites;
-          if (cites) {
-            return {
-              el,
-              cites: cites.split(' ')
-            };
-          } else {
-            return findCites(el.parentElement)
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
           }
-        } else {
-          return undefined;
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
         }
-      };
-      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-      for (var i=0; i<bibliorefs.length; i++) {
-        const ref = bibliorefs[i];
-        const citeInfo = findCites(ref);
-        if (citeInfo) {
-          tippyHover(citeInfo.el, function() {
-            var popup = window.document.createElement('div');
-            citeInfo.cites.forEach(function(cite) {
-              var citeDiv = window.document.createElement('div');
-              citeDiv.classList.add('hanging-indent');
-              citeDiv.classList.add('csl-entry');
-              var biblioDiv = window.document.getElementById('ref-' + cite);
-              if (biblioDiv) {
-                citeDiv.innerHTML = biblioDiv.innerHTML;
-              }
-              popup.appendChild(citeDiv);
-            });
-            return popup.innerHTML;
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
           });
         }
-      }
-    });
-    </script>
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
     
 
 </body></html>

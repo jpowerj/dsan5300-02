@@ -8,5 +8,7 @@ dplyr
 stringr
 forcats
 lubridate
-plotly
-boot
+latex2exp
+ggforce
+patchwork
+extraDistr

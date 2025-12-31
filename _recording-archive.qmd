@@ -1,0 +1,32 @@
+---
+title: "Previous Term Recordings"
+listing:
+  sort-ui: false
+  filter-ui: false
+  contents:
+    - lecture-recordings.yml
+  type: table
+  categories: true
+  fields: [week,section,title,date]
+  field-display-names:
+    week: "Week"
+    title: "Recording Link"
+    date: "Date"
+    categories: "Category"
+    section: "Section"
+  sort:
+    - "week desc"
+    - "section"
+    - "category desc"
+    - "title desc"
+  table-hover: true
+  # date-format: full
+  #date-format: "dddd MMM D, YYYY, HH:mm:ss"
+  # date-format: "dddd MMM D, YYYY"
+  date-format: "MMM D"
+---
+
+Use the following links to access the full set of recordings from previous terms (on Panopto):
+
+::: {#listing}
+:::

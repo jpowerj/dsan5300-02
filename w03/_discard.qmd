@@ -1,78 +1,121 @@
+How did we measure a "good" fit in e.g. DSAN 5000? High $R^2$? Low $RSS$?
+
+:::: {.columns}
+::: {.column width="50%"}
 
 ```{r}
-#| label: default-boxplot-balance
-default_df |> ggplot(aes(x=default, y=balance, fill=default)) +
-  geom_boxplot() +
-  theme_classic()
+#| label: training-data-plot
+#| fig-width: 3.666
+#| fig-height: 2.5
+#| fig-align: left
+x <- seq(from = 0, to = 1, by = 0.1)
+n <- length(x)
+eps <- rnorm(n, 0, 0.04)
+y <- x + eps
+# But make one big outlier
+midpoint <- ceiling((3/4)*n)
+y[midpoint] <- 0
+of_data <- tibble::tibble(x=x, y=y)
+# Linear model
+lin_model <- lm(y ~ x)
+# But now polynomial regression
+poly_model <- lm(y ~ poly(x, degree = 10, raw=TRUE))
+#summary(model)
+ggplot(of_data, aes(x=x, y=y)) +
+  geom_point(size=g_pointsize/2) +
+  labs(
+    title = "Training Data",
+    color = "Model"
+  ) +
+  theme_dsan()
 ```
 
+:::
+::: {.column width="50%"}
+
 ```{r}
-#| label: default-boxplot-income
-default_df |> ggplot(aes(x=default, y=income, fill=default)) +
-  geom_boxplot() +
-  theme_classic()
+#| label: training-linear-poly
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: left
+ggplot(of_data, aes(x=x, y=y)) +
+  geom_point(size=g_pointsize/2) +
+  geom_abline(aes(intercept=0, slope=1, color="Linear"), linewidth=1, show.legend = FALSE) +
+  stat_smooth(method = "lm",
+              formula = y ~ poly(x, 10, raw=TRUE),
+              se = FALSE, aes(color="Polynomial")) +
+  labs(
+    title = "A Perfect Model?",
+    color = "Model"
+  ) +
+  theme_dsan()
 ```
 
 :::
 ::::
 
+:::: {.columns}
+::: {.column width="50%"}
+
+<center>
+Linear Model:
+</center>
+
+```{r,echo=TRUE}
+#| label: lin-model-metrics
+#| echo: true
+#| code-fold: show
+summary(lin_model)$r.squared
+get_rss(lin_model)
+```
+
+:::
+::: {.column width="50%"}
+
+<center>
+Polynomial Model:
+</center>
+
+```{r,echo=TRUE}
+#| label: poly-model-metrics
+#| echo: true
+#| code-fold: show
+summary(poly_model)$r.squared
+get_rss(poly_model)
+```
+:::
+
+::::
+
 ---
 
+# Cross-Validation {data-stack-name="Cross Validation"}
 
-Here's what lines look like for this dataset:
+## Naïve Approach: Validation Set
 
-```{r}
-#| label: random-lines-origin
-library(latex2exp)
-set.seed(5300)
-# rand_slope <- log(runif(80, min=0, max=1))
-# rand_slope[41:80] <- -rand_slope[41:80]
-# rand_lines <- tibble::tibble(
-#   id=1:80, slope=rand_slope, intercept=0
-# )
-# angles <- runif(100, -pi/2, pi/2)
-angles <- seq(from=-pi/2, to=pi/2, length.out=50)
-possible_lines <- tibble::tibble(
-  slope=tan(angles), intercept=0
-)
-num_points <- 30
-x_vals <- runif(num_points, 0, 1)
-y0_vals <- 0.5 * x_vals + 0.25
-y_noise <- rnorm(num_points, 0, 0.07)
-y_vals <- y0_vals + y_noise
-rand_df <- tibble::tibble(x=x_vals, y=y_vals)
-title_exp <- latex2exp("Parameter Space ($\\beta_1$)")
-# Main plot object
-gen_lines_plot <- function(point_size=2.5) {
-  lines_plot <- rand_df |> ggplot(aes(x=x, y=y)) +
-    geom_point(size=point_size) +
-    geom_hline(yintercept=0, linewidth=1.5) +
-    geom_vline(xintercept=0, linewidth=1.5) +
-    # Point at origin
-    geom_point(data=data.frame(x=0, y=0), aes(x=x, y=y), size=4) +
-    xlim(-1,1) +
-    ylim(-1,1) +
-    # coord_fixed() +
-    theme_dsan_min(base_size=28)
-  return(lines_plot)
-}
-main_lines_plot <- gen_lines_plot()
-main_lines_plot +
-  # Parameter space of possible lines
-  geom_abline(
-    data=possible_lines,
-    aes(slope=slope, intercept=intercept, color='possible'),
-    # linetype="dotted",
-    # linewidth=0.75,
-    alpha=0.25
-  ) +
-  scale_color_manual(
-    element_blank(),
-    values=c('possible'="black", 'true'=cb_palette[2]),
-    labels=c('possible'="Possible Fits", 'true'="True DGP")
-  ) +
-  remove_legend_title() +
-  labs(
-    title=title_exp
-  )
-```
+## Better Approach: LOOCV
+
+## Best Approach: $K$-Fold CV
+
+---
+
+# Model Selection Preview {data-stack-name="Model Selection"}
+
+## The Goal
+
+* Maximize **generalizability** by
+* Penalizing **complexity**
+
+---
+
+## Resampling Methods
+
+* Cross-Validation and Bootstrap
+
+## Model Selection
+
+* Subset Selection
+* "Complexity Penalties"
+* LASSO 🤠
+
+---

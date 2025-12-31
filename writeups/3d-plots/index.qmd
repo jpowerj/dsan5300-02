@@ -6,7 +6,6 @@ affiliation: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 sidebar: mainnav
 weeknum: 3
 assignment: "General"
-jupyter: python3
 cache: true
 categories:
   - "Extra Writeups"

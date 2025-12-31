@@ -1,10 +1,10 @@
 ---
-title: "Week 11: How Do Neural Networks Deep-Learn?"
-subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+title: "Week 11: Survival Analysis"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 bibliography: "../_DSAN5300.bib"
-date: 2025-03-31
+date: 2026-03-30
 date-format: full
 lecnum: 11
 categories:
@@ -12,7 +12,7 @@ categories:
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300-01 Week 11: {{< var w11.footer >}}"
+    footer: "DSAN 5300 Week 11: {{< var w11.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true
@@ -53,11 +53,11 @@ Today's Planned Schedule:
 
 | | Start | End | Topic |
 |:- |:- |:- |:- |
-| **Lecture** | 6:30pm | 7:00pm | [Single Layer Neural Networks &rarr;](#learning-decision-boundaries) |
-| | 7:00pm | 7:20pm | [Max-Margin Classifiers &rarr;](#max-margin-classifiers) | 
-| | 7:20pm | 8:00pm | [Support Vector *Classifiers* &rarr;](#support-vector-classifiers) |
+| **Lecture** | 6:30pm | 7:00pm | [Estimating Survival Curves &rarr;](#learning-decision-boundaries) |
+| | 7:00pm | 7:20pm | [Comparing Between Groups &rarr;](#comparing-survival-curves) | 
+| | 7:20pm | 8:00pm | [Regression (Cox Proportional Hazard Model) &rarr;](#regression-with-survival-response) |
 | **Break!** | 8:00pm | 8:10pm | |
-| | 8:10pm | 9:00pm | [Fancier Neural Networks &rarr;](#quiz-time) |
+| | 8:10pm | 9:00pm | [Quiz 3 &rarr;](#quiz-time) |
 
 : {tbl-colwidths="[12,12,12,64]"}
 
@@ -73,201 +73,521 @@ set.seed(5300)
 
 {{< include ../dsan-globals/_globals-tex.qmd >}}
 
-## Quick Roadmap {.smaller .crunch-title .title-12 .crunch-ul .text-90 .crunch-li-first}
+## Roadmap {.crunch-title .crunch-ul}
 
-* **Last week:** Examples of how NNs are **capable** of learning...
-* The types of features that let us learn fancy non-linear DGPs: $Y = {\color{#e69f00} X_1 X_2 }$ [✅]{.text-80}, $Y = {\color{#56b4e9} X_1^2 + X_2^2 }$ [✅]{.text-80}, $Y = {\color{#009E73} X_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} X_2}$ [✅]{.text-80}
+* <i class='bi bi-1-circle'></i> Basic tool: **survival curve** $S(t)$ = probability of surviving past period $t$
+* Complicating factor: **Censored** obs (e.g., drop out of study)
+* $\Rightarrow$ Need to think about **DGP**: *Why* is observation $i$ censored while $j$ is observed?
+    * Basic estimators only valid if censoring $\perp$ survival time
+* <i class='bi bi-2-circle'></i> How to compare survival **between two groups**
+* <i class='bi bi-3-circle'></i> Regression: Effect of features $X_1, \ldots, X_p$ on survival
 
-* Multi-layer networks like CNNs for "pooling" low-level/fine-grained information into high-level/coarse-grained information
-  * Ex: Early layers detect **lines**, later layers figure out whether they're **brows** or **smiles**
-* **This week:** How do we actually **learn** the weights/biases which **enable these capabilities?**
-  * The answer is (🙈) **calculus** (chain rule)
+# Survival Analysis Basics {.smaller .title-12 data-stack-name="Survival Curve Estimation"}
 
-## Step-by-Step {.crunch-title .crunch-ul .text-90 .crunch-p}
+* Lots of information crunched into this one figure!
 
-::: {.callout-note title="Neural Network Training Procedure" style="font-size: 130%;"}
-For each training observation $(\mathbf{x}_i, y_i)$...
+![ISLR Figure 11.1](images/11_1.svg){fig-align="center"}
 
-<i class='bi bi-1-circle'></i> Predict $\widehat{y}_i$ from $\mathbf{x}_i$
+## Read Left to Right $\Rightarrow$ Sequence of Events {.smaller .crunch-title .title-11}
 
-<i class='bi bi-2-circle'></i> Evaluate loss $\mathcal{L}(\widehat{y}_i, y_i)$: **Cross-Entropy Loss**
+![Modified ISLR Figure 11.1](images/Survival_Plot.png){fig-align="center"}
 
-<i class='bi bi-3-circle'></i> Update parameters (weights/biases): **Backpropagation**
+## "Slice" at Deaths $\Rightarrow$ At-Risk Observations {.smaller .crunch-title .title-11}
 
-:::
+![Modified ISLR Figure 11.1](images/Survival_Plot_Slices.png){fig-align="center"}
 
-Key for success of NNs: Non-linear **but differentiable**
+## The Actual Dataset We Get {.smaller .crunch-title .title-11}
 
-* $\Rightarrow$ parameters $w^*$ **most responsible** for the loss value can be
-  (a) **identified**: $w^* = \argmax_w\left[ \frac{\partial \mathcal{L}}{\partial w} \right]$, then
-  (b) **changed the most** $w^*_t \rightarrow w^*_{t+1}$
+| Patient ($i$) | Observed Outcome ($Y_i$) | Observed? ($\delta_i$) |
+|:-:|:-:|:-:|
+| 1 | 300 | 1 |
+| 2 | 365 | 0 |
+| 3 | 150 | 1 |
+| 4 | 250 | 0 |
 
-# Recall: MNIST Digits {.smaller .title-12 data-stack-name="Cross-Entropy Loss"}
+![](images/11_1.svg){fig-align="center"}
 
-![Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4](images/nn_multilayer.svg){fig-align="center"}
+## The Dataset We Can Infer {.smaller .crunch-title .title-11}
 
-## How Do We Evaluate Output? {.smaller .title-12 data-stack-name="Cross-Entropy Loss"}
+| Patient ($i$) | $Y_i$ | $\delta_i$ | Survival Time ($T_i$) | Censor Point ($C_i$) |
+|:-:|:-:|:-:|:-:|:-:|
+| 1 | 300 | 1 | 300 | `NA` |
+| 2 | 365 | 0 | `NA` | 365 |
+| 3 | 150 | 1 | 150 | `NA` |
+| 4 | 250 | 0 | `NA` | 250 |
 
-![Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4](images/nn_multilayer_output.svg){fig-align="center"}
+: {tbl-colwidths="[20,10,10,30,30]"}
 
-## Entropy in General
+...If we're testing effect of treatment, which column do we most care about?
 
-![](images/entropy_general.svg){fig-align="center"}
+![](images/11_1.svg){fig-align="center"}
 
-## "Entropy Loss": Output Layer Uncertainty {.smaller .crunch-title .title-10 .math-80 .text-70 .crunch-quarto-figure .crunch-math .crunch-p}
+## Measuring Effect of Treatment! {.smaller .crunch-title .title-11}
 
-:::: {layout="[1,1,1]"}
-::: {#maxent-img}
+```{=html}
+<style>
+.tab-surv tr td:nth-child(4), .tab-surv tr th:nth-child(4) {
+    border-left: 2px solid #E69F00 !important;
+    border-right: 2px solid #E69F00 !important;
+    background-color: #E69F0050 !important;
+}
+.tab-surv tr:first-child th:nth-child(4) {
+    border-top: 2px solid #E69F00 !important;
+}
+.tab-surv tr:nth-child(4) td:nth-child(4) {
+    border-bottom: 2px solid #E69F00 !important;
+}
+</style>
+```
 
-<center>
+| Patient ($i$) | $Y_i$ | $\delta_i$ | Survival Time ($T_i$) | Censor Point ($C_i$) |
+|:-:|:-:|:-:|:-:|:-:|
+| 1 | 300 | 1 | 300 | `NA` |
+| 2 | 365 | 0 | `NA` | 365 |
+| 3 | 150 | 1 | 150 | `NA` |
+| 4 | 250 | 0 | `NA` | 250 |
 
-[Max entropy = **max** uncertainty]{style="font-size: 80%;"}
+: {.tab-surv tbl-colwidths="[20,10,10,30,30]"}
 
-</center>
+...If we're testing effect of treatment, [$T_i$ is what we care about!]{.cb1a-bg style="border: 2px solid #E69F00; padding: 5px !important;"}
 
-![Step 1: NN has no idea, guesses (via softmax) $\widehat{y}_d = \Pr(y = d) = 0.1 \; \forall d$](images/nn_crossent_eq.svg){fig-align="center"}
+![](images/11_1.svg){fig-align="center"}
 
-:::
-::: {#mident-img}
+## Basic Question 1: Survival {.crunch-title .math-90 .inline-90}
 
-<center>
+* Let $T$ be a RV representing time of death for a patient
+* What is probability that patient **survives** past given time $t$?
 
-[Less entropy = less uncertainty]{style="font-size: 80%;"}
+$$
+S_T(t) = \Pr(T > t)
+$$
 
-</center>
+* Note relationship to something you saw in 5100!
+* $S_T(t)$ defined to be $1 - F_T(t)$, where $F_T(t)$ is **CDF** of $T$:
 
-![Step 2: NN starting to converge: $\Pr(Y = 9)$ high, $\Pr(Y = 3)$ medium, $\Pr(Y = d)$ low for all other $d$](images/nn_crossent_mident.svg){fig-align="center"}
+$$
+F_T(t) = \Pr(T \leq t)
+$$
 
-:::
-::: {#minent-img}
+## Kaplan-Meier Estimator: Intuition {.smaller .crunch-title .title-10 .crunch-math .crunch-ul .crunch-quarto-figure .crunch-img .math-90 .inline-90 .crunch-li-5}
 
-<center>
+Each death event $d_k$ gives us **info** that survival probability lower by some amount
 
-[Min entropy = **no** uncertainty]{style="font-size: 80%;"}
+<i class='bi bi-1-circle'></i> Break $S(t)$ into **sequence of stepwise changes** at $d_1, \ldots, d_K$:
 
-</center>
+$$
+\begin{align*}
+S(d_k) = \Pr(T > d_k) &\overset{\mathclap{\small\text{LTP}}}{=} \Pr(T > d_k \mid T > d_{k-1})\overbrace{\Pr(T > d_{k-1})}^{S(d_{k-1})} \\
+&\phantom{=} \; \; + \underbrace{\Pr(T > d_k \mid T \leq d_{k-1})}_{\text{Contradiction} \implies \Pr = 0}\Pr(T \leq d_{k-1})
+\end{align*}
+$$
 
-![Step 3: NN has converged to predicting ultra-high $\widehat{y}_9 = \Pr(y = 9 \mid X)$](images/nn_minent.svg){fig-align="center"}
+:::: {.columns}
+::: {.column width="50%"}
 
-:::
-::::
+<i class='bi bi-2-circle'></i> Gives us a *recurrence relation*:
 
-## The Problem With Entropy Loss {.smaller .crunch-title .title-10 .math-80 .text-70 .crunch-p .crunch-quarto-figure}
-
-:::: {layout="[1,1,1]"}
-::: {#maxent-problem}
-
-<center>
-
-[Max entropy = **max** uncertainty]{style="font-size: 80%;"}
-
-</center>
-
-![Step 1: NN has no idea, guesses (via softmax) $\Pr(y = d) = 0.1$ for every $d$](images/nn_crossent_eq.svg){fig-align="center"}
-
-:::
-::: {#mident-problem}
-
-<center>
-
-[Less entropy = less uncertainty]{style="font-size: 80%;"}
-
-</center>
-
-![Step 2: NN starting to converge: probably $d = 3$, maybe $d = 9$, low probability on all other values](images/nn_crossent_miderr.svg){fig-align="center"}
-
-:::
-::: {#minent-problem}
-
-<center>
-
-[Min entropy = **no** uncertainty]{style="font-size: 80%;"}
-
-</center>
-
-![Step 3: NN has converged to predicting ultra-high $\Pr(y = 3)$](images/nn_minent_err.svg){fig-align="center"}
-
-:::
-::::
-
-## *Cross*-Entropy Loss: Output Layer vs. Truth {.smaller .crunch-title .title-10 .math-80 .text-70}
-
-:::: {layout="[1,1,1]"}
-::: {#crossent-max}
-
-<center>
-
-[Max entropy = **max** uncertainty]{style="font-size: 80%;"}
-
-</center>
-
-![Step 1: $H(y, \widehat{y}) = -1\cdot \log_2(0.1) \approx 3.32$](images/nn_crossent_eq.svg){fig-align="center"}
+$$
+\begin{align*}
+S(d_k) &= \Pr(T > d_k \mid T > d_{k-1})S(d_{k-1}) \\
+S(d_{k-1}) &= \Pr(T > d_{k-1} \mid T > d_{k-2})S(d_{k-2}) \\
+%S(d_{k-2}) &= \Pr(T > d_{k-2} \mid T > d_{k-3})S(d_{k-3}) \\
+&\vdots \\
+S(d_2) &= \Pr(T > d_2 \mid T > d_1)S(d_1) \\
+S(d_1) &= \Pr(T > d_1 \mid T > d_0)S(d_0) = \Pr(T > d_1)
+\end{align*}
+$$
 
 :::
-::: {#crossent-mid}
+::: {.column width="50%"}
 
-<center>
+<i class='bi bi-3-circle'></i> Plug each eq into eq above it to derive:
 
-[Less entropy = less uncertainty]{style="font-size: 80%;"}
-
-</center>
-
-![Step 2: $H(y,\widehat{y}) = -1\cdot \log_2(0.4) \approx 1.32$](images/nn_crossent_mident.svg){fig-align="center"}
-
-:::
-::: {#crossent-min}
-
-<center>
-
-[Min entropy = **no** uncertainty]{style="font-size: 80%;"}
-
-</center>
-
-![Step 3: $H(y,\widehat{y}) = -1\cdot \log_2(1) = 0$](images/nn_minent.svg){fig-align="center"}
+$$
+\begin{align*}
+S(d_k) = &\Pr(\underbrace{T > d_k}_{\mathclap{\small\text{Survives past }d_k}} \; \mid \; \underbrace{T > d_{k-1}}_{\mathclap{\small\text{Survives past }d_{k-1}}}) \\
+&\times \Pr(\underbrace{T > d_{k-1}}_{\small\text{Survives past }d_{k-1}} \mid \underbrace{T > d_{k-2}}_{\small\text{Survives past }d_{k-2}}) \\
+&\times \cdots \times \Pr(\underbrace{T > d_2}_{\mathclap{\small\text{Survives past }d_2}} \; \mid \; \underbrace{T > d_1}_{\mathclap{\small\text{Survives past }d_1}}) \\
+&\times \Pr(\underbrace{T > d_1}_{\mathclap{\small\text{Survives past }d_1}})
+\end{align*}
+$$
 
 :::
 ::::
 
-## It's Not as Silly as You Think! {.smaller .title-12 .crunch-title .crunch-ul .crunch-quarto-figure}
+## Kaplan-Meier Estimator {.smaller .crunch-title .title-11 .crunch-math .crunch-ul .crunch-quarto-figure .crunch-img}
 
-* In our example, we **know** the **true** digit... But remember the **origin of the dataset**: postal workers trying to figure out handwritten digits
-* May not **know** with certainty, but may be able to say, e.g., "It's either a 1 or a 7"
+* Defined **at** death points $d_k$ as
 
-![From [*Perceptions of Probability* Dataset](https://github.com/zonination/perceptions)](images/word-prob-joy.png){fig-align="center"}
+$$
+\widehat{S}(d_k) = \prod_{j=1}^{k} \Bigl(
+    \overbrace{
+        \frac{
+            r_j - q_j
+        }{
+            \underbrace{r_j}_{\mathclap{\small\text{Num At Risk}}}
+        }
+    }^{\mathclap{\small\text{Num Survived}}}
+\Bigr)
+$$
 
-# Ok But How Do We *Learn* The Weights? {data-stack-name="Backpropagation"}
+* Then, for $t \in (d_k, d_{k+1})$, $\widehat{S}(t) = \widehat{S}(d_k)$, producing **stepwise** survival function:
 
-* ...**Backpropagation!**
+![ISLR Figure 11.2](images/11_2.svg){fig-align="center"}
 
-## Backpropagation: Simple Example {.smaller .crunch-title .title-11}
+## Kaplan-Meier Estimator for our Example {.smaller .crunch-title .title-11 .crunch-quarto-figure .crunch-details .math-80 .inline-80}
 
-* Literally just **one** neuron (which is the output layer), $\mathcal{L}(\widehat{y},y) = (\widehat{y} - y)^2$
-* Consider a training datapoint $(x,y) = (2,10)$
-* And say our current parameters are $\beta_0 = 1, \beta_1 = 3$
-* Predicted output: $\widehat{y} = \beta_0 + \beta_1 x = 1 + 3\cdot 2 = 7$
-* Since true output is $y = 10$, we have loss $\mathcal{L} = (10-7)^2 = 9$
-* Now, let's **backpropagate** to update $\beta_1$ (on the board!)
-  * (Using learning rate of $0.1$)
+:::: {.columns}
+::: {.column width="40%"}
 
-## Top Secret Answer Slide
+Two death points: $d_1 = 150, d_2 = 300$ (plus start point $d_0 = 0$)
 
-* Weight $\beta_1$ becomes 4.2...
-* New prediction: $\widehat{y} = 1 + 4.2\cdot 2 = 9.4$
-* New loss: $(10-9.4)^2 = 0.36$ 🥳
+$$
+\begin{align*}
+{\color{#e69f00}\widehat{S}(d_0)} &= \prod_{j=0}^{0}\left( \frac{r_k - q_k}{r_k} \right) = \left( \frac{4 - 0}{4} \right) = {\color{#e69f00}\boxed{1}} \\
+{\color{#56b4e9}\widehat{S}(d_1)} &= \prod_{j=0}^{1}\left( \frac{r_k - q_k}{r_k} \right) = {\color{#e69f00}\boxed{1}} \cdot \left( \frac{r_1-q_1}{r_1} \right) \\
+&= {\color{#e69f00}\boxed{1}} \cdot \left( \frac{4 - 1}{4} \right) = {\color{#56B4E9}\boxed{\frac{3}{4}}} \\
+{\color{#009e73}\widehat{S}(d_2)} &= \prod_{j=0}^{2}\left( \frac{r_k - q_k}{r_k} \right) = {\color{#e69f00}\boxed{1}} \cdot {\color{#56b4e9}\boxed{\frac{3}{4}}} \cdot \left( \frac{r_2 - q_2}{r_2} \right) \\
+&= {\color{#e69f00}\boxed{1}} \cdot {\color{#56b4e9}\boxed{\frac{3}{4}}} \cdot \left( \frac{2-1}{2} \right) = \frac{3}{4}\cdot \frac{1}{2} = {\color{#009e73}\boxed{\frac{3}{8}}}
+\end{align*}
+$$
 
-## Backpropagation Deeper Dive {.smaller}
-
-![[Backpropagation!](https://youtu.be/tIeHLnjs5U8?si=0CSS66763D5s5UVt) (3Blue1Brown Again!)](images/backprop.jpg){fig-align="center"}
-
-*(Full NN playlist [here](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi))*
-
-## Simplest Possible Backprop
-
-* One input unit, one hidden unit, one output unit
-
-
-
-## References
-
-::: {#refs}
 :::
+::: {.column width="60%"}
+
+```{r}
+#| label: kme-example
+#| fig-height: 2.75
+#| fig-width: 5.5
+library(tidyverse) |> suppressPackageStartupMessages()
+library(survival) |> suppressPackageStartupMessages()
+library(latex2exp) |> suppressPackageStartupMessages()
+surv_df <- tribble(
+  ~id, ~y, ~delta,
+  1, 300, 1,
+  2, 365, 0,
+  3, 150, 1,
+  4, 250, 0
+)
+surv_obj <- Surv(surv_df$y, event = surv_df$delta)
+surv_model <- survfit(surv_obj ~ 1)
+# Plot options
+par(mar=c(2,4,1.25,1.0)) # bltr
+y_label <- TeX("$\\Pr(T > t)$")
+plot(
+  surv_model,
+  ylab=y_label,
+  lwd=1,
+  main="Survival Curve for 4-Patient Example"
+) # conf.int=FALSE
+# Add colors
+# lines(c(0, 150), c(1.0, 1.0), type='l', col='#E69F00', lwd=2)
+rect(xleft = 0, xright = 150, ybottom = 0, ytop = 1.0, col="#E69F0040", lwd=0)
+# lines(c(150, 300), c(3/4, 3/4), type='l', col='#56B4E9', lwd=2)
+rect(xleft = 150, xright = 300, ybottom = 0, ytop = 1.0, col="#56B4E940", lwd=0)
+# lines(c(300, 365), c(3/8, 3/8), type='l', col='#009E73', lwd=2)
+rect(xleft = 300, xright = 365, ybottom = 0, ytop = 1.0, col="#009E7340", lwd=0)
+```
+
+![](images/Survival_Plot_Slices.png){fig-align="center" width="80%"}
+
+:::
+::::
+
+# Comparing Survival Curves {.smaller .crunch-title .title-12 .crunch-ul data-stack-name="Comparing Groups"}
+
+* Are female patients more likely to survive than male patients?
+
+![ISLR Figure 11.3](images/11_3.svg){fig-align="center"}
+
+## Log-Rank Test {.crunch-title .title-09 .crunch-ul .crunch-li-8 .math-90 .inline-90 .crunch-math .text-90}
+
+* At each death event $d_k$, construct a table like:
+
+| | Group 1 | Group 2 | Total |
+| - |:-:|:-:|:-:|
+| **Died** | $q_{1k}$ | $q_{2k}$ | $q_k$ |
+| **Survived** | $r_{1k} - q_{1k}$ | $r_{2k} - q_{2k}$ | $r_k - q_k$ |
+| **Total** | $r_{1k}$ | $r_{2k}$ | $r_k$ |
+
+* Focus on $q_{1k}$! **Null hypothesis**: across all $k \in \{1, \ldots, K\}$, $q_{1k}$ not systematically lower or higher than RHS:
+
+$$
+\mathbb{E}[ \underbrace{q_{1k}}_{\mathclap{\small\substack{\text{Group 1 deaths} \\ \text{at }d_k}}} ] = 
+\overbrace{r_{1k}}^{\mathclap{\small\substack{\text{At risk in} \\[0.2em] \text{Group 1}}}} \cdot \underbrace{\left( \frac{q_k}{r_k} \right)}_{\mathclap{\small\text{Overall death rate at }d_k}}
+$$
+
+## Log-Rank Test Statistic {.crunch-title .title-09 .math-75 .crunch-ul .crunch-li-8 .inline-90}
+
+* Test statistic $W$ should "detect" the alternative hypothesis, on basis of information $X$... We can use $\boxed{\textstyle X = \sum_{k=1}^{K}q_{1k}}$!
+* Here, **log-rank test statistic** $W$ detects how much $q_{1k}$ **deviates from expected value** from prev slide:
+
+$$
+\begin{align*}
+W &= \frac{X - \mathbb{E}[X]}{\sqrt{\text{Var}[X]}} = \frac{
+  \sum_{k=1}^{K}q_{1k} - \mathbb{E}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]
+}{
+  \sqrt{\text{Var}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]}
+} = \frac{
+  \sum_{k=1}^{K} \left( q_{1k} - \mathbb{E}[q_{1k}] \right)
+}{
+  \sqrt{\text{Var}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]}
+} \\
+&= \frac{
+  \sum_{k=1}^{K}\left( q_{1k} - r_{1k}\cdot \frac{q_k}{r_k} \right)
+}{
+  \sqrt{\text{Var}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]}
+} \underset{\small\text{Ex 11.7}}{\overset{\small\text{ISLR}}{=}} 
+\frac{
+  \sum_{k=1}^{K}\left( q_{1k} - r_{1k}\cdot \frac{q_k}{r_k} \right)
+}{
+  \sqrt{\sum_{k=1}^{K} \frac{
+    q_k(r_{1k}/r_k)(1 - r_{1k}/r_k)(r_k - q_k)
+  }{
+    r_k - 1
+  }}
+}
+\end{align*}
+$$
+
+# Regression with Survival Response {data-stack-name="Regression"}
+
+## The Hazard Function {.crunch-title .crunch-ul .crunch-math .math-90 .inline-90 .title-09 .crunch-li-8}
+
+* Death rate at tiny **instant after $t$** (between $t$ and $t + \Delta t$), **given** survival past $t$:
+
+$$
+h(t) \definedas \lim_{\Delta t \rightarrow 0}\frac{\Pr(t < T \leq t + \Delta t)}{\Delta t}
+$$
+
+* If we define a RV $T_{>t} \definedas [T \mid T > t]$, $h(t)$ is the **pdf** of $T_{>t}$!
+* Can relate $h(t)$ to quantities we know (e.g., from 5100):
+
+$$
+\underbrace{h(t)}_{\small\text{pdf of }T_{>t}} = \frac{\overbrace{f(t)}^{\small\text{pdf of }T}}{\underbrace{S(t)}_{\small \Pr(T > t)}}
+$$
+
+## Proportional Hazard Assumption {.crunch-title .crunch-math .caption-smaller .text-90 .math-80 .crunch-p .crunch-quarto-figure .cols-va}
+
+$$
+h(t \mid x_i) = h_0(t)\exp\left[ \sum_{j=1}^{p}\beta_j x_{ij} \right] \iff \underbrace{\log[h(t \mid x_i)]}_{\hbar(t \mid x_i)} = \underbrace{\log[h_0(t)]}_{\hbar_0(t)} + \sum_{j=1}^{p}\beta_j x_{ij}
+$$
+
+Basically: Features $X_{j}$ **shift** [log] baseline hazard function $\hbar_0(t)$ up and down by constant amounts, via multiplication by $e^{\beta_j}$
+
+:::: {.columns}
+::: {.column width="45%"}
+
+::: {#prop-hazard-text style="font-size: 80% !important;"}
+
+* **Top row:** $\hbar_0(t)$ in **black**, $X_j = 1$ shifts it down via multiplication by $e^{\beta_j}$ to form $\hbar(t \mid X_j)$ in [green]{.cb3}
+* **Bottom row:** Proportional hazard *violated*, since $X_j = 1$ associated with **different** changes to $\hbar_0(t)$ at **different** $t$ values
+
+:::
+
+:::
+::: {.column width="55%"}
+
+![](images/11_4.svg){fig-align="center" width="100%"}
+
+:::
+::::
+
+## Cox Proportional Hazard Model {.crunch-title .crunch-math .math-80}
+
+* Intuition: Best $\beta$s are those which best predict $i$'s death among all at risk at same time. Called "Partial Likelihood" $\text{PL}(\boldsymbol\beta)$ since we don't need to estimate $h_0(t)$!
+
+$$
+\prod_{i : \, \delta_i = 1} \; \frac{
+  {\color{red}\cancel{\color{black}h_0(t)}}\exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{ij} \right]
+}{
+  {\displaystyle \sum\limits_{\mathclap{i': \, y_{i'} \geq y_i}}} {\color{red}\cancel{\color{black}h_0(t)}}\exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{i'j} \right]
+} = \prod_{i : \, \delta_i = 1} \; \frac{
+  \exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{ij} \right]
+}{
+  {\displaystyle \sum\limits_{\mathclap{i': \, y_{i'} \geq y_i}}} \exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{i'j} \right]
+}
+$$
+
+* Also note the missing intercept $\beta_0$: handled by the baseline hazard function $h_0(t)$ (which we cancel out anyways!)
+
+## In Code {.smaller .crunch-title .crunch-ul}
+
+* We'll use the `survival` library in R, very similar syntax to `lm()`, `glm()`, etc.!
+
+```{r}
+#| label: surv-cancer
+library(survival) |> suppressPackageStartupMessages()
+library(ISLR2) |> suppressPackageStartupMessages()
+bc_df <- BrainCancer |> filter(diagnosis != "Other")
+bc_df$diagnosis = factor(bc_df$diagnosis)
+bc_df$sex <- factor(substr(bc_df$sex, 1, 1))
+bc_df$loc <- factor(substr(bc_df$loc, 1, 5))
+options(width=130)
+summary(bc_df)
+```
+
+```{r}
+#| label: surv-cancer-head
+bc_df |> head(5)
+```
+
+## `coxph()` Estimation {.smaller .crunch-title .title-12 .crunch-details .table-90}
+
+```{=html}
+<style>
+.cox-table tr:nth-child(3) {
+  background-color: #e69f0040;
+  font-weight: bold;
+}
+.cox-table tr:nth-child(5) {
+  background-color: #56b4e940;
+  font-weight: bold;
+}
+</style>
+```
+
+```{r}
+#| label: cox-model
+#| classes: cox-table
+library(broom) |> suppressPackageStartupMessages()
+full_cox_model <- coxph(
+  Surv(time, status) ~ sex + diagnosis + loc + ki + gtv + stereo,
+  data=bc_df
+)
+broom::tidy(full_cox_model) |> mutate_if(is.numeric, round, 3)
+```
+
+* [**Diagnosis:**]{.cb1a-bg} Relative to **baseline** of Meningioma, HG (High-Grade) glioma associated with $e^{2.155} \approx 8.628$ times greater hazard
+* [**Karnofsky Index (`ki`):**]{.cb2a-bg} 1-unit increase associated with reduction of hazard to $e^{-0.055} \approx 94.65$% of previous value [0-100 scale of self-functioning abilities]
+
+## Survival Curves for Each Diagnosis
+
+```{r}
+#| label: diag-survival-curves
+library(extrafont) |> suppressPackageStartupMessages()
+par(cex=1.2, family="CMU Sans Serif")
+diag_levels <- c("Meningioma", "LG glioma", "HG glioma")
+diag_df <- tibble(
+  diagnosis = diag_levels,
+  sex = rep("F", 3),
+  loc = rep("Supra", 3),
+  ki = rep(mean(bc_df$ki), 3),
+  gtv = rep(mean(bc_df$gtv), 3),
+  stereo = rep("SRT", 3)
+)
+survplots <- survfit(full_cox_model, newdata = diag_df)
+plot(
+  survplots,
+  main = "Survival Curves by Diagnosis",
+  xlab = "Months", ylab = "Survival Probability",
+  col = cb_palette, lwd=1.5
+)
+legend(
+  "bottomleft",
+  diag_levels,
+  col = cb_palette, lty = 1, lwd=1.5
+)
+```
+
+## Less Straightforward: Curves for Each `ki`, `gtv` Val {.smaller .crunch-title .title-10 .crunch-quarto-figure .crunch-img .crunch-ul}
+
+* Technically a different survival curve for each value of `ki` $\in [0, 100]$, `gtv` $\in (0, \infty)$
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r}
+#| label: ki-hist
+#| fig-height: 4
+bc_df |> ggplot(aes(x=ki)) +
+  geom_density(
+    linewidth=g_linewidth,
+    fill=cb_palette[1], alpha=0.333
+  ) +
+  theme_dsan(base_size=28) +
+  labs(title = "Karnofsky Index Distribution")
+```
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| label: gtv-hist
+#| fig-height: 4
+bc_df |> ggplot(aes(x=gtv)) +
+  geom_density(
+    linewidth=g_linewidth,
+    fill=cb_palette[1], alpha=0.333
+  ) +
+  theme_dsan(base_size=28) +
+  labs(title = "Gross Tumor Volume (GTV) Distribution")
+```
+
+:::
+::::
+
+* One approach: **bin** into (low, medium, high) via terciles, one curve per bin median:
+
+:::: {.columns}
+::: {.column width="40%"}
+
+```{r}
+#| label: ki-terciles
+ki_terciles <- quantile(bc_df$ki, c(1/3, 2/3))
+bc_df <- bc_df |> mutate(
+  tercile = ifelse(ki < ki_terciles[1], 1, ifelse(ki < ki_terciles[2], 2, 3))
+)
+(terc_df <- bc_df |>
+  group_by(tercile) |>
+  summarize(med_ki=median(ki)))
+```
+
+:::
+::: {.column width="60%"}
+
+```{r}
+#| label: ki-terciles-plot
+#| fig-height: 2.5
+#| fig-width: 5.5
+library(latex2exp) |> suppressPackageStartupMessages()
+ki_df <- tibble(
+  diagnosis = rep("Meningioma", 3),
+  sex = rep("F", 3),
+  loc = rep("Supra", 3),
+  ki = terc_df$med_ki,
+  gtv = rep(mean(bc_df$gtv), 3),
+  stereo = rep("SRT", 3)
+)
+ki_plots <- survfit(full_cox_model, newdata = ki_df)
+par(
+  mar=c(4.0,4.0,1.2,0.5),
+  cex=1.2,
+  family="CMU Sans Serif"
+) # bltr
+plot(
+  ki_plots,
+  main = "Survival Curves by KI Tercile",
+  xlab = "Months",
+  ylab = TeX("$\\Pr(T > t)$"),
+  lwd = 1,
+  col = cb_palette
+)
+ki_labs <- c(
+  TeX("$h( t \\, | \\, KI = 70 )$"),
+  TeX("$h( t \\, | \\, KI = 80 )$"),
+  TeX("$h( t \\, | \\, KI = 90 )$")
+)
+legend(
+  "bottomleft",
+  ki_labs, lwd=1,
+  col = cb_palette, lty = 1, cex=0.8
+)
+```
+
+:::
+::::
+
+# Quiz 3 {data-name="Quiz"}
+
+* Last one! You got this, حَبَائب!

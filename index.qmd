@@ -1,8 +1,8 @@
 ---
-title: "DSAN 5300-01: Statistical Learning"
-subtitle: "Mondays 6:30-9pm, Car Barn 203"
+title: "DSAN 5300-02: Statistical Learning"
+subtitle: "Mondays 6:30-9pm, Car Barn 309"
 author: "Jeff Jacobs ([`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu))"
-institute: "Georgetown University, Spring 2025"
+institute: "Georgetown University, Spring 2026"
 listing:
   sort-ui: false
   filter-ui: false
@@ -20,9 +20,21 @@ format:
     link-external-newwindow: true
 ---
 
-Welcome to the homepage for **Section 01** (Mondays 6:30-9pm in Car Barn 203) of ***DSAN 5300: Statistical Learning*** at Georgetown University, for the Spring 2025 semester!
+Welcome to the homepage for **Section 02** (Mondays 6:30-9pm in Car Barn 309) of ***DSAN 5300: Statistical Learning*** at Georgetown University, for the **Spring 2026** semester! This page is just for collecting slides, writeups, and links in one spot, and does not replace the course's [**Canvas page**]({{< var canvas_url >}})!
 
-If you're looking to book an office hour with Jeff, you can use the link in the sidebar, or [this direct link](https://jjacobs.me/meet): the office hour blocks for Spring 2025 are held from **3:30-6:30pm every Tuesday**.
+If you're looking to book an office hour with Jeff, you can use the link in the sidebar, or [this direct link](https://jjacobs.me/meet): the office hour blocks for Spring 2026 are held from **3:30-6:30pm every Tuesday**.
+
+::: {.callout-note title="Irregular Lecture Days"}
+
+There will be multiple **non-Monday** lectures this semester, due to holidays and breaks! Please keep in mind the following "special" days:
+
+* **Wednesday, January 7th**: The ***first* class session** falls on a **Wednesday**, as the University follows a Monday schedule on this day
+* **Monday, January 19th**: **No class** due to Martin Luther King, Jr. Day
+* **Tuesday, February 17th**: This session falls on a **Tuesday**, as the University follows a Monday schedule this day (due to President's Day on Monday, February 16th)
+* **Monday, March 2nd**: **No class** due to Spring Break
+* **Monday, April 6th**: **No class** due to Easter Break
+
+:::
 
 Use the following links to view notes and lecture slides for individual weeks:
 

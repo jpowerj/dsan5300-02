@@ -4,25 +4,25 @@ project:
   pre-render: _pre-set-updated.py
 
 website:
-  title: "DSAN 5300-01"
+  title: "DSAN 5300-02"
   favicon: favicon.png
-  repo-url: "https://github.com/jpowerj/dsan5300-01"
+  repo-url: "https://github.com/jpowerj/dsan5300-02"
   repo-actions: [source]
   repo-link-target: "_blank"
   sidebar:
     id: mainnav
-    title: "DSAN 5300-01: Statistical Learning"
-    footer: "*Updated {{< env DSAN5300_LAST_UPDATED \"2025-01-08\" >}}*"
+    title: "DSAN 5300-02: Statistical Learning"
+    footer: "*Updated {{< env DSAN5300_LAST_UPDATED \"2026-01-07\" >}}*"
     contents:
       - text: "<i class='bi bi-house pe-1'></i> Home"
         href: index.qmd
       - text: "Zoom Link"
-        href: "https://georgetown.zoom.us/j/91911785762?pwd=poQh2m4AiSYWaDudp7hPLDEszWgBuG.1"
+        href: "https://georgetown.zoom.us/j/97371877594?pwd=oT8FiCC0RAhl8bHRsOuoZuRBzxJNQj.1"
         target: "_blank"
       - text: "Writeups"
         href: writeups/index.qmd
       - text: "Recordings <i class='bi bi-box-arrow-up-right ps-1'></i>"
-        href: "https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=07b596c2-6a0e-4302-a186-b25c00b555ce"
+        href: "https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=e60c1880-ba36-462c-b8e9-b3c301796e7a"
         target: "_blank"
       - "---"
       - text: "Week 1: {{< var w01.date-md >}}"
@@ -51,12 +51,6 @@ website:
         href: "w12/index.qmd"
       - text: "Week 13: {{< var w13.date-md >}}"
         href: "w13/index.qmd"
-      # - text: "Week 14: {{< var w14.date-md >}}"
-      #   href: "w14/index.qmd"
-      # - "---"
-      # - text: "Anonymous Suggestions<i class='bi bi-box-arrow-up-right ps-1'></i>"
-      #   href: "https://forms.gle/s35xJBf8Dj6XR5pr8"
-      #   target: "_blank"
       - "---"
       - text: "Canvas <i class='bi bi-box-arrow-up-right ps-1'></i>"
         href: "https://georgetown.instructure.com/courses/203361"
@@ -64,13 +58,14 @@ website:
       - text: "Office Hours <i class='bi bi-box-arrow-up-right ps-1'></i>"
         href: "https://jjacobs.me/meet"
         target: "_blank"
-
+      - text: "2025 Recordings <i class='bi bi-box-arrow-up-right ps-1'></i>"
+        href: "https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=07b596c2-6a0e-4302-a186-b25c00b555ce"
+        target: "_blank"
 format:
   html:
     theme:
       light: [default, "./dsan-globals/jjquarto.scss"]
       dark: [darkly, "./dsan-globals/jjquarto.scss"]
-    # css: "/dsan-globals/jjstyles.css"
     toc: true
     include-in-header:
       text: "<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js' integrity='sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==' crossorigin='anonymous' referrerpolicy='no-referrer'></script><link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'><script src='/sidebar.js'></script>"

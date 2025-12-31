@@ -7,11 +7,11 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.6.40">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.26">
 
   <meta name="author" content="Jeff Jacobs">
-  <title>DSAN 5300-01 – Week 11: How Do Neural Networks Deep-Learn?</title>
+  <title>DSAN 5300-02 – Week 11: Survival Analysis</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -30,8 +30,9 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -42,7 +43,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -94,27 +95,8 @@
     code span.va { color: #111111; } /* Variable */
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
-    /* CSS for citations */
-    div.csl-bib-body { }
-    div.csl-entry {
-      clear: both;
-    }
-    .hanging-indent div.csl-entry {
-      margin-left:2em;
-      text-indent:-2em;
-    }
-    div.csl-left-margin {
-      min-width:2em;
-      float:left;
-    }
-    div.csl-right-inline {
-      margin-left:2em;
-      padding-left:1em;
-    }
-    div.csl-indent {
-      margin-left: 2em;
-    }  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-8f68bdfe1fab35e4f5fa44ba3024eea8.css">
+  </style>
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-c59f08653608056fecc96b8077358242.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -215,8 +197,8 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Week 11: How Do Neural Networks Deep-Learn?</h1>
-  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2025, Georgetown University</span></p>
+  <h1 class="title">Week 11: Survival Analysis</h1>
+  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2026, Georgetown University</span></p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -229,7 +211,7 @@ Jeff Jacobs
     </div>
 </div>
 
-  <p class="date">Monday, March 31, 2025</p>
+  <p class="date">Monday, March 30, 2026</p>
 </section>
 <section>
 <section id="schedule" class="title-slide slide level1 smaller small-title crunch-title crunch-callout center" data-stack-name="Schedule">
@@ -255,19 +237,19 @@ Jeff Jacobs
 <td style="text-align: left;"><strong>Lecture</strong></td>
 <td style="text-align: left;">6:30pm</td>
 <td style="text-align: left;">7:00pm</td>
-<td style="text-align: left;"><a href="#/learning-decision-boundaries">Single Layer Neural Networks →</a></td>
+<td style="text-align: left;"><a href="#/learning-decision-boundaries">Estimating Survival Curves →</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
 <td style="text-align: left;">7:00pm</td>
 <td style="text-align: left;">7:20pm</td>
-<td style="text-align: left;"><a href="#/max-margin-classifiers">Max-Margin Classifiers →</a></td>
+<td style="text-align: left;"><a href="#/comparing-survival-curves">Comparing Between Groups →</a></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
 <td style="text-align: left;">7:20pm</td>
 <td style="text-align: left;">8:00pm</td>
-<td style="text-align: left;"><a href="#/support-vector-classifiers">Support Vector <em>Classifiers</em> →</a></td>
+<td style="text-align: left;"><a href="#/regression-with-survival-response">Regression (Cox Proportional Hazard Model) →</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Break!</strong></td>
@@ -279,7 +261,7 @@ Jeff Jacobs
 <td style="text-align: left;"></td>
 <td style="text-align: left;">8:10pm</td>
 <td style="text-align: left;">9:00pm</td>
-<td style="text-align: left;"><a href="#/quiz-time">Fancier Neural Networks →</a></td>
+<td style="text-align: left;"><a href="#/quiz-time">Quiz 3 →</a></td>
 </tr>
 </tbody>
 </table>
@@ -287,8 +269,8 @@ Jeff Jacobs
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
-<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
+<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </div>
@@ -319,7 +301,10 @@ Jeff Jacobs
 \newcommand{\outcome}[1]{\textsf{#1}}
 \newcommand{\param}[1]{{\color{purple} #1}}
 \newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
-\newcommand{\prob}[1]{P\left( #1 \right)}
+\newcommand{\pedge}[2]{\require{enclose}\enclose{circle}{~{#1}~} \rightarrow \; \enclose{circle}{\kern.01em {#2}~\kern.01em}}
+\newcommand{\pnode}[1]{\require{enclose}\enclose{circle}{\kern.1em {#1} \kern.1em}}
+\newcommand{\ponode}[1]{\require{enclose}\enclose{box}[background=lightgray]{{#1}}}
+\newcommand{\pnodesp}[1]{\require{enclose}\enclose{circle}{~{#1}~}}
 \newcommand{\purp}[1]{\color{purple}{#1}}
 \newcommand{\sign}{\text{Sign}}
 \newcommand{\spacecap}{\; \cap \;}
@@ -330,252 +315,852 @@ Jeff Jacobs
 \]</span></p>
 </div>
 </section>
-<section id="quick-roadmap" class="slide level2 smaller crunch-title title-12 crunch-ul text-90 crunch-li-first">
-<h2>Quick Roadmap</h2>
+<section id="roadmap" class="slide level2 crunch-title crunch-ul">
+<h2>Roadmap</h2>
 <ul>
-<li><p><strong>Last week:</strong> Examples of how NNs are <strong>capable</strong> of learning…</p></li>
-<li><p>The types of features that let us learn fancy non-linear DGPs: <span class="math inline">\(Y = {\color{#e69f00} X_1 X_2 }\)</span> <span class="text-80">✅</span>, <span class="math inline">\(Y = {\color{#56b4e9} X_1^2 + X_2^2 }\)</span> <span class="text-80">✅</span>, <span class="math inline">\(Y = {\color{#009E73} X_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} X_2}\)</span> <span class="text-80">✅</span></p></li>
-<li><p>Multi-layer networks like CNNs for “pooling” low-level/fine-grained information into high-level/coarse-grained information</p>
+<li><i class="bi bi-1-circle"></i> Basic tool: <strong>survival curve</strong> <span class="math inline">\(S(t)\)</span> = probability of surviving past period <span class="math inline">\(t\)</span></li>
+<li>Complicating factor: <strong>Censored</strong> obs (e.g., drop out of study)</li>
+<li><span class="math inline">\(\Rightarrow\)</span> Need to think about <strong>DGP</strong>: <em>Why</em> is observation <span class="math inline">\(i\)</span> censored while <span class="math inline">\(j\)</span> is observed?
 <ul>
-<li>Ex: Early layers detect <strong>lines</strong>, later layers figure out whether they’re <strong>brows</strong> or <strong>smiles</strong></li>
+<li>Basic estimators only valid if censoring <span class="math inline">\(\perp\)</span> survival time</li>
 </ul></li>
-<li><p><strong>This week:</strong> How do we actually <strong>learn</strong> the weights/biases which <strong>enable these capabilities?</strong></p>
-<ul>
-<li>The answer is (🙈) <strong>calculus</strong> (chain rule)</li>
-</ul></li>
-</ul>
-</section>
-<section id="step-by-step" class="slide level2 crunch-title crunch-ul text-90 crunch-p scrollable">
-<h2>Step-by-Step</h2>
-<div title="Neural Network Training Procedure" style="font-size: 130%;">
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Neural Network Training Procedure</strong></p>
-</div>
-<div class="callout-content">
-<p>For each training observation <span class="math inline">\((\mathbf{x}_i, y_i)\)</span>…</p>
-<p><i class="bi bi-1-circle"></i> Predict <span class="math inline">\(\widehat{y}_i\)</span> from <span class="math inline">\(\mathbf{x}_i\)</span></p>
-<p><i class="bi bi-2-circle"></i> Evaluate loss <span class="math inline">\(\mathcal{L}(\widehat{y}_i, y_i)\)</span>: <strong>Cross-Entropy Loss</strong></p>
-<p><i class="bi bi-3-circle"></i> Update parameters (weights/biases): <strong>Backpropagation</strong></p>
-</div>
-</div>
-</div>
-</div>
-<p>Key for success of NNs: Non-linear <strong>but differentiable</strong></p>
-<ul>
-<li><span class="math inline">\(\Rightarrow\)</span> parameters <span class="math inline">\(w^*\)</span> <strong>most responsible</strong> for the loss value can be
-<ol type="a">
-<li><strong>identified</strong>: <span class="math inline">\(w^* = \argmax_w\left[ \frac{\partial \mathcal{L}}{\partial w} \right]\)</span>, then</li>
-<li><strong>changed the most</strong> <span class="math inline">\(w^*_t \rightarrow w^*_{t+1}\)</span></li>
-</ol></li>
+<li><i class="bi bi-2-circle"></i> How to compare survival <strong>between two groups</strong></li>
+<li><i class="bi bi-3-circle"></i> Regression: Effect of features <span class="math inline">\(X_1, \ldots, X_p\)</span> on survival</li>
 </ul>
 </section></section>
 <section>
-<section id="recall-mnist-digits" class="title-slide slide level1 smaller title-12 center" data-stack-name="Cross-Entropy Loss">
-<h1>Recall: MNIST Digits</h1>
-
-<img data-src="images/nn_multilayer.svg" class="r-stretch quarto-figure-center"><p class="caption">Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4</p></section>
-<section id="how-do-we-evaluate-output" class="slide level2 smaller title-12" data-stack-name="Cross-Entropy Loss">
-<h2>How Do We Evaluate Output?</h2>
-
-<img data-src="images/nn_multilayer_output.svg" class="r-stretch quarto-figure-center"><p class="caption">Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4</p></section>
-<section id="entropy-in-general" class="slide level2">
-<h2>Entropy in General</h2>
-
-<img data-src="images/entropy_general.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
-<section id="entropy-loss-output-layer-uncertainty" class="slide level2 smaller crunch-title title-10 math-80 text-70 crunch-quarto-figure crunch-math crunch-p">
-<h2>“Entropy Loss”: Output Layer Uncertainty</h2>
-<div>
-
-</div>
-<div class="quarto-layout-panel" data-layout="[1,1,1]">
-<div class="quarto-layout-row">
-<div id="maxent-img" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Max entropy = <strong>max</strong> uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/nn_crossent_eq.svg"></p>
-<figcaption>Step 1: NN has no idea, guesses (via softmax) <span class="math inline">\(\widehat{y}_d = \Pr(y = d) = 0.1 \; \forall d\)</span></figcaption>
-</figure>
-</div>
-</div>
-<div id="mident-img" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Less entropy = less uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/nn_crossent_mident.svg"></p>
-<figcaption>Step 2: NN starting to converge: <span class="math inline">\(\Pr(Y = 9)\)</span> high, <span class="math inline">\(\Pr(Y = 3)\)</span> medium, <span class="math inline">\(\Pr(Y = d)\)</span> low for all other <span class="math inline">\(d\)</span></figcaption>
-</figure>
-</div>
-</div>
-<div id="minent-img" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Min entropy = <strong>no</strong> uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/nn_minent.svg"></p>
-<figcaption>Step 3: NN has converged to predicting ultra-high <span class="math inline">\(\widehat{y}_9 = \Pr(y = 9 \mid X)\)</span></figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="the-problem-with-entropy-loss" class="slide level2 smaller crunch-title title-10 math-80 text-70 crunch-p crunch-quarto-figure">
-<h2>The Problem With Entropy Loss</h2>
-<div>
-
-</div>
-<div class="quarto-layout-panel" data-layout="[1,1,1]">
-<div class="quarto-layout-row">
-<div id="maxent-problem" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Max entropy = <strong>max</strong> uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/nn_crossent_eq.svg"></p>
-<figcaption>Step 1: NN has no idea, guesses (via softmax) <span class="math inline">\(\Pr(y = d) = 0.1\)</span> for every <span class="math inline">\(d\)</span></figcaption>
-</figure>
-</div>
-</div>
-<div id="mident-problem" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Less entropy = less uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/nn_crossent_miderr.svg"></p>
-<figcaption>Step 2: NN starting to converge: probably <span class="math inline">\(d = 3\)</span>, maybe <span class="math inline">\(d = 9\)</span>, low probability on all other values</figcaption>
-</figure>
-</div>
-</div>
-<div id="minent-problem" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Min entropy = <strong>no</strong> uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/nn_minent_err.svg"></p>
-<figcaption>Step 3: NN has converged to predicting ultra-high <span class="math inline">\(\Pr(y = 3)\)</span></figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="cross-entropy-loss-output-layer-vs.-truth" class="slide level2 smaller crunch-title title-10 math-80 text-70">
-<h2><em>Cross</em>-Entropy Loss: Output Layer vs.&nbsp;Truth</h2>
-<div>
-
-</div>
-<div class="quarto-layout-panel" data-layout="[1,1,1]">
-<div class="quarto-layout-row">
-<div id="crossent-max" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Max entropy = <strong>max</strong> uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/nn_crossent_eq.svg"></p>
-<figcaption>Step 1: <span class="math inline">\(H(y, \widehat{y}) = -1\cdot \log_2(0.1) \approx 3.32\)</span></figcaption>
-</figure>
-</div>
-</div>
-<div id="crossent-mid" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Less entropy = less uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/nn_crossent_mident.svg"></p>
-<figcaption>Step 2: <span class="math inline">\(H(y,\widehat{y}) = -1\cdot \log_2(0.4) \approx 1.32\)</span></figcaption>
-</figure>
-</div>
-</div>
-<div id="crossent-min" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Min entropy = <strong>no</strong> uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/nn_minent.svg"></p>
-<figcaption>Step 3: <span class="math inline">\(H(y,\widehat{y}) = -1\cdot \log_2(1) = 0\)</span></figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="its-not-as-silly-as-you-think" class="slide level2 smaller title-12 crunch-title crunch-ul crunch-quarto-figure">
-<h2>It’s Not as Silly as You Think!</h2>
+<section id="survival-analysis-basics" class="title-slide slide level1 smaller title-12 center" data-stack-name="Survival Curve Estimation">
+<h1>Survival Analysis Basics</h1>
 <ul>
-<li>In our example, we <strong>know</strong> the <strong>true</strong> digit… But remember the <strong>origin of the dataset</strong>: postal workers trying to figure out handwritten digits</li>
-<li>May not <strong>know</strong> with certainty, but may be able to say, e.g., “It’s either a 1 or a 7”</li>
+<li>Lots of information crunched into this one figure!</li>
 </ul>
 
-<img data-src="images/word-prob-joy.png" class="r-stretch quarto-figure-center"><p class="caption">From <a href="https://github.com/zonination/perceptions"><em>Perceptions of Probability</em> Dataset</a></p></section></section>
-<section>
-<section id="ok-but-how-do-we-learn-the-weights" class="title-slide slide level1 center" data-stack-name="Backpropagation">
-<h1>Ok But How Do We <em>Learn</em> The Weights?</h1>
-<ul>
-<li>…<strong>Backpropagation!</strong></li>
-</ul>
-</section>
-<section id="backpropagation-simple-example" class="slide level2 smaller crunch-title title-11">
-<h2>Backpropagation: Simple Example</h2>
-<ul>
-<li>Literally just <strong>one</strong> neuron (which is the output layer), <span class="math inline">\(\mathcal{L}(\widehat{y},y) = (\widehat{y} - y)^2\)</span></li>
-<li>Consider a training datapoint <span class="math inline">\((x,y) = (2,10)\)</span></li>
-<li>And say our current parameters are <span class="math inline">\(\beta_0 = 1, \beta_1 = 3\)</span></li>
-<li>Predicted output: <span class="math inline">\(\widehat{y} = \beta_0 + \beta_1 x = 1 + 3\cdot 2 = 7\)</span></li>
-<li>Since true output is <span class="math inline">\(y = 10\)</span>, we have loss <span class="math inline">\(\mathcal{L} = (10-7)^2 = 9\)</span></li>
-<li>Now, let’s <strong>backpropagate</strong> to update <span class="math inline">\(\beta_1\)</span> (on the board!)
-<ul>
-<li>(Using learning rate of <span class="math inline">\(0.1\)</span>)</li>
-</ul></li>
-</ul>
-</section>
-<section id="top-secret-answer-slide" class="slide level2">
-<h2>Top Secret Answer Slide</h2>
-<ul>
-<li>Weight <span class="math inline">\(\beta_1\)</span> becomes 4.2…</li>
-<li>New prediction: <span class="math inline">\(\widehat{y} = 1 + 4.2\cdot 2 = 9.4\)</span></li>
-<li>New loss: <span class="math inline">\((10-9.4)^2 = 0.36\)</span> 🥳</li>
-</ul>
-</section>
-<section id="backpropagation-deeper-dive" class="slide level2 smaller">
-<h2>Backpropagation Deeper Dive</h2>
+<img data-src="images/11_1.svg" class="r-stretch quarto-figure-center"><p class="caption">ISLR Figure 11.1</p></section>
+<section id="read-left-to-right-rightarrow-sequence-of-events" class="slide level2 smaller crunch-title title-11">
+<h2>Read Left to Right <span class="math inline">\(\Rightarrow\)</span> Sequence of Events</h2>
 
-<img data-src="images/backprop.jpg" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://youtu.be/tIeHLnjs5U8?si=0CSS66763D5s5UVt">Backpropagation!</a> (3Blue1Brown Again!)</p><p><em>(Full NN playlist <a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi">here</a>)</em></p>
-</section>
-<section id="simplest-possible-backprop" class="slide level2">
-<h2>Simplest Possible Backprop</h2>
-<ul>
-<li>One input unit, one hidden unit, one output unit</li>
-</ul>
-</section>
-<section id="references" class="slide level2 smaller scrollable">
-<h2>References</h2>
-<div id="refs" role="list">
+<img data-src="images/Survival_Plot.png" class="r-stretch quarto-figure-center"><p class="caption">Modified ISLR Figure 11.1</p></section>
+<section id="slice-at-deaths-rightarrow-at-risk-observations" class="slide level2 smaller crunch-title title-11">
+<h2>“Slice” at Deaths <span class="math inline">\(\Rightarrow\)</span> At-Risk Observations</h2>
 
+<img data-src="images/Survival_Plot_Slices.png" class="r-stretch quarto-figure-center"><p class="caption">Modified ISLR Figure 11.1</p></section>
+<section id="the-actual-dataset-we-get" class="slide level2 smaller crunch-title title-11">
+<h2>The Actual Dataset We Get</h2>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Patient (<span class="math inline">\(i\)</span>)</th>
+<th style="text-align: center;">Observed Outcome (<span class="math inline">\(Y_i\)</span>)</th>
+<th style="text-align: center;">Observed? (<span class="math inline">\(\delta_i\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">300</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">365</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">250</td>
+<td style="text-align: center;">0</td>
+</tr>
+</tbody>
+</table>
+
+<img data-src="images/11_1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="the-dataset-we-can-infer" class="slide level2 smaller crunch-title title-11">
+<h2>The Dataset We Can Infer</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 30%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Patient (<span class="math inline">\(i\)</span>)</th>
+<th style="text-align: center;"><span class="math inline">\(Y_i\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\delta_i\)</span></th>
+<th style="text-align: center;">Survival Time (<span class="math inline">\(T_i\)</span>)</th>
+<th style="text-align: center;">Censor Point (<span class="math inline">\(C_i\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">300</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">300</td>
+<td style="text-align: center;"><code>NA</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">365</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;"><code>NA</code></td>
+<td style="text-align: center;">365</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;"><code>NA</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">250</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;"><code>NA</code></td>
+<td style="text-align: center;">250</td>
+</tr>
+</tbody>
+</table>
+<p>…If we’re testing effect of treatment, which column do we most care about?</p>
+
+<img data-src="images/11_1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="measuring-effect-of-treatment" class="slide level2 smaller crunch-title title-11">
+<h2>Measuring Effect of Treatment!</h2>
+<style>
+.tab-surv tr td:nth-child(4), .tab-surv tr th:nth-child(4) {
+    border-left: 2px solid #E69F00 !important;
+    border-right: 2px solid #E69F00 !important;
+    background-color: #E69F0050 !important;
+}
+.tab-surv tr:first-child th:nth-child(4) {
+    border-top: 2px solid #E69F00 !important;
+}
+.tab-surv tr:nth-child(4) td:nth-child(4) {
+    border-bottom: 2px solid #E69F00 !important;
+}
+</style>
+<table class="tab-surv caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 30%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Patient (<span class="math inline">\(i\)</span>)</th>
+<th style="text-align: center;"><span class="math inline">\(Y_i\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\delta_i\)</span></th>
+<th style="text-align: center;">Survival Time (<span class="math inline">\(T_i\)</span>)</th>
+<th style="text-align: center;">Censor Point (<span class="math inline">\(C_i\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">300</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">300</td>
+<td style="text-align: center;"><code>NA</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">365</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;"><code>NA</code></td>
+<td style="text-align: center;">365</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;"><code>NA</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">250</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;"><code>NA</code></td>
+<td style="text-align: center;">250</td>
+</tr>
+</tbody>
+</table>
+<p>…If we’re testing effect of treatment, <span class="cb1a-bg" style="border: 2px solid #E69F00; padding: 5px !important;"><span class="math inline">\(T_i\)</span> is what we care about!</span></p>
+
+<img data-src="images/11_1.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="basic-question-1-survival" class="slide level2 crunch-title math-90 inline-90">
+<h2>Basic Question 1: Survival</h2>
+<ul>
+<li>Let <span class="math inline">\(T\)</span> be a RV representing time of death for a patient</li>
+<li>What is probability that patient <strong>survives</strong> past given time <span class="math inline">\(t\)</span>?</li>
+</ul>
+<p><span class="math display">\[
+S_T(t) = \Pr(T &gt; t)
+\]</span></p>
+<ul>
+<li>Note relationship to something you saw in 5100!</li>
+<li><span class="math inline">\(S_T(t)\)</span> defined to be <span class="math inline">\(1 - F_T(t)\)</span>, where <span class="math inline">\(F_T(t)\)</span> is <strong>CDF</strong> of <span class="math inline">\(T\)</span>:</li>
+</ul>
+<p><span class="math display">\[
+F_T(t) = \Pr(T \leq t)
+\]</span></p>
+</section>
+<section id="kaplan-meier-estimator-intuition" class="slide level2 smaller crunch-title title-10 crunch-math crunch-ul crunch-quarto-figure crunch-img math-90 inline-90 crunch-li-5">
+<h2>Kaplan-Meier Estimator: Intuition</h2>
+<p>Each death event <span class="math inline">\(d_k\)</span> gives us <strong>info</strong> that survival probability lower by some amount</p>
+<p><i class="bi bi-1-circle"></i> Break <span class="math inline">\(S(t)\)</span> into <strong>sequence of stepwise changes</strong> at <span class="math inline">\(d_1, \ldots, d_K\)</span>:</p>
+<p><span class="math display">\[
+\begin{align*}
+S(d_k) = \Pr(T &gt; d_k) &amp;\overset{\mathclap{\small\text{LTP}}}{=} \Pr(T &gt; d_k \mid T &gt; d_{k-1})\overbrace{\Pr(T &gt; d_{k-1})}^{S(d_{k-1})} \\
+&amp;\phantom{=} \; \; + \underbrace{\Pr(T &gt; d_k \mid T \leq d_{k-1})}_{\text{Contradiction} \implies \Pr = 0}\Pr(T \leq d_{k-1})
+\end{align*}
+\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><i class="bi bi-2-circle"></i> Gives us a <em>recurrence relation</em>:</p>
+<p><span class="math display">\[
+\begin{align*}
+S(d_k) &amp;= \Pr(T &gt; d_k \mid T &gt; d_{k-1})S(d_{k-1}) \\
+S(d_{k-1}) &amp;= \Pr(T &gt; d_{k-1} \mid T &gt; d_{k-2})S(d_{k-2}) \\
+%S(d_{k-2}) &amp;= \Pr(T &gt; d_{k-2} \mid T &gt; d_{k-3})S(d_{k-3}) \\
+&amp;\vdots \\
+S(d_2) &amp;= \Pr(T &gt; d_2 \mid T &gt; d_1)S(d_1) \\
+S(d_1) &amp;= \Pr(T &gt; d_1 \mid T &gt; d_0)S(d_0) = \Pr(T &gt; d_1)
+\end{align*}
+\]</span></p>
+</div><div class="column" style="width:50%;">
+<p><i class="bi bi-3-circle"></i> Plug each eq into eq above it to derive:</p>
+<p><span class="math display">\[
+\begin{align*}
+S(d_k) = &amp;\Pr(\underbrace{T &gt; d_k}_{\mathclap{\small\text{Survives past }d_k}} \; \mid \; \underbrace{T &gt; d_{k-1}}_{\mathclap{\small\text{Survives past }d_{k-1}}}) \\
+&amp;\times \Pr(\underbrace{T &gt; d_{k-1}}_{\small\text{Survives past }d_{k-1}} \mid \underbrace{T &gt; d_{k-2}}_{\small\text{Survives past }d_{k-2}}) \\
+&amp;\times \cdots \times \Pr(\underbrace{T &gt; d_2}_{\mathclap{\small\text{Survives past }d_2}} \; \mid \; \underbrace{T &gt; d_1}_{\mathclap{\small\text{Survives past }d_1}}) \\
+&amp;\times \Pr(\underbrace{T &gt; d_1}_{\mathclap{\small\text{Survives past }d_1}})
+\end{align*}
+\]</span></p>
+</div></div>
+</section>
+<section id="kaplan-meier-estimator" class="slide level2 smaller crunch-title title-11 crunch-math crunch-ul crunch-quarto-figure crunch-img">
+<h2>Kaplan-Meier Estimator</h2>
+<ul>
+<li>Defined <strong>at</strong> death points <span class="math inline">\(d_k\)</span> as</li>
+</ul>
+<p><span class="math display">\[
+\widehat{S}(d_k) = \prod_{j=1}^{k} \Bigl(
+    \overbrace{
+        \frac{
+            r_j - q_j
+        }{
+            \underbrace{r_j}_{\mathclap{\small\text{Num At Risk}}}
+        }
+    }^{\mathclap{\small\text{Num Survived}}}
+\Bigr)
+\]</span></p>
+<ul>
+<li>Then, for <span class="math inline">\(t \in (d_k, d_{k+1})\)</span>, <span class="math inline">\(\widehat{S}(t) = \widehat{S}(d_k)\)</span>, producing <strong>stepwise</strong> survival function:</li>
+</ul>
+
+<img data-src="images/11_2.svg" class="r-stretch quarto-figure-center"><p class="caption">ISLR Figure 11.2</p></section>
+<section id="kaplan-meier-estimator-for-our-example" class="slide level2 smaller crunch-title title-11 crunch-quarto-figure crunch-details math-80 inline-80">
+<h2>Kaplan-Meier Estimator for our Example</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<p>Two death points: <span class="math inline">\(d_1 = 150, d_2 = 300\)</span> (plus start point <span class="math inline">\(d_0 = 0\)</span>)</p>
+<p><span class="math display">\[
+\begin{align*}
+{\color{#e69f00}\widehat{S}(d_0)} &amp;= \prod_{j=0}^{0}\left( \frac{r_k - q_k}{r_k} \right) = \left( \frac{4 - 0}{4} \right) = {\color{#e69f00}\boxed{1}} \\
+{\color{#56b4e9}\widehat{S}(d_1)} &amp;= \prod_{j=0}^{1}\left( \frac{r_k - q_k}{r_k} \right) = {\color{#e69f00}\boxed{1}} \cdot \left( \frac{r_1-q_1}{r_1} \right) \\
+&amp;= {\color{#e69f00}\boxed{1}} \cdot \left( \frac{4 - 1}{4} \right) = {\color{#56B4E9}\boxed{\frac{3}{4}}} \\
+{\color{#009e73}\widehat{S}(d_2)} &amp;= \prod_{j=0}^{2}\left( \frac{r_k - q_k}{r_k} \right) = {\color{#e69f00}\boxed{1}} \cdot {\color{#56b4e9}\boxed{\frac{3}{4}}} \cdot \left( \frac{r_2 - q_2}{r_2} \right) \\
+&amp;= {\color{#e69f00}\boxed{1}} \cdot {\color{#56b4e9}\boxed{\frac{3}{4}}} \cdot \left( \frac{2-1}{2} \right) = \frac{3}{4}\cdot \frac{1}{2} = {\color{#009e73}\boxed{\frac{3}{8}}}
+\end{align*}
+\]</span></p>
+</div><div class="column" style="width:60%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-2"><a></a><span class="fu">library</span>(survival) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-3"><a></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-4"><a></a>surv_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-5"><a></a>  <span class="sc">~</span>id, <span class="sc">~</span>y, <span class="sc">~</span>delta,</span>
+<span id="cb2-6"><a></a>  <span class="dv">1</span>, <span class="dv">300</span>, <span class="dv">1</span>,</span>
+<span id="cb2-7"><a></a>  <span class="dv">2</span>, <span class="dv">365</span>, <span class="dv">0</span>,</span>
+<span id="cb2-8"><a></a>  <span class="dv">3</span>, <span class="dv">150</span>, <span class="dv">1</span>,</span>
+<span id="cb2-9"><a></a>  <span class="dv">4</span>, <span class="dv">250</span>, <span class="dv">0</span></span>
+<span id="cb2-10"><a></a>)</span>
+<span id="cb2-11"><a></a>surv_obj <span class="ot">&lt;-</span> <span class="fu">Surv</span>(surv_df<span class="sc">$</span>y, <span class="at">event =</span> surv_df<span class="sc">$</span>delta)</span>
+<span id="cb2-12"><a></a>surv_model <span class="ot">&lt;-</span> <span class="fu">survfit</span>(surv_obj <span class="sc">~</span> <span class="dv">1</span>)</span>
+<span id="cb2-13"><a></a><span class="co"># Plot options</span></span>
+<span id="cb2-14"><a></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="fl">1.25</span>,<span class="fl">1.0</span>)) <span class="co"># bltr</span></span>
+<span id="cb2-15"><a></a>y_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">Pr(T &gt; t)$"</span>)</span>
+<span id="cb2-16"><a></a><span class="fu">plot</span>(</span>
+<span id="cb2-17"><a></a>  surv_model,</span>
+<span id="cb2-18"><a></a>  <span class="at">ylab=</span>y_label,</span>
+<span id="cb2-19"><a></a>  <span class="at">lwd=</span><span class="dv">1</span>,</span>
+<span id="cb2-20"><a></a>  <span class="at">main=</span><span class="st">"Survival Curve for 4-Patient Example"</span></span>
+<span id="cb2-21"><a></a>) <span class="co"># conf.int=FALSE</span></span>
+<span id="cb2-22"><a></a><span class="co"># Add colors</span></span>
+<span id="cb2-23"><a></a><span class="co"># lines(c(0, 150), c(1.0, 1.0), type='l', col='#E69F00', lwd=2)</span></span>
+<span id="cb2-24"><a></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">0</span>, <span class="at">xright =</span> <span class="dv">150</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#E69F0040"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span>
+<span id="cb2-25"><a></a><span class="co"># lines(c(150, 300), c(3/4, 3/4), type='l', col='#56B4E9', lwd=2)</span></span>
+<span id="cb2-26"><a></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">150</span>, <span class="at">xright =</span> <span class="dv">300</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#56B4E940"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span>
+<span id="cb2-27"><a></a><span class="co"># lines(c(300, 365), c(3/8, 3/8), type='l', col='#009E73', lwd=2)</span></span>
+<span id="cb2-28"><a></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">300</span>, <span class="at">xright =</span> <span class="dv">365</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#009E7340"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/kme-example-1.png" class="quarto-figure quarto-figure-center" width="528"></p>
+</figure>
 </div>
-
-
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/Survival_Plot_Slices.png" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
+</figure>
+</div>
+</div></div>
 </section></section>
+<section>
+<section id="comparing-survival-curves" class="title-slide slide level1 smaller crunch-title title-12 crunch-ul center" data-stack-name="Comparing Groups">
+<h1>Comparing Survival Curves</h1>
+<ul>
+<li>Are female patients more likely to survive than male patients?</li>
+</ul>
+
+<img data-src="images/11_3.svg" class="r-stretch quarto-figure-center"><p class="caption">ISLR Figure 11.3</p></section>
+<section id="log-rank-test" class="slide level2 crunch-title title-09 crunch-ul crunch-li-8 math-90 inline-90 crunch-math text-90">
+<h2>Log-Rank Test</h2>
+<ul>
+<li>At each death event <span class="math inline">\(d_k\)</span>, construct a table like:</li>
+</ul>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">Group 1</th>
+<th style="text-align: center;">Group 2</th>
+<th style="text-align: center;">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Died</strong></td>
+<td style="text-align: center;"><span class="math inline">\(q_{1k}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(q_{2k}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(q_k\)</span></td>
+</tr>
+<tr class="even">
+<td><strong>Survived</strong></td>
+<td style="text-align: center;"><span class="math inline">\(r_{1k} - q_{1k}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(r_{2k} - q_{2k}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(r_k - q_k\)</span></td>
+</tr>
+<tr class="odd">
+<td><strong>Total</strong></td>
+<td style="text-align: center;"><span class="math inline">\(r_{1k}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(r_{2k}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(r_k\)</span></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Focus on <span class="math inline">\(q_{1k}\)</span>! <strong>Null hypothesis</strong>: across all <span class="math inline">\(k \in \{1, \ldots, K\}\)</span>, <span class="math inline">\(q_{1k}\)</span> not systematically lower or higher than RHS:</li>
+</ul>
+<p><span class="math display">\[
+\mathbb{E}[ \underbrace{q_{1k}}_{\mathclap{\small\substack{\text{Group 1 deaths} \\ \text{at }d_k}}} ] =
+\overbrace{r_{1k}}^{\mathclap{\small\substack{\text{At risk in} \\[0.2em] \text{Group 1}}}} \cdot \underbrace{\left( \frac{q_k}{r_k} \right)}_{\mathclap{\small\text{Overall death rate at }d_k}}
+\]</span></p>
+</section>
+<section id="log-rank-test-statistic" class="slide level2 crunch-title title-09 math-75 crunch-ul crunch-li-8 inline-90">
+<h2>Log-Rank Test Statistic</h2>
+<ul>
+<li>Test statistic <span class="math inline">\(W\)</span> should “detect” the alternative hypothesis, on basis of information <span class="math inline">\(X\)</span>… We can use <span class="math inline">\(\boxed{\textstyle X = \sum_{k=1}^{K}q_{1k}}\)</span>!</li>
+<li>Here, <strong>log-rank test statistic</strong> <span class="math inline">\(W\)</span> detects how much <span class="math inline">\(q_{1k}\)</span> <strong>deviates from expected value</strong> from prev slide:</li>
+</ul>
+<p><span class="math display">\[
+\begin{align*}
+W &amp;= \frac{X - \mathbb{E}[X]}{\sqrt{\text{Var}[X]}} = \frac{
+  \sum_{k=1}^{K}q_{1k} - \mathbb{E}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]
+}{
+  \sqrt{\text{Var}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]}
+} = \frac{
+  \sum_{k=1}^{K} \left( q_{1k} - \mathbb{E}[q_{1k}] \right)
+}{
+  \sqrt{\text{Var}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]}
+} \\
+&amp;= \frac{
+  \sum_{k=1}^{K}\left( q_{1k} - r_{1k}\cdot \frac{q_k}{r_k} \right)
+}{
+  \sqrt{\text{Var}\mkern-3mu\left[ \sum_{k=1}^{K}q_{1k} \right]}
+} \underset{\small\text{Ex 11.7}}{\overset{\small\text{ISLR}}{=}}
+\frac{
+  \sum_{k=1}^{K}\left( q_{1k} - r_{1k}\cdot \frac{q_k}{r_k} \right)
+}{
+  \sqrt{\sum_{k=1}^{K} \frac{
+    q_k(r_{1k}/r_k)(1 - r_{1k}/r_k)(r_k - q_k)
+  }{
+    r_k - 1
+  }}
+}
+\end{align*}
+\]</span></p>
+</section></section>
+<section>
+<section id="regression-with-survival-response" class="title-slide slide level1 center" data-stack-name="Regression">
+<h1>Regression with Survival Response</h1>
+
+</section>
+<section id="the-hazard-function" class="slide level2 crunch-title crunch-ul crunch-math math-90 inline-90 title-09 crunch-li-8">
+<h2>The Hazard Function</h2>
+<ul>
+<li>Death rate at tiny <strong>instant after <span class="math inline">\(t\)</span></strong> (between <span class="math inline">\(t\)</span> and <span class="math inline">\(t + \Delta t\)</span>), <strong>given</strong> survival past <span class="math inline">\(t\)</span>:</li>
+</ul>
+<p><span class="math display">\[
+h(t) \definedas \lim_{\Delta t \rightarrow 0}\frac{\Pr(t &lt; T \leq t + \Delta t)}{\Delta t}
+\]</span></p>
+<ul>
+<li>If we define a RV <span class="math inline">\(T_{&gt;t} \definedas [T \mid T &gt; t]\)</span>, <span class="math inline">\(h(t)\)</span> is the <strong>pdf</strong> of <span class="math inline">\(T_{&gt;t}\)</span>!</li>
+<li>Can relate <span class="math inline">\(h(t)\)</span> to quantities we know (e.g., from 5100):</li>
+</ul>
+<p><span class="math display">\[
+\underbrace{h(t)}_{\small\text{pdf of }T_{&gt;t}} = \frac{\overbrace{f(t)}^{\small\text{pdf of }T}}{\underbrace{S(t)}_{\small \Pr(T &gt; t)}}
+\]</span></p>
+</section>
+<section id="proportional-hazard-assumption" class="slide level2 crunch-title crunch-math caption-smaller text-90 math-80 crunch-p crunch-quarto-figure cols-va">
+<h2>Proportional Hazard Assumption</h2>
+<p><span class="math display">\[
+h(t \mid x_i) = h_0(t)\exp\left[ \sum_{j=1}^{p}\beta_j x_{ij} \right] \iff \underbrace{\log[h(t \mid x_i)]}_{\hbar(t \mid x_i)} = \underbrace{\log[h_0(t)]}_{\hbar_0(t)} + \sum_{j=1}^{p}\beta_j x_{ij}
+\]</span></p>
+<p>Basically: Features <span class="math inline">\(X_{j}\)</span> <strong>shift</strong> [log] baseline hazard function <span class="math inline">\(\hbar_0(t)\)</span> up and down by constant amounts, via multiplication by <span class="math inline">\(e^{\beta_j}\)</span></p>
+<div class="columns">
+<div class="column" style="width:45%;">
+<div id="prop-hazard-text" style="font-size: 80% !important;">
+<ul>
+<li><strong>Top row:</strong> <span class="math inline">\(\hbar_0(t)\)</span> in <strong>black</strong>, <span class="math inline">\(X_j = 1\)</span> shifts it down via multiplication by <span class="math inline">\(e^{\beta_j}\)</span> to form <span class="math inline">\(\hbar(t \mid X_j)\)</span> in <span class="cb3">green</span></li>
+<li><strong>Bottom row:</strong> Proportional hazard <em>violated</em>, since <span class="math inline">\(X_j = 1\)</span> associated with <strong>different</strong> changes to <span class="math inline">\(\hbar_0(t)\)</span> at <strong>different</strong> <span class="math inline">\(t\)</span> values</li>
+</ul>
+</div>
+</div><div class="column" style="width:55%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/11_4.svg" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="cox-proportional-hazard-model" class="slide level2 crunch-title crunch-math math-80">
+<h2>Cox Proportional Hazard Model</h2>
+<ul>
+<li>Intuition: Best <span class="math inline">\(\beta\)</span>s are those which best predict <span class="math inline">\(i\)</span>’s death among all at risk at same time. Called “Partial Likelihood” <span class="math inline">\(\text{PL}(\boldsymbol\beta)\)</span> since we don’t need to estimate <span class="math inline">\(h_0(t)\)</span>!</li>
+</ul>
+<p><span class="math display">\[
+\prod_{i : \, \delta_i = 1} \; \frac{
+  {\color{red}\cancel{\color{black}h_0(t)}}\exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{ij} \right]
+}{
+  {\displaystyle \sum\limits_{\mathclap{i': \, y_{i'} \geq y_i}}} {\color{red}\cancel{\color{black}h_0(t)}}\exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{i'j} \right]
+} = \prod_{i : \, \delta_i = 1} \; \frac{
+  \exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{ij} \right]
+}{
+  {\displaystyle \sum\limits_{\mathclap{i': \, y_{i'} \geq y_i}}} \exp\mkern-3mu\left[ \sum_{j=1}^{p} \beta_j x_{i'j} \right]
+}
+\]</span></p>
+<ul>
+<li>Also note the missing intercept <span class="math inline">\(\beta_0\)</span>: handled by the baseline hazard function <span class="math inline">\(h_0(t)\)</span> (which we cancel out anyways!)</li>
+</ul>
+</section>
+<section id="in-code" class="slide level2 smaller crunch-title crunch-ul">
+<h2>In Code</h2>
+<ul>
+<li>We’ll use the <code>survival</code> library in R, very similar syntax to <code>lm()</code>, <code>glm()</code>, etc.!</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(survival) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb3-2"><a></a><span class="fu">library</span>(ISLR2) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb3-3"><a></a>bc_df <span class="ot">&lt;-</span> BrainCancer <span class="sc">|&gt;</span> <span class="fu">filter</span>(diagnosis <span class="sc">!=</span> <span class="st">"Other"</span>)</span>
+<span id="cb3-4"><a></a>bc_df<span class="sc">$</span>diagnosis <span class="ot">=</span> <span class="fu">factor</span>(bc_df<span class="sc">$</span>diagnosis)</span>
+<span id="cb3-5"><a></a>bc_df<span class="sc">$</span>sex <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">substr</span>(bc_df<span class="sc">$</span>sex, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb3-6"><a></a>bc_df<span class="sc">$</span>loc <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">substr</span>(bc_df<span class="sc">$</span>loc, <span class="dv">1</span>, <span class="dv">5</span>))</span>
+<span id="cb3-7"><a></a><span class="fu">options</span>(<span class="at">width=</span><span class="dv">130</span>)</span>
+<span id="cb3-8"><a></a><span class="fu">summary</span>(bc_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> sex         diagnosis     loc           ki              gtv         stereo       status           time      
+ F:39   Meningioma:42   Infra:10   Min.   : 40.00   Min.   : 0.040   SRS:19   Min.   :0.000   Min.   : 0.07  
+ M:34   LG glioma : 9   Supra:63   1st Qu.: 80.00   1st Qu.: 2.500   SRT:54   1st Qu.:0.000   1st Qu.: 9.77  
+        HG glioma :22              Median : 80.00   Median : 6.480            Median :0.000   Median :26.46  
+                                   Mean   : 81.37   Mean   : 8.297            Mean   :0.411   Mean   :27.83  
+                                   3rd Qu.: 90.00   3rd Qu.:11.380            3rd Qu.:1.000   3rd Qu.:41.44  
+                                   Max.   :100.00   Max.   :33.690            Max.   :1.000   Max.   :82.56  </code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>bc_df <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">sex</th>
+<th style="text-align: left;">diagnosis</th>
+<th style="text-align: left;">loc</th>
+<th style="text-align: right;">ki</th>
+<th style="text-align: right;">gtv</th>
+<th style="text-align: left;">stereo</th>
+<th style="text-align: right;">status</th>
+<th style="text-align: right;">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">F</td>
+<td style="text-align: left;">Meningioma</td>
+<td style="text-align: left;">Infra</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">6.11</td>
+<td style="text-align: left;">SRS</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">57.64</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">M</td>
+<td style="text-align: left;">HG glioma</td>
+<td style="text-align: left;">Supra</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">19.35</td>
+<td style="text-align: left;">SRT</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">8.98</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">F</td>
+<td style="text-align: left;">Meningioma</td>
+<td style="text-align: left;">Infra</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">7.95</td>
+<td style="text-align: left;">SRS</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">26.46</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">F</td>
+<td style="text-align: left;">LG glioma</td>
+<td style="text-align: left;">Supra</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">7.61</td>
+<td style="text-align: left;">SRT</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">47.80</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">M</td>
+<td style="text-align: left;">HG glioma</td>
+<td style="text-align: left;">Supra</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">5.06</td>
+<td style="text-align: left;">SRT</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6.30</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="coxph-estimation" class="slide level2 smaller crunch-title title-12 crunch-details table-90">
+<h2><code>coxph()</code> Estimation</h2>
+<style>
+.cox-table tr:nth-child(3) {
+  background-color: #e69f0040;
+  font-weight: bold;
+}
+.cox-table tr:nth-child(5) {
+  background-color: #56b4e940;
+  font-weight: bold;
+}
+</style>
+<div class="cell cox-table" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="fu">library</span>(broom) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb6-2"><a></a>full_cox_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(</span>
+<span id="cb6-3"><a></a>  <span class="fu">Surv</span>(time, status) <span class="sc">~</span> sex <span class="sc">+</span> diagnosis <span class="sc">+</span> loc <span class="sc">+</span> ki <span class="sc">+</span> gtv <span class="sc">+</span> stereo,</span>
+<span id="cb6-4"><a></a>  <span class="at">data=</span>bc_df</span>
+<span id="cb6-5"><a></a>)</span>
+<span id="cb6-6"><a></a>broom<span class="sc">::</span><span class="fu">tidy</span>(full_cox_model) <span class="sc">|&gt;</span> <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">sexM</td>
+<td style="text-align: right;">0.456</td>
+<td style="text-align: right;">0.396</td>
+<td style="text-align: right;">1.154</td>
+<td style="text-align: right;">0.249</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">diagnosisLG glioma</td>
+<td style="text-align: right;">0.864</td>
+<td style="text-align: right;">0.641</td>
+<td style="text-align: right;">1.347</td>
+<td style="text-align: right;">0.178</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">diagnosisHG glioma</td>
+<td style="text-align: right;">2.116</td>
+<td style="text-align: right;">0.470</td>
+<td style="text-align: right;">4.504</td>
+<td style="text-align: right;">0.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">locSupra</td>
+<td style="text-align: right;">1.482</td>
+<td style="text-align: right;">1.105</td>
+<td style="text-align: right;">1.342</td>
+<td style="text-align: right;">0.180</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ki</td>
+<td style="text-align: right;">-0.048</td>
+<td style="text-align: right;">0.020</td>
+<td style="text-align: right;">-2.406</td>
+<td style="text-align: right;">0.016</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">gtv</td>
+<td style="text-align: right;">0.036</td>
+<td style="text-align: right;">0.026</td>
+<td style="text-align: right;">1.361</td>
+<td style="text-align: right;">0.173</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">stereoSRT</td>
+<td style="text-align: right;">-0.475</td>
+<td style="text-align: right;">0.591</td>
+<td style="text-align: right;">-0.803</td>
+<td style="text-align: right;">0.422</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<ul>
+<li><span class="cb1a-bg"><strong>Diagnosis:</strong></span> Relative to <strong>baseline</strong> of Meningioma, HG (High-Grade) glioma associated with <span class="math inline">\(e^{2.155} \approx 8.628\)</span> times greater hazard</li>
+<li><span class="cb2a-bg"><strong>Karnofsky Index (<code>ki</code>):</strong></span> 1-unit increase associated with reduction of hazard to <span class="math inline">\(e^{-0.055} \approx 94.65\)</span>% of previous value [0-100 scale of self-functioning abilities]</li>
+</ul>
+</section>
+<section id="survival-curves-for-each-diagnosis" class="slide level2">
+<h2>Survival Curves for Each Diagnosis</h2>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">library</span>(extrafont) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb7-2"><a></a><span class="fu">par</span>(<span class="at">cex=</span><span class="fl">1.2</span>, <span class="at">family=</span><span class="st">"CMU Sans Serif"</span>)</span>
+<span id="cb7-3"><a></a>diag_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Meningioma"</span>, <span class="st">"LG glioma"</span>, <span class="st">"HG glioma"</span>)</span>
+<span id="cb7-4"><a></a>diag_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb7-5"><a></a>  <span class="at">diagnosis =</span> diag_levels,</span>
+<span id="cb7-6"><a></a>  <span class="at">sex =</span> <span class="fu">rep</span>(<span class="st">"F"</span>, <span class="dv">3</span>),</span>
+<span id="cb7-7"><a></a>  <span class="at">loc =</span> <span class="fu">rep</span>(<span class="st">"Supra"</span>, <span class="dv">3</span>),</span>
+<span id="cb7-8"><a></a>  <span class="at">ki =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>ki), <span class="dv">3</span>),</span>
+<span id="cb7-9"><a></a>  <span class="at">gtv =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>gtv), <span class="dv">3</span>),</span>
+<span id="cb7-10"><a></a>  <span class="at">stereo =</span> <span class="fu">rep</span>(<span class="st">"SRT"</span>, <span class="dv">3</span>)</span>
+<span id="cb7-11"><a></a>)</span>
+<span id="cb7-12"><a></a>survplots <span class="ot">&lt;-</span> <span class="fu">survfit</span>(full_cox_model, <span class="at">newdata =</span> diag_df)</span>
+<span id="cb7-13"><a></a><span class="fu">plot</span>(</span>
+<span id="cb7-14"><a></a>  survplots,</span>
+<span id="cb7-15"><a></a>  <span class="at">main =</span> <span class="st">"Survival Curves by Diagnosis"</span>,</span>
+<span id="cb7-16"><a></a>  <span class="at">xlab =</span> <span class="st">"Months"</span>, <span class="at">ylab =</span> <span class="st">"Survival Probability"</span>,</span>
+<span id="cb7-17"><a></a>  <span class="at">col =</span> cb_palette, <span class="at">lwd=</span><span class="fl">1.5</span></span>
+<span id="cb7-18"><a></a>)</span>
+<span id="cb7-19"><a></a><span class="fu">legend</span>(</span>
+<span id="cb7-20"><a></a>  <span class="st">"bottomleft"</span>,</span>
+<span id="cb7-21"><a></a>  diag_levels,</span>
+<span id="cb7-22"><a></a>  <span class="at">col =</span> cb_palette, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd=</span><span class="fl">1.5</span></span>
+<span id="cb7-23"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+
+</div>
+<img data-src="index_files/figure-revealjs/diag-survival-curves-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="less-straightforward-curves-for-each-ki-gtv-val" class="slide level2 smaller crunch-title title-10 crunch-quarto-figure crunch-img crunch-ul">
+<h2>Less Straightforward: Curves for Each <code>ki</code>, <code>gtv</code> Val</h2>
+<ul>
+<li>Technically a different survival curve for each value of <code>ki</code> <span class="math inline">\(\in [0, 100]\)</span>, <code>gtv</code> <span class="math inline">\(\in (0, \infty)\)</span></li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a>bc_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>ki)) <span class="sc">+</span></span>
+<span id="cb8-2"><a></a>  <span class="fu">geom_density</span>(</span>
+<span id="cb8-3"><a></a>    <span class="at">linewidth=</span>g_linewidth,</span>
+<span id="cb8-4"><a></a>    <span class="at">fill=</span>cb_palette[<span class="dv">1</span>], <span class="at">alpha=</span><span class="fl">0.333</span></span>
+<span id="cb8-5"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb8-6"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb8-7"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Karnofsky Index Distribution"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/ki-hist-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>bc_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>gtv)) <span class="sc">+</span></span>
+<span id="cb9-2"><a></a>  <span class="fu">geom_density</span>(</span>
+<span id="cb9-3"><a></a>    <span class="at">linewidth=</span>g_linewidth,</span>
+<span id="cb9-4"><a></a>    <span class="at">fill=</span>cb_palette[<span class="dv">1</span>], <span class="at">alpha=</span><span class="fl">0.333</span></span>
+<span id="cb9-5"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb9-6"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb9-7"><a></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Gross Tumor Volume (GTV) Distribution"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/gtv-hist-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<ul>
+<li>One approach: <strong>bin</strong> into (low, medium, high) via terciles, one curve per bin median:</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:40%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a>ki_terciles <span class="ot">&lt;-</span> <span class="fu">quantile</span>(bc_df<span class="sc">$</span>ki, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>))</span>
+<span id="cb10-2"><a></a>bc_df <span class="ot">&lt;-</span> bc_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb10-3"><a></a>  <span class="at">tercile =</span> <span class="fu">ifelse</span>(ki <span class="sc">&lt;</span> ki_terciles[<span class="dv">1</span>], <span class="dv">1</span>, <span class="fu">ifelse</span>(ki <span class="sc">&lt;</span> ki_terciles[<span class="dv">2</span>], <span class="dv">2</span>, <span class="dv">3</span>))</span>
+<span id="cb10-4"><a></a>)</span>
+<span id="cb10-5"><a></a>(terc_df <span class="ot">&lt;-</span> bc_df <span class="sc">|&gt;</span></span>
+<span id="cb10-6"><a></a>  <span class="fu">group_by</span>(tercile) <span class="sc">|&gt;</span></span>
+<span id="cb10-7"><a></a>  <span class="fu">summarize</span>(<span class="at">med_ki=</span><span class="fu">median</span>(ki)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: right;">tercile</th>
+<th style="text-align: right;">med_ki</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">70</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">80</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">90</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:60%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb11-2"><a></a>ki_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb11-3"><a></a>  <span class="at">diagnosis =</span> <span class="fu">rep</span>(<span class="st">"Meningioma"</span>, <span class="dv">3</span>),</span>
+<span id="cb11-4"><a></a>  <span class="at">sex =</span> <span class="fu">rep</span>(<span class="st">"F"</span>, <span class="dv">3</span>),</span>
+<span id="cb11-5"><a></a>  <span class="at">loc =</span> <span class="fu">rep</span>(<span class="st">"Supra"</span>, <span class="dv">3</span>),</span>
+<span id="cb11-6"><a></a>  <span class="at">ki =</span> terc_df<span class="sc">$</span>med_ki,</span>
+<span id="cb11-7"><a></a>  <span class="at">gtv =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>gtv), <span class="dv">3</span>),</span>
+<span id="cb11-8"><a></a>  <span class="at">stereo =</span> <span class="fu">rep</span>(<span class="st">"SRT"</span>, <span class="dv">3</span>)</span>
+<span id="cb11-9"><a></a>)</span>
+<span id="cb11-10"><a></a>ki_plots <span class="ot">&lt;-</span> <span class="fu">survfit</span>(full_cox_model, <span class="at">newdata =</span> ki_df)</span>
+<span id="cb11-11"><a></a><span class="fu">par</span>(</span>
+<span id="cb11-12"><a></a>  <span class="at">mar=</span><span class="fu">c</span>(<span class="fl">4.0</span>,<span class="fl">4.0</span>,<span class="fl">1.2</span>,<span class="fl">0.5</span>),</span>
+<span id="cb11-13"><a></a>  <span class="at">cex=</span><span class="fl">1.2</span>,</span>
+<span id="cb11-14"><a></a>  <span class="at">family=</span><span class="st">"CMU Sans Serif"</span></span>
+<span id="cb11-15"><a></a>) <span class="co"># bltr</span></span>
+<span id="cb11-16"><a></a><span class="fu">plot</span>(</span>
+<span id="cb11-17"><a></a>  ki_plots,</span>
+<span id="cb11-18"><a></a>  <span class="at">main =</span> <span class="st">"Survival Curves by KI Tercile"</span>,</span>
+<span id="cb11-19"><a></a>  <span class="at">xlab =</span> <span class="st">"Months"</span>,</span>
+<span id="cb11-20"><a></a>  <span class="at">ylab =</span> <span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">Pr(T &gt; t)$"</span>),</span>
+<span id="cb11-21"><a></a>  <span class="at">lwd =</span> <span class="dv">1</span>,</span>
+<span id="cb11-22"><a></a>  <span class="at">col =</span> cb_palette</span>
+<span id="cb11-23"><a></a>)</span>
+<span id="cb11-24"><a></a>ki_labs <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb11-25"><a></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 70 )$"</span>),</span>
+<span id="cb11-26"><a></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 80 )$"</span>),</span>
+<span id="cb11-27"><a></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 90 )$"</span>)</span>
+<span id="cb11-28"><a></a>)</span>
+<span id="cb11-29"><a></a><span class="fu">legend</span>(</span>
+<span id="cb11-30"><a></a>  <span class="st">"bottomleft"</span>,</span>
+<span id="cb11-31"><a></a>  ki_labs, <span class="at">lwd=</span><span class="dv">1</span>,</span>
+<span id="cb11-32"><a></a>  <span class="at">col =</span> cb_palette, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">cex=</span><span class="fl">0.8</span></span>
+<span id="cb11-33"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/ki-terciles-plot-1.png" class="quarto-figure quarto-figure-center" width="528"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section></section>
+<section id="quiz-3" class="title-slide slide level1 center" data-name="Quiz">
+<h1>Quiz 3</h1>
+<ul>
+<li>Last one! You got this, حَبَائب!</li>
+</ul>
+
+
+</section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
-<p>DSAN 5300-01 Week 11: Training Neural Networks</p>
+<p>DSAN 5300 Week 11: Survival Analysis</p>
 </div>
 </div></div>
 
@@ -828,197 +1413,180 @@ Jeff Jacobs
     </script>
 
     <script id="quarto-html-after-body" type="application/javascript">
-    window.document.addEventListener("DOMContentLoaded", function (event) {
-      const toggleBodyColorMode = (bsSheetEl) => {
-        const mode = bsSheetEl.getAttribute("data-mode");
-        const bodyEl = window.document.querySelector("body");
-        if (mode === "dark") {
-          bodyEl.classList.add("quarto-dark");
-          bodyEl.classList.remove("quarto-light");
-        } else {
-          bodyEl.classList.add("quarto-light");
-          bodyEl.classList.remove("quarto-dark");
-        }
-      }
-      const toggleBodyColorPrimary = () => {
-        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-        if (bsSheetEl) {
-          toggleBodyColorMode(bsSheetEl);
-        }
-      }
-      toggleBodyColorPrimary();  
-      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
-      tabsets.forEach(function(tabset) {
-        const tabby = new Tabby('#' + tabset.id);
-      });
-      const isCodeAnnotation = (el) => {
-        for (const clz of el.classList) {
-          if (clz.startsWith('code-annotation-')) {                     
-            return true;
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
           }
+          return false;
         }
-        return false;
-      }
-      const onCopySuccess = function(e) {
-        // button target
-        const button = e.trigger;
-        // don't keep focus
-        button.blur();
-        // flash "checked"
-        button.classList.add('code-copy-button-checked');
-        var currentTitle = button.getAttribute("title");
-        button.setAttribute("title", "Copied!");
-        let tooltip;
-        if (window.bootstrap) {
-          button.setAttribute("data-bs-toggle", "tooltip");
-          button.setAttribute("data-bs-placement", "left");
-          button.setAttribute("data-bs-title", "Copied!");
-          tooltip = new bootstrap.Tooltip(button, 
-            { trigger: "manual", 
-              customClass: "code-copy-button-tooltip",
-              offset: [0, -8]});
-          tooltip.show();    
-        }
-        setTimeout(function() {
-          if (tooltip) {
-            tooltip.hide();
-            button.removeAttribute("data-bs-title");
-            button.removeAttribute("data-bs-toggle");
-            button.removeAttribute("data-bs-placement");
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
           }
-          button.setAttribute("title", currentTitle);
-          button.classList.remove('code-copy-button-checked');
-        }, 1000);
-        // clear code selection
-        e.clearSelection();
-      }
-      const getTextToCopy = function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
           for (const childEl of codeEl.children) {
             if (isCodeAnnotation(childEl)) {
               childEl.remove();
             }
           }
           return codeEl.innerText;
-      }
-      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-        text: getTextToCopy
-      });
-      clipboard.on('success', onCopySuccess);
-      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-          text: getTextToCopy,
-          container: window.document.getElementById('quarto-embedded-source-code-modal')
-        });
-        clipboardModal.on('success', onCopySuccess);
-      }
-        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-        var mailtoRegex = new RegExp(/^mailto:/);
-          var filterRegex = new RegExp('/' + window.location.host + '/');
-        var isInternal = (href) => {
-            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
-        // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-        for (var i=0; i<links.length; i++) {
-          const link = links[i];
-          if (!isInternal(link.href)) {
-            // undo the damage that might have been done by quarto-nav.js in the case of
-            // links that we want to consider external
-            if (link.dataset.originalHref !== undefined) {
-              link.href = link.dataset.originalHref;
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+                // target, if specified
+                link.setAttribute("target", "_blank");
+                if (link.getAttribute("rel") === null) {
+                  link.setAttribute("rel", "noopener");
+                }
+                // default icon
+                link.classList.add("external");
             }
-              // target, if specified
-              link.setAttribute("target", "_blank");
-              if (link.getAttribute("rel") === null) {
-                link.setAttribute("rel", "noopener");
-              }
-              // default icon
-              link.classList.add("external");
           }
-        }
-      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-        const config = {
-          allowHTML: true,
-          maxWidth: 500,
-          delay: 100,
-          arrow: false,
-          appendTo: function(el) {
-              return el.closest('section.slide') || el.parentElement;
-          },
-          interactive: true,
-          interactiveBorder: 10,
-          theme: 'light-border',
-          placement: 'bottom-start',
-        };
-        if (contentFn) {
-          config.content = contentFn;
-        }
-        if (onTriggerFn) {
-          config.onTrigger = onTriggerFn;
-        }
-        if (onUntriggerFn) {
-          config.onUntrigger = onUntriggerFn;
-        }
-          config['offset'] = [0,0];
-          config['maxWidth'] = 700;
-        window.tippy(el, config); 
-      }
-      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-      for (var i=0; i<noterefs.length; i++) {
-        const ref = noterefs[i];
-        tippyHover(ref, function() {
-          // use id or data attribute instead here
-          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-          try { href = new URL(href).hash; } catch {}
-          const id = href.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note) {
-            return note.innerHTML;
-          } else {
-            return "";
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
           }
-        });
-      }
-      const findCites = (el) => {
-        const parentEl = el.parentElement;
-        if (parentEl) {
-          const cites = parentEl.dataset.cites;
-          if (cites) {
-            return {
-              el,
-              cites: cites.split(' ')
-            };
-          } else {
-            return findCites(el.parentElement)
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
           }
-        } else {
-          return undefined;
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
         }
-      };
-      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-      for (var i=0; i<bibliorefs.length; i++) {
-        const ref = bibliorefs[i];
-        const citeInfo = findCites(ref);
-        if (citeInfo) {
-          tippyHover(citeInfo.el, function() {
-            var popup = window.document.createElement('div');
-            citeInfo.cites.forEach(function(cite) {
-              var citeDiv = window.document.createElement('div');
-              citeDiv.classList.add('hanging-indent');
-              citeDiv.classList.add('csl-entry');
-              var biblioDiv = window.document.getElementById('ref-' + cite);
-              if (biblioDiv) {
-                citeDiv.innerHTML = biblioDiv.innerHTML;
-              }
-              popup.appendChild(citeDiv);
-            });
-            return popup.innerHTML;
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
           });
         }
-      }
-    });
-    </script>
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
     
 
 </body></html>

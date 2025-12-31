@@ -1,31 +1,98 @@
 
-## First Things First: The Data-Generating Process (DGP) {.smaller}
-
-* From economic microfoundations, can derive that production cost curves (in presence of *economies of scale*) tend to take on forms like
-
-$$
-C(x) = 250 + 195x - 24x^2 + x^3
-$$
+## The Key Plot
 
 ```{r}
-#| label: cubic-dgp
+#| label: lasso-plot
 library(tidyverse)
-compute_prod_cost <- function(x) {
-    return(250 + 195*x - 24*(x^2) + x^3)
+library(latex2exp)
+ridge_constraint <- function(x, y) {
+  return(x^2 + y^2 <= 1)
 }
-N <- 500
-x_vals <- runif(N, min=0, max=16)
-y_raw = compute_prod_cost(x_vals)
-y_noise = rnorm(N, mean=0, sd=100)
-y_vals <- y_raw + y_noise
-prod_df <- tibble(x=x_vals, y=y_vals)
-prod_df |> ggplot(aes(x=x, y=y)) +
-  geom_point() +
-  theme_classic(base_size=22)
+b1_vals <- seq(from=-2, to=2, by=0.025)
+b2_vals <- seq(from=-2, to=2, by=0.025)
+plane_df <- expand.grid(b1=b1_vals, b2=b2_vals) |> as_tibble()
+#print(plane_vals)
+plane_df <- plane_df |> mutate(
+  satis = ridge_constraint(b1, b2)
+)
+satis_df <- plane_df |> filter(satis)
+satis_df |> ggplot(aes(x=b1, y=b2, color=satis)) +
+  geom_point(alpha=0.333) +
+  geom_vline(xintercept=0, arrow = grid::arrow(
+        length = unit(0.1, "cm"),
+        ends = "both"
+      )) +
+  geom_hline(yintercept=0) +
+  coord_equal() +
+  xlim(-2, 2) + ylim(-2, 2) +
+  theme_dsan() +
+  theme(
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.line.x = element_blank(),
+    axis.line.y = element_blank(),
+    # axis.line.y = element_line(
+    #   arrow = grid::arrow(
+    #     length = unit(0.3, "cm"),
+    #     ends = "both"
+    #   )
+    # )
+  ) +
+  labs(
+    title="Ridge Regression Constraint",
+    x = TeX("$\\beta_1$"),
+    y = TeX("$\\beta_2$")
+  )
 ```
 
-::: {.notes}
+---
 
-https://www.opportunityatlas.org/?%7B%22mapping%22%3A%22kfr%22%2C%22dataToggles%22%3A%7B%22parentIncome%22%3A%22p25%22%2C%22childRace%22%3A%22rP%22%2C%22childGender%22%3A%22gP%22%2C%22cohortTimeline%22%3A%22e%22%7D%2C%22compareDataToggles%22%3A%7B%22parentIncome%22%3A%22pall%22%2C%22childRace%22%3A%22rP%22%2C%22childGender%22%3A%22gP%22%2C%22cohortTimeline%22%3A%22e%22%7D%2C%22selectedChapterId%22%3A%22chapter1%22%2C%22compareFeatures%22%3A%22subgroup%22%2C%22selectedFeatureByID%22%3A%22cty11001%22%2C%22filters%22%3A%5B%5D%2C%22mode%22%3A%22standardMode%22%2C%22mapBounds%22%3A%5B%5B-78.90679442941929%2C38.087613189251755%5D%2C%5B-74.96364651649473%2C40.07482897415662%5D%5D%2C%22showStoryMarkers%22%3Atrue%2C%22showHistogram%22%3Afalse%2C%22propertyShownOnMap%22%3A%22kfr_rP_gP_p25_e%22%7D
 
-:::
+```{r}
+#| label: unit-disk-l2
+library(tidyverse) |> suppressPackageStartupMessages()
+library(latex2exp) |> suppressPackageStartupMessages()
+ridge_constraint <- function(x, y) {
+  return(x^2 + y^2 <= 1)
+}
+b1_vals <- seq(from=-2, to=2, by=0.025)
+b2_vals <- seq(from=-2, to=2, by=0.025)
+plane_df <- expand.grid(b1=b1_vals, b2=b2_vals) |> as_tibble()
+#print(plane_vals)
+plane_df <- plane_df |> mutate(
+  satis = ridge_constraint(b1, b2)
+)
+satis_df <- plane_df |> filter(satis)
+satis_df |> ggplot(aes(x=b1, y=b2, color=satis)) +
+  geom_point(alpha=0.333) +
+  geom_vline(xintercept=0, arrow = grid::arrow(
+        length = unit(0.1, "cm"),
+        ends = "both"
+      )) +
+  geom_hline(yintercept=0) +
+  coord_equal() +
+  xlim(-2, 2) + ylim(-2, 2) +
+  theme_dsan() +
+  theme(
+    axis.ticks.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.line.x = element_blank(),
+    axis.line.y = element_blank(),
+    # axis.line.y = element_line(
+    #   arrow = grid::arrow(
+    #     length = unit(0.3, "cm"),
+    #     ends = "both"
+    #   )
+    # )
+  ) +
+  labs(
+    title="Ridge Regression Constraint",
+    x = TeX("$v_x$"),
+    y = TeX("$v_y$")
+  )
+```
+

@@ -1,18 +1,36 @@
-<!-- 
 
-learn parameters that best produce a (simulated) **datapoint** $\widehat{\mathbf{x}_i}$, the "most representative" point for each possible label $k$
-  * This would allow us to (say) classify new points via **similarity** to representative class-$k$ datapoint $\mathbf{x}^{(k)}$
+## What Do the Nodes Do?
 
--->
+Each node $\nu_i^{[\ell]}$ in the network:
 
+* Takes in an **input**,
+* Transforms it using a **weight** $w^{[\ell]}_i$ and **bias** $b^{[\ell]}_i$, and
+* Produces an **output**, typically using a **sigmoid function** like $\sigma(x) = \frac{1}{1+e^{-x}}$:
 
-----
+$$
+\text{output}^{[\ell]}_i = \sigma(w^{[\ell]}_i \cdot \text{input} + b^{[\ell]}_i)
+$$
 
-## The Bayes Classifier
+## How Does it "Learn"?
 
+* Need a **loss function** $\mathcal{L}(\widehat{y}, y)$
+* Starting from the end, we **backpropagate** the loss, updating **weights** and **biases** as we go
+* Higher loss $\implies$ greater change to weights and biases
 
+---
 
-* Bayes' rule lets us go back and forth between $\Pr(\text{class} \mid \text{features})$ and $\Pr(\text{features} \mid \text{class})$
-* Logistic Regression models $\Pr(Y = k \mid X = x)$... "Bayes classifier" is the theoretical classifier $\widehat{y} = \argmax_{k}\Pr(Y = k \mid X = x)$
-* (The 400th Use of "Bayes" in Statistics)
-* Hence, if we're not getting good results from logistic regression ($\leftarrow$ the problem that LDA/QDA solves), it turns out this is often due to weaknesses in that approach that are precisely the **strong points** of LDA/QDA! 🤑 (related to the maximal *margin of separation* between classes 🤔)
+## How Many Parameters?
+
+:::: {.columns}
+::: {.column width="40%"}
+
+* $\mathbf{W}_1$?
+* $\mathbf{W}_2$?
+
+:::
+::: {.column width="60%"}
+
+![](images/nn_multilayer.svg){fig-align="center" width="100%"}
+
+:::
+::::

@@ -1,10 +1,10 @@
 ---
-title: "Week 4: The Scourge of Overfitting"
-subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+title: "Week 4: Cross-Validation for Model Assessment"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 bibliography: "../_DSAN5300.bib"
-date: 2025-02-03
+date: 2026-02-02
 date-format: full
 lecnum: 4
 cache: true
@@ -13,18 +13,18 @@ categories:
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300-01 Week 4: {{< var w04.footer >}}"
+    footer: "DSAN 5300 Week 4: {{< var w04.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true
-    css: "../dsan-globals/jjstyles.css"
+    theme: [default, "../dsan-globals/jjquarto.scss"]
     slide-number: true
     echo: true
     code-fold: true
     link-external-icon: true
     link-external-newwindow: true
     include-in-header:
-      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Workbench&display=swap' rel='stylesheet'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
+      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
     simplemenu:
       flat: true
       barhtml:
@@ -38,8 +38,6 @@ format:
     html-math-method: mathjax
     echo: true
     code-fold: true
-    include-in-header:
-      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
 ---
 
 ::: {.content-visible unless-format="revealjs"}
@@ -50,21 +48,19 @@ format:
 
 :::
 
-
 # Schedule {.smaller .small-title .crunch-title .crunch-callout data-name="Schedule"}
 
 Today's Planned Schedule:
 
 | | Start | End | Topic |
 |:- |:- |:- |:- |
-| **Lecture** | 6:30pm | 6:40pm | [Logistic Regression Recap &rarr;](#recap-logistic-regression) |
-| | 6:40pm | 7:00pm | [CV and Model Selection Motivation &rarr;](#what-we-have-thus-far) |
-| | 7:00pm | 8:00pm | [Anti-Overfitting Toolkit &rarr;](#building-an-anti-overfitting-toolkit) |
+| **Lecture** | 6:30pm | 6:50pm | [Roadmap: Week 4 $\leadsto$ Week 6 &rarr;](#roadmap) |
+| | 6:50pm | 7:20pm | [Non-Linear Data-Generating Processes &rarr;](#a-non-linear-data-generating-process-(dgp)) |
+| | 7:20pm | 8:00pm | [Validation: Evaluating Non-Linear Models &rarr;](#cross-validation-evaluating-non-linear-models) |
 | **Break!** | 8:00pm | 8:10pm | |
-| | 8:10pm | 9:00pm | [Quizzo &rarr;](#quiz-time) |
+| | 8:10pm | 9:00pm | [$K$-Fold Cross-Validation: Cooking with Gas &rarr;](#k-fold-cross-validation) |
 
 : {tbl-colwidths="[12,12,12,64]"}
-
 
 ::: {.hidden}
 
@@ -78,98 +74,17 @@ set.seed(5300)
 
 {{< include ../dsan-globals/_globals-tex.qmd >}}
 
-# Recap: Logistic Regression {.smaller .crunch-ul .math-80 .title-09 data-stack-name="Recap"}
+# Roadmap {.smaller .title-10 data-stack-name="Roadmap"}
 
-* What happens to the **probability** $\Pr(Y = 1 \mid X)$ when $X$ increases by **1 unit**?
-* "Linear Probability Model" $\Pr(Y = 1 \mid X) = \beta_0 + \beta_1X$ fails, **but**, "fixing" it leads to
+* [Week 4] Oh no! When we go beyond linear models, we have to worry about **overfitting**!
+    * $\implies$ New goal! Maximize **generalizability** rather than **accuracy**
+    * $\implies$ Evaluate models on ***unseen* test data** rather than training data
+* [Week 5] **Cross-Validation (CV)** as a tool for **Model Assessment**: For more complex, non-linear models, is there some way we can try to... "foresee" how well a trained model will **generalize?**
+    * Answer: **Yes!** Cross-validation!
+* [Week 6] **Regularization** as a tool for **Model Selection**: Now that we have a method (CV) for *imperfectly* measuring "generalizability", is there some way we can try to... **allow** models to optimize CV but **penalize** them for unnecessary complexity?
+    * Answer: **Yes!** Regularization methods like LASSO and Elastic Net!
 
-$$
-\begin{align*}
-&\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
-\iff &\Pr(Y = 1 \mid X) = \frac{\exp[\beta_0 + \beta_1X]}{1 + \exp[\beta_0 + \beta_1X]} = \frac{1}{1 + \exp\left[ -(\beta_0 + \beta_1X) \right] }
-\end{align*}
-$$
-
-> $\leadsto$ A 1-unit increase in $X$ is associated with a $\beta_1$ increase in the **log-odds** of $Y$
-
-## What We Have Thus Far {.smaller .crunch-title .title-10 .crunch-ul .crunch-img}
-
-* We have a **core model**, regression, that we can **build up** into p much anything we want!
-
-| Class Topic | This Video |
-| - | - |
-| Linear regression | Pachelbel's *Canon in D* (1m26s-1m46s) |
-| Logistic regression | Add swing: ![](images/swing_image.svg){width="100"} (1m46s) |
-| Neural networks | (triads $\mapsto$ 7th/9th chords) (5m24s-5m53s) |
-
-{{< video https://www.youtube.com/watch?v=lpc1lEJ-SRc width="100%" height="340" >}}
-
-# Taking Off the Linearity Training Wheels {.smaller data-stack-name="Motivation"}
-
-```{=html}
-<style>
-@font-face {
-    font-family: Noodle;
-    src: url('/assets/Kbnoodlemonster.ttf');
-}
-.workbench-jj {
-  font-family: "Workbench", serif;
-  /* font-optical-sizing: auto; */
-  font-weight: 400;
-  font-style: normal;
-  font-size: 96pt !important;
-}
-.noodle-jj {
-    font-family: "Noodle", serif;
-    font-size: 96pt !important;
-}
-</style>
-```
-
-:::: {.columns}
-::: {.column width="50%"}
-
-::: {#fig-workbench}
-
-<center>
-
-[Linear Models]{.workbench-jj}
-
-</center>
-
-[Font Credit](https://fonts.google.com/specimen/Workbench)
-:::
-
-:::
-::: {.column width="50%"}
-
-::: {#fig-noodle}
-
-<center>
-
-[Linear Models]{.noodle-jj}
-
-</center>
-
-[Font Credit](http://keepinitkoolinkinderland.blogspot.com/p/fonts.html)
-:::
-
-:::
-::::
-
-## How Can We Attain Hiromi's Aura?
-
-* Ingredient 1: Lots of *examples*: find mysteries/questions you care about in the world and think of how regression could help us understand them!
-* But, **Ingredient 2** is **Generalized Linear Models** (GLM), which I'll give an intro to **on the board** 🏃‍♂️‍➡️
-
-## Where Are We Going / What Problems Are We Solving? {.smaller}
-
-* Another nice property we have: OLS estimator is **BLUE** (**B**est **L**inear **U**nbiased **E**stimator) of conditional mean $\mathbb{E}[Y \mid X]$
-* The first problem we'll tackle is: as we move **from** linear models with these kinds of guarantees **to** fancier models with more uncertainties / "potholes"... how do we ensure they still achieve want we want them to achieve?
-* Tldr: we can study **more complex** relationships between $X$ and $Y$ than linear ones, but we lose guarantees like "If it's linear, then it is [this]": in other words, we lose this **automatic generalizability**
-* *(With great[er] power comes great[er] responsibility!)*
-
-## The Level 2 Goal: *Generalizability* {.smaller .crunch-title .crunch-callout .crunch-ul}
+## [Reminder (W04)] New Goal: *Generalizability* {.smaller .crunch-title .crunch-callout .crunch-ul .title-11}
 
 ::: {.callout-tip .r-fit-text title="<i class='bi bi-info-circle'></i> The Goal of Statistical Learning" icon="false"}
 
@@ -181,308 +96,130 @@ Find...
 
 :::
 
-## ...Can We Just, Like, Not? {.smaller .crunch-title .crunch-ul .crunch-img}
+# A Non-Linear Data-Generating Process (DGP) {data-stack-name="Non-Linear DGP"}
 
-:::: {.columns}
-::: {.column width="70%"}
+## Our Working DGP {.smaller .crunch-title .math-80 .plotly-340 .crunch-math}
 
-* What happens if we "unleash" fancier non-linear models on data the same way we've been using linear models?
-* The evil scourge of... **OVERFITTING** *(⚡️ a single overly-dramatic lightning bolt strikes the whiteboard behind me right at this exact moment what are the odds ⚡️)*
-
-:::
-::: {.column width="30%"}
-
-![Your computer is [Yes Man](https://www.youtube.com/watch?v=g-QSuiXL6lY)](images/yes_man.png){fig-align="center" width="185"}
-
-:::
-::::
-
-:::: {.columns}
-::: {.column width="50%"}
-
-```{r}
-#| label: linear-fit
-#| fig-cap: "You: \"Fit the data... but you're only allowed to be linear!\" Computer: \"You got it boss!\""
-library(tidyverse)
-set.seed(5300)
-N <- 30
-x_vals <- runif(N, min=0, max=1)
-y_vals_raw <- 3 * x_vals
-y_noise <- rnorm(N, mean=0, sd=0.5)
-y_vals <- y_vals_raw + y_noise
-data_df <- tibble(x=x_vals, y=y_vals)
-data_df |> ggplot(aes(x=x, y=y)) +
-  geom_point(size=2) +
-  stat_smooth(
-    method="lm",
-    formula="y ~ x",
-    se=FALSE,
-    linewidth=1
-  ) +
-  labs(
-    title = paste0("Linear Regression, N = ",N)
-  ) +
-  theme_dsan(base_size=28)
-```
-
-:::
-::: {.column width="50%"}
-
-```{r}
-#| label: poly-fit
-#| fig-cap: "You: \"Fit the data...\" Computer: \"You got it boss!\""
-data_df |> ggplot(aes(x=x, y=y)) +
-  geom_point(size=2.5) +
-  stat_smooth(
-    method="lm",
-    formula=y ~ poly(x, N, raw=TRUE),
-    se=FALSE,
-    linewidth=1
-  ) +
-  labs(
-    title = paste0("Polynomial Regression, N = ",N)
-  ) +
-  theme_dsan(base_size=28)
-```
-
-:::
-::::
-
-::: {.notes}
-
-([Image Source](http://www.game-art-hq.com/89202/the-yes-man-from-fallout-game-art-overview/))
-
-:::
-
-## Memorizing Data vs. *Learning* the Relationship {.smaller .crunch-title .title-11 .crunch-quarto-figure .crunch-img}
+* Each country $i$ has a certain $x_i = \texttt{gdp\_per\_capita}_i$
+* They spend some portion of it on **healthcare** each year, which translates (based on the country's healthcare system) into **health outcomes** $y_i$
+* We *operationalize* these health outcomes as $y_i = \texttt{DALY}_i$: **[Disability Adjusted Life Years](https://ourworldindata.org/burden-of-disease)**, cross-nationally-standardized "lost years of minimally-healthy life"
 
 :::: {.columns}
 ::: {.column width="60%"}
 
 ```{r}
-#| label: training-data-plot
-#| fig-width: 4.25
-#| fig-height: 2.75
-#| fig-align: left
-x <- seq(from = 0, to = 1, by = 0.1)
-n <- length(x)
-eps <- rnorm(n, 0, 0.04)
-y <- x + eps
-# But make one big outlier
-midpoint <- ceiling((3/4)*n)
-y[midpoint] <- 0
-of_data <- tibble::tibble(x=x, y=y)
-# Linear model
-lin_model <- lm(y ~ x)
-# But now polynomial regression
-poly_model <- lm(y ~ poly(x, degree = 10, raw=TRUE))
-#summary(model)
-ggplot(of_data, aes(x=x, y=y)) +
-  geom_point(size=g_pointsize/2) +
-  labs(
-    title = "Training Data",
-    color = "Model"
-  ) +
-  theme_dsan(base_size=16)
-```
-
-```{r}
-#| label: training-linear-poly
-#| fig-width: 6
-#| fig-height: 2.75
-#| fig-align: left
-ggplot(of_data, aes(x=x, y=y)) +
-  geom_point(size=g_pointsize/2) +
-  geom_abline(aes(intercept=0, slope=1, color="Linear"), linewidth=1, show.legend = FALSE) +
-  stat_smooth(method = "lm",
-              formula = y ~ poly(x, 10, raw=TRUE),
-              se = FALSE, aes(color="Polynomial")) +
-  labs(
-    title = "A Perfect Model?",
-    color = "Model"
-  ) +
-  theme_dsan(base_size=16)
+#| label: cubic-dgp
+#| fig-align: center
+library(tidyverse) |> suppressPackageStartupMessages()
+library(plotly) |> suppressPackageStartupMessages()
+daly_df <- read_csv("assets/dalys_cleaned.csv")
+daly_df <- daly_df |> mutate(
+  gdp_pc_1k=gdp_pc_clean/1000
+)
+model_labels <- labs(
+  x="GDP per capita ($1K PPP, 2021)",
+  y="Log(DALYs/n)",
+  title="Decrease in DALYs as GDP/n Increases"
+)
+daly_plot <- daly_df |> ggplot(aes(x=gdp_pc_1k, y=log_dalys_pc, label=name)) +
+  geom_point() +
+  # geom_smooth(method="loess", formula=y ~ x) +
+  geom_smooth(method="lm", formula=y ~ poly(x,5), se=FALSE) +
+  theme_dsan(base_size=14) +
+  model_labels
+ggplotly(daly_plot)
 ```
 
 :::
 ::: {.column width="40%"}
 
-How have we measured "good" fit? High $R^2$? Low $RSS$?
-
-<center>
-Linear Model:
-</center>
-
-```{r}
-#| label: lin-model-metrics
-#| echo: true
-#| code-fold: show
-summary(lin_model)$r.squared
-get_rss(lin_model)
-```
-
-<center style="margin-top: 20px !important;">
-Polynomial Model:
-</center>
+$$
+\begin{align*}
+\leadsto Y = &10.58 - 0.2346 X + 0.01396 X^2 \\
+&- 0.0004 X^3 + 0.000005 X^4 \\
+&- 0.00000002 X^5 + \varepsilon
+\end{align*}
+$$
 
 ```{r}
-#| label: poly-model-metrics
-#| echo: true
-#| code-fold: show
-summary(poly_model)$r.squared
-get_rss(poly_model)
+#| label: fitted-cubic-curve
+eval_fitted_poly <- function(x) {
+  coefs <- c(
+    10.58,  -0.2346, 0.01396,
+    -0.0004156, 0.0000053527, -0.0000000244
+  )
+  x_terms <- c(x^0, x^1, x^2, x^3, x^4, x^5)
+  dot_prod <- sum(coefs * x_terms)
+  return(dot_prod)
+}
+N <- 500
+x_vals <- runif(N, min=0, max=90)
+y_vals <- sapply(X=x_vals, FUN=eval_fitted_poly)
+sim_df <- tibble(gdpc=x_vals, ldalys=y_vals)
+ggplot() +
+  geom_line(data=sim_df, aes(x=gdpc, y=ldalys)) +
+  geom_point(data=daly_df, aes(x=gdp_pc_1k, y=log_dalys_pc)) +
+  theme_dsan() +
+  model_labels
 ```
 
 :::
 ::::
 
-## 5000: Accuracy $\leadsto$ 5300: Generalization {.smaller .crunch-title .title-12}
+## The "True" Model {.smaller .crunch-title .crunch-ul .crunch-quarto-figure .crunch-li-6}
 
-* Training Accuracy: How well does it fit the data we can see?
-* Test Accuracy: How well does it **generalize** to future data?
-
-:::: {.columns}
-::: {.column width="60%"}
+* From here onwards, we adopt this as our "true" model, for **pedagogical** purposes!
+* Meaning: we use this model to get a sense for how...
+  * CV can "foresee" **test error** $\leadsto$ confidence in CV
+  * Regularization can **penalize** overly-complex models $\leadsto$ confidence in LASSO
+* In the real world we **don't know the DGP!**
+  * $\implies$ We **build our confidence** here, then **take off the training wheels** irl: use CV/Regularization in hopes they can help us "uncover" the **unknown DGP**
 
 ```{r}
-#| label: lin-poly-newdata
-#| fig-width: 5.5
-#| fig-height: 4
-# Data setup
-x_test <- seq(from = 0, to = 1, by = 0.1)
-n_test <- length(x_test)
-eps_test <- rnorm(n_test, 0, 0.04)
-y_test <- x_test + eps_test
-of_data_test <- tibble::tibble(x=x_test, y=y_test)
-lin_y_pred_test <- predict(lin_model, as.data.frame(x_test))
-#lin_y_pred_test
-lin_resids_test <- y_test - lin_y_pred_test
-#lin_resids_test
-lin_rss_test <- sum(lin_resids_test^2)
-#lin_rss_test
-# Lin R2 = 1 - RSS/TSS
-tss_test <- sum((y_test - mean(y_test))^2)
-lin_r2_test <- 1 - (lin_rss_test / tss_test)
-#lin_r2_test
-# Now the poly model
-poly_y_pred_test <- predict(poly_model, as.data.frame(x_test))
-poly_resids_test <- y_test - poly_y_pred_test
-poly_rss_test <- sum(poly_resids_test^2)
-#poly_rss_test
-# RSS
-poly_r2_test <- 1 - (poly_rss_test / tss_test)
-#poly_r2_test
-ggplot(of_data, aes(x=x, y=y)) +
-  stat_smooth(method = "lm",
-              formula = y ~ poly(x, 10, raw = TRUE),
-              se = FALSE, aes(color="Polynomial")) +
-  theme_classic() +
-  geom_point(data=of_data_test, aes(x=x_test, y=y_test), size=g_pointsize/2) +
-  geom_abline(aes(intercept=0, slope=1, color="Linear"), linewidth=1, show.legend = FALSE) +
-  labs(
-    title = "Evaluation: Unseen Test Data",
-    color = "Model"
-  ) +
-  theme_dsan(base_size=16)
-```
-:::
-
-::: {.column width="40%"}
-
-<center>
-Linear Model:
-</center>
-
-```{r,echo=TRUE}
-#| label: lin-newdata-metrics
-#| echo: true
-#| code-fold: show
-lin_r2_test
-lin_rss_test
+#| label: dgp-realizations
+#| fig-width: 15
+run_dgp <- function(world_label="Sim", N=60, x_max=90) {
+  x_vals <- runif(N, min=0, max=x_max)
+  y_raw <- sapply(X=x_vals, FUN=eval_fitted_poly)
+  y_noise <- rnorm(N, mean=0, sd=0.8)
+  y_vals <- y_raw + y_noise
+  sim_df <- tibble(
+    gdpc=x_vals,
+    ldalys=y_vals,
+    world=world_label
+  )
+  return(sim_df)
+}
+df1 <- run_dgp("World 1")
+df2 <- run_dgp("World 2")
+df3 <- run_dgp("World 3")
+dgp_df <- bind_rows(df1, df2, df3)
+dgp_df |> ggplot(aes(x=gdpc, y=ldalys)) +
+  geom_point(aes(color=world)) +
+  facet_wrap(vars(world)) +
+  theme_dsan(base_size=22) +
+  remove_legend() +
+  model_labels +
+  labs(title="Three Possible Realizations of our DGP")
 ```
 
-<center style="margin-top: 10px !important;">
-Polynomial Model:
-</center>
+# Cross-Validation: Evaluating Non-Linear Models {.title-09 data-stack-name="Cross-Validation"}
 
-```{r,echo=TRUE}
-#| label: poly-newdata-metrics
-#| echo: true
-#| code-fold: show
-poly_r2_test
-poly_rss_test
-```
+Specifically: evaluating non-linear models **on how well they *generalize*!**
 
-:::
-::::
-
-## In Other Words...
-
-![Image source: circulated as secret shitposting among PhD students in seminars](images/hypothesis.jpg){fig-align="center"}
-
-# Building an Anti-Overfitting Toolkit {data-stack-name="Anti-Overfitting Toolkit"}
-
-* Penalizing Complexity
-* Cross-Validation
-* Model Selection (Penalizing Complexity 2.0)
-
-## Ok So, How Do We Avoid Overfitting? {.crunch-title .crunch-math .crunch-ul}
-
-* The gist: penalize model **complexity**
-* Original optimization:
-
-  $$
-  \theta^* = \underset{\theta}{\operatorname{argmin}} \mathcal{L}(y, \widehat{y})
-  $$
-
-* New optimization:
-
-  $$
-  \theta^* = \underset{\theta}{\operatorname{argmin}} \left[ \lambda \mathcal{L}(y, \widehat{y}) + (1-\lambda) \mathsf{Complexity}(\theta) \right]
-  $$
-
-* But how do we measure, and penalize, "complexity"?
-
-## Regularization: Measuring and Penalizing Complexity {.smaller .title-11 .math-90}
-
--   In the case of polynomials, fairly simple complexity measure: *degree* of polynomial
-
-$$
-\mathsf{Complexity}(\widehat{y} = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3) > \mathsf{Complexity}(\widehat{y} = \beta_0 + \beta_1 x)
-$$
-
--   In general machine learning, however, we might not be working with polynomials
--   In neural networks, for example, we sometimes toss in millions of features and ask the algorithm to "just figure it out"
--   The gist, in the general case, is thus: try to "amplify" the most important features and shrink the rest, so that
-
-$$
-\mathsf{Complexity} \propto \frac{|\text{AmplifiedFeatures}|}{|\text{ShrunkFeatures}|}
-$$
-
-## LASSO and Elastic Net Regularization {.smaller .crunch-title .math-90}
-
--   Many ways to translate this intuition into math!
--   In several fields, however (econ, biostatistics), LASSO[^4] [@tibshirani_regression_1996] is standard:
-
-[^4]: **L**east **A**bsolute **S**hrinkage and **S**election **O**perator
-
-$$
-\beta^*_{LASSO} = {\underset{\beta}{\operatorname{argmin}}}\left\{{\frac {1}{N}}\left\|y-X\beta \right\|_{2}^{2}+\lambda \|\beta \|_{1}\right\}
-$$
-
--   Why does this work to penalize complexity? What does the parameter $\lambda$ do?
--   Some known issues with LASSO fixed in extension of the same intuitions: **Elastic Net**
-
-$$
-\beta^*_{EN} = {\underset {\beta }{\operatorname {argmin} }}\left\{ \|y-X\beta \|^{2}_2+\lambda _{2}\|\beta \|^{2}+\lambda _{1}\|\beta \|_{1} \right\}
-$$
-
--   Ensures a unique global minimum! Note that $\lambda_2 = 0, \lambda_1 = 1 \implies \beta^*_{LASSO} = \beta^*_{EN}$
+* Beyond the Train-Test Split
+* Validation Set
+* LOOCV
+* $K$-Fold CV
 
 ## Training vs. Test Data
 
+* We introduced this as a first step towards tackling the **scourge of overfitting!**
+
 ```{dot}
-//| fig-size: 3
+//| label: training-vs-test-diagram
+//| echo: false
+//| fig-height: 2
 graph grid
 {
     graph [
@@ -512,14 +249,28 @@ graph grid
 }
 ```
 
-## Cross-Validation
+* Training Set $\leadsto$ Training Error, Test Set $\leadsto$ Test Error
+* So... what's the issue? Why do we need to complicate this picture?
 
--   The idea that **good models generalize well** is crucial!
-    -   What if we could leverage this insight to optimize **over our training data**?
-    -   The key: **Validation Sets**
+## The Chilling Truth Behind Test Data 🫣 {.smaller .crunch-title .title-11}
+
+* Science-wise, technically, once you use the **test set**, you should **stop working**
+* Full gory details in fancy books (@hume_enquiry_1760 $\rightarrow$ @popper_logic_1934), but the essence is captured by visualizing scientific inference (and **statistical learning!**) like:
+
+![](images/train_test.svg){fig-align="center"}
+
+* So, what do we do? Use $\mathbf{D}_{\text{Tr}}$ along with knowledge of issues like **overfitting** to **estimate** test error!
+* Fulfills our **goal**: find model which **best predicts $Y$ from $X$ for unobserved data**
+
+## The Validation Set Approach {.crunch-title .crunch-ul .crunch-li-8 .crunch-quarto-figure}
+
+* ⚠️ Remember: under our new goal, **"good" models** = models that **generalize well!**
+* Optimizing over **test set** violates scientific inference axioms
+* Instead, optimize over **training data** by "holding out" some portion of it... Enter the **Validation Set**:
 
 ```{dot}
-//| fig-height: 3
+//| label: cv-diagram
+//| fig-height: 2.5
 graph grid
 {
     graph [
@@ -559,46 +310,132 @@ graph grid
 }
 ```
 
-## Hyperparameters
+## Evaluating *One* Model: Validation Set Approach {.crunch-title .title-07 .inline-90}
 
--   The unspoken (but highly consequential!) "settings" for our learning procedure (that we *haven't* optimized via gradient descent)
--   There are several you've already seen in e.g. 5000 -- can you name them?
+* <i class='bi bi-1-circle'></i> Randomly pick 20% of $\mathbf{D}_{\text{train}}$ as **sub-training set** $\mathbf{D}_{\text{SubTr}}$
+* <i class='bi bi-2-circle'></i> The other 80% becomes **validation set** $\mathbf{D}_{\text{Val}}$
+* <i class='bi bi-3-circle'></i> Train model on $\mathbf{D}_{\text{SubTr}}$, then evaluate using $\mathbf{D}_{\text{Val}}$, to produce **validation error** $\boxed{\varepsilon_{\text{Val}} = \widehat{\text{Err}}_{\text{Test}}}$
+* $\varepsilon_{\text{Val}}$ gives us an **estimate of the test error**
+  * $\implies$ this is what we want to **optimize**, in place of **training error**, for our new goal 😎!
 
-## Hyperparameters You've Already Seen
+## How Does It Do for Our DGP? {.smaller .crunch-title}
 
--   Unsupervised Clustering: The number of clusters we want $K$
--   Gradient Descent: The **step size** $\gamma$
--   LASSO/Elastic Net: $\lambda$
--   The train/validation/test split!
+* Recall that the "true" degree is **5**, but that you're not supposed to know that!
 
-## Hyperparameter Selection {.crunch-title .crunch-ul}
+:::: {.columns}
+::: {.column width="50%"}
 
--   Every model comes with its own hyperparameters:
-    -   Neural Networks: Number of layers, nodes per layer
-    -   Decision Trees: Max tree depth, max features to include
-    -   Topic Models: Number of topics, document/topic **priors**
--   So, how do we choose?
-    -   Often more art than science
-    -   Principled, universally applicable, but slow: grid search
-    -   Specific methods for specific algorithms: ADAM [@kingma_adam_2017] for Neural Network learning rates)
+```{r}
+#| label: n200-delta-plot
+#| fig-cap: "Here, validation error fails to capture 'true' model (likely culprits: low $N$, high noise...)"
+library(boot)
+set.seed(5300)
+sim200_df <- run_dgp(
+  world_label="N=200", N=200, x_max=100
+)
+sim1k_df <- run_dgp(
+  world_label="N=1000", N=1000, x_max=100
+)
+compute_deltas <- function(df, min_deg=1, max_deg=12) {
+  cv_deltas <- c()
+  for (i in min_deg:max_deg) {
+    cur_poly <- glm(ldalys ~ poly(gdpc, i), data=df)
+    cur_poly_cv_result <- cv.glm(data=df, glmfit=cur_poly, K=5)
+    cur_cv_adj <- cur_poly_cv_result$delta[1]
+    cv_deltas <- c(cv_deltas, cur_cv_adj)
+  }
+  return(cv_deltas)
+}
+sim200_deltas <- compute_deltas(sim200_df)
+sim200_delta_df <- tibble(degree=1:12, delta=sim200_deltas)
+sim200_delta_df |> ggplot(aes(x=degree, y=delta)) +
+  geom_line() +
+  geom_point() +
+  geom_vline(xintercept=5, linetype="dashed") +
+  scale_x_continuous(
+    breaks=seq(from=1,to=12,by=1)
+  ) +
+  theme_dsan(base_size=22) +
+  labs(title="N = 200")
+```
 
-## ...Now What? {.crunch-title .crunch-ul}
+* Possible resolution: *[See coming slides!]*
 
--   So we've got a trained model...
-    -   Data collected ✅
-    -   Loss function chosen ✅
-    -   Gradient descent complete ✅
-    -   Hyperparameters tuned ✅
-    -   Good $F_1$ score on test data ✅
--   What's our next step?
-    -   This is where **engineers** and **social scientists** diverge...
-    -   Stay tuned!
+:::
+::: {.column width="50%"}
 
-# Quiz Time! {data-stack-name="Quiz"}
+```{r}
+#| label: n1k-delta-plot
+#| fig-cap: Here, validation error fails to sharply distinguish $d \in \{5, 6, 7, 8\}$
+sim1k_deltas <- compute_deltas(sim1k_df)
+sim1k_delta_df <- tibble(degree=1:12, delta=sim1k_deltas)
+sim1k_delta_df |> ggplot(aes(x=degree, y=delta)) +
+  geom_line() +
+  geom_point() +
+  geom_vline(xintercept=5, linetype="dashed") +
+  scale_x_continuous(
+    breaks=seq(from=1,to=12,by=1)
+  ) +
+  theme_dsan(base_size=22) +
+  labs(title="N = 1000")
+```
 
-* Jeff hands out your (paper) quizzes now!
-* You have 55 minutes (8:05 to 9pm)
-* You got this 💪
+* Possible resolution: *"one standard error rule"*
+
+:::
+::::
+
+## Optimizing over *Many* Models {.crunch-title .title-09}
+
+* <i class='bi bi-1-circle'></i> Let $\mathfrak{M} = (\mathcal{M}_1, \ldots, \mathcal{M}_D)$ be a set of $D$ different models
+  * Ex: $\mathcal{M}_1$ could be a linear model, $\mathcal{M}_2$ a quadratic model, $\mathcal{M}_3$ a cubic model, and so on...
+* <i class='bi bi-2-circle'></i> For each $\mathcal{M}_i \in \mathfrak{M}$ (and for given **training** data $\mathbf{D}_{\text{Tr}}$):
+  * Use [Insert Validation Approach] to derive $\varepsilon_i$
+* <i class='bi bi-3-circle'></i> Model $\mathcal{M}_i$ with **lowest $\varepsilon_i$ wins!**
+* We are now **cooking with gas!** We can use CV to optimize over e.g. **HYPERPARAMETERS** 🤯 (that we had to just kind of... guess before)!
+
+## Cooking with Even More Gas! {.crunch-title .crunch-ul .crunch-p}
+
+*(加 even more 油!)*
+
+* It turns out that, for the purposes of estimating test error (aka, estimating how well the fitted model will **generalize**), Validation Set Approach is the **worst** approach (still good, just, least good!)
+* To see its limitations, consider: is there something special about the 20% of data we selected for the validation set?
+* Answer: **No!** It was literally randomly selected!
+* $\implies$ Any other 20% "chunk" (which we'll call a **fold** from now on) could work just as well
+
+## 5-Fold Cross-Validation {.crunch-title .crunch-ul .crunch-quarto-figure}
+
+* Secretly, by choosing a **20%** fold to be the validation set earlier, I was priming you for **5-fold** cross-validation!
+
+![[Image Source](https://biol607.github.io/)](images/kfold.png){fig-align="center"}
+
+## $K$-Fold Cross-Validation
+
+* 5 was an arbitrary choice!
+  * (Though, one with important and desirable statistical properties, which we'll get to ASAP)
+* In general, $K$-Fold CV Estimator $\varepsilon_{(K)} = \widehat{\text{Err}}_{\text{Test}}$ given by
+
+$$
+\varepsilon_{(K)} = \frac{1}{K}\sum_{i=1}^{K}\varepsilon^{\text{Val}}_{i}
+$$
+
+## Leave-One-Out Cross-Validation (LOOCV) {.smaller .crunch-title}
+
+* $K$-Fold CV with $K := N$
+* Produces the maximum possible number of terms in the summation that leads to $\varepsilon_{(K)}$
+  * i.e., $\varepsilon_{(N)}$ is an average over the maximum possible number of models
+* So... does this mean it's the best choice?
+* *Hint*: How "different" are any two models used in the sum?
+
+$$
+\begin{align*}
+\varepsilon_{(N)} =~ & \text{Err}(\mathbf{D}_1 \mid \mathbf{D}_{2:100}) + \text{Err}(\mathbf{D}_2 \mid \mathbf{D}_1, \mathbf{D}_{3:100}) \\
+&+ \text{Err}(\mathbf{D}_3 \mid \mathbf{D}_{1:2}, \mathbf{D}_{4:100}) + \cdots + \text{Err}(\mathbf{D}_{100} \mid \mathbf{D}_{1:99})
+\end{align*}
+$$
+
+* The terms here are **highly correlated!**
+* Fun math results around how $K = 5$ or $K = 10$ can best **strike a balance** between overly-correlated terms ($K = N$) and not averaging enough models ($K = 2$)!
 
 ## References
 

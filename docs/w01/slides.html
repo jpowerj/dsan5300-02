@@ -7,12 +7,11 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.6.40">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.26">
 
   <meta name="author" content="Jeff Jacobs">
-  <meta name="dcterms.date" content="2025-01-08">
-  <title>DSAN 5300-01 – Week 1: Introduction to the Course</title>
+  <title>DSAN 5300-02 – Week 1: Linear Regression</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -30,9 +29,94 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
-  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-bbe7401fe57d4b791b917637bb662036.css">
-  <link rel="stylesheet" href="../dsan-globals/jjstyles.css">
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 0em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-69945e2f2d0c274413605863338c203b.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -126,14 +210,15 @@
       margin-right: 0; 
     }
   </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
 </head>
 <body class="quarto-light">
   <div class="reveal">
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Week 1: Introduction to the Course</h1>
-  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2025, Georgetown University</span></p>
+  <h1 class="title">Week 1: Linear Regression</h1>
+  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2026, Georgetown University</span></p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -146,21 +231,836 @@ Jeff Jacobs
     </div>
 </div>
 
-  <p class="date">2025-01-08</p>
+  <p class="date">Wednesday, January 7, 2026</p>
 </section>
-<section class="slide level2">
-
+<section>
+<section id="linear-regression" class="title-slide slide level1 center" data-stack-name="Linear Regression">
+<h1>Linear Regression</h1>
 <ul>
-<li>Week 1 was held on Zoom as a <strong>combined session</strong> of the three sections of DSAN 5300</li>
-<li>The recording can be found <a href="https://georgetown.zoom.us/rec/share/nkNzHSblgm8sesz-Zq5MyGGLRNAYLyoQomiQ36Kk76zCn2cmto5ta2UbGDzWL_2o.SZUEM4C11AOq8G0Q?startTime=1736454758000">here</a></li>
+<li><p>What happens to my <strong>dependent variable</strong> <span class="math inline">\(Y\)</span> when my <strong>independent variable</strong> <span class="math inline">\(X\)</span> changes by <strong>1 unit</strong>?</p></li>
+<li><p>Whenever you carry out a regression, keep the <strong>goal</strong> in the front of your mind:</p>
+<div class="r-fit-text" title="<i class='bi bi-info-circle'></i> The Goal of Regression">
+<div class="callout callout-tip no-icon callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong><i class="bi bi-info-circle"></i> The Goal of Regression</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Find a line <span class="math inline">\(\widehat{y} = mx + b\)</span> that best predicts <span class="math inline">\(Y\)</span> for given values of <span class="math inline">\(X\)</span></strong></p>
+</div>
+</div>
+</div>
+</div></li>
+</ul>
+<div class="hidden">
+
+</div>
+<div class="hidden">
+<p><span class="math display">\[
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\bigexp}[1]{\exp\mkern-4mu\left[ #1 \right]}
+\newcommand{\bigexpect}[1]{\mathbb{E}\mkern-4mu \left[ #1 \right]}
+\newcommand{\definedas}{\overset{\small\text{def}}{=}}
+\newcommand{\definedalign}{\overset{\phantom{\text{defn}}}{=}}
+\newcommand{\eqeventual}{\overset{\text{eventually}}{=}}
+\newcommand{\Err}{\text{Err}}
+\newcommand{\expect}[1]{\mathbb{E}[#1]}
+\newcommand{\expectsq}[1]{\mathbb{E}^2[#1]}
+\newcommand{\fw}[1]{\texttt{#1}}
+\newcommand{\given}{\mid}
+\newcommand{\green}[1]{\color{green}{#1}}
+\newcommand{\heads}{\outcome{heads}}
+\newcommand{\iid}{\overset{\text{\small{iid}}}{\sim}}
+\newcommand{\lik}{\mathcal{L}}
+\newcommand{\loglik}{\ell}
+\DeclareMathOperator*{\maximize}{maximize}
+\DeclareMathOperator*{\minimize}{minimize}
+\newcommand{\mle}{\textsf{ML}}
+\newcommand{\nimplies}{\;\not\!\!\!\!\implies}
+\newcommand{\orange}[1]{\color{orange}{#1}}
+\newcommand{\outcome}[1]{\textsf{#1}}
+\newcommand{\param}[1]{{\color{purple} #1}}
+\newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
+\newcommand{\pedge}[2]{\require{enclose}\enclose{circle}{~{#1}~} \rightarrow \; \enclose{circle}{\kern.01em {#2}~\kern.01em}}
+\newcommand{\pnode}[1]{\require{enclose}\enclose{circle}{\kern.1em {#1} \kern.1em}}
+\newcommand{\ponode}[1]{\require{enclose}\enclose{box}[background=lightgray]{{#1}}}
+\newcommand{\pnodesp}[1]{\require{enclose}\enclose{circle}{~{#1}~}}
+\newcommand{\purp}[1]{\color{purple}{#1}}
+\newcommand{\sign}{\text{Sign}}
+\newcommand{\spacecap}{\; \cap \;}
+\newcommand{\spacewedge}{\; \wedge \;}
+\newcommand{\tails}{\outcome{tails}}
+\newcommand{\Var}[1]{\text{Var}[#1]}
+\newcommand{\bigVar}[1]{\text{Var}\mkern-4mu \left[ #1 \right]}
+\]</span></p>
+</div>
+</section>
+<section id="how-do-we-define-best" class="slide level2 smaller">
+<h2>How Do We Define “Best”?</h2>
+<ul>
+<li>Intuitively, two different ways to measure <strong>how well a line fits the data</strong>:</li>
+</ul>
+<div class="quarto-layout-panel" data-layout="[1,1]">
+<div class="quarto-layout-row quarto-layout-valign-center">
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/pc-line-1.png" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/reg-line-1.png" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<aside><div>
+<p>On the difference between these two lines, and why it matters, I cannot recommend <span class="citation" data-cites="gelman_data_2007">Gelman and Hill (<a href="#/references" role="doc-biblioref" onclick="">2007</a>)</span> enough!</p>
+</div></aside></section>
+<section id="predictive-example-advertising-effects" class="slide level2 smaller title-12">
+<h2>Predictive Example: Advertising Effects</h2>
+<ul>
+<li><strong>Independent variable</strong>: $ put into advertisements</li>
+<li><strong>Dependent variable</strong>: Sales</li>
+<li><strong>Goal</strong>: Figure out a good way to <strong>allocate</strong> an advertising budget</li>
 </ul>
 
+<img data-src="index_files/figure-revealjs/ad-plots-1.png" width="960" class="r-stretch"></section>
+<section id="explanatory-example-industrialization-effects" class="slide level2 smaller">
+<h2>Explanatory Example: Industrialization Effects</h2>
+
+<img data-src="index_files/figure-revealjs/mil-plot-intro-1.png" width="960" class="r-stretch"></section>
+<section id="simple-linear-regression" class="slide level2 smaller">
+<h2>Simple Linear Regression</h2>
+<ul>
+<li><p>For now, we treat <strong>Newspaper</strong>, <strong>Radio</strong>, <strong>TV</strong> advertising separately: how much do <strong>sales</strong> increase per $1 into [medium]? (Later we’ll consider them jointly: multiple regression)</p></li>
+<li><p><strong>Our model</strong>:</p>
+<p><span class="math display">\[
+Y = \underbrace{\param{\beta_0}}_{\mathclap{\text{Intercept}}} + \underbrace{\param{\beta_1}}_{\mathclap{\text{Slope}}}X + \varepsilon
+\]</span></p></li>
+<li><p>This model generates <strong>predictions</strong> via</p>
+<p><span class="math display">\[
+\widehat{y} = \underbrace{\widehat{\beta_0}}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-5mm] \text{intercept}\end{array}}} ~+~ \underbrace{\widehat{\beta_1}}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-4mm] \text{slope}\end{array}}}\cdot x
+\]</span></p></li>
+<li><p>Note how these predictions will be <strong>wrong</strong> (unless the data is perfectly linear)</p></li>
+<li><p>We’ve accounted for this in our model (by including <span class="math inline">\(\varepsilon\)</span> term)!</p></li>
+<li><p>But, we’d like to find estimates <span class="math inline">\(\widehat{\beta}_0\)</span> and <span class="math inline">\(\widehat{\beta}_1\)</span> that produce the “least wrong” predictions: motivates focus on <strong>residuals…</strong></p></li>
+</ul>
+</section>
+<section id="least-squares-minimizing-residuals" class="slide level2 smaller crunch-title crunch-quarto-figure">
+<h2>Least Squares: Minimizing Residuals</h2>
+<p>What can we <strong>optimize</strong> to ensure these residuals are as small as possible?</p>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/large-resids-plot-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<ul>
+<li>Sum?</li>
+</ul>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>0.0000000000</code></pre>
+</div>
+</div>
+<ul>
+<li>Sum of Squares?</li>
+</ul>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>3.8405017200</code></pre>
+</div>
+</div>
+</div></div>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/small-resids-plot-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<ul>
+<li>Sum?</li>
+</ul>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>0.0000000000</code></pre>
+</div>
+</div>
+<ul>
+<li>Sum of Squares?</li>
+</ul>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>1.9748635217</code></pre>
+</div>
+</div>
+</div></div>
+</section>
+<section id="why-not-absolute-value" class="slide level2 smaller crunch-title crunch-code crunch-ul crunch-quarto-figure">
+<h2>Why Not Absolute Value?</h2>
+<ul>
+<li>Two feasible ways to prevent positive and negative residuals <strong>cancelling out</strong>:
+<ul>
+<li><strong>Absolute value</strong> <span class="math inline">\(\left|y - \widehat{y}\right|\)</span> or <strong>squaring</strong> <span class="math inline">\(\left( y - \widehat{y} \right)^2\)</span></li>
+</ul></li>
+<li>But remember that we’re aiming to <strong>minimize</strong> these residuals…</li>
+<li>Ghost of calculus past 😱: which is <strong>differentiable</strong> everywhere?</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/x2-plot-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/abs-x-plot-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="outliers-penalized-quadratically" class="slide level2 smaller">
+<h2>Outliers Penalized Quadratically</h2>
+
+<img data-src="images/rss.png" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://gregorygundersen.com/blog/2020/01/04/ols/">Image Source</a></p></section>
+<section id="key-features-of-regression-line" class="slide level2 crunch-math math-90">
+<h2>Key Features of Regression Line</h2>
+<ul>
+<li>Regression line is <strong>BLUE</strong>: <strong>B</strong>est <strong>L</strong>inear <strong>U</strong>nbiased <strong>E</strong>stimator</li>
+<li>What exactly is it the “best” linear estimator of?</li>
+</ul>
+<p><span class="math display">\[
+\widehat{y} = \underbrace{\widehat{\beta}_0}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-5mm] \text{intercept}\end{array}}} ~+~ \underbrace{\widehat{\beta}_1}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-4mm] \text{slope}\end{array}}}\cdot x
+\]</span></p>
+<p>is chosen so that</p>
+<div class="smallmath">
+<p><span class="math display">\[
+\widehat{\theta} = \left(\widehat{\beta}_0, \widehat{\beta}_1\right) = \argmin_{\beta_0, \beta_1}\left[ \sum_{x_i \in X} \left(~~\overbrace{\widehat{y}(x_i)}^{\mathclap{\small\text{Predicted }y}} - \overbrace{\expect{Y \mid X = x_i}}^{\small \text{Avg. }y\text{ when }x = x_i}\right)^{2~} \right]
+\]</span></p>
+</div>
+</section>
+<section id="where-did-that-mathbbey-mid-x-x_i-come-from" class="slide level2 smaller title-11">
+<h2>Where Did That <span class="math inline">\(\mathbb{E}[Y \mid X = x_i]\)</span> Come From?</h2>
+
+<img data-src="images/regression_normal_dist.jpg" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://digfir-published.macmillanusa.com/psbe4e/psbe4e_ch10_2.html">Image Source</a></p></section>
+<section id="but-what-about-all-the-other-types-of-vars" class="slide level2 title-08">
+<h2>But… What About All the Other Types of Vars?</h2>
+<ul>
+<li>5000: you saw, e.g., nominal, ordinal, cardinal vars</li>
+<li>5100: you wrestled with <strong>discrete</strong> vs.&nbsp;<strong>continuous</strong> RVs</li>
+<li>Good News #1: Regression can handle <strong>all</strong> these types+more!</li>
+<li>Good News #2: Distinctions between <strong>classification</strong> and <strong>regression</strong> start to diminish as you learn fancier regression methods! (One key tool here: <strong>link functions</strong>)</li>
+<li>By end of 5300 you should have something on your toolbelt for handling most cases like <em>“I want to do [regression / classification], but my data is [not cardinal+continuous]”</em></li>
+</ul>
+</section></section>
+<section>
+<section id="deriving-the-least-squares-estimate" class="title-slide slide level1 center" data-stack-name="Deriving OLS">
+<h1>Deriving the Least Squares Estimate</h1>
 
 </section>
+<section id="a-sketch-hw-is-the-full-thing" class="slide level2 smaller">
+<h2>A Sketch (HW is the Full Thing)</h2>
+<ul>
+<li>OLS for regression <strong>without</strong> intercept <span class="math inline">\(\param{\beta_0}\)</span>: Which <strong>line through origin</strong> best predicts <span class="math inline">\(Y\)</span>?</li>
+<li>(Good practice + reminder of how <strong>restricted</strong> linear models are!)</li>
+</ul>
+<p><span class="math display">\[
+Y = \beta_1 X + \varepsilon
+\]</span></p>
+
+<img data-src="index_files/figure-revealjs/random-lines-origin-1.png" width="960" class="r-stretch"></section>
+<section id="evaluating-with-residuals" class="slide level2 smaller">
+<h2>Evaluating with Residuals</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/possible-choice-1-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/choice-1-resid-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/possible-choice-2-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/choice-2-resid-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="now-the-math" class="slide level2 smaller">
+<h2>Now the Math</h2>
+<p><span class="math display">\[
+\begin{align*}
+\beta_1^* = \argmin_{\beta_1}\left[ \sum_{i=1}^{n}(\widehat{y}_i - y_i)^2 \right] = \argmin_{\beta_1}\left[ \sum_{i=1}^{n}(\beta_1x_i - y_i)^2 \right]
+\end{align*}
+\]</span></p>
+<p>We can compute this derivative to obtain:</p>
+<p><span class="math display">\[
+\frac{\partial}{\partial\beta_1}\left[ \sum_{i=1}^{n}(\beta_1x_i - y_i)^2 \right] = \sum_{i=1}^{n}\frac{\partial}{\partial\beta_1}(\beta_1x_i - y_i)^2 = \sum_{i=1}^{n}2(\beta_1x_i - y_i)x_i
+\]</span></p>
+<p>And our first-order condition means that:</p>
+<p><span class="math display">\[
+\sum_{i=1}^{n}2(\beta_1^*x_i - y_i)x_i = 0 \iff \beta_1^*\sum_{i=1}^{n}x_i^2 = \sum_{i=1}^{n}x_iy_i \iff \boxed{\beta_1^* = \frac{\sum_{i=1}^{n}x_iy_i}{\sum_{i=1}^{n}x_i^2}}
+\]</span></p>
+</section></section>
+<section>
+<section id="doing-things-with-regression" class="title-slide slide level1 center" data-stack-name="Interpreting Results">
+<h1>Doing Things With Regression</h1>
+
+</section>
+<section id="regression-r-vs.-statsmodels" class="slide level2 smaller output-75">
+<h2>Regression: <code>R</code> vs.&nbsp;<code>statsmodels</code></h2>
+<div class="columns">
+<div class="column" style="width:45%;">
+<center>
+<strong>In (Base) R: <code>lm()</code></strong>
+</center>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>lin_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> TV, <span class="at">data=</span>ad_df)</span>
+<span id="cb5-2"><a></a><span class="fu">summary</span>(lin_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = sales ~ TV, data = ad_df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-8.3860 -1.9545 -0.1913  2.0671  7.2124 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 7.032594   0.457843   15.36   &lt;2e-16 ***
+TV          0.047537   0.002691   17.67   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 3.259 on 198 degrees of freedom
+Multiple R-squared:  0.6119,    Adjusted R-squared:  0.6099 
+F-statistic: 312.1 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>General syntax:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">lm</span>(</span>
+<span id="cb7-2"><a></a>  dependent <span class="sc">~</span> independent <span class="sc">+</span> controls,</span>
+<span id="cb7-3"><a></a>  <span class="at">data =</span> my_df</span>
+<span id="cb7-4"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column" style="width:55%;">
+<center>
+<strong>In Python: <code>smf.ols()</code></strong>
+</center>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb8-2"><a></a>results <span class="op">=</span> smf.ols(<span class="st">"sales ~ TV"</span>, data<span class="op">=</span>ad_df).fit()</span>
+<span id="cb8-3"><a></a><span class="bu">print</span>(results.summary(slim<span class="op">=</span><span class="va">True</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                  sales   R-squared:                       0.612
+Model:                            OLS   Adj. R-squared:                  0.610
+No. Observations:                 200   F-statistic:                     312.1
+Covariance Type:            nonrobust   Prob (F-statistic):           1.47e-42
+==============================================================================
+                 coef    std err          t      P&gt;|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      7.0326      0.458     15.360      0.000       6.130       7.935
+TV             0.0475      0.003     17.668      0.000       0.042       0.053
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
+</div>
+</div>
+<p>General syntax:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a></a>smf.ols(</span>
+<span id="cb10-2"><a></a>  <span class="st">"dependent ~ independent + controls"</span>,</span>
+<span id="cb10-3"><a></a>  data <span class="op">=</span> my_df</span>
+<span id="cb10-4"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div></div>
+</section>
+<section id="interpreting-output" class="slide level2 smaller">
+<h2>Interpreting Output</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/mil-plot-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = military ~ industrial, data = gdp_df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.3354 -1.0997 -0.3870  0.6081  6.7508 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)  0.61969    0.59526   1.041   0.3010  
+industrial   0.05253    0.02019   2.602   0.0111 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.671 on 79 degrees of freedom
+  (8 observations deleted due to missingness)
+Multiple R-squared:  0.07895,   Adjusted R-squared:  0.06729 
+F-statistic: 6.771 on 1 and 79 DF,  p-value: 0.01106</code></pre>
+</div>
+</div>
+</div></div>
+</section>
+<section id="zooming-in-coefficients" class="slide level2 smaller-table crunch-title">
+<h2>Zooming In: Coefficients</h2>
+<div class="coef-table">
+<table class="caption-top">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 20%">
+<col style="width: 22%">
+<col style="width: 26%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;"></th>
+<th style="text-align: center;">Estimate</th>
+<th>Std. Error</th>
+<th>t value</th>
+<th>Pr(&gt;|t|)</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><span class="cb1"><strong>(Intercept)</strong></span></td>
+<td style="text-align: center;"><span class="cb1">0.61969</span></td>
+<td><span class="cb1">0.59526</span></td>
+<td><span class="cb1 bold">1.041</span></td>
+<td><span class="cb1 bold">0.3010</span></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="cb2"><strong>industrial</strong></span></td>
+<td style="text-align: center;"><span class="cb2">0.05253</span></td>
+<td><span class="cb2">0.02019</span></td>
+<td><span class="cb2 bold">2.602</span></td>
+<td><span class="cb2 bold">0.0111</span></td>
+<td><span class="cb2 bold">*</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"></td>
+<td style="text-align: center;"><span class="coef-label"><span class="math inline">\(\widehat{\beta}\)</span></span></td>
+<td><span class="coef-label">Uncertainty</span></td>
+<td><span class="coef-label">Test stat <span class="math inline">\(t\)</span></span></td>
+<td><span class="coef-label">How extreme is <span class="math inline">\(t\)</span>?</span></td>
+<td><span class="coef-label">Signif. Level</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span class="math display">\[
+\widehat{y} \approx \class{cb1}{\overset{\beta_0}{\underset{\small \pm 0.595}{0.620}}} +  \class{cb2}{\overset{\beta_1}{\underset{\small \pm 0.020}{0.053}}} \cdot x
+\]</span></p>
+</section>
+<section id="zooming-in-significance" class="slide level2 crunch-title smaller-table crunch-details crunch-quarto-figure">
+<h2>Zooming In: Significance</h2>
+<div class="coef-table">
+<table class="caption-top">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 20%">
+<col style="width: 22%">
+<col style="width: 26%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;"></th>
+<th style="text-align: center;">Estimate</th>
+<th>Std. Error</th>
+<th>t value</th>
+<th>Pr(&gt;|t|)</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><span class="cb1"><strong>(Intercept)</strong></span></td>
+<td style="text-align: center;"><span class="cb1">0.61969</span></td>
+<td><span class="cb1">0.59526</span></td>
+<td><span class="cb1 bold">1.041</span></td>
+<td><span class="cb1 bold">0.3010</span></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="cb2"><strong>industrial</strong></span></td>
+<td style="text-align: center;"><span class="cb2">0.05253</span></td>
+<td><span class="cb2">0.02019</span></td>
+<td><span class="cb2 bold">2.602</span></td>
+<td><span class="cb2 bold">0.0111</span></td>
+<td><span class="cb2 bold">*</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"></td>
+<td style="text-align: center;"><span class="coef-label"><span class="math inline">\(\widehat{\beta}\)</span></span></td>
+<td><span class="coef-label">Uncertainty</span></td>
+<td><span class="coef-label">Test stat <span class="math inline">\(t\)</span></span></td>
+<td><span class="coef-label">How extreme is <span class="math inline">\(t\)</span>?</span></td>
+<td><span class="coef-label">Signif. Level</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/t-stat-intercept-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/t-stat-coef-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="the-residual-plot" class="slide level2 crunch-title crunch-images" data-name="Diagnostics">
+<h2>The Residual Plot</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><p>A key <strong>assumption</strong> required for OLS: <strong>“homoskedasticity”</strong></p></li>
+<li><p>Given our model</p>
+<p><span class="math display">\[
+y_i = \beta_0 + \beta_1x_i + \varepsilon_i
+\]</span></p></li>
+</ul>
+<p>the errors <span class="math inline">\(\varepsilon_i\)</span> <strong>should not vary systematically with <span class="math inline">\(i\)</span></strong> * Formally: <span class="math inline">\(\forall i \left[ \Var{\varepsilon_i} = \sigma^2 \right]\)</span></p>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/residual-plot-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/heteroskedastic-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="q-q-plot" class="slide level2">
+<h2>Q-Q Plot</h2>
+<ul>
+<li>If <span class="math inline">\((\widehat{y} - y) \sim \mathcal{N}(0, \sigma^2)\)</span>, points would lie on 45° line:</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/qq-plot-heteroskedastic-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/qq-plot-gdp-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="multiple-linear-regression" class="slide level2">
+<h2>Multiple Linear Regression</h2>
+<ul>
+<li>Notation: <span class="math inline">\(x_{i,j}\)</span> = value of independent variable <span class="math inline">\(j\)</span> for person/observation <span class="math inline">\(i\)</span></li>
+<li><span class="math inline">\(M\)</span> = total number of independent variables</li>
+</ul>
+<p><span class="math display">\[
+\widehat{y}_i = \beta_0 + \beta_1x_{i,1} + \beta_2x_{i,2} + \cdots + \beta_M x_{i,M}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\beta_j\)</span> interpretation: a one-unit increase in <span class="math inline">\(x_{i,j}\)</span> is associated with a <span class="math inline">\(\beta_j\)</span> unit increase in <span class="math inline">\(y_i\)</span>, <strong>holding all other independent variables constant</strong></li>
+</ul>
+</section>
+<section id="visualizing-multiple-linear-regression" class="slide level2">
+<h2>Visualizing Multiple Linear Regression</h2>
+
+<img data-src="images/3_5.svg" class="r-stretch quarto-figure-center"><p class="caption">(ISLR, Fig 3.5): <em>A pronounced non-linear relationship. Positive residuals (visible above the surface) tend to lie along the 45-degree line, where budgets are split evenly. Negative residuals (most not visible) tend to be away from this line, where budgets are more lopsided.</em></p></section>
+<section id="interpreting-mlr" class="slide level2 smaller">
+<h2>Interpreting MLR</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = sales ~ TV + radio + newspaper, data = ad_df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-8.8277 -0.8908  0.2418  1.1893  2.8292 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  2.938889   0.311908   9.422   &lt;2e-16 ***
+TV           0.045765   0.001395  32.809   &lt;2e-16 ***
+radio        0.188530   0.008611  21.893   &lt;2e-16 ***
+newspaper   -0.001037   0.005871  -0.177     0.86    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.686 on 196 degrees of freedom
+Multiple R-squared:  0.8972,    Adjusted R-squared:  0.8956 
+F-statistic: 570.3 on 3 and 196 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
+<li><strong>Holding <code>radio</code> and <code>newspaper</code> spending constant</strong>…
+<ul>
+<li>An <strong>increase of $1K</strong> in spending on <code>TV</code> advertising is associated with</li>
+<li>An <strong>increase in sales of about 46 units</strong></li>
+</ul></li>
+<li><strong>Holding <code>TV</code> and <code>newspaper</code> spending constant</strong>…
+<ul>
+<li>An <strong>increase of $1K</strong> in spending on <code>radio</code> advertising is associated with</li>
+<li>An <strong>increase in sales of about 189 units</strong></li>
+</ul></li>
+</ul>
+</div></div>
+</section>
+<section id="but-wait" class="slide level2 smaller">
+<h2>But Wait…</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = sales ~ TV + radio + newspaper, data = ad_df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-8.8277 -0.8908  0.2418  1.1893  2.8292 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  2.938889   0.311908   9.422   &lt;2e-16 ***
+TV           0.045765   0.001395  32.809   &lt;2e-16 ***
+radio        0.188530   0.008611  21.893   &lt;2e-16 ***
+newspaper   -0.001037   0.005871  -0.177     0.86    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.686 on 196 degrees of freedom
+Multiple R-squared:  0.8972,    Adjusted R-squared:  0.8956 
+F-statistic: 570.3 on 3 and 196 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = sales ~ newspaper, data = ad_df)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-11.2272  -3.3873  -0.8392   3.5059  12.7751 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 12.35141    0.62142   19.88  &lt; 2e-16 ***
+newspaper    0.05469    0.01658    3.30  0.00115 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 5.092 on 198 degrees of freedom
+Multiple R-squared:  0.05212,   Adjusted R-squared:  0.04733 
+F-statistic: 10.89 on 1 and 198 DF,  p-value: 0.001148</code></pre>
+</div>
+</div>
+</div></div>
+<ul>
+<li>MLR results can be <strong>drastically different</strong> from SLR results, because of <strong>correlations</strong> (next slide)</li>
+<li>This is a good thing! It’s how we’re able to <strong>control for</strong> confounding variables!</li>
+</ul>
+</section>
+<section id="correlations-among-features" class="slide level2 smaller">
+<h2>Correlations Among Features</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                  TV      radio  newspaper     sales
+TV        1.00000000 0.05480866 0.05664787 0.7822244
+radio     0.05480866 1.00000000 0.35410375 0.5762226
+newspaper 0.05664787 0.35410375 1.00000000 0.2282990
+sales     0.78222442 0.57622257 0.22829903 1.0000000</code></pre>
+</div>
+</div>
+<ul>
+<li>Observe how <span class="math inline">\(\text{cor}(\texttt{radio}, \texttt{newspaper}) \approx 0.35\)</span></li>
+<li>In markets where we spend more on <code>radio</code> our sales will tend to be higher…</li>
+<li>Corr matrix <span class="math inline">\(\implies\)</span> we spend more on <code>newspaper</code> in those same markets…</li>
+<li>In SLR which only examines <code>sales</code> vs.&nbsp;<code>newspaper</code>, we (<strong>correctly!</strong>) observe that higher values of <code>newspaper</code> are associated with higher values of <code>sales</code>…</li>
+<li>In essence, <code>newspaper</code> advertising is a surrogate for <code>radio</code> advertising <span class="math inline">\(\implies\)</span> in our SLR, <code>newspaper</code> “gets credit” for the association between <code>radio</code> and <code>sales</code></li>
+</ul>
+</section>
+<section id="another-mlr-superpower-incorporating-categorical-vars" class="slide level2 smaller title-09 math-90">
+<h2>Another MLR Superpower: Incorporating Categorical Vars</h2>
+<p><em>(Preview for next week)</em></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><span class="math display">\[
+Y = \beta_0 + \beta_1 \times \texttt{income}
+\]</span></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/credit-plot-slr-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\begin{align*}
+Y = &amp;\beta_0 + \beta_1 \times \texttt{income} + \beta_2 \times \texttt{Student} \\
+&amp;+ \beta_3 \times (\texttt{Student} \times \texttt{Income})
+\end{align*}
+\]</span></p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/credit-plot-students-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<ul>
+<li>Why do we need the <span class="math inline">\(\texttt{Student} \times \texttt{Income}\)</span> term?</li>
+<li>Understanding this setup will open up a <strong>vast</strong> array of possibilities for regression 😎</li>
+</ul>
+</section>
+<section id="references" class="slide level2 smaller scrollable">
+<h2>References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-gelman_data_2007" class="csl-entry" role="listitem">
+Gelman, Andrew, and Jennifer Hill. 2007. <em>Data <span>Analysis Using Regression</span> and <span>Multilevel</span>/<span>Hierarchical Models</span></em>. Cambridge University Press. <a href="https://www.dropbox.com/scl/fi/asbumi3g0gqa4xl9va7wp/Andrew-Gelman-Jennifer-Hill-Data-Analysis-Using-Regression-and-Multilevel_Hierarchical-Models.pdf?rlkey=zf8icjhm7rswvxrpm7d10m65o&amp;dl=1">https://www.dropbox.com/scl/fi/asbumi3g0gqa4xl9va7wp/Andrew-Gelman-Jennifer-Hill-Data-Analysis-Using-Regression-and-Multilevel_Hierarchical-Models.pdf?rlkey=zf8icjhm7rswvxrpm7d10m65o&amp;dl=1</a>.
+</div>
+</div>
+
+
+</section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
-<p>DSAN 5300-01 Week 1: Introduction to the Course</p>
+<p>DSAN 5300 Week 1: Linear Regression</p>
 </div>
 </div></div>
 
@@ -374,191 +1274,212 @@ Jeff Jacobs
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
-    window.document.addEventListener("DOMContentLoaded", function (event) {
-      const toggleBodyColorMode = (bsSheetEl) => {
-        const mode = bsSheetEl.getAttribute("data-mode");
-        const bodyEl = window.document.querySelector("body");
-        if (mode === "dark") {
-          bodyEl.classList.add("quarto-dark");
-          bodyEl.classList.remove("quarto-light");
-        } else {
-          bodyEl.classList.add("quarto-light");
-          bodyEl.classList.remove("quarto-dark");
-        }
-      }
-      const toggleBodyColorPrimary = () => {
-        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-        if (bsSheetEl) {
-          toggleBodyColorMode(bsSheetEl);
-        }
-      }
-      toggleBodyColorPrimary();  
-      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
-      tabsets.forEach(function(tabset) {
-        const tabby = new Tabby('#' + tabset.id);
-      });
-      const isCodeAnnotation = (el) => {
-        for (const clz of el.classList) {
-          if (clz.startsWith('code-annotation-')) {                     
-            return true;
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
           }
+          return false;
         }
-        return false;
-      }
-      const onCopySuccess = function(e) {
-        // button target
-        const button = e.trigger;
-        // don't keep focus
-        button.blur();
-        // flash "checked"
-        button.classList.add('code-copy-button-checked');
-        var currentTitle = button.getAttribute("title");
-        button.setAttribute("title", "Copied!");
-        let tooltip;
-        if (window.bootstrap) {
-          button.setAttribute("data-bs-toggle", "tooltip");
-          button.setAttribute("data-bs-placement", "left");
-          button.setAttribute("data-bs-title", "Copied!");
-          tooltip = new bootstrap.Tooltip(button, 
-            { trigger: "manual", 
-              customClass: "code-copy-button-tooltip",
-              offset: [0, -8]});
-          tooltip.show();    
-        }
-        setTimeout(function() {
-          if (tooltip) {
-            tooltip.hide();
-            button.removeAttribute("data-bs-title");
-            button.removeAttribute("data-bs-toggle");
-            button.removeAttribute("data-bs-placement");
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
           }
-          button.setAttribute("title", currentTitle);
-          button.classList.remove('code-copy-button-checked');
-        }, 1000);
-        // clear code selection
-        e.clearSelection();
-      }
-      const getTextToCopy = function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
           for (const childEl of codeEl.children) {
             if (isCodeAnnotation(childEl)) {
               childEl.remove();
             }
           }
           return codeEl.innerText;
-      }
-      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-        text: getTextToCopy
-      });
-      clipboard.on('success', onCopySuccess);
-      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-          text: getTextToCopy,
-          container: window.document.getElementById('quarto-embedded-source-code-modal')
-        });
-        clipboardModal.on('success', onCopySuccess);
-      }
-        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-        var mailtoRegex = new RegExp(/^mailto:/);
-          var filterRegex = new RegExp('/' + window.location.host + '/');
-        var isInternal = (href) => {
-            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
-        // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-        for (var i=0; i<links.length; i++) {
-          const link = links[i];
-          if (!isInternal(link.href)) {
-            // undo the damage that might have been done by quarto-nav.js in the case of
-            // links that we want to consider external
-            if (link.dataset.originalHref !== undefined) {
-              link.href = link.dataset.originalHref;
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
             }
           }
-        }
-      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-        const config = {
-          allowHTML: true,
-          maxWidth: 500,
-          delay: 100,
-          arrow: false,
-          appendTo: function(el) {
-              return el.closest('section.slide') || el.parentElement;
-          },
-          interactive: true,
-          interactiveBorder: 10,
-          theme: 'light-border',
-          placement: 'bottom-start',
-        };
-        if (contentFn) {
-          config.content = contentFn;
-        }
-        if (onTriggerFn) {
-          config.onTrigger = onTriggerFn;
-        }
-        if (onUntriggerFn) {
-          config.onUntrigger = onUntriggerFn;
-        }
-          config['offset'] = [0,0];
-          config['maxWidth'] = 700;
-        window.tippy(el, config); 
-      }
-      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-      for (var i=0; i<noterefs.length; i++) {
-        const ref = noterefs[i];
-        tippyHover(ref, function() {
-          // use id or data attribute instead here
-          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-          try { href = new URL(href).hash; } catch {}
-          const id = href.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note) {
-            return note.innerHTML;
-          } else {
-            return "";
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
           }
-        });
-      }
-      const findCites = (el) => {
-        const parentEl = el.parentElement;
-        if (parentEl) {
-          const cites = parentEl.dataset.cites;
-          if (cites) {
-            return {
-              el,
-              cites: cites.split(' ')
-            };
-          } else {
-            return findCites(el.parentElement)
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
           }
-        } else {
-          return undefined;
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
         }
-      };
-      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-      for (var i=0; i<bibliorefs.length; i++) {
-        const ref = bibliorefs[i];
-        const citeInfo = findCites(ref);
-        if (citeInfo) {
-          tippyHover(citeInfo.el, function() {
-            var popup = window.document.createElement('div');
-            citeInfo.cites.forEach(function(cite) {
-              var citeDiv = window.document.createElement('div');
-              citeDiv.classList.add('hanging-indent');
-              citeDiv.classList.add('csl-entry');
-              var biblioDiv = window.document.getElementById('ref-' + cite);
-              if (biblioDiv) {
-                citeDiv.innerHTML = biblioDiv.innerHTML;
-              }
-              popup.appendChild(citeDiv);
-            });
-            return popup.innerHTML;
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
           });
         }
-      }
-    });
-    </script>
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
     
 
 </body></html>

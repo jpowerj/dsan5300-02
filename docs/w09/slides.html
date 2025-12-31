@@ -7,11 +7,11 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.6.40">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.26">
 
   <meta name="author" content="Jeff Jacobs">
-  <title>DSAN 5300-01 – Week 9: Generative vs.&nbsp;Discriminative Models</title>
+  <title>DSAN 5300-02 – Week 9: Deep Learning</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -30,8 +30,9 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -42,7 +43,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -114,7 +115,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-8f68bdfe1fab35e4f5fa44ba3024eea8.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-c59f08653608056fecc96b8077358242.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -215,8 +216,8 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Week 9: Generative vs.&nbsp;Discriminative Models</h1>
-  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2025, Georgetown University</span></p>
+  <h1 class="title">Week 9: Deep Learning</h1>
+  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2026, Georgetown University</span></p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -229,7 +230,7 @@ Jeff Jacobs
     </div>
 </div>
 
-  <p class="date">Monday, March 17, 2025</p>
+  <p class="date">Monday, March 16, 2026</p>
 </section>
 <section>
 <section id="schedule" class="title-slide slide level1 smaller small-title crunch-title crunch-callout center" data-stack-name="Schedule">
@@ -255,7 +256,7 @@ Jeff Jacobs
 <td style="text-align: left;"><strong>Lecture</strong></td>
 <td style="text-align: left;">6:30pm</td>
 <td style="text-align: left;">7:00pm</td>
-<td style="text-align: left;"><a href="#/learning-decision-boundaries">Separating Hyperplanes →</a></td>
+<td style="text-align: left;"><a href="#/learning-decision-boundaries">Single Layer Neural Networks →</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -279,7 +280,7 @@ Jeff Jacobs
 <td style="text-align: left;"></td>
 <td style="text-align: left;">8:10pm</td>
 <td style="text-align: left;">9:00pm</td>
-<td style="text-align: left;"><a href="#/quiz-time">Quiz 2 →</a></td>
+<td style="text-align: left;"><a href="#/quiz-time">Fancier Neural Networks →</a></td>
 </tr>
 </tbody>
 </table>
@@ -287,8 +288,8 @@ Jeff Jacobs
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
-<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
+<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </div>
@@ -319,7 +320,10 @@ Jeff Jacobs
 \newcommand{\outcome}[1]{\textsf{#1}}
 \newcommand{\param}[1]{{\color{purple} #1}}
 \newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
-\newcommand{\prob}[1]{P\left( #1 \right)}
+\newcommand{\pedge}[2]{\require{enclose}\enclose{circle}{~{#1}~} \rightarrow \; \enclose{circle}{\kern.01em {#2}~\kern.01em}}
+\newcommand{\pnode}[1]{\require{enclose}\enclose{circle}{\kern.1em {#1} \kern.1em}}
+\newcommand{\ponode}[1]{\require{enclose}\enclose{box}[background=lightgray]{{#1}}}
+\newcommand{\pnodesp}[1]{\require{enclose}\enclose{circle}{~{#1}~}}
 \newcommand{\purp}[1]{\color{purple}{#1}}
 \newcommand{\sign}{\text{Sign}}
 \newcommand{\spacecap}{\; \cap \;}
@@ -330,289 +334,425 @@ Jeff Jacobs
 \]</span></p>
 </div>
 </section>
-<section id="quick-roadmap" class="slide level2 crunch-title crunch-ul text-90 crunch-li-first">
+<section id="quick-roadmap" class="slide level2 smaller crunch-title crunch-ul text-90 crunch-li-first">
 <h2>Quick Roadmap</h2>
 <ul>
-<li>Weeks 8-9: Shift from focus on <strong>regression</strong> to focus on <strong>classification</strong> (Though we use lessons from regression!)</li>
-<li>Last Week (W08): SVMs as <em>new method</em> with this focus
-<ul>
-<li>Emphasis on <strong>boundary between classes</strong> <span class="math inline">\(\leadsto\)</span> 2.5hrs on <strong>separating hyperplanes</strong>: in original feature space (Max-Margin, SVCs) or derived feature spaces (SVMs)</li>
-</ul></li>
-<li>Now: Wait, didn’t we discuss a classification method before, though its name confusingly had “regression” in it? 🤔
-<ul>
-<li>Take <strong>logistic regression</strong> but use Bayes rule to “flip” from <strong>regression[+thresholding]</strong> task to <strong>class-separation</strong> task (think of SVM’s max-width-of-“slab” objective!)</li>
-</ul></li>
+<li>We made it! Cutting-edge method for <span style="text-decoration: line-through;">statistical</span> <em>neural</em> learning</li>
 </ul>
-<!-- * Best way I can summarize: logistic regression is great if we **care about $\beta_j$ values** (effect of $\uparrow X$ on $\Pr(Y = 1)$)... 
-  * Otherwise, if we care about best **separating** $Y = 0$ from $Y = 1$ (think of SVM's max-width-of-"slab" objective), we can optimize **separation boundary**, point where $\Pr(Y = 1) = \Pr(Y = 0)$ directly
--->
-</section>
-<section id="logistic-regression-refresher" class="slide level2 crunch-title math-90 crunch-math crunch-li title-09 crunch-ul">
-<h2>Logistic Regression Refresher</h2>
-<ul>
-<li>We don’t have time for full refresher, but just remember how it involves learning <span class="math inline">\(\beta_j\)</span> values to minimize <strong>loss</strong> w.r.t.</li>
-</ul>
-<p><span class="math display">\[
-\begin{align*}
-&amp;\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
-&amp;\iff \Pr(Y = 1 \mid X = x_i) = \frac{e^{\beta_0 + \beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}}
-\end{align*}
-\]</span></p>
-<ul>
-<li>And then, if we want to <strong>classify <span class="math inline">\(x\)</span></strong> rather than just <strong>predict</strong> <span class="math inline">\(\Pr(Y = 1 \mid X = x)\)</span>, we apply a threshold <span class="math inline">\(t \in [0,1]\)</span>:</li>
-</ul>
-<p><span class="math display">\[
-\widehat{y} = \begin{cases}
-1 &amp;\text{if }\Pr(Y = 1 \mid X = x) = \frac{e^{\beta_0 + \beta_1 x}}{1 + e^{\beta_0 + \beta_1 x}} &gt; t \\
-0 &amp;\text{otherwise}
-\end{cases}
-\]</span></p>
-</section>
-<section id="intuition" class="slide level2 crunch-title crunch-ul title-09 inline-90 scrollable">
-<h2>Intuition</h2>
-<ul>
-<li>Logistic regression is called a <strong>discriminative model</strong>, since we are learning parameters <span class="math inline">\(\beta_j\)</span> that best produce a predicted <strong>class</strong> <span class="math inline">\(\widehat{y_i}\)</span> from <strong>features</strong> <span class="math inline">\(\mathbf{x}_i\)</span>…</li>
-<li>We’re modeling <span class="math inline">\(\Pr(Y = k \mid X)\)</span> (for two classes, <span class="math inline">\(k = 0\)</span> and <span class="math inline">\(k = 1\)</span>), hence the LHS of the Logistic Regression formula</li>
-<li>But there are cases where we can <strong>do better</strong><sup>1</sup> by instead modeling (learning parameters for) <span class="math inline">\(\Pr(X \mid Y = k)\)</span>, for each <span class="math inline">\(k\)</span>, then using Bayes rule to “flip” back to <span class="math inline">\(\Pr(Y = k \mid X)\)</span>!<br><span class="math inline">\(\leadsto\)</span> <strong>LDA</strong>, <strong>QDA</strong>, and <strong>Naïve Bayes</strong> classifiers</li>
-</ul>
-<aside><ol class="aside-footnotes"><li id="fn1"><p><em>(More normally-distributed <span class="math inline">\(X\)</span> <span class="math inline">\(\implies\)</span> more likely to “beat” Logistic Regression)</em></p></li></ol></aside></section></section>
-<section>
-<section id="linear-discriminant-analysis-lda" class="title-slide slide level1 center" data-stack-name="LDA">
-<h1>Linear Discriminant Analysis (LDA)</h1>
-<ul>
-<li><em>Not to be confused with the NLP model called “LDA”!</em></li>
-<li><em>In that case LDA = “Latent Dirichlet Allocation”</em></li>
-</ul>
-</section>
-<section id="bayes-rule" class="slide level2 smaller math-90 crunch-ul">
-<h2>Bayes’ Rule</h2>
-<ul>
-<li>First things first, we generalize from <span class="math inline">\(Y \in \{0, 1\}\)</span> to <span class="math inline">\(K\)</span> possible classes (labels), since the notation for <span class="math inline">\(K\)</span> classes here is not much more complex than 2 classes!</li>
-<li>We label the pieces using ISLR’s notation to make our lives easier:</li>
-</ul>
-<p><span class="math display">\[
-\underbrace{\Pr(Y = k \mid X = x)}_{p_k(x)} = \frac{
-  \overbrace{\Pr(X = x \mid Y = k)}^{f_k(x)} \overbrace{\Pr(Y = k)}^{\pi_k}
-}{
-  \sum_{\ell = 1}^{K} \underbrace{\Pr(X = x \mid Y = \ell)}_{f_{\ell}(x)} \underbrace{\Pr(Y = \ell)}_{\pi_{\ell}}
-} = \frac{f_k(x) \overbrace{\pi_k}^{\mathclap{\text{Prior}(k)}}}{\sum_{\ell = 1}^{K}f_{\ell}(x) \underbrace{\pi_\ell}_{\mathclap{\text{Prior}(\ell)}}}
-\]</span></p>
-<ul>
-<li><p>So if we do have only two classes, <span class="math inline">\(K = 2\)</span> and <span class="math inline">\(p_1(x) = \frac{f_1(x)\pi_1}{f_1(x)\pi_1 + f_0(x)\pi_0}\)</span></p></li>
-<li><p>Priors can be estimated as <span class="math inline">\(n_k / n\)</span>. The hard work is in modeling <span class="math inline">\(f_k(x)\)</span>! With estimates of these two “pieces” for each <span class="math inline">\(k\)</span>, we can derive a classifier <span class="math inline">\(\widehat{y}(x) = \argmax_k p_k(x)\)</span></p></li>
-</ul>
-</section>
-<section id="the-lda-assumption-one-feature-x" class="slide level2 smaller crunch-title title-11 math-90 crunch-ul crunch-li-5">
-<h2>The LDA Assumption (One Feature <span class="math inline">\(x\)</span>)</h2>
-<ul>
-<li>Within each class <span class="math inline">\(k\)</span>, values of <span class="math inline">\(x\)</span> are <strong>normally distributed</strong>:</li>
-</ul>
-<p><span class="math display">\[
-(X \mid Y = k) \sim \mathcal{N}(\param{\mu_k}, \param{\sigma^2}) \iff f_k(x) = \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_k}{\sigma} \right)^2\right]
-\]</span></p>
-<ul>
-<li>Plugging back into (notationally-simplified) classifier, we get</li>
-</ul>
-<p><span class="math display">\[
-\widehat{y}(x) = \argmax_{k}\left[ \frac{
-  \pi_k \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_k}{\sigma} \right)^2\right]
-}{
-  \sum_{\ell = 1}^{K}\pi_{\ell} \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_\ell}{\sigma} \right)^2\right]
-}\right],
-\]</span></p>
-<ul>
-<li>Gross, BUT <span class="math inline">\(\argmax_k p_k(x) = \argmax_k \log(p_k(x)) \leadsto\)</span> “linear” discriminant <span class="math inline">\(\delta_k(x)\)</span>:</li>
-</ul>
-<p><span class="math display">\[
-\widehat{y}(x) = \argmax_k[\delta_k(x)] = \argmax_{k}\left[ \overbrace{\frac{\mu_k}{\sigma^2}}^{\smash{m}} x ~ \overbrace{- \frac{\mu_k^2}{2\sigma^2} + \log(\pi_k)}^{\smash{b}} \right]
-\]</span></p>
-</section>
-<section id="decision-boundaries" class="slide level2 smaller crunch-title crunch-ul crunch-math math-90">
-<h2>Decision Boundaries</h2>
-<ul>
-<li><p>The <strong>boundary</strong> between two classes <span class="math inline">\(k\)</span> and <span class="math inline">\(k'\)</span> will be the point at which <span class="math inline">\(\delta_k(x) = \delta_{k'}(x)\)</span></p></li>
-<li><p>For two classes, can solve <span class="math inline">\(\delta_0(x) = \delta_1(x)\)</span> for <span class="math inline">\(x\)</span> to obtain <span class="math inline">\(x = \frac{\mu_0 + \mu_1}{2}\)</span></p></li>
-<li><p>To derive a boundary from <strong>data</strong>: <span class="math inline">\(x = \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}\)</span> <span class="math inline">\(\Rightarrow\)</span> Predict <span class="math inline">\(1\)</span> if <span class="math inline">\(x &gt; \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}\)</span>, <span class="math inline">\(0\)</span> otherwise</p></li>
-</ul>
-
-<img data-src="images/4_4.svg" class="r-stretch quarto-figure-center"><p class="caption">ISLR Figure 4.4: Estimating the Decision Boundary from data. The dashed line is the “true” boundary <span class="math inline">\(x = \frac{\mu_0 + \mu_1}{2}\)</span>, while the solid line in the right panel is the boundary <strong>estimated from data</strong> as <span class="math inline">\(x = \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}\)</span>.</p></section>
-<section id="number-of-parameters" class="slide level2 smaller crunch-title">
-<h2>Number of Parameters</h2>
-<ul>
-<li><span class="math inline">\(K = 2\)</span> is special case, since lots of things cancel out, but in general need to estimate:</li>
-</ul>
-<table class="caption-top">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>English</th>
-<th>Notation</th>
-<th>How Many</th>
-<th>Formula</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Prior for class <span class="math inline">\(k\)</span></td>
-<td><span class="math inline">\(\widehat{\pi}_k\)</span></td>
-<td><span class="math inline">\(K - 1\)</span></td>
-<td><span class="math inline">\(\widehat{\pi}_k = n_k / n\)</span></td>
-</tr>
-<tr class="even">
-<td>Estimated mean for class <span class="math inline">\(k\)</span></td>
-<td><span class="math inline">\(\widehat{\mu}_k\)</span></td>
-<td><span class="math inline">\(K\)</span></td>
-<td><span class="math inline">\(\widehat{\mu}_k = \displaystyle \frac{1}{n_k}\sum_{\{i \mid y_i = k\}}x_i\)</span></td>
-</tr>
-<tr class="odd">
-<td>Estimated (shared) variance</td>
-<td><span class="math inline">\(\widehat{\sigma}^2\)</span></td>
-<td>1</td>
-<td><span class="math inline">\(\widehat{\sigma}^2 = \displaystyle \frac{1}{n - K}\sum_{k = 1}^{K}\sum_{i:y_i = k}(x_i - \widehat{\mu}_k)^2\)</span></td>
-</tr>
-<tr class="even">
-<td></td>
-<td><strong>Total:</strong></td>
-<td><span class="math inline">\(2K\)</span></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><em>(Keep in mind for fancier methods! This may blow up to be much larger than <span class="math inline">\(n\)</span>)</em></li>
-</ul>
-</section>
-<section id="lda-with-multiple-features-here-p-2" class="slide level2 smaller crunch-title title-11 crunch-ul">
-<h2>LDA with Multiple Features (Here <span class="math inline">\(p = 2\)</span>)</h2>
-<ul>
-<li>Within each class <span class="math inline">\(k\)</span>, values of <span class="math inline">\(\mathbf{x}\)</span> are <strong>(multivariate) normally distributed</strong>:</li>
-</ul>
-<p><span class="math display">\[
-\left( \begin{bmatrix}X_1 \\ X_2\end{bmatrix} \middle| ~ Y = k \right) \sim \mathbf{\mathcal{N}}_2(\param{\boldsymbol\mu_k}, \param{\mathbf{\Sigma}})
-\]</span></p>
-<ul>
-<li>Increasing <span class="math inline">\(p\)</span> to 2 and <span class="math inline">\(K\)</span> to 3 means more parameters, but still <strong>linear boundaries</strong>. It turns out: shared variance (<span class="math inline">\(\sigma^2\)</span> or <span class="math inline">\(\mathbf{\Sigma}\)</span>) will <strong>always</strong> produce linear boundaries 🤔</li>
-</ul>
-
-<img data-src="images/4_6.svg" class="r-stretch quarto-figure-center"><p class="caption">ISLR Figure 4.6: Like before, dashed lines are “true” boundaries while solid lines are boundaries <strong>estimated from data</strong></p></section>
-<section id="quadratic-class-boundaries" class="slide level2 smaller crunch-title title-12 crunch-ul math-90 crunch-math">
-<h2>Quadratic Class Boundaries</h2>
-<ul>
-<li>To achieve <strong>non-linear</strong> boundaries, estimate covariance matrix <span class="math inline">\(\mathbf{\Sigma}_k\)</span> for each class <span class="math inline">\(k\)</span>:</li>
-</ul>
-<p><span class="math display">\[
-\left( \begin{bmatrix}X_1 \\ X_2\end{bmatrix} \middle| ~ Y = k \right) \sim \mathbf{\mathcal{N}}_2(\param{\boldsymbol\mu_k}, \param{\mathbf{\Sigma}_k})
-\]</span></p>
-<ul>
-<li>Pros: Non-linear class boundaries! Cons: More parameters to estimate, does worse than LDA if data linearly-separable (or nearly linearly-separable).</li>
-<li>Deciding factor: do you think DGP produces normal classes with same variance?</li>
-</ul>
-
-<img data-src="images/4_9.svg" class="r-stretch quarto-figure-center"><p class="caption">ISLR Figure 4.9: Dashed <span style="color: #b97dc3"><strong>purple</strong></span> line is “true” boundary (Bayes decision boundary), dotted <strong>black</strong> line is LDA boundary, solid <span style="color: #009f86"><strong>green</strong></span> line is QDA boundary</p></section>
-<section id="key-advantage-of-generative-model" class="slide level2 smaller crunch-title crunch-ul table-va title-11 inline-90 crunch-quarto-figure crunch-td">
-<h2>Key Advantage of Generative Model</h2>
-<ul>
-<li>You get an actual “picture” of <strong>what the data looks like!</strong></li>
-</ul>
-<table class="caption-top">
-<colgroup>
-<col style="width: 10%">
-<col style="width: 30%">
-<col style="width: 30%">
-<col style="width: 30%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_1)\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_2)\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_3)\)</span></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><span class="math inline">\(k = 1\)</span></td>
-<td style="text-align: center;"><img data-src="images/4_10a1.svg" class="quarto-figure quarto-figure-center" style="width:70.0%"></td>
-<td style="text-align: center;"><img data-src="images/4_10a2.svg" class="quarto-figure quarto-figure-center" style="width:70.0%"></td>
-<td style="text-align: center;"><img data-src="images/4_10a3.svg" class="quarto-figure quarto-figure-center" style="width:70.0%"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><span class="math inline">\(k = 2\)</span></td>
-<td style="text-align: center;"><img data-src="images/4_10b1.svg" class="quarto-figure quarto-figure-center" style="width:70.0%"></td>
-<td style="text-align: center;"><img data-src="images/4_10b2.svg" class="quarto-figure quarto-figure-center" style="width:70.0%"></td>
-<td style="text-align: center;"><img data-src="images/4_10b3.svg" class="quarto-figure quarto-figure-center" style="width:70.0%"></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="classifying-new-points" class="slide level2 smaller crunch-title crunch-ul table-va title-11 inline-90 crunch-quarto-figure crunch-td">
-<h2>Classifying New Points</h2>
-<ul>
-<li>For new feature values <span class="math inline">\(x_{ij}\)</span>, compare <strong>how likely</strong> this value is under <span class="math inline">\(k = 1\)</span> vs.&nbsp;<span class="math inline">\(k = 2\)</span></li>
-<li>Example: <span class="math inline">\(\mathbf{x} = (0.4, 1.5, 1)^{\top}\)</span></li>
-</ul>
-<table class="caption-top">
-<colgroup>
-<col style="width: 10%">
-<col style="width: 30%">
-<col style="width: 30%">
-<col style="width: 30%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_1)\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_2)\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_3)\)</span></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><span class="math inline">\(k = 1\)</span></td>
-<td style="text-align: center;"><img data-src="images/4_10a1.svg" class="quarto-figure quarto-figure-center" style="width:50.0%"></td>
-<td style="text-align: center;"><img data-src="images/4_10a2.svg" class="quarto-figure quarto-figure-center" style="width:50.0%"></td>
-<td style="text-align: center;"><img data-src="images/4_10a3.svg" class="quarto-figure quarto-figure-center" style="width:50.0%"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"><span class="math inline">\(f_1(0.4) = 0.368\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(f_1(1.5) = 0.484\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(f_1(1) = 0.226\)</span></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><span class="math inline">\(k = 2\)</span></td>
-<td style="text-align: center;"><img data-src="images/4_10b1.svg" class="quarto-figure quarto-figure-center" style="width:50.0%"></td>
-<td style="text-align: center;"><img data-src="images/4_10b2.svg" class="quarto-figure quarto-figure-center" style="width:50.0%"></td>
-<td style="text-align: center;"><img data-src="images/4_10b3.svg" class="quarto-figure quarto-figure-center" style="width:50.0%"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"><span class="math inline">\(f_2(0.4) = 0.030\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(f_2(1.5) = 0.130\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(f_2(1) = 0.616\)</span></td>
-</tr>
-</tbody>
-</table>
+<iframe data-external="1" src="https://www.youtube.com/embed/L5GMVdGy8rU" width="100%" height="450" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 </section></section>
 <section>
-<section id="quiz-time" class="title-slide slide level1 center" data-stack-name="Quiz">
-<h1>Quiz Time!</h1>
+<section id="single-layer-neural-networks" class="title-slide slide level1 smaller title-12 center" data-stack-name="Single-Layer NNs">
+<h1>Single-Layer Neural Networks</h1>
 
-</section>
-<section id="appendix-fuller-logistic-derivation" class="slide level2 smaller crunch-title title-09">
-<h2>Appendix: Fuller Logistic Derivation</h2>
+<img data-src="images/nn_single_layer.svg" class="r-stretch quarto-figure-center"><p class="caption">Single-Layer NN, Adapted from ISLR Fig 10.1</p></section>
+<section id="diagram-leftrightarrow-math" class="slide level2 crunch-title cols-va crunch-math crunch-quarto-figure math-90 inline-90 crunch-ul crunch-li-8 title-09">
+<h2>Diagram <span class="math inline">\(\leftrightarrow\)</span> Math</h2>
+<div class="columns">
+<div class="column" style="width:66%;">
+<ul>
+<li><span class="math inline">\(p = 4\)</span> features in <span class="cb-in"><strong>Input Layer</strong></span></li>
+<li><span class="math inline">\(K = 5\)</span> <span class="cb-hidden"><strong>Hidden Units</strong></span></li>
+<li><span class="cb-out"><strong>Output Layer</strong></span>: Regression on <strong>activations</strong> <span class="math inline">\(a_k\)</span> (<span class="cb-hidden">Hidden Unit</span> outputs)</li>
+</ul>
 <p><span class="math display">\[
 \begin{align*}
-&amp;\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
-&amp;\iff \frac{\Pr(Y = 1 \mid X = x_i)}{1 - \Pr(Y = 1\ \mid X = x_i)} = e^{\beta_0 + \beta_1 X} \\
-&amp;\iff \Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X}(1 - \Pr(Y = 1 \mid X)) \\
-&amp;\iff \Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X} - e^{\beta_0 + \beta_1 X}\Pr(Y = 1 \mid X) \\
-&amp;\iff \Pr(Y = 1 \mid X) + e^{\beta_0 + \beta_1 X}\Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X} \\
-&amp;\iff \Pr(Y = 1 \mid X)(1 + e^{\beta_0 + \beta_1 X}) = e^{\beta_0 + \beta_1 X} \\
-&amp;\iff \Pr(Y = 1 \mid X) = \frac{e^{\beta_0 + \beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}}
+{\color{#976464} y} &amp;= { \color{#976464} \beta_0 } + {\color{#666693} \sum_{k=1}^{5} } {\color{#976464} \beta_k } { \color{#666693} \overbrace{\boxed{a_k} }^{\mathclap{k^\text{th}\text{ activation}}} } \\
+{\color{#976464} y} &amp;= { \color{#976464} \beta_0 } + {\color{#666693} \sum_{k=1}^{5} } {\color{#976464} \beta_k } { \color{#666693} \underbrace{ g \mkern-4mu \left( w_{k0} + {\color{#679d67} \sum_{j=1}^{4} } w_{kj} {\color{#679d67} x_j} \right) }_{k^\text{th}\text{ activation}}}
 \end{align*}
 \]</span></p>
+</div><div class="column" style="width:34%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nn_single_layer.svg" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="matrix-form-only-if-sanity-helping" class="slide level2 smaller crunch-title title-12">
+<h2>Matrix Form (Only if Sanity-Helping)</h2>
+
+<img data-src="images/nn_activation.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="example" class="slide level2">
+<h2>Example</h2>
+<ul>
+<li>Rather than pondering over what that diagram can/can’t do, consider two “true” DGPs:</li>
+</ul>
+<p><span class="math display">\[
+\begin{align*}
+Y &amp;= {\color{#e69f00} X_1 X_2 } \\
+Y &amp;= {\color{#56b4e9} X_1^2 + X_2^2 } \\
+Y &amp;= {\color{#009E73} X_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} X_2}
+\end{align*}
+\]</span></p>
+<ul>
+<li>How exactly is a neural net able to learn these relationships?</li>
+</ul>
+</section>
+<section id="sum-of-squares" class="slide level2 smaller crunch-title crunch-math cols-va crunch-quarto-figure crunch-ul">
+<h2>Sum of Squares</h2>
+<div class="columns">
+<div class="column" style="width:45%;">
+<ul>
+<li>Can we learn <span class="math inline">\(y = {\color{#56b4e9} x_1^2 + x_2^2 }\)</span>?</li>
+<li>Let’s use <span class="math inline">\(g(x) = x^2\)</span>.</li>
+<li>Let <span class="math inline">\(\mathbf{w}_1 = (0, 1, 0)\)</span>, <span class="math inline">\(\mathbf{w}_2 = (0, 0, 1)\)</span>.</li>
+<li>Our two activations are:</li>
+</ul>
+</div><div class="column" style="width:55%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nn_2_2.svg" class="quarto-figure quarto-figure-center" style="width:66.6%"></p>
+</figure>
+</div>
+</div></div>
+<p><span class="math display">\[
+\begin{align*}
+{\color{#666693} a_1 } &amp;= g(0 + (1)(x_1) + (0)(x_2)) = x_1^2 \\
+{\color{#666693} a_2 } &amp;= g(0 + (0)(x_1) + (1)(x_2)) = x_2^2
+\end{align*}
+\]</span></p>
+<ul>
+<li>So, if <span class="math inline">\(\boldsymbol\beta = (0, 1, 1)\)</span>, then</li>
+</ul>
+<p><span class="math display">\[
+{\color{#976464} y } = 0 + (1)(x_1^2) + (1)(x_2^2) = {\color{#56b4e9} x_1^2 + x_2^2} \; ✅
+\]</span></p>
+</section>
+<section id="interaction-term" class="slide level2 smaller crunch-title crunch-math cols-va crunch-quarto-figure crunch-ul">
+<h2>Interaction Term</h2>
+<div class="columns">
+<div class="column" style="width:45%;">
+<ul>
+<li>Can we learn <span class="math inline">\(Y = {\color{#e69f00} x_1x_2}\)</span>?</li>
+<li>Let’s use <span class="math inline">\(g(x) = x^2\)</span> again.</li>
+<li>Let <span class="math inline">\(\mathbf{w}_1 = (0, 1, 1)\)</span>, <span class="math inline">\(\mathbf{w}_2 = (0, 1, -1)\)</span>.</li>
+<li>Our two activations are:</li>
+</ul>
+</div><div class="column" style="width:55%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nn_2_2.svg" class="quarto-figure quarto-figure-center" style="width:66.6%"></p>
+</figure>
+</div>
+</div></div>
+<p><span class="math display">\[
+\begin{align*}
+{\color{#666693} a_1 } &amp;= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\
+{\color{#666693} a_2 } &amp;= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2
+\end{align*}
+\]</span></p>
+<ul>
+<li>So, if we let <span class="math inline">\(\boldsymbol\beta = \left( 0, \frac{1}{4}, -\frac{1}{4} \right)\)</span>, then</li>
+</ul>
+<p><span class="math display">\[
+{\color{#976464} y } = 0 + \left(\frac{1}{4}\right)(x_1^2 + x_2^2 + 2x_1x_2) + \left(-\frac{1}{4}\right)(x_1^2 + x_2^2 - 2x_1x_2) = {\color{#e69f00} x_1x_2} \; ✅
+\]</span></p>
+</section>
+<section id="the-xor-problem" class="slide level2 smaller crunch-title crunch-math cols-va crunch-quarto-figure crunch-ul">
+<h2>The XOR Problem</h2>
+<div class="columns">
+<div class="column" style="width:45%;">
+<ul>
+<li>Can we learn <span class="math inline">\(Y = {\color{#009E73} x_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} x_2}\)</span>?</li>
+<li>Let’s use <span class="math inline">\(g(x) = x^2\)</span> once more.</li>
+<li>Let <span class="math inline">\(\mathbf{w}_1 = (0, 1, 1)\)</span>, <span class="math inline">\(\mathbf{w}_2 = (0, 1, -1)\)</span>.</li>
+<li>Our two activations are:</li>
+</ul>
+</div><div class="column" style="width:55%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nn_2_2.svg" class="quarto-figure quarto-figure-center" style="width:66.6%"></p>
+</figure>
+</div>
+</div></div>
+<p><span class="math display">\[
+\begin{align*}
+{\color{#666693} a_1 } &amp;= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\
+{\color{#666693} a_2 } &amp;= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2
+\end{align*}
+\]</span></p>
+<ul>
+<li>So, if we let <span class="math inline">\(\boldsymbol\beta = (0, 0, 1)\)</span>, then</li>
+</ul>
+<p><span class="math display">\[
+\begin{align*}
+{\color{#976464} y }(0,0) &amp;= 0 + (0)(0^2 + 0^2 + 2(0)(0)) + (1)(0^2 + 0^2 - 2(0)(0)) = {\color{#009e73} 0} \; ✅ \\
+{\color{#976464} y }(0,1) &amp;= 0 + (0)(0^2 + 1^2 + 2(0)(1)) + (1)(0^2 + 1^2 - 2(0)(1)) = {\color{#009e73} 1} \; ✅ \\
+{\color{#976464} y }(1,0) &amp;= 0 + (0)(1^2 + 0^2 + 2(1)(0)) + (1)(1^2 + 0^2 - 2(1)(0)) = {\color{#009e73} 1} \; ✅ \\
+{\color{#976464} y }(1,1) &amp;= 0 + (0)(1^2 + 1^2 + 2(1)(1)) + (1)(1^2 + 1^2 - 2(1)(1)) = {\color{#009e73} 0} \; ✅
+\end{align*}
+\]</span></p>
+</section>
+<section id="but-how" class="slide level2 smaller crunch-title crunch-quarto-figure crunch-img">
+<h2>But How?</h2>
+<ul>
+<li><strong>Output Layer</strong> is just linear regression on <strong>activations</strong> (Hidden Layer outputs)</li>
+<li>We saw in Week 7 how good <strong>basis function</strong> allows regression to learn <strong>any</strong> function</li>
+<li>Neural Networks: <strong>GOAT non-linear basis function learners!</strong></li>
+</ul>
+<div class="columns">
+<div class="column" style="width:33%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-2"><a></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-3"><a></a>xor_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb2-4"><a></a>    <span class="sc">~</span>x1, <span class="sc">~</span>x2, <span class="sc">~</span>label,</span>
+<span id="cb2-5"><a></a>    <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb2-6"><a></a>    <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb2-7"><a></a>    <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>,</span>
+<span id="cb2-8"><a></a>    <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span></span>
+<span id="cb2-9"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb2-10"><a></a><span class="fu">mutate</span>(</span>
+<span id="cb2-11"><a></a>    <span class="at">h1 =</span> (x1 <span class="sc">-</span> x2)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb2-12"><a></a>    <span class="at">label =</span> <span class="fu">factor</span>(label)</span>
+<span id="cb2-13"><a></a>)</span>
+<span id="cb2-14"><a></a>xor_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x1, <span class="at">y=</span>x2, <span class="at">label=</span>label)) <span class="sc">+</span></span>
+<span id="cb2-15"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb2-16"><a></a>    <span class="fu">aes</span>(<span class="at">color=</span>label, <span class="at">shape=</span>label),</span>
+<span id="cb2-17"><a></a>    <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="dv">2</span>,</span>
+<span id="cb2-18"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb2-19"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb2-20"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="fl">2.5</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb2-21"><a></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb2-22"><a></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb2-23"><a></a>  <span class="fu">expand_limits</span>(<span class="at">y=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.1</span>,<span class="fl">1.1</span>)) <span class="sc">+</span></span>
+<span id="cb2-24"><a></a>  <span class="co"># 45 is minus sign, 95 is em-dash</span></span>
+<span id="cb2-25"><a></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb2-26"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">32</span>) <span class="sc">+</span></span>
+<span id="cb2-27"><a></a>  <span class="fu">remove_legend_title</span>() <span class="sc">+</span></span>
+<span id="cb2-28"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb2-29"><a></a>    <span class="at">x=</span><span class="fu">TeX</span>(<span class="st">"$x_1$"</span>),</span>
+<span id="cb2-30"><a></a>    <span class="at">y=</span><span class="fu">TeX</span>(<span class="st">"$x_2$"</span>),</span>
+<span id="cb2-31"><a></a>    <span class="at">title=</span><span class="st">"XOR Problem: Original Features"</span></span>
+<span id="cb2-32"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-xor-problem" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-xor-problem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="index_files/figure-revealjs/fig-xor-problem-1.png" class="quarto-figure quarto-figure-center" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-xor-problem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: The DGP <span class="math inline">\(Y = x_1 \oplus x_2\)</span> produces points in <span class="math inline">\([0,1]^2\)</span> which are not linearly separable
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:33%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb3-2"><a></a>xor_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb3-3"><a></a>    <span class="sc">~</span>x1, <span class="sc">~</span>x2, <span class="sc">~</span>label,</span>
+<span id="cb3-4"><a></a>    <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb3-5"><a></a>    <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb3-6"><a></a>    <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>,</span>
+<span id="cb3-7"><a></a>    <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span></span>
+<span id="cb3-8"><a></a>) <span class="sc">|&gt;</span></span>
+<span id="cb3-9"><a></a><span class="fu">mutate</span>(</span>
+<span id="cb3-10"><a></a>    <span class="at">h1 =</span> (x1 <span class="sc">-</span> x2)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb3-11"><a></a>    <span class="at">h2 =</span> (x1 <span class="sc">+</span> x2)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb3-12"><a></a>    <span class="at">h2 =</span> <span class="fu">ifelse</span>(h1 <span class="sc">&gt;</span> <span class="fl">0.5</span> <span class="sc">&amp;</span> x2<span class="sc">==</span><span class="dv">0</span>, h2 <span class="sc">+</span> <span class="fl">0.5</span>, h2),</span>
+<span id="cb3-13"><a></a>    <span class="at">label =</span> <span class="fu">factor</span>(label)</span>
+<span id="cb3-14"><a></a>)</span>
+<span id="cb3-15"><a></a>xor_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>h1, <span class="at">y=</span>h2, <span class="at">label=</span>label)) <span class="sc">+</span></span>
+<span id="cb3-16"><a></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb3-17"><a></a>  <span class="co"># Negative space</span></span>
+<span id="cb3-18"><a></a>  <span class="fu">geom_rect</span>(<span class="at">xmin=</span><span class="sc">-</span><span class="cn">Inf</span>, <span class="at">xmax=</span><span class="fl">0.5</span>, <span class="at">ymin=</span><span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax=</span><span class="cn">Inf</span>, <span class="at">fill=</span>cb_palette[<span class="dv">1</span>], <span class="at">alpha=</span><span class="fl">0.15</span>) <span class="sc">+</span></span>
+<span id="cb3-19"><a></a>  <span class="co"># Positive space</span></span>
+<span id="cb3-20"><a></a>  <span class="fu">geom_rect</span>(<span class="at">xmin=</span><span class="fl">0.5</span>, <span class="at">xmax=</span><span class="cn">Inf</span>, <span class="at">ymin=</span><span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax=</span><span class="cn">Inf</span>, <span class="at">fill=</span>cb_palette[<span class="dv">2</span>], <span class="at">alpha=</span><span class="fl">0.15</span>) <span class="sc">+</span></span>
+<span id="cb3-21"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb3-22"><a></a>    <span class="fu">aes</span>(<span class="at">color=</span>label, <span class="at">shape=</span>label),</span>
+<span id="cb3-23"><a></a>    <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="dv">2</span>,</span>
+<span id="cb3-24"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb3-25"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb3-26"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span>g_pointsize<span class="sc">*</span><span class="fl">2.5</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb3-27"><a></a>  <span class="fu">expand_limits</span>(<span class="at">y=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.2</span>,<span class="fl">4.2</span>)) <span class="sc">+</span></span>
+<span id="cb3-28"><a></a>  <span class="co"># 45 is minus sign, 95 is em-dash</span></span>
+<span id="cb3-29"><a></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb3-30"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">32</span>) <span class="sc">+</span></span>
+<span id="cb3-31"><a></a>  <span class="fu">remove_legend_title</span>() <span class="sc">+</span></span>
+<span id="cb3-32"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-33"><a></a>    <span class="at">title=</span><span class="st">"NN-Learned Feature Space"</span>,</span>
+<span id="cb3-34"><a></a>    <span class="at">x=</span><span class="fu">TeX</span>(<span class="st">"$h_1(x_1, x_2)$"</span>),</span>
+<span id="cb3-35"><a></a>    <span class="at">y=</span><span class="fu">TeX</span>(<span class="st">"$h_2(x_1, x_2)$"</span>)</span>
+<span id="cb3-36"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-xor-problem-tr" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-xor-problem-tr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="index_files/figure-revealjs/fig-xor-problem-tr-1.png" class="quarto-figure quarto-figure-center" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-xor-problem-tr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Learned bases <span class="math inline">\(h_1 = (x_1 - x_2)^2\)</span> and <span class="math inline">\(h_2 = (x_1 + x_2)^2\)</span> enable <strong>separating hyperplane</strong> <span class="math inline">\(h_1 = 0.5\)</span>
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:33%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb4-2"><a></a>x1_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">0</span>, <span class="at">to=</span><span class="dv">1</span>, <span class="at">by=</span><span class="fl">0.0075</span>)</span>
+<span id="cb4-3"><a></a>x2_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">0</span>, <span class="at">to=</span><span class="dv">1</span>, <span class="at">by=</span><span class="fl">0.0075</span>)</span>
+<span id="cb4-4"><a></a>grid_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">x1=</span>x1_vals, <span class="at">x2=</span>x2_vals) <span class="sc">|&gt;</span></span>
+<span id="cb4-5"><a></a>  <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-6"><a></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-7"><a></a>    <span class="at">label=</span><span class="fu">factor</span>(<span class="fu">as.numeric</span>((x1<span class="sc">-</span>x2)<span class="sc">^</span><span class="dv">2</span> <span class="sc">&gt;</span> <span class="fl">0.5</span>))</span>
+<span id="cb4-8"><a></a>  )</span>
+<span id="cb4-9"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb4-10"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb4-11"><a></a>    <span class="at">data=</span>grid_df,</span>
+<span id="cb4-12"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>x1, <span class="at">y=</span>x2, <span class="at">color=</span>label),</span>
+<span id="cb4-13"><a></a>    <span class="at">alpha=</span><span class="fl">0.4</span></span>
+<span id="cb4-14"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb4-15"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb4-16"><a></a>    <span class="at">data=</span>xor_df,</span>
+<span id="cb4-17"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>x1, <span class="at">y=</span>x2, <span class="at">color=</span>label, <span class="at">shape=</span>label),</span>
+<span id="cb4-18"><a></a>    <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="dv">2</span>,</span>
+<span id="cb4-19"><a></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb4-20"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb4-21"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb4-22"><a></a>    <span class="at">data=</span>xor_df,</span>
+<span id="cb4-23"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>x1, <span class="at">y=</span>x2, <span class="at">fill=</span>label),</span>
+<span id="cb4-24"><a></a>    <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span>g_pointsize<span class="sc">*</span><span class="fl">2.5</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.4</span></span>
+<span id="cb4-25"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb4-26"><a></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="dv">1</span>, <span class="at">intercept=</span><span class="fl">0.7</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb4-27"><a></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="dv">1</span>, <span class="at">intercept=</span><span class="sc">-</span><span class="fl">0.7</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb4-28"><a></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb4-29"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">32</span>) <span class="sc">+</span></span>
+<span id="cb4-30"><a></a>  <span class="fu">remove_legend_title</span>() <span class="sc">+</span></span>
+<span id="cb4-31"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-32"><a></a>    <span class="at">title=</span><span class="st">"XOR Problem: Inverted NN Features"</span>,</span>
+<span id="cb4-33"><a></a>    <span class="at">x=</span><span class="fu">TeX</span>(<span class="st">"$X_1$"</span>), <span class="at">y=</span><span class="fu">TeX</span>(<span class="st">"$X_2$"</span>)</span>
+<span id="cb4-34"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-xor-inverse" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-xor-inverse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="index_files/figure-revealjs/fig-xor-inverse-1.png" class="quarto-figure quarto-figure-center" width="960">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-xor-inverse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Here, the blue area represents points where <span class="math inline">\(h_1 = (x_1 - x_2)^2 &gt; 0.5\)</span>
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section></section>
+<section>
+<section id="multilayer-neural-networks" class="title-slide slide level1 smaller crunch-title title-12 center" data-stack-name="Multilayer NNs">
+<h1>Multilayer Neural Networks</h1>
+
+<img data-src="images/nn_multilayer.svg" class="r-stretch quarto-figure-center"><p class="caption">Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4</p></section>
+<section id="input-representation" class="slide level2 smaller crunch-title cols-va">
+<h2>Input Representation</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/mnist_repr.jpg" style="width:100.0%"></p>
+<figcaption>From <a href="https://www.youtube.com/watch?v=aircAruvnKk"><em>But what is a neural network?</em></a>, 3Blue1Brown</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nn_multilayer.svg" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="but-wait-ten-outputs" class="slide level2 smaller crunch-title crunch-ul cols-va">
+<h2>But Wait… Ten Outputs?</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/nn_multilayer.svg" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
+<li>The (magical) <strong>softmax</strong> function!</li>
+</ul>
+<p><span class="math display">\[
+z_d = \Pr(Y = d \mid X) = \frac{e^{y_d}}{\sum_{i=0}^{9}e^{y_i}}
+\]</span></p>
+<ul>
+<li>Ensures that each <span class="math inline">\(Z_d\)</span> is a <strong>probability!</strong></li>
+</ul>
+<p><span class="math display">\[
+\begin{align}
+0 \leq z_d &amp;\leq 1 \; \; \forall ~ d \in \{0,\ldots,9\} \\
+\sum_{d=0}^{9}z_d &amp;= 1
+\end{align}
+\]</span></p>
+</div></div>
+</section>
+<section id="visualizing-softmax-results" class="slide level2">
+<h2>Visualizing Softmax Results</h2>
+
+<img data-src="images/mnist.jpg" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://n8programs.com/mnistLatentSpace/"><strong>Interactive Visualization: Handwritten-Digit Space</strong></a></p></section></section>
+<section>
+<section id="fancier-neural-networks" class="title-slide slide level1 center" data-stack-name="Fancier NNs">
+<h1>Fancier Neural Networks</h1>
+<ul>
+<li>Convolutional Neural Networks (CNNs)</li>
+<li>Recurrent Neural Networks (RNNs)</li>
+</ul>
+</section>
+<section id="cnns" class="slide level2 crunch-title crunch-ul">
+<h2>CNNs</h2>
+<ul>
+<li>Key point: Convolutional layers are <strong>not</strong> fully connected!</li>
+<li>Each layer “pools” info from two units in previous layer</li>
+</ul>
+
+<img data-src="images/cnn.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="decoding-the-thought-vector" class="slide level2 crunch-title title-11 crunch-ul smaller crunch-quarto-figure crunch-img">
+<h2>Decoding the Thought Vector</h2>
+<ul>
+<li>Hidden layers closer to input layer detect low-level “fine-grained” features</li>
+<li>Hidden layers closer to output layer detect high-level “coarse-grained” features</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/frown.jpg" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/smile.jpg" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
+</figure>
+</div>
+<center>
+<p><a href="https://gabgoh.github.io/ThoughtVectors/"><strong>Decoding the Thought Vector</strong></a></p>
+</center>
+</section>
+<section id="variational-autoencoders" class="slide level2">
+<h2>Variational Autoencoders</h2>
+
+<img data-src="images/nn_vae.svg" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="rnns" class="slide level2 smaller">
+<h2>RNNs</h2>
+<p><em>…More next week, tbh</em></p>
+
+<img data-src="images/10_12.svg" class="r-stretch quarto-figure-center"><p class="caption">ISLR Figure 10.12</p></section>
+<section id="ok-but-how-do-we-learn-the-weights" class="slide level2 smaller title-11">
+<h2>Ok But How Do We <em>Learn</em> The Weights?</h2>
+
+<img data-src="images/backprop.jpg" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://youtu.be/tIeHLnjs5U8?si=0CSS66763D5s5UVt">Backpropagation!</a> (3Blue1Brown Again!)</p><p><em>(Full NN playlist <a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi">here</a>)</em></p>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>
@@ -622,11 +762,10 @@ Jeff Jacobs
 
 
 </section></section>
-
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
-<p>DSAN 5300-01 Week 9: Discriminant Analysis</p>
+<p>DSAN 5300 Week 9: Deep Learning</p>
 </div>
 </div></div>
 
@@ -879,197 +1018,180 @@ Jeff Jacobs
     </script>
 
     <script id="quarto-html-after-body" type="application/javascript">
-    window.document.addEventListener("DOMContentLoaded", function (event) {
-      const toggleBodyColorMode = (bsSheetEl) => {
-        const mode = bsSheetEl.getAttribute("data-mode");
-        const bodyEl = window.document.querySelector("body");
-        if (mode === "dark") {
-          bodyEl.classList.add("quarto-dark");
-          bodyEl.classList.remove("quarto-light");
-        } else {
-          bodyEl.classList.add("quarto-light");
-          bodyEl.classList.remove("quarto-dark");
-        }
-      }
-      const toggleBodyColorPrimary = () => {
-        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-        if (bsSheetEl) {
-          toggleBodyColorMode(bsSheetEl);
-        }
-      }
-      toggleBodyColorPrimary();  
-      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
-      tabsets.forEach(function(tabset) {
-        const tabby = new Tabby('#' + tabset.id);
-      });
-      const isCodeAnnotation = (el) => {
-        for (const clz of el.classList) {
-          if (clz.startsWith('code-annotation-')) {                     
-            return true;
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
           }
+          return false;
         }
-        return false;
-      }
-      const onCopySuccess = function(e) {
-        // button target
-        const button = e.trigger;
-        // don't keep focus
-        button.blur();
-        // flash "checked"
-        button.classList.add('code-copy-button-checked');
-        var currentTitle = button.getAttribute("title");
-        button.setAttribute("title", "Copied!");
-        let tooltip;
-        if (window.bootstrap) {
-          button.setAttribute("data-bs-toggle", "tooltip");
-          button.setAttribute("data-bs-placement", "left");
-          button.setAttribute("data-bs-title", "Copied!");
-          tooltip = new bootstrap.Tooltip(button, 
-            { trigger: "manual", 
-              customClass: "code-copy-button-tooltip",
-              offset: [0, -8]});
-          tooltip.show();    
-        }
-        setTimeout(function() {
-          if (tooltip) {
-            tooltip.hide();
-            button.removeAttribute("data-bs-title");
-            button.removeAttribute("data-bs-toggle");
-            button.removeAttribute("data-bs-placement");
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
           }
-          button.setAttribute("title", currentTitle);
-          button.classList.remove('code-copy-button-checked');
-        }, 1000);
-        // clear code selection
-        e.clearSelection();
-      }
-      const getTextToCopy = function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
           for (const childEl of codeEl.children) {
             if (isCodeAnnotation(childEl)) {
               childEl.remove();
             }
           }
           return codeEl.innerText;
-      }
-      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-        text: getTextToCopy
-      });
-      clipboard.on('success', onCopySuccess);
-      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-          text: getTextToCopy,
-          container: window.document.getElementById('quarto-embedded-source-code-modal')
-        });
-        clipboardModal.on('success', onCopySuccess);
-      }
-        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-        var mailtoRegex = new RegExp(/^mailto:/);
-          var filterRegex = new RegExp('/' + window.location.host + '/');
-        var isInternal = (href) => {
-            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
-        // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-        for (var i=0; i<links.length; i++) {
-          const link = links[i];
-          if (!isInternal(link.href)) {
-            // undo the damage that might have been done by quarto-nav.js in the case of
-            // links that we want to consider external
-            if (link.dataset.originalHref !== undefined) {
-              link.href = link.dataset.originalHref;
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+                // target, if specified
+                link.setAttribute("target", "_blank");
+                if (link.getAttribute("rel") === null) {
+                  link.setAttribute("rel", "noopener");
+                }
+                // default icon
+                link.classList.add("external");
             }
-              // target, if specified
-              link.setAttribute("target", "_blank");
-              if (link.getAttribute("rel") === null) {
-                link.setAttribute("rel", "noopener");
-              }
-              // default icon
-              link.classList.add("external");
           }
-        }
-      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-        const config = {
-          allowHTML: true,
-          maxWidth: 500,
-          delay: 100,
-          arrow: false,
-          appendTo: function(el) {
-              return el.closest('section.slide') || el.parentElement;
-          },
-          interactive: true,
-          interactiveBorder: 10,
-          theme: 'light-border',
-          placement: 'bottom-start',
-        };
-        if (contentFn) {
-          config.content = contentFn;
-        }
-        if (onTriggerFn) {
-          config.onTrigger = onTriggerFn;
-        }
-        if (onUntriggerFn) {
-          config.onUntrigger = onUntriggerFn;
-        }
-          config['offset'] = [0,0];
-          config['maxWidth'] = 700;
-        window.tippy(el, config); 
-      }
-      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-      for (var i=0; i<noterefs.length; i++) {
-        const ref = noterefs[i];
-        tippyHover(ref, function() {
-          // use id or data attribute instead here
-          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-          try { href = new URL(href).hash; } catch {}
-          const id = href.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note) {
-            return note.innerHTML;
-          } else {
-            return "";
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
           }
-        });
-      }
-      const findCites = (el) => {
-        const parentEl = el.parentElement;
-        if (parentEl) {
-          const cites = parentEl.dataset.cites;
-          if (cites) {
-            return {
-              el,
-              cites: cites.split(' ')
-            };
-          } else {
-            return findCites(el.parentElement)
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
           }
-        } else {
-          return undefined;
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
         }
-      };
-      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-      for (var i=0; i<bibliorefs.length; i++) {
-        const ref = bibliorefs[i];
-        const citeInfo = findCites(ref);
-        if (citeInfo) {
-          tippyHover(citeInfo.el, function() {
-            var popup = window.document.createElement('div');
-            citeInfo.cites.forEach(function(cite) {
-              var citeDiv = window.document.createElement('div');
-              citeDiv.classList.add('hanging-indent');
-              citeDiv.classList.add('csl-entry');
-              var biblioDiv = window.document.getElementById('ref-' + cite);
-              if (biblioDiv) {
-                citeDiv.innerHTML = biblioDiv.innerHTML;
-              }
-              popup.appendChild(citeDiv);
-            });
-            return popup.innerHTML;
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
           });
         }
-      }
-    });
-    </script>
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
     
 
 </body></html>

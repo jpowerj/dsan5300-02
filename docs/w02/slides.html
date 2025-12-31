@@ -7,11 +7,11 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.6.40">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.26">
 
   <meta name="author" content="Jeff Jacobs">
-  <title>DSAN 5300-01 – Week 2: Linear Regression</title>
+  <title>DSAN 5300-02 – Week 2: Getting Fancy with Regression</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -30,8 +30,9 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -42,7 +43,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -115,8 +116,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-bbe7401fe57d4b791b917637bb662036.css">
-  <link rel="stylesheet" href="../dsan-globals/jjstyles.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-69945e2f2d0c274413605863338c203b.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -217,8 +217,8 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Week 2: Linear Regression</h1>
-  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2025, Georgetown University</span></p>
+  <h1 class="title">Week 2: Getting Fancy with Regression</h1>
+  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2026, Georgetown University</span></p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -231,11 +231,11 @@ Jeff Jacobs
     </div>
 </div>
 
-  <p class="date">Monday, January 13, 2025</p>
+  <p class="date">Monday, January 12, 2026</p>
 </section>
 <section>
-<section id="linear-regression" class="title-slide slide level1 center" data-stack-name="Linear Regression">
-<h1>Linear Regression</h1>
+<section id="recap-linear-regression" class="title-slide slide level1 center" data-stack-name="Recap">
+<h1>Recap: Linear Regression</h1>
 <ul>
 <li><p>What happens to my <strong>dependent variable</strong> <span class="math inline">\(Y\)</span> when my <strong>independent variable</strong> <span class="math inline">\(X\)</span> changes by <strong>1 unit</strong>?</p></li>
 <li><p>Whenever you carry out a regression, keep the <strong>goal</strong> in the front of your mind:</p>
@@ -246,7 +246,7 @@ Jeff Jacobs
 <p><strong><i class="bi bi-info-circle"></i> The Goal of Regression</strong></p>
 </div>
 <div class="callout-content">
-<p><strong>Find a line <span class="math inline">\(\widehat{y} = mx + b\)</span> that best predicts <span class="math inline">\(Y\)</span> for given values of <span class="math inline">\(X\)</span></strong></p>
+<p><strong>Find a line <span class="math inline">\(\widehat{y} = mx + b\)</span> that best <em>predicts</em> <span class="math inline">\(Y\)</span> for given values of <span class="math inline">\(X\)</span></strong></p>
 </div>
 </div>
 </div>
@@ -256,8 +256,8 @@ Jeff Jacobs
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
-<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
+<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </div>
@@ -288,7 +288,10 @@ Jeff Jacobs
 \newcommand{\outcome}[1]{\textsf{#1}}
 \newcommand{\param}[1]{{\color{purple} #1}}
 \newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
-\newcommand{\prob}[1]{P\left( #1 \right)}
+\newcommand{\pedge}[2]{\require{enclose}\enclose{circle}{~{#1}~} \rightarrow \; \enclose{circle}{\kern.01em {#2}~\kern.01em}}
+\newcommand{\pnode}[1]{\require{enclose}\enclose{circle}{\kern.1em {#1} \kern.1em}}
+\newcommand{\ponode}[1]{\require{enclose}\enclose{box}[background=lightgray]{{#1}}}
+\newcommand{\pnodesp}[1]{\require{enclose}\enclose{circle}{~{#1}~}}
 \newcommand{\purp}[1]{\color{purple}{#1}}
 \newcommand{\sign}{\text{Sign}}
 \newcommand{\spacecap}{\; \cap \;}
@@ -299,6 +302,20 @@ Jeff Jacobs
 \]</span></p>
 </div>
 </section>
+<section id="what-regression-is-not" class="slide level2 crunch-title math-90 crunch-ul crunch-math-15">
+<h2>What Regression is <em>Not</em></h2>
+<ul>
+<li><p>Final reminder that Regression, PCA have <strong>different goals!</strong></p></li>
+<li><p>If your goal was to, e.g., generate <strong>realistic <span class="math inline">\((x,y)\)</span> pairs</strong>, then (mathematically) you want PCA! Roughly:</p>
+<p><span class="math display">\[
+\widehat{f}_{\text{PCA}} = \min_{\mathbf{c}}\left[ \sum_{i=1}^{n} (\widehat{x}_i(\mathbf{c}) - x_i)^2 + (\widehat{y}_i(\mathbf{c}) - y_i)^2 \right]
+\]</span></p></li>
+<li><p>Our goal is a <strong>good predictor of <span class="math inline">\(Y\)</span></strong>:</p>
+<p><span class="math display">\[
+\widehat{f}_{\text{Reg}} = \min_{\beta_0, \beta_1}\left[ \sum_{i=1}^{n} (\widehat{y}_i(\beta) - y_i)^2 \right]
+\]</span></p></li>
+</ul>
+</section>
 <section id="how-do-we-define-best" class="slide level2 smaller">
 <h2>How Do We Define “Best”?</h2>
 <ul>
@@ -306,7 +323,7 @@ Jeff Jacobs
 </ul>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(tidyverse)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb2-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5321</span>)</span>
 <span id="cb2-3"><a></a>N <span class="ot">&lt;-</span> <span class="dv">11</span></span>
 <span id="cb2-4"><a></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">by =</span> <span class="dv">1</span> <span class="sc">/</span> (N <span class="sc">-</span> <span class="dv">1</span>))</span>
@@ -333,7 +350,7 @@ Jeff Jacobs
 <span id="cb2-25"><a></a>  <span class="fu">dsan_theme</span>(<span class="st">"half"</span>) <span class="sc">+</span></span>
 <span id="cb2-26"><a></a>  <span class="fu">labs</span>(</span>
 <span id="cb2-27"><a></a>    <span class="at">title =</span> <span class="st">"Regression Line"</span></span>
-<span id="cb2-28"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-28"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="quarto-layout-panel" data-layout="[1,1]">
 <div class="quarto-layout-row quarto-layout-valign-center">
@@ -360,957 +377,14 @@ Jeff Jacobs
 
 <aside><div>
 <p>On the difference between these two lines, and why it matters, I cannot recommend <span class="citation" data-cites="gelman_data_2007">Gelman and Hill (<a href="#/references" role="doc-biblioref" onclick="">2007</a>)</span> enough!</p>
-</div></aside></section>
-<section id="predictive-example-advertising-effects" class="slide level2 smaller title-12">
-<h2>Predictive Example: Advertising Effects</h2>
-<ul>
-<li><strong>Independent variable</strong>: $ put into advertisements</li>
-<li><strong>Dependent variable</strong>: Sales</li>
-<li><strong>Goal</strong>: Figure out a good way to <strong>allocate</strong> an advertising budget</li>
-</ul>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb3-2"><a></a>ad_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/Advertising.csv"</span>) <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">id=</span><span class="st">`</span><span class="at">...1</span><span class="st">`</span>)</span>
-<span id="cb3-3"><a></a>long_df <span class="ot">&lt;-</span> ad_df <span class="sc">|&gt;</span> <span class="fu">pivot_longer</span>(<span class="sc">-</span><span class="fu">c</span>(id, sales), <span class="at">names_to=</span><span class="st">"medium"</span>, <span class="at">values_to=</span><span class="st">"allocation"</span>)</span>
-<span id="cb3-4"><a></a>long_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>allocation, <span class="at">y=</span>sales)) <span class="sc">+</span></span>
-<span id="cb3-5"><a></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb3-6"><a></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(medium), <span class="at">scales=</span><span class="st">"free_x"</span>) <span class="sc">+</span></span>
-<span id="cb3-7"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">"y ~ x"</span>) <span class="sc">+</span></span>
-<span id="cb3-8"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
-<span id="cb3-9"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb3-10"><a></a>    <span class="at">x =</span> <span class="st">"Allocation ($1K)"</span>,</span>
-<span id="cb3-11"><a></a>    <span class="at">y =</span> <span class="st">"Sales (1K Units)"</span></span>
-<span id="cb3-12"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="index_files/figure-revealjs/ad-plots-1.png" width="960" class="r-stretch"></section>
-<section id="explanatory-example-industrialization-effects" class="slide level2 smaller">
-<h2>Explanatory Example: Industrialization Effects</h2>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb4-2"><a></a>gdp_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/gdp_pca.csv"</span>)</span>
-<span id="cb4-3"><a></a>mil_plot <span class="ot">&lt;-</span> gdp_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>industrial, <span class="at">y=</span>military)) <span class="sc">+</span></span>
-<span id="cb4-4"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span><span class="sc">*</span>g_pointsize) <span class="sc">+</span></span>
-<span id="cb4-5"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">"y ~ x"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb4-6"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
-<span id="cb4-7"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb4-8"><a></a>    <span class="at">title=</span><span class="st">"Military Exports vs. Industrialization"</span>,</span>
-<span id="cb4-9"><a></a>    <span class="at">x=</span><span class="st">"Industrial Production (% of GDP)"</span>,</span>
-<span id="cb4-10"><a></a>    <span class="at">y=</span><span class="st">"Military Exports (% of All Exports)"</span></span>
-<span id="cb4-11"><a></a>  )</span>
-<span id="cb4-12"><a></a>mil_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="index_files/figure-revealjs/mil-plot-intro-1.png" width="960" class="r-stretch"></section>
-<section id="simple-linear-regression" class="slide level2 smaller">
-<h2>Simple Linear Regression</h2>
-<ul>
-<li><p>For now, we treat <strong>Newspaper</strong>, <strong>Radio</strong>, <strong>TV</strong> advertising separately: how much do <strong>sales</strong> increase per $1 into [medium]? (Later we’ll consider them jointly: multiple regression)</p></li>
-<li><p><strong>Our model</strong>:</p>
-<p><span class="math display">\[
-Y = \underbrace{\param{\beta_0}}_{\mathclap{\text{Intercept}}} + \underbrace{\param{\beta_1}}_{\mathclap{\text{Slope}}}X + \varepsilon
-\]</span></p></li>
-<li><p>This model generates <strong>predictions</strong> via</p>
-<p><span class="math display">\[
-\widehat{y} = \underbrace{\widehat{\beta_0}}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-5mm] \text{intercept}\end{array}}} ~+~ \underbrace{\widehat{\beta_1}}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-4mm] \text{slope}\end{array}}}\cdot x
-\]</span></p></li>
-<li><p>Note how these predictions will be <strong>wrong</strong> (unless the data is perfectly linear)</p></li>
-<li><p>We’ve accounted for this in our model (by including <span class="math inline">\(\varepsilon\)</span> term)!</p></li>
-<li><p>But, we’d like to find estimates <span class="math inline">\(\widehat{\beta}_0\)</span> and <span class="math inline">\(\widehat{\beta}_1\)</span> that produce the “least wrong” predictions: motivates focus on <strong>residuals…</strong></p></li>
-</ul>
-</section>
-<section id="least-squares-minimizing-residuals" class="slide level2 smaller crunch-title crunch-quarto-figure">
-<h2>Least Squares: Minimizing Residuals</h2>
-<p>What can we <strong>optimize</strong> to ensure these residuals are as small as possible?</p>
-<div class="columns">
-<div class="column" style="width:60%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>N <span class="ot">&lt;-</span> <span class="dv">21</span></span>
-<span id="cb5-2"><a></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">by =</span> <span class="dv">1</span> <span class="sc">/</span> (N <span class="sc">-</span> <span class="dv">1</span>))</span>
-<span id="cb5-3"><a></a>y <span class="ot">&lt;-</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(N, <span class="dv">0</span>, <span class="fl">0.25</span>)</span>
-<span id="cb5-4"><a></a>mean_y <span class="ot">&lt;-</span> <span class="fu">mean</span>(y)</span>
-<span id="cb5-5"><a></a>spread <span class="ot">&lt;-</span> y <span class="sc">-</span> mean_y</span>
-<span id="cb5-6"><a></a>sim_lg_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">spread =</span> spread)</span>
-<span id="cb5-7"><a></a>sim_lg_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
-<span id="cb5-8"><a></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="dv">1</span>, <span class="at">intercept=</span><span class="dv">0</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">color=</span>cbPalette[<span class="dv">1</span>], <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
-<span id="cb5-9"><a></a>  <span class="co"># geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +</span></span>
-<span id="cb5-10"><a></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend=</span>x, <span class="at">yend=</span>x, <span class="at">color=</span><span class="fu">ifelse</span>(y<span class="sc">&gt;</span>x,<span class="st">"Positive"</span>,<span class="st">"Negative"</span>)), <span class="at">linewidth=</span><span class="fl">1.5</span><span class="sc">*</span>g_linewidth) <span class="sc">+</span></span>
-<span id="cb5-11"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span>g_pointsize) <span class="sc">+</span></span>
-<span id="cb5-12"><a></a>  <span class="co"># coord_equal() +</span></span>
-<span id="cb5-13"><a></a>  <span class="fu">theme_dsan</span>(<span class="st">"half"</span>) <span class="sc">+</span></span>
-<span id="cb5-14"><a></a>  <span class="fu">scale_color_manual</span>(<span class="st">"Spread"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"Positive"</span><span class="ot">=</span>cbPalette[<span class="dv">3</span>],<span class="st">"Negative"</span><span class="ot">=</span>cbPalette[<span class="dv">6</span>]), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"Positive"</span><span class="ot">=</span><span class="st">"Positive"</span>,<span class="st">"Negative"</span><span class="ot">=</span><span class="st">"Negative"</span>)) <span class="sc">+</span></span>
-<span id="cb5-15"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb5-16"><a></a>    <span class="at">title =</span> <span class="st">"Regression Line"</span></span>
-<span id="cb5-17"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/large-resids-plot-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:40%;">
-<ul>
-<li>Sum?</li>
-</ul>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a>large_sum <span class="ot">&lt;-</span> <span class="fu">sum</span>(sim_lg_df<span class="sc">$</span>spread)</span>
-<span id="cb6-2"><a></a><span class="fu">writeLines</span>(<span class="fu">fmt_decimal</span>(large_sum))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>0.0000000000</code></pre>
-</div>
-</div>
-<ul>
-<li>Sum of Squares?</li>
-</ul>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a>large_sqsum <span class="ot">&lt;-</span> <span class="fu">sum</span>((sim_lg_df<span class="sc">$</span>spread)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb8-2"><a></a><span class="fu">writeLines</span>(<span class="fu">fmt_decimal</span>(large_sqsum))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>3.8405017200</code></pre>
-</div>
-</div>
-</div></div>
-<div class="columns">
-<div class="column" style="width:60%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a>N <span class="ot">&lt;-</span> <span class="dv">21</span></span>
-<span id="cb10-2"><a></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">by =</span> <span class="dv">1</span> <span class="sc">/</span> (N <span class="sc">-</span> <span class="dv">1</span>))</span>
-<span id="cb10-3"><a></a>y <span class="ot">&lt;-</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(N, <span class="dv">0</span>, <span class="fl">0.05</span>)</span>
-<span id="cb10-4"><a></a>mean_y <span class="ot">&lt;-</span> <span class="fu">mean</span>(y)</span>
-<span id="cb10-5"><a></a>spread <span class="ot">&lt;-</span> y <span class="sc">-</span> mean_y</span>
-<span id="cb10-6"><a></a>sim_sm_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">spread =</span> spread)</span>
-<span id="cb10-7"><a></a>sim_sm_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
-<span id="cb10-8"><a></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="dv">1</span>, <span class="at">intercept=</span><span class="dv">0</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">color=</span>cbPalette[<span class="dv">1</span>], <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
-<span id="cb10-9"><a></a>  <span class="co"># geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +</span></span>
-<span id="cb10-10"><a></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend=</span>x, <span class="at">yend=</span>x, <span class="at">color=</span><span class="fu">ifelse</span>(y<span class="sc">&gt;</span>x,<span class="st">"Positive"</span>,<span class="st">"Negative"</span>)), <span class="at">linewidth=</span><span class="fl">1.5</span><span class="sc">*</span>g_linewidth) <span class="sc">+</span></span>
-<span id="cb10-11"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span>g_pointsize) <span class="sc">+</span></span>
-<span id="cb10-12"><a></a>  <span class="co"># coord_equal() +</span></span>
-<span id="cb10-13"><a></a>  <span class="fu">theme_dsan</span>(<span class="st">"half"</span>) <span class="sc">+</span></span>
-<span id="cb10-14"><a></a>  <span class="fu">scale_color_manual</span>(<span class="st">"Spread"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"Positive"</span><span class="ot">=</span>cbPalette[<span class="dv">3</span>],<span class="st">"Negative"</span><span class="ot">=</span>cbPalette[<span class="dv">6</span>]), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"Positive"</span><span class="ot">=</span><span class="st">"Positive"</span>,<span class="st">"Negative"</span><span class="ot">=</span><span class="st">"Negative"</span>)) <span class="sc">+</span></span>
-<span id="cb10-15"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb10-16"><a></a>    <span class="at">title =</span> <span class="st">"Regression Line"</span></span>
-<span id="cb10-17"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/small-resids-plot-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:40%;">
-<ul>
-<li>Sum?</li>
-</ul>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>small_rsum <span class="ot">&lt;-</span> <span class="fu">sum</span>(sim_sm_df<span class="sc">$</span>spread)</span>
-<span id="cb11-2"><a></a><span class="fu">writeLines</span>(<span class="fu">fmt_decimal</span>(small_rsum))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>0.0000000000</code></pre>
-</div>
-</div>
-<ul>
-<li>Sum of Squares?</li>
-</ul>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>small_sqrsum <span class="ot">&lt;-</span> <span class="fu">sum</span>((sim_sm_df<span class="sc">$</span>spread)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb13-2"><a></a><span class="fu">writeLines</span>(<span class="fu">fmt_decimal</span>(small_sqrsum))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>1.9748635217</code></pre>
-</div>
-</div>
-</div></div>
-</section>
-<section id="why-not-absolute-value" class="slide level2 smaller crunch-title crunch-code crunch-ul crunch-quarto-figure">
-<h2>Why Not Absolute Value?</h2>
-<ul>
-<li>Two feasible ways to prevent positive and negative residuals <strong>cancelling out</strong>:
-<ul>
-<li><strong>Absolute value</strong> <span class="math inline">\(\left|y - \widehat{y}\right|\)</span> or <strong>squaring</strong> <span class="math inline">\(\left( y - \widehat{y} \right)^2\)</span></li>
-</ul></li>
-<li>But remember that we’re aiming to <strong>minimize</strong> these residuals…</li>
-<li>Ghost of calculus past 😱: which is <strong>differentiable</strong> everywhere?</li>
-</ul>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">library</span>(latex2exp)</span>
-<span id="cb15-2"><a></a>x2_label <span class="ot">&lt;-</span> <span class="fu">latex2exp</span>(<span class="st">"$f(x) = x^2$"</span>)</span>
-<span id="cb15-3"><a></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">4</span>)), <span class="fu">aes</span>(<span class="at">x=</span>x)) <span class="sc">+</span></span>
-<span id="cb15-4"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun=</span><span class="sc">~</span> .x<span class="sc">^</span><span class="dv">2</span>, <span class="at">linewidth =</span> g_linewidth) <span class="sc">+</span></span>
-<span id="cb15-5"><a></a>  <span class="fu">dsan_theme</span>(<span class="st">"quarter"</span>) <span class="sc">+</span></span>
-<span id="cb15-6"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb15-7"><a></a>    <span class="at">title=</span>x2_label,</span>
-<span id="cb15-8"><a></a>    <span class="at">y=</span><span class="st">"f(x)"</span></span>
-<span id="cb15-9"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/x2-plot-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="co"># Could use facet_grid() here, but it doesn't work too nicely with stat_function() :(</span></span>
-<span id="cb16-2"><a></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">4</span>)), <span class="fu">aes</span>(<span class="at">x=</span>x)) <span class="sc">+</span></span>
-<span id="cb16-3"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun=</span><span class="sc">~</span> <span class="fu">abs</span>(.x), <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
-<span id="cb16-4"><a></a>  <span class="fu">dsan_theme</span>(<span class="st">"quarter"</span>) <span class="sc">+</span></span>
-<span id="cb16-5"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb16-6"><a></a>    <span class="at">title=</span><span class="st">"f(x) = |x|"</span>,</span>
-<span id="cb16-7"><a></a>    <span class="at">y=</span><span class="st">"f(x)"</span></span>
-<span id="cb16-8"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/abs-x-plot-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-</section>
-<section id="outliers-penalized-quadratically" class="slide level2 smaller">
-<h2>Outliers Penalized Quadratically</h2>
-
-<img data-src="images/rss.png" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://gregorygundersen.com/blog/2020/01/04/ols/">Image Source</a></p></section>
-<section id="key-features-of-regression-line" class="slide level2 crunch-math math-90">
-<h2>Key Features of Regression Line</h2>
-<ul>
-<li>Regression line is <strong>BLUE</strong>: <strong>B</strong>est <strong>L</strong>inear <strong>U</strong>nbiased <strong>E</strong>stimator</li>
-<li>What exactly is it the “best” linear estimator of?</li>
-</ul>
-<p><span class="math display">\[
-\widehat{y} = \underbrace{\widehat{\beta}_0}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-5mm] \text{intercept}\end{array}}} ~+~ \underbrace{\widehat{\beta}_1}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-4mm] \text{slope}\end{array}}}\cdot x
-\]</span></p>
-<p>is chosen so that</p>
-<div class="smallmath">
-<p><span class="math display">\[
-\widehat{\theta} = \left(\widehat{\beta}_0, \widehat{\beta}_1\right) = \argmin_{\beta_0, \beta_1}\left[ \sum_{x_i \in X} \left(~~\overbrace{\widehat{y}(x_i)}^{\mathclap{\small\text{Predicted }y}} - \overbrace{\expect{Y \mid X = x_i}}^{\small \text{Avg. }y\text{ when }x = x_i}\right)^{2~} \right]
-\]</span></p>
-</div>
-</section>
-<section id="where-did-that-mathbbey-mid-x-x_i-come-from" class="slide level2 smaller title-11">
-<h2>Where Did That <span class="math inline">\(\mathbb{E}[Y \mid X = x_i]\)</span> Come From?</h2>
-
-<img data-src="images/regression_normal_dist.jpg" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://digfir-published.macmillanusa.com/psbe4e/psbe4e_ch10_2.html">Image Source</a></p></section>
-<section id="but-what-about-all-the-other-types-of-vars" class="slide level2 title-08">
-<h2>But… What About All the Other Types of Vars?</h2>
-<ul>
-<li>5000: you saw, e.g., nominal, ordinal, cardinal vars</li>
-<li>5100: you wrestled with <strong>discrete</strong> vs.&nbsp;<strong>continuous</strong> RVs</li>
-<li>Good News #1: Regression can handle <strong>all</strong> these types+more!</li>
-<li>Good News #2: Distinctions between <strong>classification</strong> and <strong>regression</strong> start to diminish as you learn fancier regression methods! (One key tool here: <strong>link functions</strong>)</li>
-<li>By end of 5300 you should have something on your toolbelt for handling most cases like <em>“I want to do [regression / classification], but my data is [not cardinal+continuous]”</em></li>
-</ul>
-</section></section>
+</div></aside></section></section>
 <section>
-<section id="deriving-the-least-squares-estimate" class="title-slide slide level1 center" data-stack-name="Deriving OLS">
-<h1>Deriving the Least Squares Estimate</h1>
+<section id="multiple-linear-regression-mlr" class="title-slide slide level1 center" data-stack-name="MLR">
+<h1>Multiple Linear Regression (MLR)</h1>
 
 </section>
-<section id="a-sketch-hw-is-the-full-thing" class="slide level2 smaller">
-<h2>A Sketch (HW is the Full Thing)</h2>
-<ul>
-<li>OLS for regression <strong>without</strong> intercept <span class="math inline">\(\param{\beta_0}\)</span>: Which <strong>line through origin</strong> best predicts <span class="math inline">\(Y\)</span>?</li>
-<li>(Good practice + reminder of how <strong>restricted</strong> linear models are!)</li>
-</ul>
-<p><span class="math display">\[
-Y = \beta_1 X + \varepsilon
-\]</span></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">library</span>(latex2exp)</span>
-<span id="cb17-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
-<span id="cb17-3"><a></a><span class="co"># rand_slope &lt;- log(runif(80, min=0, max=1))</span></span>
-<span id="cb17-4"><a></a><span class="co"># rand_slope[41:80] &lt;- -rand_slope[41:80]</span></span>
-<span id="cb17-5"><a></a><span class="co"># rand_lines &lt;- tibble::tibble(</span></span>
-<span id="cb17-6"><a></a><span class="co">#   id=1:80, slope=rand_slope, intercept=0</span></span>
-<span id="cb17-7"><a></a><span class="co"># )</span></span>
-<span id="cb17-8"><a></a><span class="co"># angles &lt;- runif(100, -pi/2, pi/2)</span></span>
-<span id="cb17-9"><a></a>angles <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="sc">-</span>pi<span class="sc">/</span><span class="dv">2</span>, <span class="at">to=</span>pi<span class="sc">/</span><span class="dv">2</span>, <span class="at">length.out=</span><span class="dv">50</span>)</span>
-<span id="cb17-10"><a></a>possible_lines <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb17-11"><a></a>  <span class="at">slope=</span><span class="fu">tan</span>(angles), <span class="at">intercept=</span><span class="dv">0</span></span>
-<span id="cb17-12"><a></a>)</span>
-<span id="cb17-13"><a></a>num_points <span class="ot">&lt;-</span> <span class="dv">30</span></span>
-<span id="cb17-14"><a></a>x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(num_points, <span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb17-15"><a></a>y0_vals <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> x_vals <span class="sc">+</span> <span class="fl">0.25</span></span>
-<span id="cb17-16"><a></a>y_noise <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(num_points, <span class="dv">0</span>, <span class="fl">0.07</span>)</span>
-<span id="cb17-17"><a></a>y_vals <span class="ot">&lt;-</span> y0_vals <span class="sc">+</span> y_noise</span>
-<span id="cb17-18"><a></a>rand_df <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x=</span>x_vals, <span class="at">y=</span>y_vals)</span>
-<span id="cb17-19"><a></a>title_exp <span class="ot">&lt;-</span> <span class="fu">latex2exp</span>(<span class="st">"Parameter Space ($</span><span class="sc">\\</span><span class="st">beta_1$)"</span>)</span>
-<span id="cb17-20"><a></a><span class="co"># Main plot object</span></span>
-<span id="cb17-21"><a></a>gen_lines_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">point_size=</span><span class="fl">2.5</span>) {</span>
-<span id="cb17-22"><a></a>  lines_plot <span class="ot">&lt;-</span> rand_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
-<span id="cb17-23"><a></a>    <span class="fu">geom_point</span>(<span class="at">size=</span>point_size) <span class="sc">+</span></span>
-<span id="cb17-24"><a></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>, <span class="at">linewidth=</span><span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb17-25"><a></a>    <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">0</span>, <span class="at">linewidth=</span><span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb17-26"><a></a>    <span class="co"># Point at origin</span></span>
-<span id="cb17-27"><a></a>    <span class="fu">geom_point</span>(<span class="at">data=</span><span class="fu">data.frame</span>(<span class="at">x=</span><span class="dv">0</span>, <span class="at">y=</span><span class="dv">0</span>), <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb17-28"><a></a>    <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb17-29"><a></a>    <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb17-30"><a></a>    <span class="co"># coord_fixed() +</span></span>
-<span id="cb17-31"><a></a>    <span class="fu">theme_dsan_min</span>(<span class="at">base_size=</span><span class="dv">28</span>)</span>
-<span id="cb17-32"><a></a>  <span class="fu">return</span>(lines_plot)</span>
-<span id="cb17-33"><a></a>}</span>
-<span id="cb17-34"><a></a>main_lines_plot <span class="ot">&lt;-</span> <span class="fu">gen_lines_plot</span>()</span>
-<span id="cb17-35"><a></a>main_lines_plot <span class="sc">+</span></span>
-<span id="cb17-36"><a></a>  <span class="co"># Parameter space of possible lines</span></span>
-<span id="cb17-37"><a></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb17-38"><a></a>    <span class="at">data=</span>possible_lines,</span>
-<span id="cb17-39"><a></a>    <span class="fu">aes</span>(<span class="at">slope=</span>slope, <span class="at">intercept=</span>intercept, <span class="at">color=</span><span class="st">'possible'</span>),</span>
-<span id="cb17-40"><a></a>    <span class="co"># linetype="dotted",</span></span>
-<span id="cb17-41"><a></a>    <span class="co"># linewidth=0.75,</span></span>
-<span id="cb17-42"><a></a>    <span class="at">alpha=</span><span class="fl">0.25</span></span>
-<span id="cb17-43"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb17-44"><a></a>  <span class="co"># True DGP</span></span>
-<span id="cb17-45"><a></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb17-46"><a></a>    <span class="fu">aes</span>(</span>
-<span id="cb17-47"><a></a>      <span class="at">slope=</span><span class="fl">0.5</span>,</span>
-<span id="cb17-48"><a></a>      <span class="at">intercept=</span><span class="fl">0.25</span>,</span>
-<span id="cb17-49"><a></a>      <span class="at">color=</span><span class="st">'true'</span></span>
-<span id="cb17-50"><a></a>    ), <span class="at">linewidth=</span><span class="dv">1</span>, <span class="at">alpha=</span><span class="fl">0.8</span></span>
-<span id="cb17-51"><a></a>  ) <span class="sc">+</span> </span>
-<span id="cb17-52"><a></a>  <span class="fu">scale_color_manual</span>(</span>
-<span id="cb17-53"><a></a>    <span class="fu">element_blank</span>(),</span>
-<span id="cb17-54"><a></a>    <span class="at">values=</span><span class="fu">c</span>(<span class="st">'possible'</span><span class="ot">=</span><span class="st">"black"</span>, <span class="st">'true'</span><span class="ot">=</span>cb_palette[<span class="dv">2</span>]),</span>
-<span id="cb17-55"><a></a>    <span class="at">labels=</span><span class="fu">c</span>(<span class="st">'possible'</span><span class="ot">=</span><span class="st">"Possible Fits"</span>, <span class="st">'true'</span><span class="ot">=</span><span class="st">"True DGP"</span>)</span>
-<span id="cb17-56"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb17-57"><a></a>  <span class="fu">remove_legend_title</span>() <span class="sc">+</span></span>
-<span id="cb17-58"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb17-59"><a></a>    <span class="at">title=</span>title_exp</span>
-<span id="cb17-60"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-
-</div>
-<img data-src="index_files/figure-revealjs/random-lines-origin-1.png" width="960" class="r-stretch"></section>
-<section id="evaluating-with-residuals" class="slide level2 smaller">
-<h2>Evaluating with Residuals</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a>rc1_df <span class="ot">&lt;-</span> possible_lines <span class="sc">|&gt;</span> <span class="fu">slice</span>(<span class="fu">n</span>() <span class="sc">-</span> <span class="dv">14</span>)</span>
-<span id="cb18-2"><a></a><span class="co"># Predictions for this choice</span></span>
-<span id="cb18-3"><a></a>rc1_pred_df <span class="ot">&lt;-</span> rand_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
-<span id="cb18-4"><a></a>  <span class="at">y_pred =</span> rc1_df<span class="sc">$</span>slope <span class="sc">*</span> x,</span>
-<span id="cb18-5"><a></a>  <span class="at">resid =</span> y <span class="sc">-</span> y_pred</span>
-<span id="cb18-6"><a></a>)</span>
-<span id="cb18-7"><a></a>rc1_label <span class="ot">&lt;-</span> <span class="fu">latex2exp</span>(<span class="fu">paste0</span>(<span class="st">"Estimate 1: $</span><span class="sc">\\</span><span class="st">beta_1 </span><span class="sc">\\</span><span class="st">approx "</span>,<span class="fu">round</span>(rc1_df<span class="sc">$</span>slope, <span class="dv">3</span>),<span class="st">"$"</span>))</span>
-<span id="cb18-8"><a></a>rc1_lines_plot <span class="ot">&lt;-</span> <span class="fu">gen_lines_plot</span>(<span class="at">point_size=</span><span class="dv">5</span>)</span>
-<span id="cb18-9"><a></a>rc1_lines_plot <span class="sc">+</span></span>
-<span id="cb18-10"><a></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb18-11"><a></a>    <span class="at">data=</span>rc1_df,</span>
-<span id="cb18-12"><a></a>    <span class="fu">aes</span>(<span class="at">intercept=</span>intercept, <span class="at">slope=</span>slope),</span>
-<span id="cb18-13"><a></a>    <span class="at">linewidth=</span><span class="dv">2</span>,</span>
-<span id="cb18-14"><a></a>    <span class="at">color=</span>cb_palette[<span class="dv">1</span>]</span>
-<span id="cb18-15"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb18-16"><a></a>  <span class="fu">geom_segment</span>(</span>
-<span id="cb18-17"><a></a>    <span class="at">data=</span>rc1_pred_df,</span>
-<span id="cb18-18"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">xend=</span>x, <span class="at">yend=</span>y_pred),</span>
-<span id="cb18-19"><a></a>    <span class="co"># color=cb_palette[1]</span></span>
-<span id="cb18-20"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb18-21"><a></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">1</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb18-22"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb18-23"><a></a>    <span class="at">title =</span> rc1_label</span>
-<span id="cb18-24"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/possible-choice-1-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>gen_resid_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(pred_df) {</span>
-<span id="cb19-2"><a></a>  rc_rss <span class="ot">&lt;-</span> <span class="fu">sum</span>((pred_df<span class="sc">$</span>resid)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb19-3"><a></a>  rc_resid_label <span class="ot">&lt;-</span> <span class="fu">latex2exp</span>(<span class="fu">paste0</span>(<span class="st">"Residuals: RSS $</span><span class="sc">\\</span><span class="st">approx$ "</span>,<span class="fu">round</span>(rc_rss,<span class="dv">3</span>)))</span>
-<span id="cb19-4"><a></a>  rc_resid_plot <span class="ot">&lt;-</span> pred_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>resid)) <span class="sc">+</span></span>
-<span id="cb19-5"><a></a>    <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">5</span>) <span class="sc">+</span></span>
-<span id="cb19-6"><a></a>    <span class="fu">geom_hline</span>(</span>
-<span id="cb19-7"><a></a>      <span class="at">yintercept=</span><span class="dv">0</span>,</span>
-<span id="cb19-8"><a></a>      <span class="at">color=</span>cb_palette[<span class="dv">1</span>],</span>
-<span id="cb19-9"><a></a>      <span class="at">linewidth=</span><span class="fl">1.5</span></span>
-<span id="cb19-10"><a></a>    ) <span class="sc">+</span></span>
-<span id="cb19-11"><a></a>    <span class="fu">geom_segment</span>(</span>
-<span id="cb19-12"><a></a>      <span class="fu">aes</span>(<span class="at">xend=</span>x, <span class="at">yend=</span><span class="dv">0</span>)</span>
-<span id="cb19-13"><a></a>    ) <span class="sc">+</span></span>
-<span id="cb19-14"><a></a>    <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
-<span id="cb19-15"><a></a>    <span class="fu">theme</span>(<span class="at">axis.line.x =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
-<span id="cb19-16"><a></a>    <span class="fu">labs</span>(</span>
-<span id="cb19-17"><a></a>      <span class="at">title=</span>rc_resid_label</span>
-<span id="cb19-18"><a></a>    )</span>
-<span id="cb19-19"><a></a>  <span class="fu">return</span>(rc_resid_plot)</span>
-<span id="cb19-20"><a></a>}</span>
-<span id="cb19-21"><a></a>rc1_resid_plot <span class="ot">&lt;-</span> <span class="fu">gen_resid_plot</span>(rc1_pred_df)</span>
-<span id="cb19-22"><a></a>rc1_resid_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/choice-1-resid-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>rc2_df <span class="ot">&lt;-</span> possible_lines <span class="sc">|&gt;</span> <span class="fu">slice</span>(<span class="fu">n</span>() <span class="sc">-</span> <span class="dv">9</span>)</span>
-<span id="cb20-2"><a></a><span class="co"># Predictions for this choice</span></span>
-<span id="cb20-3"><a></a>rc2_pred_df <span class="ot">&lt;-</span> rand_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
-<span id="cb20-4"><a></a>  <span class="at">y_pred =</span> rc2_df<span class="sc">$</span>slope <span class="sc">*</span> x,</span>
-<span id="cb20-5"><a></a>  <span class="at">resid =</span> y <span class="sc">-</span> y_pred</span>
-<span id="cb20-6"><a></a>)</span>
-<span id="cb20-7"><a></a>rc2_label <span class="ot">&lt;-</span> <span class="fu">latex2exp</span>(<span class="fu">paste0</span>(<span class="st">"Estimate 2: $</span><span class="sc">\\</span><span class="st">beta_1 </span><span class="sc">\\</span><span class="st">approx "</span>,<span class="fu">round</span>(rc2_df<span class="sc">$</span>slope,<span class="dv">3</span>),<span class="st">"$"</span>))</span>
-<span id="cb20-8"><a></a>rc2_lines_plot <span class="ot">&lt;-</span> <span class="fu">gen_lines_plot</span>(<span class="at">point_size=</span><span class="dv">5</span>)</span>
-<span id="cb20-9"><a></a>rc2_lines_plot <span class="sc">+</span></span>
-<span id="cb20-10"><a></a>  <span class="fu">geom_abline</span>(</span>
-<span id="cb20-11"><a></a>    <span class="at">data=</span>rc2_df,</span>
-<span id="cb20-12"><a></a>    <span class="fu">aes</span>(<span class="at">intercept=</span>intercept, <span class="at">slope=</span>slope),</span>
-<span id="cb20-13"><a></a>    <span class="at">linewidth=</span><span class="dv">2</span>,</span>
-<span id="cb20-14"><a></a>    <span class="at">color=</span>cb_palette[<span class="dv">3</span>]</span>
-<span id="cb20-15"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb20-16"><a></a>  <span class="fu">geom_segment</span>(</span>
-<span id="cb20-17"><a></a>    <span class="at">data=</span>rc2_pred_df,</span>
-<span id="cb20-18"><a></a>    <span class="fu">aes</span>(</span>
-<span id="cb20-19"><a></a>      <span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">xend=</span>x,</span>
-<span id="cb20-20"><a></a>      <span class="at">yend=</span><span class="fu">ifelse</span>(y_pred <span class="sc">&lt;=</span> <span class="dv">1</span>, y_pred, <span class="cn">Inf</span>)</span>
-<span id="cb20-21"><a></a>    )</span>
-<span id="cb20-22"><a></a>    <span class="co"># color=cb_palette[1]</span></span>
-<span id="cb20-23"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb20-24"><a></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">1</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb20-25"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb20-26"><a></a>    <span class="at">title=</span>rc2_label</span>
-<span id="cb20-27"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/possible-choice-2-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>rc2_resid_plot <span class="ot">&lt;-</span> <span class="fu">gen_resid_plot</span>(rc2_pred_df)</span>
-<span id="cb21-2"><a></a>rc2_resid_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/choice-2-resid-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-</section>
-<section id="now-the-math" class="slide level2 smaller">
-<h2>Now the Math</h2>
-<p><span class="math display">\[
-\begin{align*}
-\beta_1^* = \argmin_{\beta_1}\left[ \sum_{i=1}^{n}(\widehat{y}_i - y_i)^2 \right] = \argmin_{\beta_1}\left[ \sum_{i=1}^{n}(\beta_1x_i - y_i)^2 \right]
-\end{align*}
-\]</span></p>
-<p>We can compute this derivative to obtain:</p>
-<p><span class="math display">\[
-\frac{\partial}{\partial\beta_1}\left[ \sum_{i=1}^{n}(\beta_1x_i - y_i)^2 \right] = \sum_{i=1}^{n}\frac{\partial}{\partial\beta_1}(\beta_1x_i - y_i)^2 = \sum_{i=1}^{n}2(\beta_1x_i - y_i)x_i
-\]</span></p>
-<p>And our first-order condition means that:</p>
-<p><span class="math display">\[
-\sum_{i=1}^{n}2(\beta_1^*x_i - y_i)x_i = 0 \iff \beta_1^*\sum_{i=1}^{n}x_i^2 = \sum_{i=1}^{n}x_iy_i \iff \boxed{\beta_1^* = \frac{\sum_{i=1}^{n}x_iy_i}{\sum_{i=1}^{n}x_i^2}}
-\]</span></p>
-</section></section>
-<section>
-<section id="doing-things-with-regression" class="title-slide slide level1 center" data-stack-name="Interpreting Results">
-<h1>Doing Things With Regression</h1>
-
-</section>
-<section id="regression-r-vs.-statsmodels" class="slide level2 smaller output-75">
-<h2>Regression: <code>R</code> vs.&nbsp;<code>statsmodels</code></h2>
-<div class="columns">
-<div class="column" style="width:45%;">
-<center>
-<strong>In (Base) R: <code>lm()</code></strong>
-</center>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>lin_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> TV, <span class="at">data=</span>ad_df)</span>
-<span id="cb22-2"><a></a><span class="fu">summary</span>(lin_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = sales ~ TV, data = ad_df)
-
-Residuals:
-    Min      1Q  Median      3Q     Max 
--8.3860 -1.9545 -0.1913  2.0671  7.2124 
-
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 7.032594   0.457843   15.36   &lt;2e-16 ***
-TV          0.047537   0.002691   17.67   &lt;2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 3.259 on 198 degrees of freedom
-Multiple R-squared:  0.6119,    Adjusted R-squared:  0.6099 
-F-statistic: 312.1 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
-</div>
-</div>
-<p>General syntax:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="fu">lm</span>(</span>
-<span id="cb24-2"><a></a>  dependent <span class="sc">~</span> independent <span class="sc">+</span> controls,</span>
-<span id="cb24-3"><a></a>  <span class="at">data =</span> my_df</span>
-<span id="cb24-4"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div><div class="column" style="width:55%;">
-<center>
-<strong>In Python: <code>smf.ols()</code></strong>
-</center>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
-<span id="cb25-2"><a></a>results <span class="op">=</span> smf.ols(<span class="st">"sales ~ TV"</span>, data<span class="op">=</span>ad_df).fit()</span>
-<span id="cb25-3"><a></a><span class="bu">print</span>(results.summary(slim<span class="op">=</span><span class="va">True</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>                            OLS Regression Results                            
-==============================================================================
-Dep. Variable:                  sales   R-squared:                       0.612
-Model:                            OLS   Adj. R-squared:                  0.610
-No. Observations:                 200   F-statistic:                     312.1
-Covariance Type:            nonrobust   Prob (F-statistic):           1.47e-42
-==============================================================================
-                 coef    std err          t      P&gt;|t|      [0.025      0.975]
-------------------------------------------------------------------------------
-Intercept      7.0326      0.458     15.360      0.000       6.130       7.935
-TV             0.0475      0.003     17.668      0.000       0.042       0.053
-==============================================================================
-
-Notes:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
-</div>
-</div>
-<p>General syntax:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a></a>smf.ols(</span>
-<span id="cb27-2"><a></a>  <span class="st">"dependent ~ independent + controls"</span>,</span>
-<span id="cb27-3"><a></a>  data <span class="op">=</span> my_df</span>
-<span id="cb27-4"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div></div>
-</section>
-<section id="interpreting-output" class="slide level2 smaller">
-<h2>Interpreting Output</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a>mil_plot <span class="sc">+</span> <span class="fu">theme_dsan</span>(<span class="st">"quarter"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/mil-plot-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a></a>gdp_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(military <span class="sc">~</span> industrial, <span class="at">data=</span>gdp_df)</span>
-<span id="cb29-2"><a></a><span class="fu">summary</span>(gdp_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = military ~ industrial, data = gdp_df)
-
-Residuals:
-    Min      1Q  Median      3Q     Max 
--2.3354 -1.0997 -0.3870  0.6081  6.7508 
-
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)  
-(Intercept)  0.61969    0.59526   1.041   0.3010  
-industrial   0.05253    0.02019   2.602   0.0111 *
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 1.671 on 79 degrees of freedom
-  (8 observations deleted due to missingness)
-Multiple R-squared:  0.07895,   Adjusted R-squared:  0.06729 
-F-statistic: 6.771 on 1 and 79 DF,  p-value: 0.01106</code></pre>
-</div>
-</div>
-</div></div>
-</section>
-<section id="zooming-in-coefficients" class="slide level2 smaller-table crunch-title">
-<h2>Zooming In: Coefficients</h2>
-<div class="coef-table">
-<table class="caption-top">
-<colgroup>
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 20%">
-<col style="width: 22%">
-<col style="width: 26%">
-<col style="width: 8%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: right;"></th>
-<th style="text-align: center;">Estimate</th>
-<th>Std. Error</th>
-<th>t value</th>
-<th>Pr(&gt;|t|)</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;"><span class="cb1"><strong>(Intercept)</strong></span></td>
-<td style="text-align: center;"><span class="cb1">0.61969</span></td>
-<td><span class="cb1">0.59526</span></td>
-<td><span class="cb1 bold">1.041</span></td>
-<td><span class="cb1 bold">0.3010</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td style="text-align: right;"><span class="cb2"><strong>industrial</strong></span></td>
-<td style="text-align: center;"><span class="cb2">0.05253</span></td>
-<td><span class="cb2">0.02019</span></td>
-<td><span class="cb2 bold">2.602</span></td>
-<td><span class="cb2 bold">0.0111</span></td>
-<td><span class="cb2 bold">*</span></td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;"></td>
-<td style="text-align: center;"><span class="coef-label"><span class="math inline">\(\widehat{\beta}\)</span></span></td>
-<td><span class="coef-label">Uncertainty</span></td>
-<td><span class="coef-label">Test stat <span class="math inline">\(t\)</span></span></td>
-<td><span class="coef-label">How extreme is <span class="math inline">\(t\)</span>?</span></td>
-<td><span class="coef-label">Signif. Level</span></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><span class="math display">\[
-\widehat{y} \approx \class{cb1}{\overset{\beta_0}{\underset{\small \pm 0.595}{0.620}}} +  \class{cb2}{\overset{\beta_1}{\underset{\small \pm 0.020}{0.053}}} \cdot x
-\]</span></p>
-</section>
-<section id="zooming-in-significance" class="slide level2 crunch-title smaller-table crunch-details crunch-quarto-figure">
-<h2>Zooming In: Significance</h2>
-<div class="coef-table">
-<table class="caption-top">
-<colgroup>
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 20%">
-<col style="width: 22%">
-<col style="width: 26%">
-<col style="width: 8%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: right;"></th>
-<th style="text-align: center;">Estimate</th>
-<th>Std. Error</th>
-<th>t value</th>
-<th>Pr(&gt;|t|)</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;"><span class="cb1"><strong>(Intercept)</strong></span></td>
-<td style="text-align: center;"><span class="cb1">0.61969</span></td>
-<td><span class="cb1">0.59526</span></td>
-<td><span class="cb1 bold">1.041</span></td>
-<td><span class="cb1 bold">0.3010</span></td>
-<td></td>
-</tr>
-<tr class="even">
-<td style="text-align: right;"><span class="cb2"><strong>industrial</strong></span></td>
-<td style="text-align: center;"><span class="cb2">0.05253</span></td>
-<td><span class="cb2">0.02019</span></td>
-<td><span class="cb2 bold">2.602</span></td>
-<td><span class="cb2 bold">0.0111</span></td>
-<td><span class="cb2 bold">*</span></td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;"></td>
-<td style="text-align: center;"><span class="coef-label"><span class="math inline">\(\widehat{\beta}\)</span></span></td>
-<td><span class="coef-label">Uncertainty</span></td>
-<td><span class="coef-label">Test stat <span class="math inline">\(t\)</span></span></td>
-<td><span class="coef-label">How extreme is <span class="math inline">\(t\)</span>?</span></td>
-<td><span class="coef-label">Signif. Level</span></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb31-2"><a></a>int_tstat <span class="ot">&lt;-</span> <span class="fl">1.041</span></span>
-<span id="cb31-3"><a></a>int_tstat_str <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"%.02f"</span>, int_tstat)</span>
-<span id="cb31-4"><a></a>label_df_int <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb31-5"><a></a>    <span class="sc">~</span>x, <span class="sc">~</span>y, <span class="sc">~</span>label,</span>
-<span id="cb31-6"><a></a>    <span class="fl">0.25</span>, <span class="fl">0.05</span>, <span class="fu">paste0</span>(<span class="st">"P(t &gt; "</span>,int_tstat_str,<span class="st">")</span><span class="sc">\n</span><span class="st">= 0.3"</span>)</span>
-<span id="cb31-7"><a></a>)</span>
-<span id="cb31-8"><a></a>label_df_signif_int <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb31-9"><a></a>    <span class="sc">~</span>x, <span class="sc">~</span>y, <span class="sc">~</span>label,</span>
-<span id="cb31-10"><a></a>    <span class="fl">2.7</span>, <span class="fl">0.075</span>, <span class="st">"95% Signif.</span><span class="sc">\n</span><span class="st">Cutoff"</span></span>
-<span id="cb31-11"><a></a>)</span>
-<span id="cb31-12"><a></a>funcShaded <span class="ot">&lt;-</span> <span class="cf">function</span>(x, lower_bound, upper_bound){</span>
-<span id="cb31-13"><a></a>    y <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(x)</span>
-<span id="cb31-14"><a></a>    y[x <span class="sc">&lt;</span> lower_bound <span class="sc">|</span> x <span class="sc">&gt;</span> upper_bound] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
-<span id="cb31-15"><a></a>    <span class="fu">return</span>(y)</span>
-<span id="cb31-16"><a></a>}</span>
-<span id="cb31-17"><a></a>funcShadedIntercept <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">funcShaded</span>(x, int_tstat, <span class="cn">Inf</span>)</span>
-<span id="cb31-18"><a></a>funcShadedSignif <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">funcShaded</span>(x, <span class="fl">1.96</span>, <span class="cn">Inf</span>)</span>
-<span id="cb31-19"><a></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>)), <span class="fu">aes</span>(<span class="at">x=</span>x)) <span class="sc">+</span></span>
-<span id="cb31-20"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun=</span>dnorm, <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
-<span id="cb31-21"><a></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept=</span>int_tstat), <span class="at">linewidth=</span>g_linewidth, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb31-22"><a></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept =</span> <span class="fl">1.96</span>), <span class="at">linewidth=</span>g_linewidth, <span class="at">linetype=</span><span class="st">"solid"</span>) <span class="sc">+</span></span>
-<span id="cb31-23"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> funcShadedIntercept, <span class="at">geom =</span> <span class="st">"area"</span>, <span class="at">fill =</span> cbPalette[<span class="dv">1</span>], <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb31-24"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> funcShadedSignif, <span class="at">geom =</span> <span class="st">"area"</span>, <span class="at">fill =</span> <span class="st">"grey"</span>, <span class="at">alpha =</span> <span class="fl">0.333</span>) <span class="sc">+</span></span>
-<span id="cb31-25"><a></a>  <span class="fu">geom_text</span>(label_df_int, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label), <span class="at">size =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
-<span id="cb31-26"><a></a>  <span class="fu">geom_text</span>(label_df_signif_int, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label), <span class="at">size =</span> <span class="dv">8</span>) <span class="sc">+</span></span>
-<span id="cb31-27"><a></a>  <span class="co"># Add single additional tick</span></span>
-<span id="cb31-28"><a></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">0</span>, int_tstat, <span class="dv">2</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"-2"</span>,<span class="st">"0"</span>,int_tstat_str,<span class="st">"2"</span>)) <span class="sc">+</span></span>
-<span id="cb31-29"><a></a>  <span class="fu">dsan_theme</span>(<span class="st">"quarter"</span>) <span class="sc">+</span></span>
-<span id="cb31-30"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb31-31"><a></a>    <span class="at">title =</span> <span class="st">"t Value for Intercept"</span>,</span>
-<span id="cb31-32"><a></a>    <span class="at">x =</span> <span class="st">"t"</span>,</span>
-<span id="cb31-33"><a></a>    <span class="at">y =</span> <span class="st">"Density"</span></span>
-<span id="cb31-34"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb31-35"><a></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"black"</span>, cbPalette[<span class="dv">1</span>], <span class="st">"black"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="index_files/figure-revealjs/t-stat-intercept-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb32-2"><a></a>coef_tstat <span class="ot">&lt;-</span> <span class="fl">2.602</span></span>
-<span id="cb32-3"><a></a>coef_tstat_str <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"%.02f"</span>, coef_tstat)</span>
-<span id="cb32-4"><a></a>label_df_coef <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb32-5"><a></a>    <span class="sc">~</span>x, <span class="sc">~</span>y, <span class="sc">~</span>label,</span>
-<span id="cb32-6"><a></a>    <span class="fl">3.65</span>, <span class="fl">0.06</span>, <span class="fu">paste0</span>(<span class="st">"P(t &gt; "</span>,coef_tstat_str,<span class="st">")</span><span class="sc">\n</span><span class="st">= 0.01"</span>)</span>
-<span id="cb32-7"><a></a>)</span>
-<span id="cb32-8"><a></a>label_df_signif_coef <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb32-9"><a></a>  <span class="sc">~</span>x, <span class="sc">~</span>y, <span class="sc">~</span>label,</span>
-<span id="cb32-10"><a></a>  <span class="fl">1.05</span>, <span class="fl">0.03</span>, <span class="st">"95% Signif.</span><span class="sc">\n</span><span class="st">Cutoff"</span></span>
-<span id="cb32-11"><a></a>)</span>
-<span id="cb32-12"><a></a>funcShadedCoef <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">funcShaded</span>(x, coef_tstat, <span class="cn">Inf</span>)</span>
-<span id="cb32-13"><a></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">4</span>)), <span class="fu">aes</span>(<span class="at">x=</span>x)) <span class="sc">+</span></span>
-<span id="cb32-14"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun=</span>dnorm, <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
-<span id="cb32-15"><a></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept=</span>coef_tstat), <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
-<span id="cb32-16"><a></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept=</span><span class="fl">1.96</span>), <span class="at">linetype=</span><span class="st">"solid"</span>, <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
-<span id="cb32-17"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> funcShadedCoef, <span class="at">geom =</span> <span class="st">"area"</span>, <span class="at">fill =</span> cbPalette[<span class="dv">2</span>], <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb32-18"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> funcShadedSignif, <span class="at">geom =</span> <span class="st">"area"</span>, <span class="at">fill =</span> <span class="st">"grey"</span>, <span class="at">alpha =</span> <span class="fl">0.333</span>) <span class="sc">+</span></span>
-<span id="cb32-19"><a></a>  <span class="co"># Label shaded area</span></span>
-<span id="cb32-20"><a></a>  <span class="fu">geom_text</span>(label_df_coef, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label), <span class="at">size =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
-<span id="cb32-21"><a></a>  <span class="co"># Label significance cutoff</span></span>
-<span id="cb32-22"><a></a>  <span class="fu">geom_text</span>(label_df_signif_coef, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label), <span class="at">size =</span> <span class="dv">8</span>) <span class="sc">+</span></span>
-<span id="cb32-23"><a></a>  <span class="fu">coord_cartesian</span>(<span class="at">clip =</span> <span class="st">"off"</span>) <span class="sc">+</span></span>
-<span id="cb32-24"><a></a>  <span class="co"># Add single additional tick</span></span>
-<span id="cb32-25"><a></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>, coef_tstat, <span class="dv">4</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"-4"</span>, <span class="st">"-2"</span>,<span class="st">"0"</span>, <span class="st">"2"</span>, coef_tstat_str,<span class="st">"4"</span>)) <span class="sc">+</span></span>
-<span id="cb32-26"><a></a>  <span class="fu">dsan_theme</span>(<span class="st">"quarter"</span>) <span class="sc">+</span></span>
-<span id="cb32-27"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb32-28"><a></a>    <span class="at">title =</span> <span class="st">"t Value for Coefficient"</span>,</span>
-<span id="cb32-29"><a></a>    <span class="at">x =</span> <span class="st">"t"</span>,</span>
-<span id="cb32-30"><a></a>    <span class="at">y =</span> <span class="st">"Density"</span></span>
-<span id="cb32-31"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb32-32"><a></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>, cbPalette[<span class="dv">2</span>], <span class="st">"black"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="index_files/figure-revealjs/t-stat-coef-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-</section>
-<section id="the-residual-plot" class="slide level2 crunch-title crunch-images" data-name="Diagnostics">
-<h2>The Residual Plot</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<ul>
-<li>A key <strong>assumption</strong> required for OLS: <strong>“homoskedasticity”</strong></li>
-<li>Given our model <span class="math display">\[
-y_i = \beta_0 + \beta_1x_i + \varepsilon_i
-\]</span> the errors <span class="math inline">\(\varepsilon_i\)</span> <strong>should not vary systematically with <span class="math inline">\(i\)</span></strong></li>
-<li>Formally: <span class="math inline">\(\forall i \left[ \Var{\varepsilon_i} = \sigma^2 \right]\)</span></li>
-</ul>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a><span class="fu">library</span>(broom)</span>
-<span id="cb33-2"><a></a>gdp_resid_df <span class="ot">&lt;-</span> <span class="fu">augment</span>(gdp_model)</span>
-<span id="cb33-3"><a></a><span class="fu">ggplot</span>(gdp_resid_df, <span class="fu">aes</span>(<span class="at">x =</span> industrial, <span class="at">y =</span> .resid)) <span class="sc">+</span></span>
-<span id="cb33-4"><a></a>    <span class="fu">geom_point</span>(<span class="at">size =</span> g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb33-5"><a></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb33-6"><a></a>    <span class="fu">dsan_theme</span>(<span class="st">"quarter"</span>) <span class="sc">+</span></span>
-<span id="cb33-7"><a></a>    <span class="fu">labs</span>(</span>
-<span id="cb33-8"><a></a>      <span class="at">title =</span> <span class="st">"Residual Plot for Military ~ Industrial"</span>,</span>
-<span id="cb33-9"><a></a>      <span class="at">x =</span> <span class="st">"Fitted Value"</span>,</span>
-<span id="cb33-10"><a></a>      <span class="at">y =</span> <span class="st">"Residual"</span></span>
-<span id="cb33-11"><a></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/residual-plot-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">80</span></span>
-<span id="cb34-2"><a></a>errors <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(x), <span class="dv">0</span>, x<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">1000</span>)</span>
-<span id="cb34-3"><a></a>y <span class="ot">&lt;-</span> x <span class="sc">+</span> errors</span>
-<span id="cb34-4"><a></a>het_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x)</span>
-<span id="cb34-5"><a></a>df_het <span class="ot">&lt;-</span> <span class="fu">augment</span>(het_model)</span>
-<span id="cb34-6"><a></a><span class="fu">ggplot</span>(df_het, <span class="fu">aes</span>(<span class="at">x =</span> .fitted, <span class="at">y =</span> .resid)) <span class="sc">+</span></span>
-<span id="cb34-7"><a></a>    <span class="fu">geom_point</span>(<span class="at">size =</span> g_pointsize <span class="sc">/</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb34-8"><a></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb34-9"><a></a>    <span class="fu">dsan_theme</span>(<span class="st">"quarter"</span>) <span class="sc">+</span></span>
-<span id="cb34-10"><a></a>    <span class="fu">labs</span>(</span>
-<span id="cb34-11"><a></a>        <span class="at">title =</span> <span class="st">"Residual Plot for Heteroskedastic Data"</span>,</span>
-<span id="cb34-12"><a></a>        <span class="at">x =</span> <span class="st">"Fitted Value"</span>,</span>
-<span id="cb34-13"><a></a>        <span class="at">y =</span> <span class="st">"Residual"</span></span>
-<span id="cb34-14"><a></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/heteroskedastic-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-</section>
-<section id="q-q-plot" class="slide level2">
-<h2>Q-Q Plot</h2>
-<ul>
-<li>If <span class="math inline">\((\widehat{y} - y) \sim \mathcal{N}(0, \sigma^2)\)</span>, points would lie on 45° line:</li>
-</ul>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a><span class="fu">ggplot</span>(df_het, <span class="fu">aes</span>(<span class="at">sample=</span>.resid)) <span class="sc">+</span></span>
-<span id="cb35-2"><a></a>  <span class="fu">stat_qq</span>(<span class="at">size =</span> g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">stat_qq_line</span>(<span class="at">linewidth =</span> g_linewidth) <span class="sc">+</span></span>
-<span id="cb35-3"><a></a>  <span class="fu">dsan_theme</span>(<span class="st">"half"</span>) <span class="sc">+</span></span>
-<span id="cb35-4"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb35-5"><a></a>    <span class="at">title =</span> <span class="st">"Q-Q Plot for Heteroskedastic Data"</span>,</span>
-<span id="cb35-6"><a></a>    <span class="at">x =</span> <span class="st">"Normal Distribution Quantiles"</span>,</span>
-<span id="cb35-7"><a></a>    <span class="at">y =</span> <span class="st">"Observed Data Quantiles"</span></span>
-<span id="cb35-8"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/qq-plot-heteroskedastic-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a><span class="fu">ggplot</span>(gdp_resid_df, <span class="fu">aes</span>(<span class="at">sample=</span>.resid)) <span class="sc">+</span></span>
-<span id="cb36-2"><a></a>  <span class="fu">stat_qq</span>(<span class="at">size =</span> g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">stat_qq_line</span>(<span class="at">linewidth =</span> g_linewidth) <span class="sc">+</span></span>
-<span id="cb36-3"><a></a>  <span class="fu">dsan_theme</span>(<span class="st">"half"</span>) <span class="sc">+</span></span>
-<span id="cb36-4"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb36-5"><a></a>    <span class="at">title =</span> <span class="st">"Q-Q Plot for Industrial ~ Military Residuals"</span>,</span>
-<span id="cb36-6"><a></a>    <span class="at">x =</span> <span class="st">"Normal Distribution Quantiles"</span>,</span>
-<span id="cb36-7"><a></a>    <span class="at">y =</span> <span class="st">"Observed Data Quantiles"</span></span>
-<span id="cb36-8"><a></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/qq-plot-gdp-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-</section>
-<section id="multiple-linear-regression" class="slide level2">
-<h2>Multiple Linear Regression</h2>
+<section id="multiple-linear-regression-mlr-model" class="slide level2">
+<h2>Multiple Linear Regression (MLR) Model</h2>
 <ul>
 <li>Notation: <span class="math inline">\(x_{i,j}\)</span> = value of independent variable <span class="math inline">\(j\)</span> for person/observation <span class="math inline">\(i\)</span></li>
 <li><span class="math inline">\(M\)</span> = total number of independent variables</li>
@@ -1326,15 +400,415 @@ y_i = \beta_0 + \beta_1x_i + \varepsilon_i
 <h2>Visualizing Multiple Linear Regression</h2>
 
 <img data-src="images/3_5.svg" class="r-stretch quarto-figure-center"><p class="caption">(ISLR, Fig 3.5): <em>A pronounced non-linear relationship. Positive residuals (visible above the surface) tend to lie along the 45-degree line, where budgets are split evenly. Negative residuals (most not visible) tend to be away from this line, where budgets are more lopsided.</em></p></section>
-<section id="interpreting-mlr" class="slide level2 smaller">
+<section id="interpreting-mlr" class="slide level2 smaller crunch-title crunch-ul output-center">
 <h2>Interpreting MLR</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a>mlr_model <span class="op">=</span> smf.ols(</span>
+<span id="cb3-2"><a></a>  formula<span class="op">=</span><span class="st">"sales ~ TV + radio + newspaper"</span>,</span>
+<span id="cb3-3"><a></a>  data<span class="op">=</span>ad_df</span>
+<span id="cb3-4"><a></a>)</span>
+<span id="cb3-5"><a></a>mlr_result <span class="op">=</span> mlr_model.fit()</span>
+<span id="cb3-6"><a></a><span class="bu">print</span>(mlr_result.summary().tables[<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>==============================================================================
+                 coef    std err          t      P&gt;|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      2.9389      0.312      9.422      0.000       2.324       3.554
+TV             0.0458      0.001     32.809      0.000       0.043       0.049
+radio          0.1885      0.009     21.893      0.000       0.172       0.206
+newspaper     -0.0010      0.006     -0.177      0.860      -0.013       0.011
+==============================================================================</code></pre>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><strong>Holding <code>radio</code> and <code>newspaper</code> spending constant</strong>…
+<ul>
+<li>An <strong>increase of $1K</strong> in spending on <code>TV</code> advertising is associated with</li>
+<li>An <strong>increase in sales of about 46 units</strong></li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<ul>
+<li><strong>Holding <code>TV</code> and <code>newspaper</code> spending constant</strong>…
+<ul>
+<li>An <strong>increase of $1K</strong> in spending on <code>radio</code> advertising is associated with</li>
+<li>An <strong>increase in sales of about 189 units</strong></li>
+</ul></li>
+</ul>
+</div></div>
+</section>
+<section id="but-wait" class="slide level2 smaller output-75 output-nowrap">
+<h2>But Wait…</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell code-output-scroll">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python code-overflow-scroll number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a><span class="co"># print(mlr_result.summary2(float_format='%.3f'))</span></span>
+<span id="cb5-2"><a></a><span class="bu">print</span>(mlr_result.summary2())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 Results: Ordinary least squares
+=================================================================
+Model:              OLS              Adj. R-squared:     0.896   
+Dependent Variable: sales            AIC:                780.3622
+Date:               2025-03-09 05:23 BIC:                793.5555
+No. Observations:   200              Log-Likelihood:     -386.18 
+Df Model:           3                F-statistic:        570.3   
+Df Residuals:       196              Prob (F-statistic): 1.58e-96
+R-squared:          0.897            Scale:              2.8409  
+------------------------------------------------------------------
+                Coef.   Std.Err.     t     P&gt;|t|    [0.025  0.975]
+------------------------------------------------------------------
+Intercept       2.9389    0.3119   9.4223  0.0000   2.3238  3.5540
+TV              0.0458    0.0014  32.8086  0.0000   0.0430  0.0485
+radio           0.1885    0.0086  21.8935  0.0000   0.1715  0.2055
+newspaper      -0.0010    0.0059  -0.1767  0.8599  -0.0126  0.0105
+-----------------------------------------------------------------
+Omnibus:             60.414       Durbin-Watson:          2.084  
+Prob(Omnibus):       0.000        Jarque-Bera (JB):       151.241
+Skew:                -1.327       Prob(JB):               0.000  
+Kurtosis:            6.332        Condition No.:          454    
+=================================================================
+Notes:
+[1] Standard Errors assume that the covariance matrix of the
+errors is correctly specified.</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a></a>slr_model <span class="op">=</span> smf.ols(</span>
+<span id="cb7-2"><a></a>  formula<span class="op">=</span><span class="st">"sales ~ newspaper"</span>,</span>
+<span id="cb7-3"><a></a>  data<span class="op">=</span>ad_df</span>
+<span id="cb7-4"><a></a>)</span>
+<span id="cb7-5"><a></a>slr_result <span class="op">=</span> slr_model.fit()</span>
+<span id="cb7-6"><a></a><span class="bu">print</span>(slr_result.summary2())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 Results: Ordinary least squares
+==================================================================
+Model:              OLS              Adj. R-squared:     0.047    
+Dependent Variable: sales            AIC:                1220.6714
+Date:               2025-03-09 05:23 BIC:                1227.2680
+No. Observations:   200              Log-Likelihood:     -608.34  
+Df Model:           1                F-statistic:        10.89    
+Df Residuals:       198              Prob (F-statistic): 0.00115  
+R-squared:          0.052            Scale:              25.933   
+-------------------------------------------------------------------
+                Coef.   Std.Err.     t     P&gt;|t|    [0.025   0.975]
+-------------------------------------------------------------------
+Intercept      12.3514    0.6214  19.8761  0.0000  11.1260  13.5769
+newspaper       0.0547    0.0166   3.2996  0.0011   0.0220   0.0874
+------------------------------------------------------------------
+Omnibus:               6.231        Durbin-Watson:           1.983
+Prob(Omnibus):         0.044        Jarque-Bera (JB):        5.483
+Skew:                  0.330        Prob(JB):                0.064
+Kurtosis:              2.527        Condition No.:           65   
+==================================================================
+Notes:
+[1] Standard Errors assume that the covariance matrix of the
+errors is correctly specified.</code></pre>
+</div>
+</div>
+</div></div>
+<ul>
+<li>MLR results can be <strong>drastically different</strong> from SLR results, because of <strong>correlations</strong> (next slide)</li>
+<li>This is a good thing! It’s how we’re able to <strong>control for</strong> confounding variables!</li>
+</ul>
+</section>
+<section id="correlations-among-features" class="slide level2 smaller">
+<h2>Correlations Among Features</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a></a>ad_df.drop(columns<span class="op">=</span><span class="st">"id"</span>).corr()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 TV     radio  newspaper     sales
+TV         1.000000  0.054809   0.056648  0.782224
+radio      0.054809  1.000000   0.354104  0.576223
+newspaper  0.056648  0.354104   1.000000  0.228299
+sales      0.782224  0.576223   0.228299  1.000000</code></pre>
+</div>
+</div>
+<ul>
+<li>Observe how <span class="math inline">\(\text{cor}(\texttt{radio}, \texttt{newspaper}) \approx 0.35\)</span></li>
+<li>In markets where we spend more on <code>radio</code> our sales will tend to be higher…</li>
+<li>Corr matrix <span class="math inline">\(\implies\)</span> we spend more on <code>newspaper</code> in those same markets…</li>
+<li>In SLR which only examines <code>sales</code> vs.&nbsp;<code>newspaper</code>, we (<strong>correctly!</strong>) observe that higher values of <code>newspaper</code> are associated with higher values of <code>sales</code>…</li>
+<li>In essence, <code>newspaper</code> advertising is a surrogate for <code>radio</code> advertising <span class="math inline">\(\implies\)</span> in our SLR, <code>newspaper</code> “gets credit” for the association between <code>radio</code> and <code>sales</code></li>
+</ul>
+</section>
+<section id="another-mlr-superpower-incorporating-categorical-vars" class="slide level2 smaller title-09 math-90">
+<h2>Another MLR Superpower: Incorporating Categorical Vars</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<p><span class="math display">\[
+\begin{align*}
+Y &amp;= \beta_0 + \beta_1 \times \texttt{income} \\
+&amp;\phantom{Y}
+\end{align*}
+\]</span></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>credit_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/Credit.csv"</span>)</span>
+<span id="cb11-2"><a></a>credit_plot <span class="ot">&lt;-</span> credit_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Income, <span class="at">y=</span>Balance)) <span class="sc">+</span></span>
+<span id="cb11-3"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span><span class="sc">*</span>g_pointsize) <span class="sc">+</span></span>
+<span id="cb11-4"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">"y ~ x"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb11-5"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
+<span id="cb11-6"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-7"><a></a>    <span class="at">title=</span><span class="st">"Credit Card Balance vs. Income Level"</span>,</span>
+<span id="cb11-8"><a></a>    <span class="at">x=</span><span class="st">"Income ($1K)"</span>,</span>
+<span id="cb11-9"><a></a>    <span class="at">y=</span><span class="st">"Credit Card Balance ($)"</span></span>
+<span id="cb11-10"><a></a>  )</span>
+<span id="cb11-11"><a></a>credit_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/credit-plot-slr-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:52%;">
+<p><span class="math display">\[
+\begin{align*}
+Y = &amp;\beta_0 + \beta_1 \times \texttt{income} + \beta_2 \times \texttt{Student} \\
+&amp;+ \beta_3 \times (\texttt{Student} \times \texttt{Income})
+\end{align*}
+\]</span></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a>student_plot <span class="ot">&lt;-</span> credit_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Income, <span class="at">y=</span>Balance, <span class="at">color=</span>Student)) <span class="sc">+</span></span>
+<span id="cb12-2"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span><span class="sc">*</span>g_pointsize) <span class="sc">+</span></span>
+<span id="cb12-3"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">"y ~ x"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb12-4"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
+<span id="cb12-5"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb12-6"><a></a>    <span class="at">title=</span><span class="st">"Credit Card Balance vs. Income Level"</span>,</span>
+<span id="cb12-7"><a></a>    <span class="at">x=</span><span class="st">"Income ($1K)"</span>,</span>
+<span id="cb12-8"><a></a>    <span class="at">y=</span><span class="st">"Credit Card Balance ($)"</span></span>
+<span id="cb12-9"><a></a>  )</span>
+<span id="cb12-10"><a></a>student_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/credit-plot-students-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<ul>
+<li>Why do we need the <span class="math inline">\(\texttt{Student} \times \texttt{Income}\)</span> term?</li>
+<li>Understanding this setup will open up a <strong>vast</strong> array of possibilities for regression 😎</li>
+<li>(Dear future Jeff, let’s go through this on the board! Sincerely, past Jeff)</li>
+</ul>
+</section></section>
+<section>
+<section id="logistic-regression" class="title-slide slide level1 center" data-stack-name="Logistic Regression">
+<h1>Logistic Regression</h1>
+
+</section>
+<section id="from-mlr-to-logistic-regression" class="slide level2 crunch-title math-90 crunch-ul crunch-quarto-figure cols-va">
+<h2>From MLR to Logistic Regression</h2>
+<ul>
+<li>As DSAN students, you know that we’re still sweeping <strong>classification</strong> under the rug!</li>
+<li>We saw how to include binary/multiclass <strong>covariates</strong>, but what if the actual <strong>thing we’re trying to predict</strong> is binary?</li>
+<li>The <strong>wrong</strong> approach is the “Linear Probability Model”:</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><span class="math display">\[
+\Pr(Y \mid X) = \beta_0 + \beta_1 X + \varepsilon
+\]</span></p>
+</div><div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/egg_head.jpg" class="quarto-figure quarto-figure-center" width="500"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="credit-default" class="slide level2">
+<h2>Credit Default</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb13-2"><a></a><span class="fu">library</span>(ggExtra)</span>
+<span id="cb13-3"><a></a>default_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/Default.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a></a>  <span class="fu">mutate</span>(<span class="at">default_num =</span> <span class="fu">ifelse</span>(default<span class="sc">==</span><span class="st">"Yes"</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span>
+<span id="cb13-5"><a></a>default_plot <span class="ot">&lt;-</span> default_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>balance, <span class="at">y=</span>income, <span class="at">color=</span>default, <span class="at">shape=</span>default)) <span class="sc">+</span></span>
+<span id="cb13-6"><a></a>  <span class="fu">geom_point</span>(<span class="at">alpha=</span><span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb13-7"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">16</span>) <span class="sc">+</span></span>
+<span id="cb13-8"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb13-9"><a></a>    <span class="at">title=</span><span class="st">"Credit Defaults by Income and Account Balance"</span>,</span>
+<span id="cb13-10"><a></a>    <span class="at">x =</span> <span class="st">"Account Balance"</span>,</span>
+<span id="cb13-11"><a></a>    <span class="at">y =</span> <span class="st">"Income"</span></span>
+<span id="cb13-12"><a></a>  )</span>
+<span id="cb13-13"><a></a>default_mplot <span class="ot">&lt;-</span> default_plot <span class="sc">|&gt;</span> <span class="fu">ggMarginal</span>(<span class="at">type=</span><span class="st">"boxplot"</span>, <span class="at">groupColour=</span><span class="cn">FALSE</span>, <span class="at">groupFill=</span><span class="cn">TRUE</span>)</span>
+<span id="cb13-14"><a></a>default_mplot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+
+</div>
+<img data-src="index_files/figure-revealjs/default-dataset-1.png" width="960" class="r-stretch"></section>
+<section id="lines-vs.-sigmoids" class="slide level2 smaller math-90">
+<h2>Lines vs.&nbsp;Sigmoids(!)</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Here’s what lines look like for this dataset:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="co">#lpm_model &lt;- lm(default ~ balance, data=default_df)</span></span>
+<span id="cb14-2"><a></a>default_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(</span>
+<span id="cb14-3"><a></a>    <span class="fu">aes</span>(</span>
+<span id="cb14-4"><a></a>      <span class="at">x=</span>balance, <span class="at">y=</span>default_num</span>
+<span id="cb14-5"><a></a>    )</span>
+<span id="cb14-6"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb14-7"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>default)) <span class="sc">+</span></span>
+<span id="cb14-8"><a></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">"lm"</span>, <span class="at">formula=</span>y<span class="sc">~</span>x, <span class="at">color=</span><span class="st">'black'</span>) <span class="sc">+</span></span>
+<span id="cb14-9"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/linear-prob-model-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Here’s what sigmoids look like:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb15-2"><a></a>logistic_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(default_num <span class="sc">~</span> balance, <span class="at">family=</span><span class="fu">binomial</span>(<span class="at">link=</span><span class="st">'logit'</span>),<span class="at">data=</span>default_df)</span>
+<span id="cb15-3"><a></a>default_df<span class="sc">$</span>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(logistic_model, <span class="at">newdata =</span> default_df, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb15-4"><a></a>my_sigmoid <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span><span class="sc">+</span><span class="fu">exp</span>(<span class="sc">-</span>x))</span>
+<span id="cb15-5"><a></a>default_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>balance, <span class="at">y=</span>default_num)) <span class="sc">+</span></span>
+<span id="cb15-6"><a></a>  <span class="co">#stat_function(fun=my_sigmoid) +</span></span>
+<span id="cb15-7"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>default)) <span class="sc">+</span></span>
+<span id="cb15-8"><a></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb15-9"><a></a>    <span class="at">data=</span>default_df,</span>
+<span id="cb15-10"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>balance, <span class="at">y=</span>predictions),</span>
+<span id="cb15-11"><a></a>    <span class="at">linewidth=</span><span class="dv">1</span></span>
+<span id="cb15-12"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb15-13"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/plot-sigmoids-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<div class="cols-va">
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><span class="math display">\[
+\Pr(Y \mid X) = \beta_0 + \beta_1 X + \varepsilon
+\]</span></p>
+</div><div class="column" style="width:50%;">
+<p><span class="math display">\[
+\log\underbrace{\left[ \frac{\Pr(Y \mid X)}{1 - \Pr(Y \mid X)} \right]}_{\mathclap{\smash{\text{Odds Ratio}}}} = \beta_0 + \beta_1 X + \varepsilon
+\]</span></p>
+</div></div>
+</div>
+</section>
+<section id="but-lets-derive-this" class="slide level2">
+<h2>But Let’s <em>Derive</em> This!</h2>
+<p><span class="math display">\[
+\begin{align*}
+\Pr(Y \mid X) &amp;= \frac{e^{\beta_0 + \beta_1X}}{1 + e^{\beta_0 + \beta_1X}} \\
+\iff \underbrace{\frac{\Pr(Y \mid X)}{1 - \Pr(Y \mid X)}}_{\text{Odds Ratio}} &amp;= e^{\beta_0 + \beta_1X} \\
+\iff \underbrace{\log\left[ \frac{\Pr(Y \mid X)}{1 - \Pr(Y \mid X)} \right]}_{\text{Log-Odds Ratio}} &amp;= \beta_0 + \beta_1X
+\end{align*}
+\]</span></p>
+</section>
+<section id="now-how-will-we-ever-find-good-parameter-values" class="slide level2 smaller">
+<h2><em>Now</em> How Will We Ever Find “Good” Parameter Values?</h2>
+<ul>
+<li>If only we had some sort of <strong>estimator</strong>… One that would choose <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> so as to <strong>maximize</strong> the <strong>likelihood</strong> of seeing some data…</li>
+</ul>
+<p><span class="math display">\[
+L(\beta_0, \beta_1) = \prod_{\{i \mid y_i = 1\}}\Pr(Y = 1 \mid X) \prod_{\{i \mid y_i = 0\}}(1-\Pr(Y = 1 \mid X))
+\]</span></p>
+<ul>
+<li>(Much more on this later 😸)</li>
+</ul>
+</section>
+<section id="the-interpretation-problem" class="slide level2 smaller">
+<h2>The Interpretation Problem</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>)</span>
+<span id="cb16-2"><a></a><span class="fu">print</span>(<span class="fu">summary</span>(logistic_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = default_num ~ balance, family = binomial(link = "logit"), 
+    data = default_df)
+
+Coefficients:
+               Estimate  Std. Error z value            Pr(&gt;|z|)    
+(Intercept) -10.6513306   0.3611574  -29.49 &lt;0.0000000000000002 ***
+balance       0.0054989   0.0002204   24.95 &lt;0.0000000000000002 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 2920.6  on 9999  degrees of freedom
+Residual deviance: 1596.5  on 9998  degrees of freedom
+AIC: 1600.5
+
+Number of Fisher Scoring iterations: 8</code></pre>
+</div>
+</div>
+<ul>
+<li>Slope is no longer the same everywhere! It <strong>varies</strong> across different values of <span class="math inline">\(x\)</span>…</li>
+<li>Let’s brainstorm some possible ways to make our lives easier when interpreting these coefficients!</li>
+</ul>
+</section>
+<section id="references" class="slide level2 smaller scrollable">
+<h2>References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-gelman_data_2007" class="csl-entry" role="listitem">
+Gelman, Andrew, and Jennifer Hill. 2007. <em>Data <span>Analysis Using Regression</span> and <span>Multilevel</span>/<span>Hierarchical Models</span></em>. Cambridge University Press. <a href="https://www.dropbox.com/scl/fi/asbumi3g0gqa4xl9va7wp/Andrew-Gelman-Jennifer-Hill-Data-Analysis-Using-Regression-and-Multilevel_Hierarchical-Models.pdf?rlkey=zf8icjhm7rswvxrpm7d10m65o&amp;dl=1">https://www.dropbox.com/scl/fi/asbumi3g0gqa4xl9va7wp/Andrew-Gelman-Jennifer-Hill-Data-Analysis-Using-Regression-and-Multilevel_Hierarchical-Models.pdf?rlkey=zf8icjhm7rswvxrpm7d10m65o&amp;dl=1</a>.
+</div>
+</div>
+</section>
+<section id="appendix-mlr-in-r" class="slide level2 smaller">
+<h2>Appendix: MLR in R</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a>mlr_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> TV <span class="sc">+</span> radio <span class="sc">+</span> newspaper, <span class="at">data=</span>ad_df)</span>
-<span id="cb37-2"><a></a><span class="fu">print</span>(<span class="fu">summary</span>(mlr_model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb18-2"><a></a>ad_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/Advertising.csv"</span>) <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">id=</span><span class="st">`</span><span class="at">...1</span><span class="st">`</span>)</span>
+<span id="cb18-3"><a></a>mlr_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb18-4"><a></a>  sales <span class="sc">~</span> TV <span class="sc">+</span> radio <span class="sc">+</span> newspaper,</span>
+<span id="cb18-5"><a></a>  <span class="at">data=</span>ad_df</span>
+<span id="cb18-6"><a></a>)</span>
+<span id="cb18-7"><a></a><span class="fu">print</span>(<span class="fu">summary</span>(mlr_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1346,17 +820,17 @@ Residuals:
 -8.8277 -0.8908  0.2418  1.1893  2.8292 
 
 Coefficients:
-             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)  2.938889   0.311908   9.422   &lt;2e-16 ***
-TV           0.045765   0.001395  32.809   &lt;2e-16 ***
-radio        0.188530   0.008611  21.893   &lt;2e-16 ***
-newspaper   -0.001037   0.005871  -0.177     0.86    
+             Estimate Std. Error t value            Pr(&gt;|t|)    
+(Intercept)  2.938889   0.311908   9.422 &lt;0.0000000000000002 ***
+TV           0.045765   0.001395  32.809 &lt;0.0000000000000002 ***
+radio        0.188530   0.008611  21.893 &lt;0.0000000000000002 ***
+newspaper   -0.001037   0.005871  -0.177                0.86    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Residual standard error: 1.686 on 196 degrees of freedom
 Multiple R-squared:  0.8972,    Adjusted R-squared:  0.8956 
-F-statistic: 570.3 on 3 and 196 DF,  p-value: &lt; 2.2e-16</code></pre>
+F-statistic: 570.3 on 3 and 196 DF,  p-value: &lt; 0.00000000000000022</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
@@ -1373,176 +847,13 @@ F-statistic: 570.3 on 3 and 196 DF,  p-value: &lt; 2.2e-16</code></pre>
 </ul></li>
 </ul>
 </div></div>
-</section>
-<section id="but-wait" class="slide level2 smaller">
-<h2>But Wait…</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a></a><span class="fu">print</span>(<span class="fu">summary</span>(mlr_model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = sales ~ TV + radio + newspaper, data = ad_df)
-
-Residuals:
-    Min      1Q  Median      3Q     Max 
--8.8277 -0.8908  0.2418  1.1893  2.8292 
-
-Coefficients:
-             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)  2.938889   0.311908   9.422   &lt;2e-16 ***
-TV           0.045765   0.001395  32.809   &lt;2e-16 ***
-radio        0.188530   0.008611  21.893   &lt;2e-16 ***
-newspaper   -0.001037   0.005871  -0.177     0.86    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 1.686 on 196 degrees of freedom
-Multiple R-squared:  0.8972,    Adjusted R-squared:  0.8956 
-F-statistic: 570.3 on 3 and 196 DF,  p-value: &lt; 2.2e-16</code></pre>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a></a>lr_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> newspaper, <span class="at">data=</span>ad_df)</span>
-<span id="cb41-2"><a></a><span class="fu">print</span>(<span class="fu">summary</span>(lr_model))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = sales ~ newspaper, data = ad_df)
-
-Residuals:
-     Min       1Q   Median       3Q      Max 
--11.2272  -3.3873  -0.8392   3.5059  12.7751 
-
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 12.35141    0.62142   19.88  &lt; 2e-16 ***
-newspaper    0.05469    0.01658    3.30  0.00115 ** 
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 5.092 on 198 degrees of freedom
-Multiple R-squared:  0.05212,   Adjusted R-squared:  0.04733 
-F-statistic: 10.89 on 1 and 198 DF,  p-value: 0.001148</code></pre>
-</div>
-</div>
-</div></div>
-<ul>
-<li>MLR results can be <strong>drastically different</strong> from SLR results, because of <strong>correlations</strong> (next slide)</li>
-<li>This is a good thing! It’s how we’re able to <strong>control for</strong> confounding variables!</li>
-</ul>
-</section>
-<section id="correlations-among-features" class="slide level2 smaller">
-<h2>Correlations Among Features</h2>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a></a><span class="fu">cor</span>(ad_df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>id))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>                  TV      radio  newspaper     sales
-TV        1.00000000 0.05480866 0.05664787 0.7822244
-radio     0.05480866 1.00000000 0.35410375 0.5762226
-newspaper 0.05664787 0.35410375 1.00000000 0.2282990
-sales     0.78222442 0.57622257 0.22829903 1.0000000</code></pre>
-</div>
-</div>
-<ul>
-<li>Observe how <span class="math inline">\(\text{cor}(\texttt{radio}, \texttt{newspaper}) \approx 0.35\)</span></li>
-<li>In markets where we spend more on <code>radio</code> our sales will tend to be higher…</li>
-<li>Corr matrix <span class="math inline">\(\implies\)</span> we spend more on <code>newspaper</code> in those same markets…</li>
-<li>In SLR which only examines <code>sales</code> vs.&nbsp;<code>newspaper</code>, we (<strong>correctly!</strong>) observe that higher values of <code>newspaper</code> are associated with higher values of <code>sales</code>…</li>
-<li>In essence, <code>newspaper</code> advertising is a surrogate for <code>radio</code> advertising <span class="math inline">\(\implies\)</span> in our SLR, <code>newspaper</code> “gets credit” for the association between <code>radio</code> and <code>sales</code></li>
-</ul>
-</section>
-<section id="another-mlr-superpower-incorporating-categorical-vars" class="slide level2 smaller title-09 math-90">
-<h2>Another MLR Superpower: Incorporating Categorical Vars</h2>
-<p><em>(Preview for next week)</em></p>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><span class="math display">\[
-Y = \beta_0 + \beta_1 \times \texttt{income}
-\]</span></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a></a>credit_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/Credit.csv"</span>)</span>
-<span id="cb45-2"><a></a>credit_plot <span class="ot">&lt;-</span> credit_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Income, <span class="at">y=</span>Balance)) <span class="sc">+</span></span>
-<span id="cb45-3"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span><span class="sc">*</span>g_pointsize) <span class="sc">+</span></span>
-<span id="cb45-4"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">"y ~ x"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb45-5"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
-<span id="cb45-6"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb45-7"><a></a>    <span class="at">title=</span><span class="st">"Credit Card Balance vs. Income Level"</span>,</span>
-<span id="cb45-8"><a></a>    <span class="at">x=</span><span class="st">"Income ($1K)"</span>,</span>
-<span id="cb45-9"><a></a>    <span class="at">y=</span><span class="st">"Credit Card Balance ($)"</span></span>
-<span id="cb45-10"><a></a>  )</span>
-<span id="cb45-11"><a></a>credit_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/credit-plot-slr-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<p><span class="math display">\[
-\begin{align*}
-Y = &amp;\beta_0 + \beta_1 \times \texttt{income} + \beta_2 \times \texttt{Student} \\
-&amp;+ \beta_3 \times (\texttt{Student} \times \texttt{Income})
-\end{align*}
-\]</span></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a></a>student_plot <span class="ot">&lt;-</span> credit_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Income, <span class="at">y=</span>Balance, <span class="at">color=</span>Student)) <span class="sc">+</span></span>
-<span id="cb46-2"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span><span class="sc">*</span>g_pointsize) <span class="sc">+</span></span>
-<span id="cb46-3"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">"y ~ x"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb46-4"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
-<span id="cb46-5"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb46-6"><a></a>    <span class="at">title=</span><span class="st">"Credit Card Balance vs. Income Level"</span>,</span>
-<span id="cb46-7"><a></a>    <span class="at">x=</span><span class="st">"Income ($1K)"</span>,</span>
-<span id="cb46-8"><a></a>    <span class="at">y=</span><span class="st">"Credit Card Balance ($)"</span></span>
-<span id="cb46-9"><a></a>  )</span>
-<span id="cb46-10"><a></a>student_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/credit-plot-students-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-<ul>
-<li>Why do we need the <span class="math inline">\(\texttt{Student} \times \texttt{Income}\)</span> term?</li>
-<li>Understanding this setup will open up a <strong>vast</strong> array of possibilities for regression 😎</li>
-</ul>
-</section>
-<section id="references" class="slide level2 smaller scrollable">
-<h2>References</h2>
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
-<div id="ref-gelman_data_2007" class="csl-entry" role="listitem">
-Gelman, Andrew, and Jennifer Hill. 2007. <em>Data <span>Analysis Using Regression</span> and <span>Multilevel</span>/<span>Hierarchical Models</span></em>. Cambridge University Press.
-</div>
-</div>
 
 
 </section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
-<p>DSAN 5300-01 Week 2: Linear Regression</p>
+<p>DSAN 5300 Week 2: Logistic Regression</p>
 </div>
 </div></div>
 
@@ -1795,190 +1106,173 @@ Gelman, Andrew, and Jennifer Hill. 2007. <em>Data <span>Analysis Using Regressio
     </script>
 
     <script id="quarto-html-after-body" type="application/javascript">
-    window.document.addEventListener("DOMContentLoaded", function (event) {
-      const toggleBodyColorMode = (bsSheetEl) => {
-        const mode = bsSheetEl.getAttribute("data-mode");
-        const bodyEl = window.document.querySelector("body");
-        if (mode === "dark") {
-          bodyEl.classList.add("quarto-dark");
-          bodyEl.classList.remove("quarto-light");
-        } else {
-          bodyEl.classList.add("quarto-light");
-          bodyEl.classList.remove("quarto-dark");
-        }
-      }
-      const toggleBodyColorPrimary = () => {
-        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-        if (bsSheetEl) {
-          toggleBodyColorMode(bsSheetEl);
-        }
-      }
-      toggleBodyColorPrimary();  
-      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
-      tabsets.forEach(function(tabset) {
-        const tabby = new Tabby('#' + tabset.id);
-      });
-      const isCodeAnnotation = (el) => {
-        for (const clz of el.classList) {
-          if (clz.startsWith('code-annotation-')) {                     
-            return true;
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
           }
+          return false;
         }
-        return false;
-      }
-      const onCopySuccess = function(e) {
-        // button target
-        const button = e.trigger;
-        // don't keep focus
-        button.blur();
-        // flash "checked"
-        button.classList.add('code-copy-button-checked');
-        var currentTitle = button.getAttribute("title");
-        button.setAttribute("title", "Copied!");
-        let tooltip;
-        if (window.bootstrap) {
-          button.setAttribute("data-bs-toggle", "tooltip");
-          button.setAttribute("data-bs-placement", "left");
-          button.setAttribute("data-bs-title", "Copied!");
-          tooltip = new bootstrap.Tooltip(button, 
-            { trigger: "manual", 
-              customClass: "code-copy-button-tooltip",
-              offset: [0, -8]});
-          tooltip.show();    
-        }
-        setTimeout(function() {
-          if (tooltip) {
-            tooltip.hide();
-            button.removeAttribute("data-bs-title");
-            button.removeAttribute("data-bs-toggle");
-            button.removeAttribute("data-bs-placement");
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
           }
-          button.setAttribute("title", currentTitle);
-          button.classList.remove('code-copy-button-checked');
-        }, 1000);
-        // clear code selection
-        e.clearSelection();
-      }
-      const getTextToCopy = function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
           for (const childEl of codeEl.children) {
             if (isCodeAnnotation(childEl)) {
               childEl.remove();
             }
           }
           return codeEl.innerText;
-      }
-      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-        text: getTextToCopy
-      });
-      clipboard.on('success', onCopySuccess);
-      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-          text: getTextToCopy,
-          container: window.document.getElementById('quarto-embedded-source-code-modal')
-        });
-        clipboardModal.on('success', onCopySuccess);
-      }
-        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-        var mailtoRegex = new RegExp(/^mailto:/);
-          var filterRegex = new RegExp('/' + window.location.host + '/');
-        var isInternal = (href) => {
-            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
-        // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-        for (var i=0; i<links.length; i++) {
-          const link = links[i];
-          if (!isInternal(link.href)) {
-            // undo the damage that might have been done by quarto-nav.js in the case of
-            // links that we want to consider external
-            if (link.dataset.originalHref !== undefined) {
-              link.href = link.dataset.originalHref;
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
             }
           }
-        }
-      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-        const config = {
-          allowHTML: true,
-          maxWidth: 500,
-          delay: 100,
-          arrow: false,
-          appendTo: function(el) {
-              return el.closest('section.slide') || el.parentElement;
-          },
-          interactive: true,
-          interactiveBorder: 10,
-          theme: 'light-border',
-          placement: 'bottom-start',
-        };
-        if (contentFn) {
-          config.content = contentFn;
-        }
-        if (onTriggerFn) {
-          config.onTrigger = onTriggerFn;
-        }
-        if (onUntriggerFn) {
-          config.onUntrigger = onUntriggerFn;
-        }
-          config['offset'] = [0,0];
-          config['maxWidth'] = 700;
-        window.tippy(el, config); 
-      }
-      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-      for (var i=0; i<noterefs.length; i++) {
-        const ref = noterefs[i];
-        tippyHover(ref, function() {
-          // use id or data attribute instead here
-          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-          try { href = new URL(href).hash; } catch {}
-          const id = href.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note) {
-            return note.innerHTML;
-          } else {
-            return "";
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
           }
-        });
-      }
-      const findCites = (el) => {
-        const parentEl = el.parentElement;
-        if (parentEl) {
-          const cites = parentEl.dataset.cites;
-          if (cites) {
-            return {
-              el,
-              cites: cites.split(' ')
-            };
-          } else {
-            return findCites(el.parentElement)
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
           }
-        } else {
-          return undefined;
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
         }
-      };
-      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-      for (var i=0; i<bibliorefs.length; i++) {
-        const ref = bibliorefs[i];
-        const citeInfo = findCites(ref);
-        if (citeInfo) {
-          tippyHover(citeInfo.el, function() {
-            var popup = window.document.createElement('div');
-            citeInfo.cites.forEach(function(cite) {
-              var citeDiv = window.document.createElement('div');
-              citeDiv.classList.add('hanging-indent');
-              citeDiv.classList.add('csl-entry');
-              var biblioDiv = window.document.getElementById('ref-' + cite);
-              if (biblioDiv) {
-                citeDiv.innerHTML = biblioDiv.innerHTML;
-              }
-              popup.appendChild(citeDiv);
-            });
-            return popup.innerHTML;
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
           });
         }
-      }
-    });
-    </script>
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
     
 
 </body></html>

@@ -1,77 +1,73 @@
-zoom_url: "https://georgetown.zoom.us/j/91911785762?pwd=poQh2m4AiSYWaDudp7hPLDEszWgBuG.1"
-recording_url: "https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=07b596c2-6a0e-4302-a186-b25c00b555ce"
+zoom_url: "https://georgetown.zoom.us/j/97371877594?pwd=oT8FiCC0RAhl8bHRsOuoZuRBzxJNQj.1"
+recording_url: "https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=e60c1880-ba36-462c-b8e9-b3c301796e7a"
+canvas_url: "https://georgetown.instructure.com/courses/224125"
 w01:
   weeknum: 1
-  title: "Introduction to the Course"
-  footer: "Introduction to the Course"
-  date-md: "Jan 9"
-w02:
-  weeknum: 2
   title: "Linear Regression"
   footer: "Linear Regression"
-  date-md: "Jan 13"
-w03:
-  weeknum: 3
+  date-md: "Jan 7"
+w02:
+  weeknum: 2
   title: "Logistic Regression"
   footer: "Logistic Regression"
-  date-md: "Jan 27"
-w04:
-  weeknum: 4
+  date-md: "Jan 12"
+w03:
+  weeknum: 3
   title: "The Scourge of Overfitting"
   footer: "The Scourge of Overfitting"
-  date-md: "Feb 3"
-w05:
-  weeknum: 5
+  date-md: "Jan 26"
+w04:
+  weeknum: 4
   title: "Cross-Validation for Model Assessment"
   footer: "CV for Model Assessment"
-  date-md: "Feb 10"
-w06:
-  weeknum: 6
+  date-md: "Feb 2"
+w05:
+  weeknum: 5
   title: "Regularization for Model Selection"
   footer: "Regularization for Model Selection"
-  date-md: "Feb 18"
-w07:
-  weeknum: 7
+  date-md: "Feb 9"
+w06:
+  weeknum: 6
   title: "Basis Functions and Splines"
   footer: "Basis Functions and Splines"
-  date-md: "Feb 24"
-w08:
-  weeknum: 8
+  date-md: "Feb 17"
+w07:
+  weeknum: 7
   title: "Support Vector Machines (SVMs)"
   footer: "Support Vector Machines (SVMs)"
-  date-md: "Mar 10"
-w09:
-  weeknum: 9
+  date-md: "Feb 23"
+w08:
+  weeknum: 8
   title: "Generative vs. Discriminative Models"
   footer: "Discriminant Analysis"
-  date-md: "Mar 17"
-w10:
-  weeknum: 10
+  date-md: "Mar 9"
+w09:
+  weeknum: 9
   title: "Deep Learning"
   footer: "Deep Learning"
-  date-md: "Mar 24"
-w11:
-  weeknum: 11
+  date-md: "Mar 16"
+w10:
+  weeknum: 10
   title: "How Do Neural Networks Deep-Learn?"
   footer: "Training Neural Networks"
-  date-md: "Mar 31"
-w12:
-  weeknum: 12
+  date-md: "Mar 23"
+w11:
+  weeknum: 11
   title: "Survival Analysis"
   footer: "Survival Analysis"
-  date-md: "Apr 7"
-w13:
-  weeknum: 13
+  date-md: "Mar 23"
+w12:
+  weeknum: 12
   title: "Machine Learning for Causal Inference"
   footer: "Machine Learning for Causal Inference"
-  date-md: "Apr 14"
-# w14:
-#   weeknum: 14
-#   title: "Republican Liberty and the Kindly Slavemaster"
-#   footer: "Republican Liberty"
-#   date-md: "Apr 16"
-# w15:
-#   weeknum: 15
-#   title: "Final Project Day"
-#   footer: "Final Projects"
-#   date-md: "Apr 23"
+  date-md: "Apr 13"
+w13:
+  weeknum: 13
+  title: "In-Class Office Hours"
+  footer: "In-Class Office Hours"
+  date-md: "Apr 20"
+w14:
+  weeknum: 14
+  title: "Final Project Presentations"
+  footer: "Final Project Presentations"
+  date-md: "Apr 27"

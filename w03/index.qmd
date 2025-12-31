@@ -1,10 +1,10 @@
 ---
-title: "Week 3: Getting Fancy with Regression"
-subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+title: "Week 3: The Scourge of Overfitting"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 bibliography: "../_DSAN5300.bib"
-date: 2025-01-27
+date: 2026-01-26
 date-format: full
 lecnum: 3
 cache: true
@@ -13,16 +13,18 @@ categories:
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300-01 Week 3: {{< var w03.footer >}}"
+    footer: "DSAN 5300 Week 3: {{< var w03.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true
-    css: "../dsan-globals/jjstyles.css"
+    theme: [default, "../dsan-globals/jjquarto.scss"]
     slide-number: true
     echo: true
     code-fold: true
+    link-external-icon: true
+    link-external-newwindow: true
     include-in-header:
-      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
+      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Workbench&display=swap' rel='stylesheet'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
     simplemenu:
       flat: true
       barhtml:
@@ -48,16 +50,21 @@ format:
 
 :::
 
-# Recap Linear Regression {data-stack-name="Recap"}
 
-* What happens to my **dependent variable** $Y$ when my **independent variable** $X$ changes by **1 unit**?
-* Whenever you carry out a regression, keep the **goal** in the front of your mind:
+# Schedule {.smaller .small-title .crunch-title .crunch-callout data-name="Schedule"}
 
-  ::: {.callout-tip .r-fit-text title="<i class='bi bi-info-circle'></i> The Goal of Regression" icon="false"}
+Today's Planned Schedule:
 
-  **Find a line $\widehat{y} = mx + b$ that best *predicts* $Y$ for given values of $X$**
+| | Start | End | Topic |
+|:- |:- |:- |:- |
+| **Lecture** | 6:30pm | 6:40pm | [Logistic Regression Recap &rarr;](#recap-logistic-regression) |
+| | 6:40pm | 7:00pm | [CV and Model Selection Motivation &rarr;](#what-we-have-thus-far) |
+| | 7:00pm | 8:00pm | [Anti-Overfitting Toolkit &rarr;](#building-an-anti-overfitting-toolkit) |
+| **Break!** | 8:00pm | 8:10pm | |
+| | 8:10pm | 9:00pm | [Quizzo &rarr;](#quiz-time) |
 
-  :::
+: {tbl-colwidths="[12,12,12,64]"}
+
 
 ::: {.hidden}
 
@@ -71,403 +78,531 @@ set.seed(5300)
 
 {{< include ../dsan-globals/_globals-tex.qmd >}}
 
-## What Regression is *Not* {.crunch-title .math-90 .crunch-ul .crunch-math-15}
+# Recap: Logistic Regression {.smaller .crunch-ul .math-80 .title-09 data-stack-name="Recap"}
 
-* Final reminder that Regression, PCA have **different goals!**
-* If your goal was to, e.g., generate **realistic $(x,y)$ pairs**, then (mathematically) you want PCA! Roughly:
+* What happens to the **probability** $\Pr(Y = 1 \mid X)$ when $X$ increases by **1 unit**?
+* "Linear Probability Model" $\Pr(Y = 1 \mid X) = \beta_0 + \beta_1X$ fails, **but**, "fixing" it leads to
 
-  $$
-  \widehat{f}_{\text{PCA}} = \min_{\mathbf{c}}\left[ \sum_{i=1}^{n} (\widehat{x}_i(\mathbf{c}) - x_i)^2 + (\widehat{y}_i(\mathbf{c}) - y_i)^2 \right]
-  $$
+$$
+\begin{align*}
+&\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
+\iff &\Pr(Y = 1 \mid X) = \frac{\exp[\beta_0 + \beta_1X]}{1 + \exp[\beta_0 + \beta_1X]} = \frac{1}{1 + \exp\left[ -(\beta_0 + \beta_1X) \right] }
+\end{align*}
+$$
 
-* Our goal is a **good predictor of $Y$**:
+> $\leadsto$ A 1-unit increase in $X$ is associated with a $\beta_1$ increase in the **log-odds** of $Y$
 
-  $$
-  \widehat{f}_{\text{Reg}} = \min_{\beta_0, \beta_1}\left[ \sum_{i=1}^{n} (\widehat{y}_i(\beta) - y_i)^2 \right]
-  $$
+## What We Have Thus Far {.smaller .crunch-title .title-10 .crunch-ul .crunch-img}
 
-## How Do We Define "Best"? {.smaller}
+* We have a **core model**, regression, that we can **build up** into p much anything we want!
 
-* Intuitively, two different ways to measure **how well a line fits the data**:
+| Class Topic | This Video |
+| - | - |
+| Linear regression | Pachelbel's *Canon in D* (1m26s-1m46s) |
+| Logistic regression | Add swing: ![](images/swing_image.svg){width="100"} (1m46s) |
+| Neural networks | (triads $\mapsto$ 7th/9th chords) (5m24s-5m53s) |
 
-::: {layout="[1,1]" layout-valign="center"}
+{{< video https://www.youtube.com/watch?v=lpc1lEJ-SRc width="100%" height="340" >}}
+
+# Taking Off the Linearity Training Wheels {.smaller data-stack-name="Motivation"}
+
+```{=html}
+<style>
+@font-face {
+    font-family: Noodle;
+    src: url('/assets/Kbnoodlemonster.ttf');
+}
+.workbench-jj {
+  font-family: "Workbench", serif;
+  /* font-optical-sizing: auto; */
+  font-weight: 400;
+  font-style: normal;
+  font-size: 96pt !important;
+}
+.noodle-jj {
+    font-family: "Noodle", serif;
+    font-size: 96pt !important;
+}
+</style>
+```
+
+:::: {.columns}
+::: {.column width="50%"}
+
+::: {#fig-workbench}
+
+<center>
+
+[Linear Models]{.workbench-jj}
+
+</center>
+
+[Font Credit](https://fonts.google.com/specimen/Workbench)
+:::
+
+:::
+::: {.column width="50%"}
+
+::: {#fig-noodle}
+
+<center>
+
+[Linear Models]{.noodle-jj}
+
+</center>
+
+[Font Credit](http://keepinitkoolinkinderland.blogspot.com/p/fonts.html)
+:::
+
+:::
+::::
+
+## How Can We Attain Hiromi's Aura?
+
+* Ingredient 1: Lots of *examples*: find mysteries/questions you care about in the world and think of how regression could help us understand them!
+* But, **Ingredient 2** is **Generalized Linear Models** (GLM), which I'll give an intro to **on the board** 🏃‍♂️‍➡️
+
+## Where Are We Going / What Problems Are We Solving? {.smaller}
+
+* Another nice property we have: OLS estimator is **BLUE** (**B**est **L**inear **U**nbiased **E**stimator) of conditional mean $\mathbb{E}[Y \mid X]$
+* The first problem we'll tackle is: as we move **from** linear models with these kinds of guarantees **to** fancier models with more uncertainties / "potholes"... how do we ensure they still achieve want we want them to achieve?
+* Tldr: we can study **more complex** relationships between $X$ and $Y$ than linear ones, but we lose guarantees like "If it's linear, then it is [this]": in other words, we lose this **automatic generalizability**
+* *(With great[er] power comes great[er] responsibility!)*
+
+## The Level 2 Goal: *Generalizability* {.smaller .crunch-title .crunch-callout .crunch-ul}
+
+::: {.callout-tip .r-fit-text title="<i class='bi bi-info-circle'></i> The Goal of Statistical Learning" icon="false"}
+
+Find...
+
+* A function $\widehat{y} = f(x)$ ✅
+* That best predicts $Y$ for given values of $X$ ✅
+* For data that has not yet been observed! 😳❓
+
+:::
+
+## ...Can We Just, Like, Not? {.smaller .crunch-title .crunch-ul .crunch-img}
+
+:::: {.columns}
+::: {.column width="70%"}
+
+* What happens if we "unleash" fancier non-linear models on data the same way we've been using linear models?
+* The evil scourge of... **OVERFITTING** *(⚡️ a single overly-dramatic lightning bolt strikes the whiteboard behind me right at this exact moment what are the odds ⚡️)*
+
+:::
+::: {.column width="30%"}
+
+![Your computer is [Yes Man](https://www.youtube.com/watch?v=g-QSuiXL6lY)](images/yes_man.png){fig-align="center" width="185"}
+
+:::
+::::
+
+:::: {.columns}
+::: {.column width="50%"}
 
 ```{r}
-#| label: pc-line
-#| fig-width: 6
+#| label: linear-fit
+#| fig-cap: "You: \"Fit the data... but you're only allowed to be linear!\" Computer: \"You got it boss!\""
 library(tidyverse)
-set.seed(5321)
-N <- 11
-x <- seq(from = 0, to = 1, by = 1 / (N - 1))
-y <- x + rnorm(N, 0, 0.2)
-mean_y <- mean(y)
-spread <- y - mean_y
-df <- tibble(x = x, y = y, spread = spread)
-ggplot(df, aes(x=x, y=y)) +
-  geom_abline(slope=1, intercept=0, linetype="dashed", color=cbPalette[1], linewidth=g_linewidth*2) +
-  geom_segment(xend=(x+y)/2, yend=(x+y)/2, linewidth=g_linewidth*2, color=cbPalette[2]) +
-  geom_point(size=g_pointsize) +
-  coord_equal() +
-  xlim(0, 1) + ylim(0, 1) +
-  dsan_theme("half") +
+set.seed(5300)
+N <- 30
+x_vals <- runif(N, min=0, max=1)
+y_vals_raw <- 3 * x_vals
+y_noise <- rnorm(N, mean=0, sd=0.5)
+y_vals <- y_vals_raw + y_noise
+data_df <- tibble(x=x_vals, y=y_vals)
+data_df |> ggplot(aes(x=x, y=y)) +
+  geom_point(size=2) +
+  stat_smooth(
+    method="lm",
+    formula="y ~ x",
+    se=FALSE,
+    linewidth=1
+  ) +
   labs(
-    title = "Principal Component Line"
-  )
+    title = paste0("Linear Regression, N = ",N)
+  ) +
+  theme_dsan(base_size=28)
 ```
+
+:::
+::: {.column width="50%"}
 
 ```{r}
-#| label: reg-line
-#| fig-width: 6
-ggplot(df, aes(x=x, y=y)) +
-  geom_abline(slope=1, intercept=0, linetype="dashed", color=cbPalette[1], linewidth=g_linewidth*2) +
-  geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +
-  geom_point(size=g_pointsize) +
-  coord_equal() +
-  xlim(0, 1) + ylim(0, 1) +
-  dsan_theme("half") +
+#| label: poly-fit
+#| fig-cap: "You: \"Fit the data...\" Computer: \"You got it boss!\""
+data_df |> ggplot(aes(x=x, y=y)) +
+  geom_point(size=2.5) +
+  stat_smooth(
+    method="lm",
+    formula=y ~ poly(x, N, raw=TRUE),
+    se=FALSE,
+    linewidth=1
+  ) +
   labs(
-    title = "Regression Line"
-  )
-```
-
-:::
-
-::: {.aside}
-On the difference between these two lines, and why it matters, I cannot recommend @gelman_data_2007 enough!
-:::
-
-# Multiple Linear Regression (MLR) {data-stack-name="MLR"}
-
-## Multiple Linear Regression (MLR) Model
-
-* Notation: $x_{i,j}$ = value of independent variable $j$ for person/observation $i$
-* $M$ = total number of independent variables
-
-$$
-\widehat{y}_i = \beta_0 + \beta_1x_{i,1} + \beta_2x_{i,2} + \cdots + \beta_M x_{i,M}
-$$
-
-* $\beta_j$ interpretation: a one-unit increase in $x_{i,j}$ is associated with a $\beta_j$ unit increase in $y_i$, **holding all other independent variables constant**
-
-## Visualizing Multiple Linear Regression
-
-![(ISLR, Fig 3.5): *A pronounced non-linear relationship. Positive residuals (visible above the surface) tend to lie along the 45-degree line, where budgets are split evenly. Negative residuals (most not visible) tend to be away from this line, where budgets are more lopsided.*](images/3_5.svg){fig-align="center"}
-
-## Interpreting MLR {.smaller .crunch-title .crunch-ul .output-center}
-
-```{python}
-#| label: mlr-results-setup
-#| echo: false
-#| code-fold: false
-import pandas as pd
-import statsmodels.formula.api as smf
-ad_df = pd.read_csv("assets/Advertising.csv")
-ad_df = ad_df.rename(columns={'Unnamed: 0': 'id'})
-```
-
-```{python}
-#| label: mlr-results-py
-#| code-fold: show
-mlr_model = smf.ols(
-  formula="sales ~ TV + radio + newspaper",
-  data=ad_df
-)
-mlr_result = mlr_model.fit()
-print(mlr_result.summary().tables[1])
-```
-
-:::: {.columns}
-::: {.column width="50%"}
-
-* **Holding `radio` and `newspaper` spending constant**...
-  * An **increase of $1K** in spending on `TV` advertising is associated with
-  * An **increase in sales of about 46 units**
-
-:::
-::: {.column width="50%"}
-
-* **Holding `TV` and `newspaper` spending constant**...
-  * An **increase of $1K** in spending on `radio` advertising is associated with
-  * An **increase in sales of about 189 units**
-
-:::
-::::
-
-## But Wait... {.smaller .output-75 .output-nowrap}
-
-:::: {.columns}
-::: {.column width="50%"}
-
-```{python}
-#| label: mlr-result-side
-#| code-overflow: scroll
-#| classes: code-output-scroll
-# print(mlr_result.summary2(float_format='%.3f'))
-print(mlr_result.summary2())
-```
-
-:::
-::: {.column width="50%"}
-
-```{python}
-#| label: lr-result-side
-slr_model = smf.ols(
-  formula="sales ~ newspaper",
-  data=ad_df
-)
-slr_result = slr_model.fit()
-print(slr_result.summary2())
+    title = paste0("Polynomial Regression, N = ",N)
+  ) +
+  theme_dsan(base_size=28)
 ```
 
 :::
 ::::
 
-* MLR results can be **drastically different** from SLR results, because of **correlations** (next slide)
-* This is a good thing! It's how we're able to **control for** confounding variables!
+::: {.notes}
 
-## Correlations Among Features {.smaller}
-
-```{python}
-#| label: feature-corr-matrix
-ad_df.drop(columns="id").corr()
-```
-
-* Observe how $\text{cor}(\texttt{radio}, \texttt{newspaper}) \approx 0.35$ 
-* In markets where we spend more on `radio` our sales will tend to be higher...
-* Corr matrix $\implies$ we spend more on `newspaper` in those same markets...
-* In SLR which only examines `sales` vs. `newspaper`, we (**correctly!**) observe that higher values of `newspaper` are associated with higher values of `sales`...
-* In essence, `newspaper` advertising is a surrogate for `radio` advertising $\implies$ in our SLR, `newspaper` "gets credit" for the association between `radio` and `sales`
-
-## Another MLR Superpower: Incorporating Categorical Vars {.smaller .title-09 .math-90}
-
-:::: {.columns}
-::: {.column width="48%"}
-
-$$
-\begin{align*}
-Y &= \beta_0 + \beta_1 \times \texttt{income} \\
-&\phantom{Y}
-\end{align*}
-$$
-
-```{r}
-#| label: credit-plot-slr
-credit_df <- read_csv("assets/Credit.csv")
-credit_plot <- credit_df |> ggplot(aes(x=Income, y=Balance)) +
-  geom_point(size=0.5*g_pointsize) +
-  geom_smooth(method='lm', formula="y ~ x", linewidth=1) +
-  theme_dsan() +
-  labs(
-    title="Credit Card Balance vs. Income Level",
-    x="Income ($1K)",
-    y="Credit Card Balance ($)"
-  )
-credit_plot
-```
+([Image Source](http://www.game-art-hq.com/89202/the-yes-man-from-fallout-game-art-overview/))
 
 :::
-::: {.column width="52%"}
 
-$$
-\begin{align*}
-Y = &\beta_0 + \beta_1 \times \texttt{income} + \beta_2 \times \texttt{Student} \\
-&+ \beta_3 \times (\texttt{Student} \times \texttt{Income})
-\end{align*}
-$$
-
-```{r}
-#| label: credit-plot-students
-student_plot <- credit_df |> ggplot(aes(x=Income, y=Balance, color=Student)) +
-  geom_point(size=0.5*g_pointsize) +
-  geom_smooth(method='lm', formula="y ~ x", linewidth=1) +
-  theme_dsan() +
-  labs(
-    title="Credit Card Balance vs. Income Level",
-    x="Income ($1K)",
-    y="Credit Card Balance ($)"
-  )
-student_plot
-```
-
-:::
-::::
-
-* Why do we need the $\texttt{Student} \times \texttt{Income}$ term?
-* Understanding this setup will open up a **vast** array of possibilities for regression 😎
-* (Dear future Jeff, let's go through this on the board! Sincerely, past Jeff)
-
-# Logistic Regression {data-stack-name="Logistic Regression"}
-
-## From MLR to Logistic Regression {.crunch-title .math-90 .crunch-ul .crunch-quarto-figure .cols-va}
-
-* As DSAN students, you know that we're still sweeping **classification** under the rug!
-* We saw how to include binary/multiclass **covariates**, but what if the actual **thing we're trying to predict** is binary?
-* The **wrong** approach is the "Linear Probability Model":
+## Memorizing Data vs. *Learning* the Relationship {.smaller .crunch-title .title-11 .crunch-quarto-figure .crunch-img}
 
 :::: {.columns}
 ::: {.column width="60%"}
 
-$$
-\Pr(Y \mid X) = \beta_0 + \beta_1 X + \varepsilon
-$$
+```{r}
+#| label: training-data-plot
+#| fig-width: 4.25
+#| fig-height: 2.75
+#| fig-align: left
+x <- seq(from = 0, to = 1, by = 0.1)
+n <- length(x)
+eps <- rnorm(n, 0, 0.04)
+y <- x + eps
+# But make one big outlier
+midpoint <- ceiling((3/4)*n)
+y[midpoint] <- 0
+of_data <- tibble::tibble(x=x, y=y)
+# Linear model
+lin_model <- lm(y ~ x)
+# But now polynomial regression
+poly_model <- lm(y ~ poly(x, degree = 10, raw=TRUE))
+#summary(model)
+ggplot(of_data, aes(x=x, y=y)) +
+  geom_point(size=g_pointsize/2) +
+  labs(
+    title = "Training Data",
+    color = "Model"
+  ) +
+  theme_dsan(base_size=16)
+```
+
+```{r}
+#| label: training-linear-poly
+#| fig-width: 6
+#| fig-height: 2.75
+#| fig-align: left
+ggplot(of_data, aes(x=x, y=y)) +
+  geom_point(size=g_pointsize/2) +
+  geom_abline(aes(intercept=0, slope=1, color="Linear"), linewidth=1, show.legend = FALSE) +
+  stat_smooth(method = "lm",
+              formula = y ~ poly(x, 10, raw=TRUE),
+              se = FALSE, aes(color="Polynomial")) +
+  labs(
+    title = "A Perfect Model?",
+    color = "Model"
+  ) +
+  theme_dsan(base_size=16)
+```
 
 :::
 ::: {.column width="40%"}
 
-![](images/egg_head.jpg){fig-align="center" width="500"}
+How have we measured "good" fit? High $R^2$? Low $RSS$?
+
+<center>
+Linear Model:
+</center>
+
+```{r}
+#| label: lin-model-metrics
+#| echo: true
+#| code-fold: show
+summary(lin_model)$r.squared
+get_rss(lin_model)
+```
+
+<center style="margin-top: 20px !important;">
+Polynomial Model:
+</center>
+
+```{r}
+#| label: poly-model-metrics
+#| echo: true
+#| code-fold: show
+summary(poly_model)$r.squared
+get_rss(poly_model)
+```
 
 :::
 ::::
 
-## Credit Default
+## 5000: Accuracy $\leadsto$ 5300: Generalization {.smaller .crunch-title .title-12}
+
+* Training Accuracy: How well does it fit the data we can see?
+* Test Accuracy: How well does it **generalize** to future data?
+
+:::: {.columns}
+::: {.column width="60%"}
 
 ```{r}
-#| label: default-dataset
-library(tidyverse)
-library(ggExtra)
-default_df <- read_csv("assets/Default.csv") |>
-  mutate(default_num = ifelse(default=="Yes",1,0))
-default_plot <- default_df |> ggplot(aes(x=balance, y=income, color=default, shape=default)) +
-  geom_point(alpha=0.6) +
-  theme_classic(base_size=16) +
+#| label: lin-poly-newdata
+#| fig-width: 5.5
+#| fig-height: 4
+# Data setup
+x_test <- seq(from = 0, to = 1, by = 0.1)
+n_test <- length(x_test)
+eps_test <- rnorm(n_test, 0, 0.04)
+y_test <- x_test + eps_test
+of_data_test <- tibble::tibble(x=x_test, y=y_test)
+lin_y_pred_test <- predict(lin_model, as.data.frame(x_test))
+#lin_y_pred_test
+lin_resids_test <- y_test - lin_y_pred_test
+#lin_resids_test
+lin_rss_test <- sum(lin_resids_test^2)
+#lin_rss_test
+# Lin R2 = 1 - RSS/TSS
+tss_test <- sum((y_test - mean(y_test))^2)
+lin_r2_test <- 1 - (lin_rss_test / tss_test)
+#lin_r2_test
+# Now the poly model
+poly_y_pred_test <- predict(poly_model, as.data.frame(x_test))
+poly_resids_test <- y_test - poly_y_pred_test
+poly_rss_test <- sum(poly_resids_test^2)
+#poly_rss_test
+# RSS
+poly_r2_test <- 1 - (poly_rss_test / tss_test)
+#poly_r2_test
+ggplot(of_data, aes(x=x, y=y)) +
+  stat_smooth(method = "lm",
+              formula = y ~ poly(x, 10, raw = TRUE),
+              se = FALSE, aes(color="Polynomial")) +
+  theme_classic() +
+  geom_point(data=of_data_test, aes(x=x_test, y=y_test), size=g_pointsize/2) +
+  geom_abline(aes(intercept=0, slope=1, color="Linear"), linewidth=1, show.legend = FALSE) +
   labs(
-    title="Credit Defaults by Income and Account Balance",
-    x = "Account Balance",
-    y = "Income"
-  )
-default_mplot <- default_plot |> ggMarginal(type="boxplot", groupColour=FALSE, groupFill=TRUE)
-default_mplot
-```
-
-## Lines vs. Sigmoids(!) {.smaller .math-90}
-
-:::: {.columns}
-::: {.column width="50%"}
-
-Here's what lines look like for this dataset:
-
-```{r}
-#| label: linear-prob-model
-#lpm_model <- lm(default ~ balance, data=default_df)
-default_df |> ggplot(
-    aes(
-      x=balance, y=default_num
-    )
+    title = "Evaluation: Unseen Test Data",
+    color = "Model"
   ) +
-  geom_point(aes(color=default)) +
-  stat_smooth(method="lm", formula=y~x, color='black') +
-  theme_classic(base_size=16)
+  theme_dsan(base_size=16)
 ```
-
 :::
-::: {.column width="50%"}
 
-Here's what sigmoids look like:
+::: {.column width="40%"}
+
+<center>
+Linear Model:
+</center>
 
 ```{r}
-#| label: plot-sigmoids
-#| code-fold: true
-library(tidyverse)
-logistic_model <- glm(default_num ~ balance, family=binomial(link='logit'),data=default_df)
-default_df$predictions <- predict(logistic_model, newdata = default_df, type = "response")
-my_sigmoid <- function(x) 1 / (1+exp(-x))
-default_df |> ggplot(aes(x=balance, y=default_num)) +
-  #stat_function(fun=my_sigmoid) +
-  geom_point(aes(color=default)) +
-  geom_line(
-    data=default_df,
-    aes(x=balance, y=predictions),
-    linewidth=1
-  ) +
-  theme_classic(base_size=16)
+#| label: lin-newdata-metrics
+#| echo: true
+#| code-fold: show
+lin_r2_test
+lin_rss_test
+```
+
+<center style="margin-top: 10px !important;">
+Polynomial Model:
+</center>
+
+```{r}
+#| label: poly-newdata-metrics
+#| echo: true
+#| code-fold: show
+poly_r2_test
+poly_rss_test
 ```
 
 :::
 ::::
 
-<div class='cols-va'>
+## In Other Words...
 
-:::: {.columns}
-::: {.column width="50%"}
+![Image source: circulated as secret shitposting among PhD students in seminars](images/hypothesis.jpg){fig-align="center"}
 
-$$
-\Pr(Y \mid X) = \beta_0 + \beta_1 X + \varepsilon
-$$
+# Building an Anti-Overfitting Toolkit {data-stack-name="Anti-Overfitting Toolkit"}
 
-:::
-::: {.column width="50%"}
+* Penalizing Complexity
+* Cross-Validation
+* Model Selection (Penalizing Complexity 2.0)
 
-$$
-\log\underbrace{\left[ \frac{\Pr(Y \mid X)}{1 - \Pr(Y \mid X)} \right]}_{\mathclap{\smash{\text{Odds Ratio}}}} = \beta_0 + \beta_1 X + \varepsilon
-$$
+## Ok So, How Do We Avoid Overfitting? {.crunch-title .crunch-math .crunch-ul}
 
-:::
-::::
+* The gist: penalize model **complexity**
+* Original optimization:
 
-</div>
+  $$
+  \theta^* = \underset{\theta}{\operatorname{argmin}} \mathcal{L}(y, \widehat{y})
+  $$
 
-## But Let's *Derive* This!
+* New optimization:
 
-$$
-\begin{align*}
-\Pr(Y \mid X) &= \frac{e^{\beta_0 + \beta_1X}}{1 + e^{\beta_0 + \beta_1X}} \\
-\iff \underbrace{\frac{\Pr(Y \mid X)}{1 - \Pr(Y \mid X)}}_{\text{Odds Ratio}} &= e^{\beta_0 + \beta_1X} \\
-\iff \underbrace{\log\left[ \frac{\Pr(Y \mid X)}{1 - \Pr(Y \mid X)} \right]}_{\text{Log-Odds Ratio}} &= \beta_0 + \beta_1X
-\end{align*}
-$$
+  $$
+  \theta^* = \underset{\theta}{\operatorname{argmin}} \left[ \lambda \mathcal{L}(y, \widehat{y}) + (1-\lambda) \mathsf{Complexity}(\theta) \right]
+  $$
 
-## *Now* How Will We Ever Find "Good" Parameter Values? {.smaller}
+* But how do we measure, and penalize, "complexity"?
 
-* If only we had some sort of **estimator**... One that would choose $\beta_0$ and $\beta_1$ so as to **maximize** the **likelihood** of seeing some data...
+## Regularization: Measuring and Penalizing Complexity {.smaller .title-11 .math-90}
+
+-   In the case of polynomials, fairly simple complexity measure: *degree* of polynomial
 
 $$
-L(\beta_0, \beta_1) = \prod_{\{i \mid y_i = 1\}}\Pr(Y = 1 \mid X) \prod_{\{i \mid y_i = 0\}}(1-\Pr(Y = 1 \mid X))
+\mathsf{Complexity}(\widehat{y} = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3) > \mathsf{Complexity}(\widehat{y} = \beta_0 + \beta_1 x)
 $$
 
-* (Much more on this later 😸)
+-   In general machine learning, however, we might not be working with polynomials
+-   In neural networks, for example, we sometimes toss in millions of features and ask the algorithm to "just figure it out"
+-   The gist, in the general case, is thus: try to "amplify" the most important features and shrink the rest, so that
 
-## The Interpretation Problem {.smaller}
+$$
+\mathsf{Complexity} \propto \frac{|\text{AmplifiedFeatures}|}{|\text{ShrunkFeatures}|}
+$$
 
-```{r}
-#| label: logistic-default
-options(scipen = 999)
-print(summary(logistic_model))
+## LASSO and Elastic Net Regularization {.smaller .crunch-title .math-90}
+
+-   Many ways to translate this intuition into math!
+-   In several fields, however (econ, biostatistics), LASSO[^4] [@tibshirani_regression_1996] is standard:
+
+[^4]: **L**east **A**bsolute **S**hrinkage and **S**election **O**perator
+
+$$
+\beta^*_{LASSO} = {\underset{\beta}{\operatorname{argmin}}}\left\{{\frac {1}{N}}\left\|y-X\beta \right\|_{2}^{2}+\lambda \|\beta \|_{1}\right\}
+$$
+
+-   Why does this work to penalize complexity? What does the parameter $\lambda$ do?
+-   Some known issues with LASSO fixed in extension of the same intuitions: **Elastic Net**
+
+$$
+\beta^*_{EN} = {\underset {\beta }{\operatorname {argmin} }}\left\{ \|y-X\beta \|^{2}_2+\lambda _{2}\|\beta \|^{2}+\lambda _{1}\|\beta \|_{1} \right\}
+$$
+
+-   Ensures a unique global minimum! Note that $\lambda_2 = 0, \lambda_1 = 1 \implies \beta^*_{LASSO} = \beta^*_{EN}$
+
+## Training vs. Test Data
+
+```{dot}
+//| label: train-vs-test-diagram
+//| fig-size: 3
+graph grid
+{
+    graph [
+        overlap=true
+    ]
+    nodesep=0.0
+    ranksep=0.0
+    rankdir="TB"
+    node [
+        style="filled",
+        color=black,
+        fillcolor=lightblue,
+        shape=box
+    ]
+
+	// uncomment to hide the grid
+	edge [style=invis]
+	
+	subgraph cluster_01 {
+	    label="Training Set (80%)"
+	N1[label="20%"] N2[label="20%"] N3[label="20%"] N4[label="20%"]
+	}
+	subgraph cluster_02 {
+	    label="Test Set (20%)"
+	N5[label="20%",fillcolor=orange]
+	}
+}
 ```
 
-* Slope is no longer the same everywhere! It **varies** across different values of $x$...
-* Let's brainstorm some possible ways to make our lives easier when interpreting these coefficients!
+## Cross-Validation
+
+-   The idea that **good models generalize well** is crucial!
+    -   What if we could leverage this insight to optimize **over our training data**?
+    -   The key: **Validation Sets**
+
+```{dot}
+//| label: cv-diagram
+//| fig-height: 3
+graph grid
+{
+    graph [
+        overlap=true,
+        scale=0.2
+    ]
+    nodesep=0.0
+    ranksep=0.0
+    rankdir="LR"
+    scale=0.2
+    node [
+        style="filled",
+        color=black,
+        fillcolor=lightblue,
+        shape=box
+    ]
+
+	// uncomment to hide the grid
+	edge [style=invis]
+	
+	subgraph cluster_01 {
+	    label="Training Set (80%)"
+	    subgraph cluster_02 {
+	        label="Training Fold (80%)"
+	        A1[label="16%"] A2[label="16%"] A3[label="16%"] A4[label="16%"]
+	    }
+	    subgraph cluster_03 {
+	        label="Validation Fold (20%)"
+	        B1[label="16%",fillcolor=lightgreen]
+	    }
+	}
+	subgraph cluster_04 {
+	    label="Test Set (20%)"
+	C1[label="20%",fillcolor=orange]
+	}
+	A1 -- A2 -- A3 -- A4 -- B1 -- C1;
+}
+```
+
+## Hyperparameters
+
+-   The unspoken (but highly consequential!) "settings" for our learning procedure (that we *haven't* optimized via gradient descent)
+-   There are several you've already seen in e.g. 5000 -- can you name them?
+
+## Hyperparameters You've Already Seen
+
+-   Unsupervised Clustering: The number of clusters we want $K$
+-   Gradient Descent: The **step size** $\gamma$
+-   LASSO/Elastic Net: $\lambda$
+-   The train/validation/test split!
+
+## Hyperparameter Selection {.crunch-title .crunch-ul}
+
+-   Every model comes with its own hyperparameters:
+    -   Neural Networks: Number of layers, nodes per layer
+    -   Decision Trees: Max tree depth, max features to include
+    -   Topic Models: Number of topics, document/topic **priors**
+-   So, how do we choose?
+    -   Often more art than science
+    -   Principled, universally applicable, but slow: grid search
+    -   Specific methods for specific algorithms: ADAM [@kingma_adam_2017] for Neural Network learning rates)
+
+## ...Now What? {.crunch-title .crunch-ul}
+
+* So we've got a trained model...
+  * Data collected ✅
+  * Loss function chosen ✅
+  * Gradient descent complete ✅
+  * Hyperparameters tuned ✅
+  * Good $F_1$ score on test data ✅
+* What's our next step?
+  * This is where **engineers** and **social scientists** diverge...
+  * Stay tuned!
+
+# Quiz Time! {data-stack-name="Quiz"}
+
+* Jeff hands out your (paper) quizzes now!
+* You have 55 minutes (8:05 to 9pm)
+* You got this 💪
 
 ## References
 
 ::: {#refs}
 :::
-
-## Appendix: MLR in R {.smaller}
-
-:::: {.columns}
-::: {.column width="50%"}
-
-```{r}
-#| label: mlr-results-r
-#| code-fold: show
-library(tidyverse)
-ad_df <- read_csv("assets/Advertising.csv") |> rename(id=`...1`)
-mlr_model <- lm(
-  sales ~ TV + radio + newspaper,
-  data=ad_df
-)
-print(summary(mlr_model))
-```
-
-:::
-::: {.column width="50%"}
-
-* **Holding `radio` and `newspaper` spending constant**...
-  * An **increase of $1K** in spending on `TV` advertising is associated with
-  * An **increase in sales of about 46 units**
-* **Holding `TV` and `newspaper` spending constant**...
-  * An **increase of $1K** in spending on `radio` advertising is associated with
-  * An **increase in sales of about 189 units**
-
-:::
-::::

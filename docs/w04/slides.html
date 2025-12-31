@@ -7,11 +7,11 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.6.40">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.26">
 
   <meta name="author" content="Jeff Jacobs">
-  <title>DSAN 5300-01 – Week 4: The Scourge of Overfitting</title>
+  <title>DSAN 5300-02 – Week 4: Cross-Validation for Model Assessment</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -30,8 +30,9 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -42,7 +43,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -115,8 +116,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-7cec2dca622b227f57edc44a776e74bc.css">
-  <link rel="stylesheet" href="../dsan-globals/jjstyles.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-c59f08653608056fecc96b8077358242.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -210,15 +210,24 @@
       margin-right: 0; 
     }
   </style>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Workbench&amp;display=swap" rel="stylesheet"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
+  <link href="../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+  <script src="../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+  <script src="../site_libs/plotly-binding-4.10.4/plotly.js"></script>
+  <script src="../site_libs/typedarray-0.1/typedarray.min.js"></script>
+  <script src="../site_libs/jquery-3.5.1/jquery.min.js"></script>
+  <link href="../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+  <script src="../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+  <link href="../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+  <script src="../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
 </head>
 <body class="quarto-light">
   <div class="reveal">
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Week 4: The Scourge of Overfitting</h1>
-  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2025, Georgetown University</span></p>
+  <h1 class="title">Week 4: Cross-Validation for Model Assessment</h1>
+  <p class="subtitle"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2026, Georgetown University</span></p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -231,7 +240,7 @@ Jeff Jacobs
     </div>
 </div>
 
-  <p class="date">Monday, February 3, 2025</p>
+  <p class="date">Monday, February 2, 2026</p>
 </section>
 <section id="schedule" class="title-slide slide level1 smaller small-title crunch-title crunch-callout center" data-name="Schedule">
 <h1>Schedule</h1>
@@ -255,20 +264,20 @@ Jeff Jacobs
 <tr class="odd">
 <td style="text-align: left;"><strong>Lecture</strong></td>
 <td style="text-align: left;">6:30pm</td>
-<td style="text-align: left;">6:40pm</td>
-<td style="text-align: left;"><a href="#/recap-logistic-regression">Logistic Regression Recap →</a></td>
+<td style="text-align: left;">6:50pm</td>
+<td style="text-align: left;"><a href="#/roadmap">Roadmap: Week 4 <span class="math inline">\(\leadsto\)</span> Week 6 →</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">6:40pm</td>
-<td style="text-align: left;">7:00pm</td>
-<td style="text-align: left;"><a href="#/what-we-have-thus-far">CV and Model Selection Motivation →</a></td>
+<td style="text-align: left;">6:50pm</td>
+<td style="text-align: left;">7:20pm</td>
+<td style="text-align: left;"><a href="#/a-non-linear-data-generating-process-(dgp)">Non-Linear Data-Generating Processes →</a></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">7:00pm</td>
+<td style="text-align: left;">7:20pm</td>
 <td style="text-align: left;">8:00pm</td>
-<td style="text-align: left;"><a href="#/building-an-anti-overfitting-toolkit">Anti-Overfitting Toolkit →</a></td>
+<td style="text-align: left;"><a href="#/cross-validation-evaluating-non-linear-models">Validation: Evaluating Non-Linear Models →</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Break!</strong></td>
@@ -280,7 +289,7 @@ Jeff Jacobs
 <td style="text-align: left;"></td>
 <td style="text-align: left;">8:10pm</td>
 <td style="text-align: left;">9:00pm</td>
-<td style="text-align: left;"><a href="#/quiz-time">Quizzo →</a></td>
+<td style="text-align: left;"><a href="#/k-fold-cross-validation"><span class="math inline">\(K\)</span>-Fold Cross-Validation: Cooking with Gas →</a></td>
 </tr>
 </tbody>
 </table>
@@ -288,8 +297,8 @@ Jeff Jacobs
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
-<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
+<span id="cb1-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </div>
@@ -320,7 +329,10 @@ Jeff Jacobs
 \newcommand{\outcome}[1]{\textsf{#1}}
 \newcommand{\param}[1]{{\color{purple} #1}}
 \newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
-\newcommand{\prob}[1]{P\left( #1 \right)}
+\newcommand{\pedge}[2]{\require{enclose}\enclose{circle}{~{#1}~} \rightarrow \; \enclose{circle}{\kern.01em {#2}~\kern.01em}}
+\newcommand{\pnode}[1]{\require{enclose}\enclose{circle}{\kern.1em {#1} \kern.1em}}
+\newcommand{\ponode}[1]{\require{enclose}\enclose{box}[background=lightgray]{{#1}}}
+\newcommand{\pnodesp}[1]{\require{enclose}\enclose{circle}{~{#1}~}}
 \newcommand{\purp}[1]{\color{purple}{#1}}
 \newcommand{\sign}{\text{Sign}}
 \newcommand{\spacecap}{\; \cap \;}
@@ -333,122 +345,26 @@ Jeff Jacobs
 </section>
 
 <section>
-<section id="recap-logistic-regression" class="title-slide slide level1 smaller crunch-ul math-80 title-09 center" data-stack-name="Recap">
-<h1>Recap: Logistic Regression</h1>
+<section id="roadmap" class="title-slide slide level1 smaller title-10 center" data-stack-name="Roadmap">
+<h1>Roadmap</h1>
 <ul>
-<li>What happens to the <strong>probability</strong> <span class="math inline">\(\Pr(Y = 1 \mid X)\)</span> when <span class="math inline">\(X\)</span> increases by <strong>1 unit</strong>?</li>
-<li>“Linear Probability Model” <span class="math inline">\(\Pr(Y = 1 \mid X) = \beta_0 + \beta_1X\)</span> fails, <strong>but</strong>, “fixing” it leads to</li>
-</ul>
-<p><span class="math display">\[
-\begin{align*}
-&amp;\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
-\iff &amp;\Pr(Y = 1 \mid X) = \frac{\exp[\beta_0 + \beta_1X]}{1 + \exp[\beta_0 + \beta_1X]} = \frac{1}{1 + \exp\left[ -(\beta_0 + \beta_1X) \right] }
-\end{align*}
-\]</span></p>
-<blockquote>
-<p><span class="math inline">\(\leadsto\)</span> A 1-unit increase in <span class="math inline">\(X\)</span> is associated with a <span class="math inline">\(\beta_1\)</span> increase in the <strong>log-odds</strong> of <span class="math inline">\(Y\)</span></p>
-</blockquote>
-</section>
-<section id="what-we-have-thus-far" class="slide level2 smaller crunch-title title-10 crunch-ul crunch-img">
-<h2>What We Have Thus Far</h2>
+<li>[Week 4] Oh no! When we go beyond linear models, we have to worry about <strong>overfitting</strong>!
 <ul>
-<li>We have a <strong>core model</strong>, regression, that we can <strong>build up</strong> into p much anything we want!</li>
-</ul>
-<table class="caption-top">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Class Topic</th>
-<th>This Video</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Linear regression</td>
-<td>Pachelbel’s <em>Canon in D</em> (1m26s-1m46s)</td>
-</tr>
-<tr class="even">
-<td>Logistic regression</td>
-<td>Add swing: <img data-src="images/swing_image.svg" width="100"> (1m46s)</td>
-</tr>
-<tr class="odd">
-<td>Neural networks</td>
-<td>(triads <span class="math inline">\(\mapsto\)</span> 7th/9th chords) (5m24s-5m53s)</td>
-</tr>
-</tbody>
-</table>
-<iframe data-external="1" src="https://www.youtube.com/embed/lpc1lEJ-SRc" width="100%" height="340" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
-</section></section>
-<section>
-<section id="taking-off-the-linearity-training-wheels" class="title-slide slide level1 smaller center" data-stack-name="Motivation">
-<h1>Taking Off the Linearity Training Wheels</h1>
-<style>
-@font-face {
-    font-family: Noodle;
-    src: url('../assets/Kbnoodlemonster.ttf');
-}
-.workbench-jj {
-  font-family: "Workbench", serif;
-  /* font-optical-sizing: auto; */
-  font-weight: 400;
-  font-style: normal;
-  font-size: 96pt !important;
-}
-.noodle-jj {
-    font-family: "Noodle", serif;
-    font-size: 96pt !important;
-}
-</style>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div id="fig-workbench" class="quarto-float quarto-figure quarto-figure-center">
-<figure class="quarto-float quarto-float-fig">
-<div aria-describedby="fig-workbench-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<center>
-<p><span class="workbench-jj">Linear Models</span></p>
-</center>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-workbench-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: <a href="https://fonts.google.com/specimen/Workbench">Font Credit</a>
-</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:50%;">
-<div id="fig-noodle" class="quarto-float quarto-figure quarto-figure-center">
-<figure class="quarto-float quarto-float-fig">
-<div aria-describedby="fig-noodle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<center>
-<p><span class="noodle-jj">Linear Models</span></p>
-</center>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-noodle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: <a href="http://keepinitkoolinkinderland.blogspot.com/p/fonts.html">Font Credit</a>
-</figcaption>
-</figure>
-</div>
-</div></div>
-</section>
-<section id="how-can-we-attain-hiromis-aura" class="slide level2">
-<h2>How Can We Attain Hiromi’s Aura?</h2>
+<li><span class="math inline">\(\implies\)</span> New goal! Maximize <strong>generalizability</strong> rather than <strong>accuracy</strong></li>
+<li><span class="math inline">\(\implies\)</span> Evaluate models on <strong><em>unseen</em> test data</strong> rather than training data</li>
+</ul></li>
+<li>[Week 5] <strong>Cross-Validation (CV)</strong> as a tool for <strong>Model Assessment</strong>: For more complex, non-linear models, is there some way we can try to… “foresee” how well a trained model will <strong>generalize?</strong>
 <ul>
-<li>Ingredient 1: Lots of <em>examples</em>: find mysteries/questions you care about in the world and think of how regression could help us understand them!</li>
-<li>But, <strong>Ingredient 2</strong> is <strong>Generalized Linear Models</strong> (GLM), which I’ll give an intro to <strong>on the board</strong> 🏃‍♂️‍➡️</li>
+<li>Answer: <strong>Yes!</strong> Cross-validation!</li>
+</ul></li>
+<li>[Week 6] <strong>Regularization</strong> as a tool for <strong>Model Selection</strong>: Now that we have a method (CV) for <em>imperfectly</em> measuring “generalizability”, is there some way we can try to… <strong>allow</strong> models to optimize CV but <strong>penalize</strong> them for unnecessary complexity?
+<ul>
+<li>Answer: <strong>Yes!</strong> Regularization methods like LASSO and Elastic Net!</li>
+</ul></li>
 </ul>
 </section>
-<section id="where-are-we-going-what-problems-are-we-solving" class="slide level2 smaller">
-<h2>Where Are We Going / What Problems Are We Solving?</h2>
-<ul>
-<li>Another nice property we have: OLS estimator is <strong>BLUE</strong> (<strong>B</strong>est <strong>L</strong>inear <strong>U</strong>nbiased <strong>E</strong>stimator) of conditional mean <span class="math inline">\(\mathbb{E}[Y \mid X]\)</span></li>
-<li>The first problem we’ll tackle is: as we move <strong>from</strong> linear models with these kinds of guarantees <strong>to</strong> fancier models with more uncertainties / “potholes”… how do we ensure they still achieve want we want them to achieve?</li>
-<li>Tldr: we can study <strong>more complex</strong> relationships between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> than linear ones, but we lose guarantees like “If it’s linear, then it is [this]”: in other words, we lose this <strong>automatic generalizability</strong></li>
-<li><em>(With great[er] power comes great[er] responsibility!)</em></li>
-</ul>
-</section>
-<section id="the-level-2-goal-generalizability" class="slide level2 smaller crunch-title crunch-callout crunch-ul">
-<h2>The Level 2 Goal: <em>Generalizability</em></h2>
+<section id="reminder-w04-new-goal-generalizability" class="slide level2 smaller crunch-title crunch-callout crunch-ul title-11">
+<h2>[Reminder (W04)] New Goal: <em>Generalizability</em></h2>
 <div class="r-fit-text" title="<i class='bi bi-info-circle'></i> The Goal of Statistical Learning">
 <div class="callout callout-tip no-icon callout-titled callout-style-default">
 <div class="callout-body">
@@ -466,400 +382,153 @@ Figure&nbsp;2: <a href="http://keepinitkoolinkinderland.blogspot.com/p/fonts.htm
 </div>
 </div>
 </div>
+</section></section>
+<section>
+<section id="a-non-linear-data-generating-process-dgp" class="title-slide slide level1 center" data-stack-name="Non-Linear DGP">
+<h1>A Non-Linear Data-Generating Process (DGP)</h1>
+
 </section>
-<section id="can-we-just-like-not" class="slide level2 smaller crunch-title crunch-ul crunch-img">
-<h2>…Can We Just, Like, Not?</h2>
-<div class="columns">
-<div class="column" style="width:70%;">
+<section id="our-working-dgp" class="slide level2 smaller crunch-title math-80 plotly-340 crunch-math">
+<h2>Our Working DGP</h2>
 <ul>
-<li>What happens if we “unleash” fancier non-linear models on data the same way we’ve been using linear models?</li>
-<li>The evil scourge of… <strong>OVERFITTING</strong> <em>(⚡️ a single overly-dramatic lightning bolt strikes the whiteboard behind me right at this exact moment what are the odds ⚡️)</em></li>
+<li>Each country <span class="math inline">\(i\)</span> has a certain <span class="math inline">\(x_i = \texttt{gdp\_per\_capita}_i\)</span></li>
+<li>They spend some portion of it on <strong>healthcare</strong> each year, which translates (based on the country’s healthcare system) into <strong>health outcomes</strong> <span class="math inline">\(y_i\)</span></li>
+<li>We <em>operationalize</em> these health outcomes as <span class="math inline">\(y_i = \texttt{DALY}_i\)</span>: <strong><a href="https://ourworldindata.org/burden-of-disease">Disability Adjusted Life Years</a></strong>, cross-nationally-standardized “lost years of minimally-healthy life”</li>
 </ul>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/yes_man.png" width="185"></p>
-<figcaption>Your computer is <a href="https://www.youtube.com/watch?v=g-QSuiXL6lY">Yes Man</a></figcaption>
-</figure>
-</div>
-</div></div>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb2-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
-<span id="cb2-3"><a></a>N <span class="ot">&lt;-</span> <span class="dv">30</span></span>
-<span id="cb2-4"><a></a>x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="at">min=</span><span class="dv">0</span>, <span class="at">max=</span><span class="dv">1</span>)</span>
-<span id="cb2-5"><a></a>y_vals_raw <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">*</span> x_vals</span>
-<span id="cb2-6"><a></a>y_noise <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fl">0.5</span>)</span>
-<span id="cb2-7"><a></a>y_vals <span class="ot">&lt;-</span> y_vals_raw <span class="sc">+</span> y_noise</span>
-<span id="cb2-8"><a></a>data_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x=</span>x_vals, <span class="at">y=</span>y_vals)</span>
-<span id="cb2-9"><a></a>data_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
-<span id="cb2-10"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb2-11"><a></a>  <span class="fu">stat_smooth</span>(</span>
-<span id="cb2-12"><a></a>    <span class="at">method=</span><span class="st">"lm"</span>,</span>
-<span id="cb2-13"><a></a>    <span class="at">formula=</span><span class="st">"y ~ x"</span>,</span>
-<span id="cb2-14"><a></a>    <span class="at">se=</span><span class="cn">FALSE</span>,</span>
-<span id="cb2-15"><a></a>    <span class="at">linewidth=</span><span class="dv">1</span></span>
-<span id="cb2-16"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb2-17"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb2-18"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"Linear Regression, N = "</span>,N)</span>
-<span id="cb2-19"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb2-20"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="index_files/figure-revealjs/linear-fit-1.png" width="960"></p>
-<figcaption>You: “Fit the data… but you’re only allowed to be linear!” Computer: “You got it boss!”</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>data_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
-<span id="cb3-2"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">2.5</span>) <span class="sc">+</span></span>
-<span id="cb3-3"><a></a>  <span class="fu">stat_smooth</span>(</span>
-<span id="cb3-4"><a></a>    <span class="at">method=</span><span class="st">"lm"</span>,</span>
-<span id="cb3-5"><a></a>    <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x, N, <span class="at">raw=</span><span class="cn">TRUE</span>),</span>
-<span id="cb3-6"><a></a>    <span class="at">se=</span><span class="cn">FALSE</span>,</span>
-<span id="cb3-7"><a></a>    <span class="at">linewidth=</span><span class="dv">1</span></span>
-<span id="cb3-8"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb3-9"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb3-10"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"Polynomial Regression, N = "</span>,N)</span>
-<span id="cb3-11"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb3-12"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="index_files/figure-revealjs/poly-fit-1.png" width="960"></p>
-<figcaption>You: “Fit the data…” Computer: “You got it boss!”</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div></div>
-<aside class="notes">
-<p>(<a href="http://www.game-art-hq.com/89202/the-yes-man-from-fallout-game-art-overview/">Image Source</a>)</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="memorizing-data-vs.-learning-the-relationship" class="slide level2 smaller crunch-title title-11 crunch-quarto-figure crunch-img">
-<h2>Memorizing Data vs.&nbsp;<em>Learning</em> the Relationship</h2>
 <div class="columns">
 <div class="column" style="width:60%;">
-<div class="cell" data-layout-align="left">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.1</span>)</span>
-<span id="cb4-2"><a></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
-<span id="cb4-3"><a></a>eps <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.04</span>)</span>
-<span id="cb4-4"><a></a>y <span class="ot">&lt;-</span> x <span class="sc">+</span> eps</span>
-<span id="cb4-5"><a></a><span class="co"># But make one big outlier</span></span>
-<span id="cb4-6"><a></a>midpoint <span class="ot">&lt;-</span> <span class="fu">ceiling</span>((<span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>)<span class="sc">*</span>n)</span>
-<span id="cb4-7"><a></a>y[midpoint] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb4-8"><a></a>of_data <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)</span>
-<span id="cb4-9"><a></a><span class="co"># Linear model</span></span>
-<span id="cb4-10"><a></a>lin_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x)</span>
-<span id="cb4-11"><a></a><span class="co"># But now polynomial regression</span></span>
-<span id="cb4-12"><a></a>poly_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="at">degree =</span> <span class="dv">10</span>, <span class="at">raw=</span><span class="cn">TRUE</span>))</span>
-<span id="cb4-13"><a></a><span class="co">#summary(model)</span></span>
-<span id="cb4-14"><a></a><span class="fu">ggplot</span>(of_data, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
-<span id="cb4-15"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span>g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb4-16"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb4-17"><a></a>    <span class="at">title =</span> <span class="st">"Training Data"</span>,</span>
-<span id="cb4-18"><a></a>    <span class="at">color =</span> <span class="st">"Model"</span></span>
-<span id="cb4-19"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb4-20"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-2"><a></a><span class="fu">library</span>(plotly) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-3"><a></a>daly_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/dalys_cleaned.csv"</span>)</span>
+<span id="cb2-4"><a></a>daly_df <span class="ot">&lt;-</span> daly_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb2-5"><a></a>  <span class="at">gdp_pc_1k=</span>gdp_pc_clean<span class="sc">/</span><span class="dv">1000</span></span>
+<span id="cb2-6"><a></a>)</span>
+<span id="cb2-7"><a></a>model_labels <span class="ot">&lt;-</span> <span class="fu">labs</span>(</span>
+<span id="cb2-8"><a></a>  <span class="at">x=</span><span class="st">"GDP per capita ($1K PPP, 2021)"</span>,</span>
+<span id="cb2-9"><a></a>  <span class="at">y=</span><span class="st">"Log(DALYs/n)"</span>,</span>
+<span id="cb2-10"><a></a>  <span class="at">title=</span><span class="st">"Decrease in DALYs as GDP/n Increases"</span></span>
+<span id="cb2-11"><a></a>)</span>
+<span id="cb2-12"><a></a>daly_plot <span class="ot">&lt;-</span> daly_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>gdp_pc_1k, <span class="at">y=</span>log_dalys_pc, <span class="at">label=</span>name)) <span class="sc">+</span></span>
+<span id="cb2-13"><a></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb2-14"><a></a>  <span class="co"># geom_smooth(method="loess", formula=y ~ x) +</span></span>
+<span id="cb2-15"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">"lm"</span>, <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">5</span>), <span class="at">se=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb2-16"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb2-17"><a></a>  model_labels</span>
+<span id="cb2-18"><a></a><span class="fu">ggplotly</span>(daly_plot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-left">
-<figure>
-<p><img data-src="index_files/figure-revealjs/training-data-plot-1.png" class="quarto-figure quarto-figure-left" width="408"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell" data-layout-align="left">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">ggplot</span>(of_data, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
-<span id="cb5-2"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span>g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb5-3"><a></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept=</span><span class="dv">0</span>, <span class="at">slope=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">"Linear"</span>), <span class="at">linewidth=</span><span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb5-4"><a></a>  <span class="fu">stat_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>,</span>
-<span id="cb5-5"><a></a>              <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">10</span>, <span class="at">raw=</span><span class="cn">TRUE</span>),</span>
-<span id="cb5-6"><a></a>              <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color=</span><span class="st">"Polynomial"</span>)) <span class="sc">+</span></span>
-<span id="cb5-7"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb5-8"><a></a>    <span class="at">title =</span> <span class="st">"A Perfect Model?"</span>,</span>
-<span id="cb5-9"><a></a>    <span class="at">color =</span> <span class="st">"Model"</span></span>
-<span id="cb5-10"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb5-11"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-left">
-<figure>
-<p><img data-src="index_files/figure-revealjs/training-linear-poly-1.png" class="quarto-figure quarto-figure-left" width="576"></p>
-</figure>
-</div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-94264ee9ce07bac537c8" style="width:960px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-94264ee9ce07bac537c8">{"x":{"data":[{"x":[2.1440000000000001,16.353999999999999,14.497,7.4080000000000004,26.300000000000001,15.922000000000001,57.322000000000003,63.576000000000001,20.111000000000001,7.4409999999999998,27.611000000000001,61.874000000000002,3.464,13.459,9.4540000000000006,18.544,17.960999999999999,18.076000000000001,29.536999999999999,2.4860000000000002,0.83699999999999997,6.226,4.7939999999999996,55.781999999999996,7.6849999999999996,1.129,1.7,29.105,20.407,17.699999999999999,3.4409999999999998,6.2629999999999999,24.140000000000001,6.0449999999999999,36.914000000000001,9.6050000000000004,49.93,49.996000000000002,1.3140000000000001,70.341999999999999,5.9480000000000004,21.911999999999999,6.8250000000000002,13.539999999999999,15.579000000000001,10.81,16.821000000000002,0.59599999999999997,45.064,9.8460000000000001,2.5880000000000001,10.685,57.350999999999999,53.901000000000003,18.524000000000001,2.778,18.916,62.950000000000003,6.6079999999999997,33.578000000000003,11.827999999999999,3.7389999999999999,2.4510000000000001,22.866,3.1349999999999998,6.2030000000000003,38.648000000000003,8.0500000000000007,12.757,14.952,12.731999999999999,46.238,50.465000000000003,9.577,44.548999999999999,9.1820000000000004,32.945999999999998,5.3390000000000004,5.7359999999999998,8.0800000000000001,35.604999999999997,11.6,2.5449999999999999,1.5389999999999999,12.641999999999999,46.576000000000001,1.599,1.6879999999999999,29.823,19.053000000000001,2.3479999999999999,58.198999999999998,5.8369999999999997,22.738,21.032,15.682,14.792,24.510000000000002,8.6229999999999993,1.4570000000000001,5.1779999999999999,9.7089999999999996,4.5460000000000003,69.322999999999993,48.194000000000003,7.0869999999999997,1.5860000000000001,5.492,1.5840000000000001,22.370999999999999,89.209000000000003,38.719000000000001,5.367,5.6630000000000003,30.933,3.9769999999999999,15.406000000000001,15.282,8.8580000000000005,41.774999999999999,38.862000000000002,40.560000000000002,38.070999999999998,38.938000000000002,2.7309999999999999,55.768000000000001,4.1740000000000004,23.669,2.8490000000000002,38.436999999999998,46.274000000000001,2.5179999999999998,1.3919999999999999,13.711,48.570999999999998,0.39200000000000002,44.091000000000001,14.316000000000001,3.2490000000000001,18.457999999999998,63.125,81.602999999999994,4.593,3.9860000000000002,3.4929999999999999,20.245000000000001,2.577,30.826000000000001,12.375,31.638000000000002,16.434000000000001,2.6850000000000001,17.846,52.872,71.317999999999998,29.440999999999999,9.2479999999999993,2.621,12.048999999999999,0.626,3.5030000000000001,3.1850000000000001],"y":[9.9217645067809102,8.5888066262257698,8.8819751842488674,10.259075906349571,8.6437905994378301,8.6301825334385356,6.8403326026647031,7.6010524482932071,9.2693071497400314,9.2646391453835619,8.7276485874539631,7.5063170170522149,10.21989191239992,9.087426697070768,9.7663267243285041,8.6011298462887904,10.504291896371402,9.030579533742106,8.978887392790833,10.404577942313962,10.23800430701923,9.3357034949328543,10.30937257246898,7.5573684575183542,8.912581027281183,10.860758986335853,10.519278413847845,8.3365821708207299,7.3971938208664803,8.7378055419429153,9.7978603346497568,10.126479092297169,8.4334202015498363,10.223993721417102,8.1305007686313573,8.8818918590165499,7.304179642438152,8.3116193842120865,10.217714180210022,7.2631193641207688,10.006887647825058,8.8780095478555197,9.4589177245472023,8.9076123413191297,8.9911639412230837,8.6419562543489032,10.26369724189499,10.115683395781833,8.136606044573977,10.86186603752004,10.063218348800268,9.1709652469019964,6.8665165309655398,7.5928702878448178,9.9644509404942436,10.115921965175319,8.9097486609028298,7.5360972361759666,9.9939633381926676,7.7869670026148716,9.3821232582124363,10.376863613735219,10.374303351882419,9.5830274349697753,9.9496982021404676,9.228730237087774,8.5432702111263552,9.5895710127800076,9.2059005304501191,8.8341913182020715,8.9823224602457117,7.4559344892894766,7.4642805819991178,8.8105789667846963,6.8114646186638508,8.7733691167806711,9.0219001341740501,10.147750510870264,8.7945976294568844,9.3381001407774544,8.5608655198724239,8.905010149674025,11.138111280967967,10.275120072107841,8.8244131502410585,8.4292577512480698,10.134357180705356,10.4982056947047,8.851004748710233,8.5144694854946401,10.493518918433075,7.4629613584288599,9.5275861010266585,8.5643629958926279,9.1074767365169436,8.6898010560225529,8.8192070711281971,8.7997069310152103,8.7625208457863177,10.671194745921158,9.3016425303829688,10.364422056303168,9.5490957146119637,7.5417891950495761,6.8556195245616083,9.1679963864817111,10.34221656462144,10.339507730200753,8.1696195617238505,9.0054050403106416,6.9964984888165258,8.9075581980017571,9.8912681993977873,8.6903730902929084,8.5567599985182525,9.7942863374923643,9.1555462198890432,9.4003572437375436,9.4339478156756797,8.3075086597861834,7.6698219950066804,7.8512719971098832,8.6323772972226998,8.9444980661288582,9.9233735096936115,8.0931872596028072,9.8735642838847699,8.3149301176813832,10.425884964160316,8.5980540258712352,7.831855437747774,9.2361543068691621,10.789428349305648,10.287449788751106,7.0914092810098701,10.702039247785928,7.4756793147880041,8.3506662405209244,9.4080922664254967,9.2478480803125844,7.2260635449756787,7.2589049868780311,8.5507440149273197,9.4704328270685938,10.153989428563625,8.4711492529148309,10.134956352596328,8.9586301510940025,8.897887350532482,8.5631221233046375,9.1606878360711121,10.336632676417601,8.7071852545144122,7.9479966543239167,8.2400949125041016,8.3306226203328677,8.7165685027760187,9.1492200022970795,8.4544237711631567,9.5729049379910975,10.490070715742744,10.714171071658564],"text":["gdp_pc_1k:  2.144<br />log_dalys_pc:  9.921765<br />name: Afghanistan","gdp_pc_1k: 16.354<br />log_dalys_pc:  8.588807<br />name: Albania","gdp_pc_1k: 14.497<br />log_dalys_pc:  8.881975<br />name: Algeria","gdp_pc_1k:  7.408<br />log_dalys_pc: 10.259076<br />name: Angola","gdp_pc_1k: 26.300<br />log_dalys_pc:  8.643791<br />name: Argentina","gdp_pc_1k: 15.922<br />log_dalys_pc:  8.630183<br />name: Armenia","gdp_pc_1k: 57.322<br />log_dalys_pc:  6.840333<br />name: Australia","gdp_pc_1k: 63.576<br />log_dalys_pc:  7.601052<br />name: Austria","gdp_pc_1k: 20.111<br />log_dalys_pc:  9.269307<br />name: Azerbaijan","gdp_pc_1k:  7.441<br />log_dalys_pc:  9.264639<br />name: Bangladesh","gdp_pc_1k: 27.611<br />log_dalys_pc:  8.727649<br />name: Belarus","gdp_pc_1k: 61.874<br />log_dalys_pc:  7.506317<br />name: Belgium","gdp_pc_1k:  3.464<br />log_dalys_pc: 10.219892<br />name: Benin","gdp_pc_1k: 13.459<br />log_dalys_pc:  9.087427<br />name: Bhutan","gdp_pc_1k:  9.454<br />log_dalys_pc:  9.766327<br />name: Bolivia","gdp_pc_1k: 18.544<br />log_dalys_pc:  8.601130<br />name: Bosnia and Herzegovina","gdp_pc_1k: 17.961<br />log_dalys_pc: 10.504292<br />name: Botswana","gdp_pc_1k: 18.076<br />log_dalys_pc:  9.030580<br />name: Brazil","gdp_pc_1k: 29.537<br />log_dalys_pc:  8.978887<br />name: Bulgaria","gdp_pc_1k:  2.486<br />log_dalys_pc: 10.404578<br />name: Burkina Faso","gdp_pc_1k:  0.837<br />log_dalys_pc: 10.238004<br />name: Burundi","gdp_pc_1k:  6.226<br />log_dalys_pc:  9.335703<br />name: Cambodia","gdp_pc_1k:  4.794<br />log_dalys_pc: 10.309373<br />name: Cameroon","gdp_pc_1k: 55.782<br />log_dalys_pc:  7.557368<br />name: Canada","gdp_pc_1k:  7.685<br />log_dalys_pc:  8.912581<br />name: Cape Verde","gdp_pc_1k:  1.129<br />log_dalys_pc: 10.860759<br />name: Central African Republic","gdp_pc_1k:  1.700<br />log_dalys_pc: 10.519278<br />name: Chad","gdp_pc_1k: 29.105<br />log_dalys_pc:  8.336582<br />name: Chile","gdp_pc_1k: 20.407<br />log_dalys_pc:  7.397194<br />name: China","gdp_pc_1k: 17.700<br />log_dalys_pc:  8.737806<br />name: Colombia","gdp_pc_1k:  3.441<br />log_dalys_pc:  9.797860<br />name: Comoros","gdp_pc_1k:  6.263<br />log_dalys_pc: 10.126479<br />name: Republic of Congo","gdp_pc_1k: 24.140<br />log_dalys_pc:  8.433420<br />name: Costa Rica","gdp_pc_1k:  6.045<br />log_dalys_pc: 10.223994<br />name: Cote d'Ivoire","gdp_pc_1k: 36.914<br />log_dalys_pc:  8.130501<br />name: Croatia","gdp_pc_1k:  9.605<br />log_dalys_pc:  8.881892<br />name: Cuba","gdp_pc_1k: 49.930<br />log_dalys_pc:  7.304180<br />name: Cyprus","gdp_pc_1k: 49.996<br />log_dalys_pc:  8.311619<br />name: Czechia","gdp_pc_1k:  1.314<br />log_dalys_pc: 10.217714<br />name: Democratic Republic of Congo","gdp_pc_1k: 70.342<br />log_dalys_pc:  7.263119<br />name: Denmark","gdp_pc_1k:  5.948<br />log_dalys_pc: 10.006888<br />name: Djibouti","gdp_pc_1k: 21.912<br />log_dalys_pc:  8.878010<br />name: Dominican Republic","gdp_pc_1k:  6.825<br />log_dalys_pc:  9.458918<br />name: East Timor","gdp_pc_1k: 13.540<br />log_dalys_pc:  8.907612<br />name: Ecuador","gdp_pc_1k: 15.579<br />log_dalys_pc:  8.991164<br />name: Egypt","gdp_pc_1k: 10.810<br />log_dalys_pc:  8.641956<br />name: El Salvador","gdp_pc_1k: 16.821<br />log_dalys_pc: 10.263697<br />name: Equatorial Guinea","gdp_pc_1k:  0.596<br />log_dalys_pc: 10.115683<br />name: Eritrea","gdp_pc_1k: 45.064<br />log_dalys_pc:  8.136606<br />name: Estonia","gdp_pc_1k:  9.846<br />log_dalys_pc: 10.861866<br />name: Eswatini","gdp_pc_1k:  2.588<br />log_dalys_pc: 10.063218<br />name: Ethiopia","gdp_pc_1k: 10.685<br />log_dalys_pc:  9.170965<br />name: Fiji","gdp_pc_1k: 57.351<br />log_dalys_pc:  6.866517<br />name: Finland","gdp_pc_1k: 53.901<br />log_dalys_pc:  7.592870<br />name: France","gdp_pc_1k: 18.524<br />log_dalys_pc:  9.964451<br />name: Gabon","gdp_pc_1k:  2.778<br />log_dalys_pc: 10.115922<br />name: Gambia","gdp_pc_1k: 18.916<br />log_dalys_pc:  8.909749<br />name: Georgia","gdp_pc_1k: 62.950<br />log_dalys_pc:  7.536097<br />name: Germany","gdp_pc_1k:  6.608<br />log_dalys_pc:  9.993963<br />name: Ghana","gdp_pc_1k: 33.578<br />log_dalys_pc:  7.786967<br />name: Greece","gdp_pc_1k: 11.828<br />log_dalys_pc:  9.382123<br />name: Guatemala","gdp_pc_1k:  3.739<br />log_dalys_pc: 10.376864<br />name: Guinea","gdp_pc_1k:  2.451<br />log_dalys_pc: 10.374303<br />name: Guinea-Bissau","gdp_pc_1k: 22.866<br />log_dalys_pc:  9.583027<br />name: Guyana","gdp_pc_1k:  3.135<br />log_dalys_pc:  9.949698<br />name: Haiti","gdp_pc_1k:  6.203<br />log_dalys_pc:  9.228730<br />name: Honduras","gdp_pc_1k: 38.648<br />log_dalys_pc:  8.543270<br />name: Hungary","gdp_pc_1k:  8.050<br />log_dalys_pc:  9.589571<br />name: India","gdp_pc_1k: 12.757<br />log_dalys_pc:  9.205901<br />name: Indonesia","gdp_pc_1k: 14.952<br />log_dalys_pc:  8.834191<br />name: Iran","gdp_pc_1k: 12.732<br />log_dalys_pc:  8.982322<br />name: Iraq","gdp_pc_1k: 46.238<br />log_dalys_pc:  7.455934<br />name: Israel","gdp_pc_1k: 50.465<br />log_dalys_pc:  7.464281<br />name: Italy","gdp_pc_1k:  9.577<br />log_dalys_pc:  8.810579<br />name: Jamaica","gdp_pc_1k: 44.549<br />log_dalys_pc:  6.811465<br />name: Japan","gdp_pc_1k:  9.182<br />log_dalys_pc:  8.773369<br />name: Jordan","gdp_pc_1k: 32.946<br />log_dalys_pc:  9.021900<br />name: Kazakhstan","gdp_pc_1k:  5.339<br />log_dalys_pc: 10.147751<br />name: Kenya","gdp_pc_1k:  5.736<br />log_dalys_pc:  8.794598<br />name: Kyrgyzstan","gdp_pc_1k:  8.080<br />log_dalys_pc:  9.338100<br />name: Laos","gdp_pc_1k: 35.605<br />log_dalys_pc:  8.560866<br />name: Latvia","gdp_pc_1k: 11.600<br />log_dalys_pc:  8.905010<br />name: Lebanon","gdp_pc_1k:  2.545<br />log_dalys_pc: 11.138111<br />name: Lesotho","gdp_pc_1k:  1.539<br />log_dalys_pc: 10.275120<br />name: Liberia","gdp_pc_1k: 12.642<br />log_dalys_pc:  8.824413<br />name: Libya","gdp_pc_1k: 46.576<br />log_dalys_pc:  8.429258<br />name: Lithuania","gdp_pc_1k:  1.599<br />log_dalys_pc: 10.134357<br />name: Madagascar","gdp_pc_1k:  1.688<br />log_dalys_pc: 10.498206<br />name: Malawi","gdp_pc_1k: 29.823<br />log_dalys_pc:  8.851005<br />name: Malaysia","gdp_pc_1k: 19.053<br />log_dalys_pc:  8.514469<br />name: Maldives","gdp_pc_1k:  2.348<br />log_dalys_pc: 10.493519<br />name: Mali","gdp_pc_1k: 58.199<br />log_dalys_pc:  7.462961<br />name: Malta","gdp_pc_1k:  5.837<br />log_dalys_pc:  9.527586<br />name: Mauritania","gdp_pc_1k: 22.738<br />log_dalys_pc:  8.564363<br />name: Mauritius","gdp_pc_1k: 21.032<br />log_dalys_pc:  9.107477<br />name: Mexico","gdp_pc_1k: 15.682<br />log_dalys_pc:  8.689801<br />name: Moldova","gdp_pc_1k: 14.792<br />log_dalys_pc:  8.819207<br />name: Mongolia","gdp_pc_1k: 24.510<br />log_dalys_pc:  8.799707<br />name: Montenegro","gdp_pc_1k:  8.623<br />log_dalys_pc:  8.762521<br />name: Morocco","gdp_pc_1k:  1.457<br />log_dalys_pc: 10.671195<br />name: Mozambique","gdp_pc_1k:  5.178<br />log_dalys_pc:  9.301643<br />name: Myanmar","gdp_pc_1k:  9.709<br />log_dalys_pc: 10.364422<br />name: Namibia","gdp_pc_1k:  4.546<br />log_dalys_pc:  9.549096<br />name: Nepal","gdp_pc_1k: 69.323<br />log_dalys_pc:  7.541789<br />name: Netherlands","gdp_pc_1k: 48.194<br />log_dalys_pc:  6.855620<br />name: New Zealand","gdp_pc_1k:  7.087<br />log_dalys_pc:  9.167996<br />name: Nicaragua","gdp_pc_1k:  1.586<br />log_dalys_pc: 10.342217<br />name: Niger","gdp_pc_1k:  5.492<br />log_dalys_pc: 10.339508<br />name: Nigeria","gdp_pc_1k:  1.584<br />log_dalys_pc:  8.169620<br />name: North Korea","gdp_pc_1k: 22.371<br />log_dalys_pc:  9.005405<br />name: North Macedonia","gdp_pc_1k: 89.209<br />log_dalys_pc:  6.996498<br />name: Norway","gdp_pc_1k: 38.719<br />log_dalys_pc:  8.907558<br />name: Oman","gdp_pc_1k:  5.367<br />log_dalys_pc:  9.891268<br />name: Pakistan","gdp_pc_1k:  5.663<br />log_dalys_pc:  8.690373<br />name: Palestine","gdp_pc_1k: 30.933<br />log_dalys_pc:  8.556760<br />name: Panama","gdp_pc_1k:  3.977<br />log_dalys_pc:  9.794286<br />name: Papua New Guinea","gdp_pc_1k: 15.406<br />log_dalys_pc:  9.155546<br />name: Paraguay","gdp_pc_1k: 15.282<br />log_dalys_pc:  9.400357<br />name: Peru","gdp_pc_1k:  8.858<br />log_dalys_pc:  9.433948<br />name: Philippines","gdp_pc_1k: 41.775<br />log_dalys_pc:  8.307509<br />name: Poland","gdp_pc_1k: 38.862<br />log_dalys_pc:  7.669822<br />name: Portugal","gdp_pc_1k: 40.560<br />log_dalys_pc:  7.851272<br />name: Puerto Rico","gdp_pc_1k: 38.071<br />log_dalys_pc:  8.632377<br />name: Romania","gdp_pc_1k: 38.938<br />log_dalys_pc:  8.944498<br />name: Russia","gdp_pc_1k:  2.731<br />log_dalys_pc:  9.923374<br />name: Rwanda","gdp_pc_1k: 55.768<br />log_dalys_pc:  8.093187<br />name: Saudi Arabia","gdp_pc_1k:  4.174<br />log_dalys_pc:  9.873564<br />name: Senegal","gdp_pc_1k: 23.669<br />log_dalys_pc:  8.314930<br />name: Serbia","gdp_pc_1k:  2.849<br />log_dalys_pc: 10.425885<br />name: Sierra Leone","gdp_pc_1k: 38.437<br />log_dalys_pc:  8.598054<br />name: Slovakia","gdp_pc_1k: 46.274<br />log_dalys_pc:  7.831855<br />name: Slovenia","gdp_pc_1k:  2.518<br />log_dalys_pc:  9.236154<br />name: Solomon Islands","gdp_pc_1k:  1.392<br />log_dalys_pc: 10.789428<br />name: Somalia","gdp_pc_1k: 13.711<br />log_dalys_pc: 10.287450<br />name: South Africa","gdp_pc_1k: 48.571<br />log_dalys_pc:  7.091409<br />name: South Korea","gdp_pc_1k:  0.392<br />log_dalys_pc: 10.702039<br />name: South Sudan","gdp_pc_1k: 44.091<br />log_dalys_pc:  7.475679<br />name: Spain","gdp_pc_1k: 14.316<br />log_dalys_pc:  8.350666<br />name: Sri Lanka","gdp_pc_1k:  3.249<br />log_dalys_pc:  9.408092<br />name: Sudan","gdp_pc_1k: 18.458<br />log_dalys_pc:  9.247848<br />name: Suriname","gdp_pc_1k: 63.125<br />log_dalys_pc:  7.226064<br />name: Sweden","gdp_pc_1k: 81.603<br />log_dalys_pc:  7.258905<br />name: Switzerland","gdp_pc_1k:  4.593<br />log_dalys_pc:  8.550744<br />name: Syria","gdp_pc_1k:  3.986<br />log_dalys_pc:  9.470433<br />name: Tajikistan","gdp_pc_1k:  3.493<br />log_dalys_pc: 10.153989<br />name: Tanzania","gdp_pc_1k: 20.245<br />log_dalys_pc:  8.471149<br />name: Thailand","gdp_pc_1k:  2.577<br />log_dalys_pc: 10.134956<br />name: Togo","gdp_pc_1k: 30.826<br />log_dalys_pc:  8.958630<br />name: Trinidad and Tobago","gdp_pc_1k: 12.375<br />log_dalys_pc:  8.897887<br />name: Tunisia","gdp_pc_1k: 31.638<br />log_dalys_pc:  8.563122<br />name: Turkey","gdp_pc_1k: 16.434<br />log_dalys_pc:  9.160688<br />name: Turkmenistan","gdp_pc_1k:  2.685<br />log_dalys_pc: 10.336633<br />name: Uganda","gdp_pc_1k: 17.846<br />log_dalys_pc:  8.707185<br />name: Ukraine","gdp_pc_1k: 52.872<br />log_dalys_pc:  7.947997<br />name: United Kingdom","gdp_pc_1k: 71.318<br />log_dalys_pc:  8.240095<br />name: United States","gdp_pc_1k: 29.441<br />log_dalys_pc:  8.330623<br />name: Uruguay","gdp_pc_1k:  9.248<br />log_dalys_pc:  8.716569<br />name: Uzbekistan","gdp_pc_1k:  2.621<br />log_dalys_pc:  9.149220<br />name: Venezuela","gdp_pc_1k: 12.049<br />log_dalys_pc:  8.454424<br />name: Vietnam","gdp_pc_1k:  0.626<br />log_dalys_pc:  9.572905<br />name: Yemen","gdp_pc_1k:  3.503<br />log_dalys_pc: 10.490071<br />name: Zambia","gdp_pc_1k:  3.185<br />log_dalys_pc: 10.714171<br />name: Zimbabwe"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[0.39200000000000002,1.5162658227848103,2.6405316455696202,3.7647974683544301,4.8890632911392409,6.0133291139240512,7.1375949367088607,8.2618607594936702,9.3861265822784805,10.510392405063291,11.634658227848101,12.758924050632912,13.88318987341772,15.007455696202531,16.131721518987341,17.255987341772151,18.380253164556962,19.504518987341772,20.628784810126582,21.753050632911393,22.877316455696203,24.001582278481013,25.125848101265824,26.250113924050634,27.374379746835441,28.498645569620251,29.622911392405062,30.747177215189872,31.871443037974682,32.9957088607595,34.119974683544307,35.24424050632912,36.368506329113927,37.492772151898734,38.617037974683548,39.741303797468355,40.865569620253169,41.989835443037975,43.114101265822789,44.238367088607596,45.36263291139241,46.486898734177217,47.611164556962031,48.735430379746838,49.859696202531651,50.983962025316458,52.108227848101272,53.232493670886079,54.356759493670886,55.4810253164557,56.605291139240506,57.72955696202532,58.853822784810127,59.978088607594941,61.102354430379748,62.226620253164562,63.350886075949369,64.475151898734168,65.599417721518989,66.723683544303796,67.847949367088603,68.97221518987341,70.096481012658231,71.220746835443038,72.345012658227844,73.469278481012651,74.593544303797458,75.717810126582279,76.842075949367086,77.966341772151893,79.090607594936699,80.21487341772152,81.339139240506327,82.463405063291134,83.587670886075941,84.711936708860762,85.836202531645569,86.960468354430375,88.084734177215182,89.209000000000003],"y":[10.488405378158266,10.253236422060775,10.048773083697801,9.8718420462751695,9.7194628821919924,9.5888427948954185,9.4773713607353862,9.3826152708193771,9.3023130728671664,9.2343699130655956,9.1768522779233006,9.1279827361254888,9.0861346803886764,9.0498270693154605,9.0177191692492471,8.988605296129041,8.9614095573441723,8.935180593589056,8.9090863207179538,8.8824086715997304,8.8545383379725919,8.824969512298857,8.7932946296197052,8.7591991094099289,8.7224560974326906,8.6829212075942799,8.640527263798857,8.5952790418032219,8.5472480110715576,8.4965670766301997,8.4434253209223584,8.388062745662916,8.3307650136931475,8.271858190835486,8.2117034877482897,8.1506920017805733,8.0892394588267766,8.0277809551815231,7.966765699394359,7.9066517541245211,7.8479007779956875,7.7909727674507243,7.7363207986064522,7.6843857691083963,7.6355911399855358,7.5903376775050635,7.5489981950271394,7.511912294859644,7.4793811101129339,7.4516620465545955,7.4289635244641987,7.4114397204880538,7.3991853094939639,7.3922302064259782,7.3905343081591477,7.3939822353542821,7.402378074312705,7.4154401188309951,7.4327956120557594,7.4539754883383775,7.4784091150897547,7.5054190346350813,7.5342157060685873,7.5638922471082886,7.5934191759507526,7.6216391531258436,7.6472617233514857,7.6688580573884071,7.6848556938949031,7.6935332812815833,7.6930153195661388,7.6812669022280771,7.6560884580634943,7.6151104930398219,7.5557883321505752,7.4753968612701245,7.371025269008431,7.2395717885658151,7.0777384395876997,6.8820257700193741],"text":["gdp_pc_1k:  0.392000<br />log_dalys_pc: 10.488405","gdp_pc_1k:  1.516266<br />log_dalys_pc: 10.253236","gdp_pc_1k:  2.640532<br />log_dalys_pc: 10.048773","gdp_pc_1k:  3.764797<br />log_dalys_pc:  9.871842","gdp_pc_1k:  4.889063<br />log_dalys_pc:  9.719463","gdp_pc_1k:  6.013329<br />log_dalys_pc:  9.588843","gdp_pc_1k:  7.137595<br />log_dalys_pc:  9.477371","gdp_pc_1k:  8.261861<br />log_dalys_pc:  9.382615","gdp_pc_1k:  9.386127<br />log_dalys_pc:  9.302313","gdp_pc_1k: 10.510392<br />log_dalys_pc:  9.234370","gdp_pc_1k: 11.634658<br />log_dalys_pc:  9.176852","gdp_pc_1k: 12.758924<br />log_dalys_pc:  9.127983","gdp_pc_1k: 13.883190<br />log_dalys_pc:  9.086135","gdp_pc_1k: 15.007456<br />log_dalys_pc:  9.049827","gdp_pc_1k: 16.131722<br />log_dalys_pc:  9.017719","gdp_pc_1k: 17.255987<br />log_dalys_pc:  8.988605","gdp_pc_1k: 18.380253<br />log_dalys_pc:  8.961410","gdp_pc_1k: 19.504519<br />log_dalys_pc:  8.935181","gdp_pc_1k: 20.628785<br />log_dalys_pc:  8.909086","gdp_pc_1k: 21.753051<br />log_dalys_pc:  8.882409","gdp_pc_1k: 22.877316<br />log_dalys_pc:  8.854538","gdp_pc_1k: 24.001582<br />log_dalys_pc:  8.824970","gdp_pc_1k: 25.125848<br />log_dalys_pc:  8.793295","gdp_pc_1k: 26.250114<br />log_dalys_pc:  8.759199","gdp_pc_1k: 27.374380<br />log_dalys_pc:  8.722456","gdp_pc_1k: 28.498646<br />log_dalys_pc:  8.682921","gdp_pc_1k: 29.622911<br />log_dalys_pc:  8.640527","gdp_pc_1k: 30.747177<br />log_dalys_pc:  8.595279","gdp_pc_1k: 31.871443<br />log_dalys_pc:  8.547248","gdp_pc_1k: 32.995709<br />log_dalys_pc:  8.496567","gdp_pc_1k: 34.119975<br />log_dalys_pc:  8.443425","gdp_pc_1k: 35.244241<br />log_dalys_pc:  8.388063","gdp_pc_1k: 36.368506<br />log_dalys_pc:  8.330765","gdp_pc_1k: 37.492772<br />log_dalys_pc:  8.271858","gdp_pc_1k: 38.617038<br />log_dalys_pc:  8.211703","gdp_pc_1k: 39.741304<br />log_dalys_pc:  8.150692","gdp_pc_1k: 40.865570<br />log_dalys_pc:  8.089239","gdp_pc_1k: 41.989835<br />log_dalys_pc:  8.027781","gdp_pc_1k: 43.114101<br />log_dalys_pc:  7.966766","gdp_pc_1k: 44.238367<br />log_dalys_pc:  7.906652","gdp_pc_1k: 45.362633<br />log_dalys_pc:  7.847901","gdp_pc_1k: 46.486899<br />log_dalys_pc:  7.790973","gdp_pc_1k: 47.611165<br />log_dalys_pc:  7.736321","gdp_pc_1k: 48.735430<br />log_dalys_pc:  7.684386","gdp_pc_1k: 49.859696<br />log_dalys_pc:  7.635591","gdp_pc_1k: 50.983962<br />log_dalys_pc:  7.590338","gdp_pc_1k: 52.108228<br />log_dalys_pc:  7.548998","gdp_pc_1k: 53.232494<br />log_dalys_pc:  7.511912","gdp_pc_1k: 54.356759<br />log_dalys_pc:  7.479381","gdp_pc_1k: 55.481025<br />log_dalys_pc:  7.451662","gdp_pc_1k: 56.605291<br />log_dalys_pc:  7.428964","gdp_pc_1k: 57.729557<br />log_dalys_pc:  7.411440","gdp_pc_1k: 58.853823<br />log_dalys_pc:  7.399185","gdp_pc_1k: 59.978089<br />log_dalys_pc:  7.392230","gdp_pc_1k: 61.102354<br />log_dalys_pc:  7.390534","gdp_pc_1k: 62.226620<br />log_dalys_pc:  7.393982","gdp_pc_1k: 63.350886<br />log_dalys_pc:  7.402378","gdp_pc_1k: 64.475152<br />log_dalys_pc:  7.415440","gdp_pc_1k: 65.599418<br />log_dalys_pc:  7.432796","gdp_pc_1k: 66.723684<br />log_dalys_pc:  7.453975","gdp_pc_1k: 67.847949<br />log_dalys_pc:  7.478409","gdp_pc_1k: 68.972215<br />log_dalys_pc:  7.505419","gdp_pc_1k: 70.096481<br />log_dalys_pc:  7.534216","gdp_pc_1k: 71.220747<br />log_dalys_pc:  7.563892","gdp_pc_1k: 72.345013<br />log_dalys_pc:  7.593419","gdp_pc_1k: 73.469278<br />log_dalys_pc:  7.621639","gdp_pc_1k: 74.593544<br />log_dalys_pc:  7.647262","gdp_pc_1k: 75.717810<br />log_dalys_pc:  7.668858","gdp_pc_1k: 76.842076<br />log_dalys_pc:  7.684856","gdp_pc_1k: 77.966342<br />log_dalys_pc:  7.693533","gdp_pc_1k: 79.090608<br />log_dalys_pc:  7.693015","gdp_pc_1k: 80.214873<br />log_dalys_pc:  7.681267","gdp_pc_1k: 81.339139<br />log_dalys_pc:  7.656088","gdp_pc_1k: 82.463405<br />log_dalys_pc:  7.615110","gdp_pc_1k: 83.587671<br />log_dalys_pc:  7.555788","gdp_pc_1k: 84.711937<br />log_dalys_pc:  7.475397","gdp_pc_1k: 85.836203<br />log_dalys_pc:  7.371025","gdp_pc_1k: 86.960468<br />log_dalys_pc:  7.239572","gdp_pc_1k: 88.084734<br />log_dalys_pc:  7.077738","gdp_pc_1k: 89.209000<br />log_dalys_pc:  6.882026"],"type":"scatter","mode":"lines","name":"fitted values","line":{"width":3.7795275590551185,"color":"rgba(51,102,255,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":56.913242009132418,"r":9.2984640929846396,"b":56.720630967206304,"l":47.422166874221666},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":18.596928185969279},"title":{"text":"Decrease in DALYs as GDP/n Increases","font":{"color":"rgba(0,0,0,1)","family":"","size":22.316313823163139},"x":0.5,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-4.0488499999999998,93.649850000000001],"tickmode":"array","ticktext":["0","25","50","75"],"tickvals":[0,25,50,75],"categoryorder":"array","categoryarray":["0","25","50","75"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":4.6492320464923198,"tickwidth":0.8453149175440583,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":14.877542548775427},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.8453149175440583,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"GDP per capita ($1K PPP, 2021)","font":{"color":"rgba(0,0,0,1)","family":"","size":18.596928185969279}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[6.5951322855486447,11.354443614083173],"tickmode":"array","ticktext":["7","8","9","10","11"],"tickvals":[7,8,9,10,11],"categoryorder":"array","categoryarray":["7","8","9","10","11"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":4.6492320464923198,"tickwidth":0.8453149175440583,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":14.877542548775427},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.8453149175440583,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":{"text":"Log(DALYs/n)","font":{"color":"rgba(0,0,0,1)","family":"","size":18.596928185969279}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":2.4051539012168925,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.877542548775427}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"1584846c242ff":{"x":{},"y":{},"label":{},"type":"scatter"},"158487bbc97a3":{"x":{},"y":{},"label":{}}},"cur_data":"1584846c242ff","visdat":{"1584846c242ff":["function (y) ","x"],"158487bbc97a3":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </div><div class="column" style="width:40%;">
-<p>How have we measured “good” fit? High <span class="math inline">\(R^2\)</span>? Low <span class="math inline">\(RSS\)</span>?</p>
-<center>
-Linear Model:
-</center>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="fu">summary</span>(lin_model)<span class="sc">$</span>r.squared</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.5679903</code></pre>
-</div>
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="fu">get_rss</span>(lin_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.5638522</code></pre>
-</div>
-</div>
-<center style="margin-top: 20px !important;">
-Polynomial Model:
-</center>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="fu">summary</span>(poly_model)<span class="sc">$</span>r.squared</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 1</code></pre>
-</div>
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a><span class="fu">get_rss</span>(poly_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0</code></pre>
-</div>
-</div>
-</div></div>
-</section>
-<section id="accuracy-leadsto-5300-generalization" class="slide level2 smaller crunch-title title-12">
-<h2>5000: Accuracy <span class="math inline">\(\leadsto\)</span> 5300: Generalization</h2>
-<ul>
-<li>Training Accuracy: How well does it fit the data we can see?</li>
-<li>Test Accuracy: How well does it <strong>generalize</strong> to future data?</li>
-</ul>
-<div class="columns">
-<div class="column" style="width:60%;">
+<p><span class="math display">\[
+\begin{align*}
+\leadsto Y = &amp;10.58 - 0.2346 X + 0.01396 X^2 \\
+&amp;- 0.0004 X^3 + 0.000005 X^4 \\
+&amp;- 0.00000002 X^5 + \varepsilon
+\end{align*}
+\]</span></p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="co"># Data setup</span></span>
-<span id="cb14-2"><a></a>x_test <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.1</span>)</span>
-<span id="cb14-3"><a></a>n_test <span class="ot">&lt;-</span> <span class="fu">length</span>(x_test)</span>
-<span id="cb14-4"><a></a>eps_test <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_test, <span class="dv">0</span>, <span class="fl">0.04</span>)</span>
-<span id="cb14-5"><a></a>y_test <span class="ot">&lt;-</span> x_test <span class="sc">+</span> eps_test</span>
-<span id="cb14-6"><a></a>of_data_test <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x=</span>x_test, <span class="at">y=</span>y_test)</span>
-<span id="cb14-7"><a></a>lin_y_pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(lin_model, <span class="fu">as.data.frame</span>(x_test))</span>
-<span id="cb14-8"><a></a><span class="co">#lin_y_pred_test</span></span>
-<span id="cb14-9"><a></a>lin_resids_test <span class="ot">&lt;-</span> y_test <span class="sc">-</span> lin_y_pred_test</span>
-<span id="cb14-10"><a></a><span class="co">#lin_resids_test</span></span>
-<span id="cb14-11"><a></a>lin_rss_test <span class="ot">&lt;-</span> <span class="fu">sum</span>(lin_resids_test<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb14-12"><a></a><span class="co">#lin_rss_test</span></span>
-<span id="cb14-13"><a></a><span class="co"># Lin R2 = 1 - RSS/TSS</span></span>
-<span id="cb14-14"><a></a>tss_test <span class="ot">&lt;-</span> <span class="fu">sum</span>((y_test <span class="sc">-</span> <span class="fu">mean</span>(y_test))<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb14-15"><a></a>lin_r2_test <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> (lin_rss_test <span class="sc">/</span> tss_test)</span>
-<span id="cb14-16"><a></a><span class="co">#lin_r2_test</span></span>
-<span id="cb14-17"><a></a><span class="co"># Now the poly model</span></span>
-<span id="cb14-18"><a></a>poly_y_pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(poly_model, <span class="fu">as.data.frame</span>(x_test))</span>
-<span id="cb14-19"><a></a>poly_resids_test <span class="ot">&lt;-</span> y_test <span class="sc">-</span> poly_y_pred_test</span>
-<span id="cb14-20"><a></a>poly_rss_test <span class="ot">&lt;-</span> <span class="fu">sum</span>(poly_resids_test<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb14-21"><a></a><span class="co">#poly_rss_test</span></span>
-<span id="cb14-22"><a></a><span class="co"># RSS</span></span>
-<span id="cb14-23"><a></a>poly_r2_test <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> (poly_rss_test <span class="sc">/</span> tss_test)</span>
-<span id="cb14-24"><a></a><span class="co">#poly_r2_test</span></span>
-<span id="cb14-25"><a></a><span class="fu">ggplot</span>(of_data, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
-<span id="cb14-26"><a></a>  <span class="fu">stat_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>,</span>
-<span id="cb14-27"><a></a>              <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">10</span>, <span class="at">raw =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb14-28"><a></a>              <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color=</span><span class="st">"Polynomial"</span>)) <span class="sc">+</span></span>
-<span id="cb14-29"><a></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
-<span id="cb14-30"><a></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>of_data_test, <span class="fu">aes</span>(<span class="at">x=</span>x_test, <span class="at">y=</span>y_test), <span class="at">size=</span>g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb14-31"><a></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept=</span><span class="dv">0</span>, <span class="at">slope=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">"Linear"</span>), <span class="at">linewidth=</span><span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb14-32"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb14-33"><a></a>    <span class="at">title =</span> <span class="st">"Evaluation: Unseen Test Data"</span>,</span>
-<span id="cb14-34"><a></a>    <span class="at">color =</span> <span class="st">"Model"</span></span>
-<span id="cb14-35"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb14-36"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>eval_fitted_poly <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb3-2"><a></a>  coefs <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-3"><a></a>    <span class="fl">10.58</span>,  <span class="sc">-</span><span class="fl">0.2346</span>, <span class="fl">0.01396</span>,</span>
+<span id="cb3-4"><a></a>    <span class="sc">-</span><span class="fl">0.0004156</span>, <span class="fl">0.0000053527</span>, <span class="sc">-</span><span class="fl">0.0000000244</span></span>
+<span id="cb3-5"><a></a>  )</span>
+<span id="cb3-6"><a></a>  x_terms <span class="ot">&lt;-</span> <span class="fu">c</span>(x<span class="sc">^</span><span class="dv">0</span>, x<span class="sc">^</span><span class="dv">1</span>, x<span class="sc">^</span><span class="dv">2</span>, x<span class="sc">^</span><span class="dv">3</span>, x<span class="sc">^</span><span class="dv">4</span>, x<span class="sc">^</span><span class="dv">5</span>)</span>
+<span id="cb3-7"><a></a>  dot_prod <span class="ot">&lt;-</span> <span class="fu">sum</span>(coefs <span class="sc">*</span> x_terms)</span>
+<span id="cb3-8"><a></a>  <span class="fu">return</span>(dot_prod)</span>
+<span id="cb3-9"><a></a>}</span>
+<span id="cb3-10"><a></a>N <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb3-11"><a></a>x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="at">min=</span><span class="dv">0</span>, <span class="at">max=</span><span class="dv">90</span>)</span>
+<span id="cb3-12"><a></a>y_vals <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="at">X=</span>x_vals, <span class="at">FUN=</span>eval_fitted_poly)</span>
+<span id="cb3-13"><a></a>sim_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">gdpc=</span>x_vals, <span class="at">ldalys=</span>y_vals)</span>
+<span id="cb3-14"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb3-15"><a></a>  <span class="fu">geom_line</span>(<span class="at">data=</span>sim_df, <span class="fu">aes</span>(<span class="at">x=</span>gdpc, <span class="at">y=</span>ldalys)) <span class="sc">+</span></span>
+<span id="cb3-16"><a></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>daly_df, <span class="fu">aes</span>(<span class="at">x=</span>gdp_pc_1k, <span class="at">y=</span>log_dalys_pc)) <span class="sc">+</span></span>
+<span id="cb3-17"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
+<span id="cb3-18"><a></a>  model_labels</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/lin-poly-newdata-1.png" width="528"></p>
+<p><img data-src="index_files/figure-revealjs/fitted-cubic-curve-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
-</div><div class="column" style="width:40%;">
-<center>
-Linear Model:
-</center>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>lin_r2_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.8906269</code></pre>
-</div>
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a>lin_rss_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.139159</code></pre>
-</div>
-</div>
-<center style="margin-top: 10px !important;">
-Polynomial Model:
-</center>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>poly_r2_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.5237016</code></pre>
-</div>
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>poly_rss_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.6060099</code></pre>
-</div>
-</div>
 </div></div>
 </section>
-<section id="in-other-words" class="slide level2">
-<h2>In Other Words…</h2>
+<section id="the-true-model" class="slide level2 smaller crunch-title crunch-ul crunch-quarto-figure crunch-li-6">
+<h2>The “True” Model</h2>
+<ul>
+<li>From here onwards, we adopt this as our “true” model, for <strong>pedagogical</strong> purposes!</li>
+<li>Meaning: we use this model to get a sense for how…
+<ul>
+<li>CV can “foresee” <strong>test error</strong> <span class="math inline">\(\leadsto\)</span> confidence in CV</li>
+<li>Regularization can <strong>penalize</strong> overly-complex models <span class="math inline">\(\leadsto\)</span> confidence in LASSO</li>
+</ul></li>
+<li>In the real world we <strong>don’t know the DGP!</strong>
+<ul>
+<li><span class="math inline">\(\implies\)</span> We <strong>build our confidence</strong> here, then <strong>take off the training wheels</strong> irl: use CV/Regularization in hopes they can help us “uncover” the <strong>unknown DGP</strong></li>
+</ul></li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>run_dgp <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">world_label=</span><span class="st">"Sim"</span>, <span class="at">N=</span><span class="dv">60</span>, <span class="at">x_max=</span><span class="dv">90</span>) {</span>
+<span id="cb4-2"><a></a>  x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="at">min=</span><span class="dv">0</span>, <span class="at">max=</span>x_max)</span>
+<span id="cb4-3"><a></a>  y_raw <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="at">X=</span>x_vals, <span class="at">FUN=</span>eval_fitted_poly)</span>
+<span id="cb4-4"><a></a>  y_noise <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fl">0.8</span>)</span>
+<span id="cb4-5"><a></a>  y_vals <span class="ot">&lt;-</span> y_raw <span class="sc">+</span> y_noise</span>
+<span id="cb4-6"><a></a>  sim_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb4-7"><a></a>    <span class="at">gdpc=</span>x_vals,</span>
+<span id="cb4-8"><a></a>    <span class="at">ldalys=</span>y_vals,</span>
+<span id="cb4-9"><a></a>    <span class="at">world=</span>world_label</span>
+<span id="cb4-10"><a></a>  )</span>
+<span id="cb4-11"><a></a>  <span class="fu">return</span>(sim_df)</span>
+<span id="cb4-12"><a></a>}</span>
+<span id="cb4-13"><a></a>df1 <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(<span class="st">"World 1"</span>)</span>
+<span id="cb4-14"><a></a>df2 <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(<span class="st">"World 2"</span>)</span>
+<span id="cb4-15"><a></a>df3 <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(<span class="st">"World 3"</span>)</span>
+<span id="cb4-16"><a></a>dgp_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(df1, df2, df3)</span>
+<span id="cb4-17"><a></a>dgp_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>gdpc, <span class="at">y=</span>ldalys)) <span class="sc">+</span></span>
+<span id="cb4-18"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>world)) <span class="sc">+</span></span>
+<span id="cb4-19"><a></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(world)) <span class="sc">+</span></span>
+<span id="cb4-20"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>) <span class="sc">+</span></span>
+<span id="cb4-21"><a></a>  <span class="fu">remove_legend</span>() <span class="sc">+</span></span>
+<span id="cb4-22"><a></a>  model_labels <span class="sc">+</span></span>
+<span id="cb4-23"><a></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Three Possible Realizations of our DGP"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 
-<img data-src="images/hypothesis.jpg" class="r-stretch quarto-figure-center"><p class="caption">Image source: circulated as secret shitposting among PhD students in seminars</p></section></section>
+</div>
+<img data-src="index_files/figure-revealjs/dgp-realizations-1.png" width="1440" class="r-stretch"></section></section>
 <section>
-<section id="building-an-anti-overfitting-toolkit" class="title-slide slide level1 center" data-stack-name="Anti-Overfitting Toolkit">
-<h1>Building an Anti-Overfitting Toolkit</h1>
+<section id="cross-validation-evaluating-non-linear-models" class="title-slide slide level1 title-09 center" data-stack-name="Cross-Validation">
+<h1>Cross-Validation: Evaluating Non-Linear Models</h1>
+<p>Specifically: evaluating non-linear models <strong>on how well they <em>generalize</em>!</strong></p>
 <ul>
-<li>Penalizing Complexity</li>
-<li>Cross-Validation</li>
-<li>Model Selection (Penalizing Complexity 2.0)</li>
+<li>Beyond the Train-Test Split</li>
+<li>Validation Set</li>
+<li>LOOCV</li>
+<li><span class="math inline">\(K\)</span>-Fold CV</li>
 </ul>
 </section>
-<section id="ok-so-how-do-we-avoid-overfitting" class="slide level2 crunch-title crunch-math crunch-ul">
-<h2>Ok So, How Do We Avoid Overfitting?</h2>
-<ul>
-<li><p>The gist: penalize model <strong>complexity</strong></p></li>
-<li><p>Original optimization:</p>
-<p><span class="math display">\[
-\theta^* = \underset{\theta}{\operatorname{argmin}} \mathcal{L}(y, \widehat{y})
-\]</span></p></li>
-<li><p>New optimization:</p>
-<p><span class="math display">\[
-\theta^* = \underset{\theta}{\operatorname{argmin}} \left[ \lambda \mathcal{L}(y, \widehat{y}) + (1-\lambda) \mathsf{Complexity}(\theta) \right]
-\]</span></p></li>
-<li><p>But how do we measure, and penalize, “complexity”?</p></li>
-</ul>
-</section>
-<section id="regularization-measuring-and-penalizing-complexity" class="slide level2 smaller title-11 math-90">
-<h2>Regularization: Measuring and Penalizing Complexity</h2>
-<ul>
-<li>In the case of polynomials, fairly simple complexity measure: <em>degree</em> of polynomial</li>
-</ul>
-<p><span class="math display">\[
-\mathsf{Complexity}(\widehat{y} = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3) &gt; \mathsf{Complexity}(\widehat{y} = \beta_0 + \beta_1 x)
-\]</span></p>
-<ul>
-<li>In general machine learning, however, we might not be working with polynomials</li>
-<li>In neural networks, for example, we sometimes toss in millions of features and ask the algorithm to “just figure it out”</li>
-<li>The gist, in the general case, is thus: try to “amplify” the most important features and shrink the rest, so that</li>
-</ul>
-<p><span class="math display">\[
-\mathsf{Complexity} \propto \frac{|\text{AmplifiedFeatures}|}{|\text{ShrunkFeatures}|}
-\]</span></p>
-</section>
-<section id="lasso-and-elastic-net-regularization" class="slide level2 smaller crunch-title math-90 scrollable">
-<h2>LASSO and Elastic Net Regularization</h2>
-<ul>
-<li>Many ways to translate this intuition into math!</li>
-<li>In several fields, however (econ, biostatistics), LASSO<sup>1</sup> <span class="citation" data-cites="tibshirani_regression_1996">(<a href="#/references" role="doc-biblioref" onclick="">Tibshirani 1996</a>)</span> is standard:</li>
-</ul>
-<p><span class="math display">\[
-\beta^*_{LASSO} = {\underset{\beta}{\operatorname{argmin}}}\left\{{\frac {1}{N}}\left\|y-X\beta \right\|_{2}^{2}+\lambda \|\beta \|_{1}\right\}
-\]</span></p>
-<ul>
-<li>Why does this work to penalize complexity? What does the parameter <span class="math inline">\(\lambda\)</span> do?</li>
-<li>Some known issues with LASSO fixed in extension of the same intuitions: <strong>Elastic Net</strong></li>
-</ul>
-<p><span class="math display">\[
-\beta^*_{EN} = {\underset {\beta }{\operatorname {argmin} }}\left\{ \|y-X\beta \|^{2}_2+\lambda _{2}\|\beta \|^{2}+\lambda _{1}\|\beta \|_{1} \right\}
-\]</span></p>
-<ul>
-<li>Ensures a unique global minimum! Note that <span class="math inline">\(\lambda_2 = 0, \lambda_1 = 1 \implies \beta^*_{LASSO} = \beta^*_{EN}\)</span></li>
-</ul>
-<aside><ol class="aside-footnotes"><li id="fn1"><p><strong>L</strong>east <strong>A</strong>bsolute <strong>S</strong>hrinkage and <strong>S</strong>election <strong>O</strong>perator</p></li></ol></aside></section>
 <section id="training-vs.-test-data" class="slide level2">
 <h2>Training vs.&nbsp;Test Data</h2>
-<div class="cell" data-fig-size="3" data-layout-align="default">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource dot number-lines code-with-copy"><code class="sourceCode dot"><span id="cb23-1"><a></a><span class="va">graph</span> <span class="va">grid</span></span>
-<span id="cb23-2"><a></a><span class="ot">{</span></span>
-<span id="cb23-3"><a></a><span class="co">    </span><span class="va">graph</span><span class="co"> </span><span class="ot">[</span></span>
-<span id="cb23-4"><a></a><span class="co">        </span><span class="va">overlap</span><span class="ot">=</span><span class="va">true</span></span>
-<span id="cb23-5"><a></a><span class="co">    </span><span class="ot">]</span></span>
-<span id="cb23-6"><a></a><span class="co">    </span><span class="at">nodesep</span><span class="ot">=</span><span class="dv">0.0</span></span>
-<span id="cb23-7"><a></a><span class="co">    </span><span class="at">ranksep</span><span class="ot">=</span><span class="dv">0.0</span></span>
-<span id="cb23-8"><a></a><span class="co">    </span><span class="at">rankdir</span><span class="ot">=</span><span class="st">"TB"</span></span>
-<span id="cb23-9"><a></a><span class="co">    </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span></span>
-<span id="cb23-10"><a></a><span class="co">        </span><span class="at">style</span><span class="ot">=</span><span class="st">"filled"</span><span class="co">,</span></span>
-<span id="cb23-11"><a></a><span class="co">        </span><span class="at">color</span><span class="ot">=</span><span class="va">black</span><span class="co">,</span></span>
-<span id="cb23-12"><a></a><span class="co">        </span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightblue</span><span class="co">,</span></span>
-<span id="cb23-13"><a></a><span class="co">        </span><span class="at">shape</span><span class="ot">=</span><span class="va">box</span></span>
-<span id="cb23-14"><a></a><span class="co">    </span><span class="ot">]</span></span>
-<span id="cb23-15"><a></a></span>
-<span id="cb23-16"><a></a><span class="co">    // uncomment to hide the grid</span></span>
-<span id="cb23-17"><a></a><span class="co">    </span><span class="kw">edge</span><span class="co"> </span><span class="ot">[</span><span class="at">style</span><span class="ot">=</span><span class="va">invis</span><span class="ot">]</span></span>
-<span id="cb23-18"><a></a><span class="co">    </span></span>
-<span id="cb23-19"><a></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_01</span><span class="co"> </span><span class="ot">{</span></span>
-<span id="cb23-20"><a></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Set (80%)"</span></span>
-<span id="cb23-21"><a></a><span class="co">    </span><span class="va">N1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="ot">]</span><span class="co"> </span><span class="va">N2</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="ot">]</span><span class="co"> </span><span class="va">N3</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="ot">]</span><span class="co"> </span><span class="va">N4</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="ot">]</span></span>
-<span id="cb23-22"><a></a><span class="co">    </span><span class="ot">}</span></span>
-<span id="cb23-23"><a></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_02</span><span class="co"> </span><span class="ot">{</span></span>
-<span id="cb23-24"><a></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Test Set (20%)"</span></span>
-<span id="cb23-25"><a></a><span class="co">    </span><span class="va">N5</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">orange</span><span class="ot">]</span></span>
-<span id="cb23-26"><a></a><span class="co">    </span><span class="ot">}</span></span>
-<span id="cb23-27"><a></a><span class="ot">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<ul>
+<li>We introduced this as a first step towards tackling the <strong>scourge of overfitting!</strong></li>
+</ul>
+<div class="cell" data-fig-height="2" data-layout-align="default">
 <div class="cell-output-display">
+<div id="training-vs-test-diagram">
 <div>
-<p></p><figure class=""><p></p>
-<div>
-<svg width="960" height="480" viewbox="0.00 0.00 366.00 100.80" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<svg width="960" height="192" viewbox="0.00 0.00 366.00 100.80" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 96.8)">
 <title>grid</title>
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-96.8 362,-96.8 362,4 -4,4"></polygon>
@@ -906,66 +575,78 @@ Polynomial Model:
 </g>
 </svg>
 </div>
-<p></p></figure><p></p>
 </div>
 </div>
 </div>
-</section>
-<section id="cross-validation" class="slide level2">
-<h2>Cross-Validation</h2>
 <ul>
-<li>The idea that <strong>good models generalize well</strong> is crucial!
-<ul>
-<li>What if we could leverage this insight to optimize <strong>over our training data</strong>?</li>
-<li>The key: <strong>Validation Sets</strong></li>
-</ul></li>
+<li>Training Set <span class="math inline">\(\leadsto\)</span> Training Error, Test Set <span class="math inline">\(\leadsto\)</span> Test Error</li>
+<li>So… what’s the issue? Why do we need to complicate this picture?</li>
 </ul>
-<div class="cell" data-fig-height="3" data-layout-align="default">
+</section>
+<section id="the-chilling-truth-behind-test-data" class="slide level2 smaller crunch-title title-11">
+<h2>The Chilling Truth Behind Test Data 🫣</h2>
+<ul>
+<li>Science-wise, technically, once you use the <strong>test set</strong>, you should <strong>stop working</strong></li>
+<li>Full gory details in fancy books (<span class="citation" data-cites="hume_enquiry_1760">Hume (<a href="#/references" role="doc-biblioref" onclick="">1760</a>)</span> <span class="math inline">\(\rightarrow\)</span> <span class="citation" data-cites="popper_logic_1934">Popper (<a href="#/references" role="doc-biblioref" onclick="">1934</a>)</span>), but the essence is captured by visualizing scientific inference (and <strong>statistical learning!</strong>) like:</li>
+</ul>
+
+<img data-src="images/train_test.svg" class="quarto-figure quarto-figure-center r-stretch"><ul>
+<li>So, what do we do? Use <span class="math inline">\(\mathbf{D}_{\text{Tr}}\)</span> along with knowledge of issues like <strong>overfitting</strong> to <strong>estimate</strong> test error!</li>
+<li>Fulfills our <strong>goal</strong>: find model which <strong>best predicts <span class="math inline">\(Y\)</span> from <span class="math inline">\(X\)</span> for unobserved data</strong></li>
+</ul>
+</section>
+<section id="the-validation-set-approach" class="slide level2 crunch-title crunch-ul crunch-li-8 crunch-quarto-figure">
+<h2>The Validation Set Approach</h2>
+<ul>
+<li>⚠️ Remember: under our new goal, <strong>“good” models</strong> = models that <strong>generalize well!</strong></li>
+<li>Optimizing over <strong>test set</strong> violates scientific inference axioms</li>
+<li>Instead, optimize over <strong>training data</strong> by “holding out” some portion of it… Enter the <strong>Validation Set</strong>:</li>
+</ul>
+<div class="cell" data-fig-height="2.5" data-layout-align="default">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource dot number-lines code-with-copy"><code class="sourceCode dot"><span id="cb24-1"><a></a><span class="va">graph</span> <span class="va">grid</span></span>
-<span id="cb24-2"><a></a><span class="ot">{</span></span>
-<span id="cb24-3"><a></a><span class="co">    </span><span class="va">graph</span><span class="co"> </span><span class="ot">[</span></span>
-<span id="cb24-4"><a></a><span class="co">        </span><span class="va">overlap</span><span class="ot">=</span><span class="va">true</span><span class="co">,</span></span>
-<span id="cb24-5"><a></a><span class="co">        </span><span class="va">scale</span><span class="ot">=</span><span class="dv">0.2</span></span>
-<span id="cb24-6"><a></a><span class="co">    </span><span class="ot">]</span></span>
-<span id="cb24-7"><a></a><span class="co">    </span><span class="at">nodesep</span><span class="ot">=</span><span class="dv">0.0</span></span>
-<span id="cb24-8"><a></a><span class="co">    </span><span class="at">ranksep</span><span class="ot">=</span><span class="dv">0.0</span></span>
-<span id="cb24-9"><a></a><span class="co">    </span><span class="at">rankdir</span><span class="ot">=</span><span class="st">"LR"</span></span>
-<span id="cb24-10"><a></a><span class="co">    </span><span class="va">scale</span><span class="ot">=</span><span class="dv">0.2</span></span>
-<span id="cb24-11"><a></a><span class="co">    </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span></span>
-<span id="cb24-12"><a></a><span class="co">        </span><span class="at">style</span><span class="ot">=</span><span class="st">"filled"</span><span class="co">,</span></span>
-<span id="cb24-13"><a></a><span class="co">        </span><span class="at">color</span><span class="ot">=</span><span class="va">black</span><span class="co">,</span></span>
-<span id="cb24-14"><a></a><span class="co">        </span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightblue</span><span class="co">,</span></span>
-<span id="cb24-15"><a></a><span class="co">        </span><span class="at">shape</span><span class="ot">=</span><span class="va">box</span></span>
-<span id="cb24-16"><a></a><span class="co">    </span><span class="ot">]</span></span>
-<span id="cb24-17"><a></a></span>
-<span id="cb24-18"><a></a><span class="co">    // uncomment to hide the grid</span></span>
-<span id="cb24-19"><a></a><span class="co">    </span><span class="kw">edge</span><span class="co"> </span><span class="ot">[</span><span class="at">style</span><span class="ot">=</span><span class="va">invis</span><span class="ot">]</span></span>
-<span id="cb24-20"><a></a><span class="co">    </span></span>
-<span id="cb24-21"><a></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_01</span><span class="co"> </span><span class="ot">{</span></span>
-<span id="cb24-22"><a></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Set (80%)"</span></span>
-<span id="cb24-23"><a></a><span class="co">        </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_02</span><span class="co"> </span><span class="ot">{</span></span>
-<span id="cb24-24"><a></a><span class="co">            </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Fold (80%)"</span></span>
-<span id="cb24-25"><a></a><span class="co">            </span><span class="va">A1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A2</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A3</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A4</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span></span>
-<span id="cb24-26"><a></a><span class="co">        </span><span class="ot">}</span></span>
-<span id="cb24-27"><a></a><span class="co">        </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_03</span><span class="co"> </span><span class="ot">{</span></span>
-<span id="cb24-28"><a></a><span class="co">            </span><span class="at">label</span><span class="ot">=</span><span class="st">"Validation Fold (20%)"</span></span>
-<span id="cb24-29"><a></a><span class="co">            </span><span class="va">B1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightgreen</span><span class="ot">]</span></span>
-<span id="cb24-30"><a></a><span class="co">        </span><span class="ot">}</span></span>
-<span id="cb24-31"><a></a><span class="co">    </span><span class="ot">}</span></span>
-<span id="cb24-32"><a></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_04</span><span class="co"> </span><span class="ot">{</span></span>
-<span id="cb24-33"><a></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Test Set (20%)"</span></span>
-<span id="cb24-34"><a></a><span class="co">    </span><span class="va">C1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">orange</span><span class="ot">]</span></span>
-<span id="cb24-35"><a></a><span class="co">    </span><span class="ot">}</span></span>
-<span id="cb24-36"><a></a><span class="co">    </span><span class="va">A1</span><span class="co"> -- </span><span class="va">A2</span><span class="co"> -- </span><span class="va">A3</span><span class="co"> -- </span><span class="va">A4</span><span class="co"> -- </span><span class="va">B1</span><span class="co"> -- </span><span class="va">C1</span><span class="ot">;</span></span>
-<span id="cb24-37"><a></a><span class="ot">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource dot number-lines code-with-copy"><code class="sourceCode dot"><span id="cb5-1"><a></a><span class="va">graph</span> <span class="va">grid</span></span>
+<span id="cb5-2"><a></a><span class="ot">{</span></span>
+<span id="cb5-3"><a></a><span class="co">    </span><span class="va">graph</span><span class="co"> </span><span class="ot">[</span></span>
+<span id="cb5-4"><a></a><span class="co">        </span><span class="va">overlap</span><span class="ot">=</span><span class="va">true</span><span class="co">,</span></span>
+<span id="cb5-5"><a></a><span class="co">        </span><span class="va">scale</span><span class="ot">=</span><span class="dv">0.2</span></span>
+<span id="cb5-6"><a></a><span class="co">    </span><span class="ot">]</span></span>
+<span id="cb5-7"><a></a><span class="co">    </span><span class="at">nodesep</span><span class="ot">=</span><span class="dv">0.0</span></span>
+<span id="cb5-8"><a></a><span class="co">    </span><span class="at">ranksep</span><span class="ot">=</span><span class="dv">0.0</span></span>
+<span id="cb5-9"><a></a><span class="co">    </span><span class="at">rankdir</span><span class="ot">=</span><span class="st">"LR"</span></span>
+<span id="cb5-10"><a></a><span class="co">    </span><span class="va">scale</span><span class="ot">=</span><span class="dv">0.2</span></span>
+<span id="cb5-11"><a></a><span class="co">    </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span></span>
+<span id="cb5-12"><a></a><span class="co">        </span><span class="at">style</span><span class="ot">=</span><span class="st">"filled"</span><span class="co">,</span></span>
+<span id="cb5-13"><a></a><span class="co">        </span><span class="at">color</span><span class="ot">=</span><span class="va">black</span><span class="co">,</span></span>
+<span id="cb5-14"><a></a><span class="co">        </span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightblue</span><span class="co">,</span></span>
+<span id="cb5-15"><a></a><span class="co">        </span><span class="at">shape</span><span class="ot">=</span><span class="va">box</span></span>
+<span id="cb5-16"><a></a><span class="co">    </span><span class="ot">]</span></span>
+<span id="cb5-17"><a></a></span>
+<span id="cb5-18"><a></a><span class="co">    // uncomment to hide the grid</span></span>
+<span id="cb5-19"><a></a><span class="co">    </span><span class="kw">edge</span><span class="co"> </span><span class="ot">[</span><span class="at">style</span><span class="ot">=</span><span class="va">invis</span><span class="ot">]</span></span>
+<span id="cb5-20"><a></a><span class="co">    </span></span>
+<span id="cb5-21"><a></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_01</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb5-22"><a></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Set (80%)"</span></span>
+<span id="cb5-23"><a></a><span class="co">        </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_02</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb5-24"><a></a><span class="co">            </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Fold (80%)"</span></span>
+<span id="cb5-25"><a></a><span class="co">            </span><span class="va">A1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A2</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A3</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A4</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span></span>
+<span id="cb5-26"><a></a><span class="co">        </span><span class="ot">}</span></span>
+<span id="cb5-27"><a></a><span class="co">        </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_03</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb5-28"><a></a><span class="co">            </span><span class="at">label</span><span class="ot">=</span><span class="st">"Validation Fold (20%)"</span></span>
+<span id="cb5-29"><a></a><span class="co">            </span><span class="va">B1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightgreen</span><span class="ot">]</span></span>
+<span id="cb5-30"><a></a><span class="co">        </span><span class="ot">}</span></span>
+<span id="cb5-31"><a></a><span class="co">    </span><span class="ot">}</span></span>
+<span id="cb5-32"><a></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_04</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb5-33"><a></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Test Set (20%)"</span></span>
+<span id="cb5-34"><a></a><span class="co">    </span><span class="va">C1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">orange</span><span class="ot">]</span></span>
+<span id="cb5-35"><a></a><span class="co">    </span><span class="ot">}</span></span>
+<span id="cb5-36"><a></a><span class="co">    </span><span class="va">A1</span><span class="co"> -- </span><span class="va">A2</span><span class="co"> -- </span><span class="va">A3</span><span class="co"> -- </span><span class="va">A4</span><span class="co"> -- </span><span class="va">B1</span><span class="co"> -- </span><span class="va">C1</span><span class="ot">;</span></span>
+<span id="cb5-37"><a></a><span class="ot">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
+<div id="cv-diagram">
 <div>
-<p></p><figure class=""><p></p>
-<div>
-<svg width="960" height="288" viewbox="0.00 0.00 553.00 142.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<svg width="960" height="240" viewbox="0.00 0.00 553.00 142.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 138)">
 <title>grid</title>
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-138 549,-138 549,4 -4,4"></polygon>
@@ -1033,89 +714,188 @@ Polynomial Model:
 </g>
 </svg>
 </div>
-<p></p></figure><p></p>
 </div>
 </div>
 </div>
 </section>
-<section id="hyperparameters" class="slide level2">
-<h2>Hyperparameters</h2>
+<section id="evaluating-one-model-validation-set-approach" class="slide level2 crunch-title title-07 inline-90">
+<h2>Evaluating <em>One</em> Model: Validation Set Approach</h2>
 <ul>
-<li>The unspoken (but highly consequential!) “settings” for our learning procedure (that we <em>haven’t</em> optimized via gradient descent)</li>
-<li>There are several you’ve already seen in e.g.&nbsp;5000 – can you name them?</li>
-</ul>
-</section>
-<section id="hyperparameters-youve-already-seen" class="slide level2">
-<h2>Hyperparameters You’ve Already Seen</h2>
+<li><i class="bi bi-1-circle"></i> Randomly pick 20% of <span class="math inline">\(\mathbf{D}_{\text{train}}\)</span> as <strong>sub-training set</strong> <span class="math inline">\(\mathbf{D}_{\text{SubTr}}\)</span></li>
+<li><i class="bi bi-2-circle"></i> The other 80% becomes <strong>validation set</strong> <span class="math inline">\(\mathbf{D}_{\text{Val}}\)</span></li>
+<li><i class="bi bi-3-circle"></i> Train model on <span class="math inline">\(\mathbf{D}_{\text{SubTr}}\)</span>, then evaluate using <span class="math inline">\(\mathbf{D}_{\text{Val}}\)</span>, to produce <strong>validation error</strong> <span class="math inline">\(\boxed{\varepsilon_{\text{Val}} = \widehat{\text{Err}}_{\text{Test}}}\)</span></li>
+<li><span class="math inline">\(\varepsilon_{\text{Val}}\)</span> gives us an <strong>estimate of the test error</strong>
 <ul>
-<li>Unsupervised Clustering: The number of clusters we want <span class="math inline">\(K\)</span></li>
-<li>Gradient Descent: The <strong>step size</strong> <span class="math inline">\(\gamma\)</span></li>
-<li>LASSO/Elastic Net: <span class="math inline">\(\lambda\)</span></li>
-<li>The train/validation/test split!</li>
-</ul>
-</section>
-<section id="hyperparameter-selection" class="slide level2 crunch-title crunch-ul">
-<h2>Hyperparameter Selection</h2>
-<ul>
-<li>Every model comes with its own hyperparameters:
-<ul>
-<li>Neural Networks: Number of layers, nodes per layer</li>
-<li>Decision Trees: Max tree depth, max features to include</li>
-<li>Topic Models: Number of topics, document/topic <strong>priors</strong></li>
-</ul></li>
-<li>So, how do we choose?
-<ul>
-<li>Often more art than science</li>
-<li>Principled, universally applicable, but slow: grid search</li>
-<li>Specific methods for specific algorithms: ADAM <span class="citation" data-cites="kingma_adam_2017">(<a href="#/references" role="doc-biblioref" onclick="">Kingma and Ba 2017</a>)</span> for Neural Network learning rates)</li>
+<li><span class="math inline">\(\implies\)</span> this is what we want to <strong>optimize</strong>, in place of <strong>training error</strong>, for our new goal 😎!</li>
 </ul></li>
 </ul>
 </section>
-<section id="now-what" class="slide level2 crunch-title crunch-ul">
-<h2>…Now What?</h2>
+<section id="how-does-it-do-for-our-dgp" class="slide level2 smaller crunch-title">
+<h2>How Does It Do for Our DGP?</h2>
 <ul>
-<li>So we’ve got a trained model…
-<ul>
-<li>Data collected ✅</li>
-<li>Loss function chosen ✅</li>
-<li>Gradient descent complete ✅</li>
-<li>Hyperparameters tuned ✅</li>
-<li>Good <span class="math inline">\(F_1\)</span> score on test data ✅</li>
-</ul></li>
-<li>What’s our next step?
-<ul>
-<li>This is where <strong>engineers</strong> and <strong>social scientists</strong> diverge…</li>
-<li>Stay tuned!</li>
-</ul></li>
+<li>Recall that the “true” degree is <strong>5</strong>, but that you’re not supposed to know that!</li>
 </ul>
-</section></section>
-<section>
-<section id="quiz-time" class="title-slide slide level1 center" data-stack-name="Quiz">
-<h1>Quiz Time!</h1>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="fu">library</span>(boot)</span>
+<span id="cb6-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
+<span id="cb6-3"><a></a>sim200_df <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(</span>
+<span id="cb6-4"><a></a>  <span class="at">world_label=</span><span class="st">"N=200"</span>, <span class="at">N=</span><span class="dv">200</span>, <span class="at">x_max=</span><span class="dv">100</span></span>
+<span id="cb6-5"><a></a>)</span>
+<span id="cb6-6"><a></a>sim1k_df <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(</span>
+<span id="cb6-7"><a></a>  <span class="at">world_label=</span><span class="st">"N=1000"</span>, <span class="at">N=</span><span class="dv">1000</span>, <span class="at">x_max=</span><span class="dv">100</span></span>
+<span id="cb6-8"><a></a>)</span>
+<span id="cb6-9"><a></a>compute_deltas <span class="ot">&lt;-</span> <span class="cf">function</span>(df, <span class="at">min_deg=</span><span class="dv">1</span>, <span class="at">max_deg=</span><span class="dv">12</span>) {</span>
+<span id="cb6-10"><a></a>  cv_deltas <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb6-11"><a></a>  <span class="cf">for</span> (i <span class="cf">in</span> min_deg<span class="sc">:</span>max_deg) {</span>
+<span id="cb6-12"><a></a>    cur_poly <span class="ot">&lt;-</span> <span class="fu">glm</span>(ldalys <span class="sc">~</span> <span class="fu">poly</span>(gdpc, i), <span class="at">data=</span>df)</span>
+<span id="cb6-13"><a></a>    cur_poly_cv_result <span class="ot">&lt;-</span> <span class="fu">cv.glm</span>(<span class="at">data=</span>df, <span class="at">glmfit=</span>cur_poly, <span class="at">K=</span><span class="dv">5</span>)</span>
+<span id="cb6-14"><a></a>    cur_cv_adj <span class="ot">&lt;-</span> cur_poly_cv_result<span class="sc">$</span>delta[<span class="dv">1</span>]</span>
+<span id="cb6-15"><a></a>    cv_deltas <span class="ot">&lt;-</span> <span class="fu">c</span>(cv_deltas, cur_cv_adj)</span>
+<span id="cb6-16"><a></a>  }</span>
+<span id="cb6-17"><a></a>  <span class="fu">return</span>(cv_deltas)</span>
+<span id="cb6-18"><a></a>}</span>
+<span id="cb6-19"><a></a>sim200_deltas <span class="ot">&lt;-</span> <span class="fu">compute_deltas</span>(sim200_df)</span>
+<span id="cb6-20"><a></a>sim200_delta_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">degree=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">delta=</span>sim200_deltas)</span>
+<span id="cb6-21"><a></a>sim200_delta_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>degree, <span class="at">y=</span>delta)) <span class="sc">+</span></span>
+<span id="cb6-22"><a></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb6-23"><a></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb6-24"><a></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb6-25"><a></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb6-26"><a></a>    <span class="at">breaks=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="dv">1</span>,<span class="at">to=</span><span class="dv">12</span>,<span class="at">by=</span><span class="dv">1</span>)</span>
+<span id="cb6-27"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb6-28"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>) <span class="sc">+</span></span>
+<span id="cb6-29"><a></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"N = 200"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/n200-delta-plot-1.png" width="960"></p>
+<figcaption>Here, validation error fails to capture ‘true’ model (likely culprits: low <span class="math inline">\(N\)</span>, high noise…)</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <ul>
-<li>Jeff hands out your (paper) quizzes now!</li>
-<li>You have 55 minutes (8:05 to 9pm)</li>
-<li>You got this 💪</li>
+<li>Possible resolution: <em>[See coming slides!]</em></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>sim1k_deltas <span class="ot">&lt;-</span> <span class="fu">compute_deltas</span>(sim1k_df)</span>
+<span id="cb7-2"><a></a>sim1k_delta_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">degree=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">delta=</span>sim1k_deltas)</span>
+<span id="cb7-3"><a></a>sim1k_delta_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>degree, <span class="at">y=</span>delta)) <span class="sc">+</span></span>
+<span id="cb7-4"><a></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb7-5"><a></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb7-6"><a></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb7-7"><a></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb7-8"><a></a>    <span class="at">breaks=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="dv">1</span>,<span class="at">to=</span><span class="dv">12</span>,<span class="at">by=</span><span class="dv">1</span>)</span>
+<span id="cb7-9"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb7-10"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>) <span class="sc">+</span></span>
+<span id="cb7-11"><a></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"N = 1000"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/n1k-delta-plot-1.png" width="960"></p>
+<figcaption>Here, validation error fails to sharply distinguish <span class="math inline">\(d \in \{5, 6, 7, 8\}\)</span></figcaption>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Possible resolution: <em>“one standard error rule”</em></li>
+</ul>
+</div></div>
+</section>
+<section id="optimizing-over-many-models" class="slide level2 crunch-title title-09">
+<h2>Optimizing over <em>Many</em> Models</h2>
+<ul>
+<li><i class="bi bi-1-circle"></i> Let <span class="math inline">\(\mathfrak{M} = (\mathcal{M}_1, \ldots, \mathcal{M}_D)\)</span> be a set of <span class="math inline">\(D\)</span> different models
+<ul>
+<li>Ex: <span class="math inline">\(\mathcal{M}_1\)</span> could be a linear model, <span class="math inline">\(\mathcal{M}_2\)</span> a quadratic model, <span class="math inline">\(\mathcal{M}_3\)</span> a cubic model, and so on…</li>
+</ul></li>
+<li><i class="bi bi-2-circle"></i> For each <span class="math inline">\(\mathcal{M}_i \in \mathfrak{M}\)</span> (and for given <strong>training</strong> data <span class="math inline">\(\mathbf{D}_{\text{Tr}}\)</span>):
+<ul>
+<li>Use [Insert Validation Approach] to derive <span class="math inline">\(\varepsilon_i\)</span></li>
+</ul></li>
+<li><i class="bi bi-3-circle"></i> Model <span class="math inline">\(\mathcal{M}_i\)</span> with <strong>lowest <span class="math inline">\(\varepsilon_i\)</span> wins!</strong></li>
+<li>We are now <strong>cooking with gas!</strong> We can use CV to optimize over e.g.&nbsp;<strong>HYPERPARAMETERS</strong> 🤯 (that we had to just kind of… guess before)!</li>
+</ul>
+</section>
+<section id="cooking-with-even-more-gas" class="slide level2 crunch-title crunch-ul crunch-p">
+<h2>Cooking with Even More Gas!</h2>
+<p><em>(加 even more 油!)</em></p>
+<ul>
+<li>It turns out that, for the purposes of estimating test error (aka, estimating how well the fitted model will <strong>generalize</strong>), Validation Set Approach is the <strong>worst</strong> approach (still good, just, least good!)</li>
+<li>To see its limitations, consider: is there something special about the 20% of data we selected for the validation set?</li>
+<li>Answer: <strong>No!</strong> It was literally randomly selected!</li>
+<li><span class="math inline">\(\implies\)</span> Any other 20% “chunk” (which we’ll call a <strong>fold</strong> from now on) could work just as well</li>
+</ul>
+</section>
+<section id="fold-cross-validation" class="slide level2 crunch-title crunch-ul crunch-quarto-figure">
+<h2>5-Fold Cross-Validation</h2>
+<ul>
+<li>Secretly, by choosing a <strong>20%</strong> fold to be the validation set earlier, I was priming you for <strong>5-fold</strong> cross-validation!</li>
+</ul>
+
+<img data-src="images/kfold.png" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://biol607.github.io/">Image Source</a></p></section>
+<section id="k-fold-cross-validation" class="slide level2">
+<h2><span class="math inline">\(K\)</span>-Fold Cross-Validation</h2>
+<ul>
+<li>5 was an arbitrary choice!
+<ul>
+<li>(Though, one with important and desirable statistical properties, which we’ll get to ASAP)</li>
+</ul></li>
+<li>In general, <span class="math inline">\(K\)</span>-Fold CV Estimator <span class="math inline">\(\varepsilon_{(K)} = \widehat{\text{Err}}_{\text{Test}}\)</span> given by</li>
+</ul>
+<p><span class="math display">\[
+\varepsilon_{(K)} = \frac{1}{K}\sum_{i=1}^{K}\varepsilon^{\text{Val}}_{i}
+\]</span></p>
+</section>
+<section id="leave-one-out-cross-validation-loocv" class="slide level2 smaller crunch-title">
+<h2>Leave-One-Out Cross-Validation (LOOCV)</h2>
+<ul>
+<li><span class="math inline">\(K\)</span>-Fold CV with <span class="math inline">\(K := N\)</span></li>
+<li>Produces the maximum possible number of terms in the summation that leads to <span class="math inline">\(\varepsilon_{(K)}\)</span>
+<ul>
+<li>i.e., <span class="math inline">\(\varepsilon_{(N)}\)</span> is an average over the maximum possible number of models</li>
+</ul></li>
+<li>So… does this mean it’s the best choice?</li>
+<li><em>Hint</em>: How “different” are any two models used in the sum?</li>
+</ul>
+<p><span class="math display">\[
+\begin{align*}
+\varepsilon_{(N)} =~ &amp; \text{Err}(\mathbf{D}_1 \mid \mathbf{D}_{2:100}) + \text{Err}(\mathbf{D}_2 \mid \mathbf{D}_1, \mathbf{D}_{3:100}) \\
+&amp;+ \text{Err}(\mathbf{D}_3 \mid \mathbf{D}_{1:2}, \mathbf{D}_{4:100}) + \cdots + \text{Err}(\mathbf{D}_{100} \mid \mathbf{D}_{1:99})
+\end{align*}
+\]</span></p>
+<ul>
+<li>The terms here are <strong>highly correlated!</strong></li>
+<li>Fun math results around how <span class="math inline">\(K = 5\)</span> or <span class="math inline">\(K = 10\)</span> can best <strong>strike a balance</strong> between overly-correlated terms (<span class="math inline">\(K = N\)</span>) and not averaging enough models (<span class="math inline">\(K = 2\)</span>)!</li>
 </ul>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
-<div id="ref-kingma_adam_2017" class="csl-entry" role="listitem">
-Kingma, Diederik P., and Jimmy Ba. 2017. <span>“Adam: <span>A Method</span> for <span>Stochastic Optimization</span>.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.1412.6980">https://doi.org/10.48550/arXiv.1412.6980</a>.
+<div id="ref-hume_enquiry_1760" class="csl-entry" role="listitem">
+Hume, David. 1760. <em>An <span>Enquiry Concerning Human Understanding</span></em>. <span>Simon and Schuster</span>. <a href="https://books.google.com?id=BWDrAgAAQBAJ">https://books.google.com?id=BWDrAgAAQBAJ</a>.
 </div>
-<div id="ref-tibshirani_regression_1996" class="csl-entry" role="listitem">
-Tibshirani, Robert. 1996. <span>“Regression <span>Shrinkage</span> and <span>Selection</span> via the <span>Lasso</span>.”</span> <em>Journal of the Royal Statistical Society. Series B (Methodological)</em> 58 (1): 267–88. <a href="https://www.jstor.org/stable/2346178">https://www.jstor.org/stable/2346178</a>.
+<div id="ref-popper_logic_1934" class="csl-entry" role="listitem">
+Popper, Karl R. 1934. <em>The <span>Logic</span> of <span>Scientific Discovery</span></em>. Psychology Press. <a href="https://www.dropbox.com/scl/fi/7x42jx2h9z4w6ubp6w0eq/Karl_Popper_The_logic_of_scientific_discovery.pdf?rlkey=i3v2sv29ktd7g6ey70qj444gh&amp;dl=1">https://www.dropbox.com/scl/fi/7x42jx2h9z4w6ubp6w0eq/Karl_Popper_The_logic_of_scientific_discovery.pdf?rlkey=i3v2sv29ktd7g6ey70qj444gh&amp;dl=1</a>.
 </div>
 </div>
 
 
 </section></section>
-
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
 <div class="footer footer-default">
-<p>DSAN 5300-01 Week 4: The Scourge of Overfitting</p>
+<p>DSAN 5300 Week 4: CV for Model Assessment</p>
 </div>
 </div></div>
 
@@ -1368,197 +1148,180 @@ Tibshirani, Robert. 1996. <span>“Regression <span>Shrinkage</span> and <span>S
     </script>
 
     <script id="quarto-html-after-body" type="application/javascript">
-    window.document.addEventListener("DOMContentLoaded", function (event) {
-      const toggleBodyColorMode = (bsSheetEl) => {
-        const mode = bsSheetEl.getAttribute("data-mode");
-        const bodyEl = window.document.querySelector("body");
-        if (mode === "dark") {
-          bodyEl.classList.add("quarto-dark");
-          bodyEl.classList.remove("quarto-light");
-        } else {
-          bodyEl.classList.add("quarto-light");
-          bodyEl.classList.remove("quarto-dark");
-        }
-      }
-      const toggleBodyColorPrimary = () => {
-        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-        if (bsSheetEl) {
-          toggleBodyColorMode(bsSheetEl);
-        }
-      }
-      toggleBodyColorPrimary();  
-      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
-      tabsets.forEach(function(tabset) {
-        const tabby = new Tabby('#' + tabset.id);
-      });
-      const isCodeAnnotation = (el) => {
-        for (const clz of el.classList) {
-          if (clz.startsWith('code-annotation-')) {                     
-            return true;
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
           }
+          return false;
         }
-        return false;
-      }
-      const onCopySuccess = function(e) {
-        // button target
-        const button = e.trigger;
-        // don't keep focus
-        button.blur();
-        // flash "checked"
-        button.classList.add('code-copy-button-checked');
-        var currentTitle = button.getAttribute("title");
-        button.setAttribute("title", "Copied!");
-        let tooltip;
-        if (window.bootstrap) {
-          button.setAttribute("data-bs-toggle", "tooltip");
-          button.setAttribute("data-bs-placement", "left");
-          button.setAttribute("data-bs-title", "Copied!");
-          tooltip = new bootstrap.Tooltip(button, 
-            { trigger: "manual", 
-              customClass: "code-copy-button-tooltip",
-              offset: [0, -8]});
-          tooltip.show();    
-        }
-        setTimeout(function() {
-          if (tooltip) {
-            tooltip.hide();
-            button.removeAttribute("data-bs-title");
-            button.removeAttribute("data-bs-toggle");
-            button.removeAttribute("data-bs-placement");
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
           }
-          button.setAttribute("title", currentTitle);
-          button.classList.remove('code-copy-button-checked');
-        }, 1000);
-        // clear code selection
-        e.clearSelection();
-      }
-      const getTextToCopy = function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
           for (const childEl of codeEl.children) {
             if (isCodeAnnotation(childEl)) {
               childEl.remove();
             }
           }
           return codeEl.innerText;
-      }
-      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-        text: getTextToCopy
-      });
-      clipboard.on('success', onCopySuccess);
-      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-          text: getTextToCopy,
-          container: window.document.getElementById('quarto-embedded-source-code-modal')
-        });
-        clipboardModal.on('success', onCopySuccess);
-      }
-        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-        var mailtoRegex = new RegExp(/^mailto:/);
-          var filterRegex = new RegExp('/' + window.location.host + '/');
-        var isInternal = (href) => {
-            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
-        // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-        for (var i=0; i<links.length; i++) {
-          const link = links[i];
-          if (!isInternal(link.href)) {
-            // undo the damage that might have been done by quarto-nav.js in the case of
-            // links that we want to consider external
-            if (link.dataset.originalHref !== undefined) {
-              link.href = link.dataset.originalHref;
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+                // target, if specified
+                link.setAttribute("target", "_blank");
+                if (link.getAttribute("rel") === null) {
+                  link.setAttribute("rel", "noopener");
+                }
+                // default icon
+                link.classList.add("external");
             }
-              // target, if specified
-              link.setAttribute("target", "_blank");
-              if (link.getAttribute("rel") === null) {
-                link.setAttribute("rel", "noopener");
-              }
-              // default icon
-              link.classList.add("external");
           }
-        }
-      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-        const config = {
-          allowHTML: true,
-          maxWidth: 500,
-          delay: 100,
-          arrow: false,
-          appendTo: function(el) {
-              return el.closest('section.slide') || el.parentElement;
-          },
-          interactive: true,
-          interactiveBorder: 10,
-          theme: 'light-border',
-          placement: 'bottom-start',
-        };
-        if (contentFn) {
-          config.content = contentFn;
-        }
-        if (onTriggerFn) {
-          config.onTrigger = onTriggerFn;
-        }
-        if (onUntriggerFn) {
-          config.onUntrigger = onUntriggerFn;
-        }
-          config['offset'] = [0,0];
-          config['maxWidth'] = 700;
-        window.tippy(el, config); 
-      }
-      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-      for (var i=0; i<noterefs.length; i++) {
-        const ref = noterefs[i];
-        tippyHover(ref, function() {
-          // use id or data attribute instead here
-          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-          try { href = new URL(href).hash; } catch {}
-          const id = href.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note) {
-            return note.innerHTML;
-          } else {
-            return "";
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
           }
-        });
-      }
-      const findCites = (el) => {
-        const parentEl = el.parentElement;
-        if (parentEl) {
-          const cites = parentEl.dataset.cites;
-          if (cites) {
-            return {
-              el,
-              cites: cites.split(' ')
-            };
-          } else {
-            return findCites(el.parentElement)
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
           }
-        } else {
-          return undefined;
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
         }
-      };
-      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-      for (var i=0; i<bibliorefs.length; i++) {
-        const ref = bibliorefs[i];
-        const citeInfo = findCites(ref);
-        if (citeInfo) {
-          tippyHover(citeInfo.el, function() {
-            var popup = window.document.createElement('div');
-            citeInfo.cites.forEach(function(cite) {
-              var citeDiv = window.document.createElement('div');
-              citeDiv.classList.add('hanging-indent');
-              citeDiv.classList.add('csl-entry');
-              var biblioDiv = window.document.getElementById('ref-' + cite);
-              if (biblioDiv) {
-                citeDiv.innerHTML = biblioDiv.innerHTML;
-              }
-              popup.appendChild(citeDiv);
-            });
-            return popup.innerHTML;
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
           });
         }
-      }
-    });
-    </script>
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
     
 
 </body></html>

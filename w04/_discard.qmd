@@ -1,121 +1,31 @@
-How did we measure a "good" fit in e.g. DSAN 5000? High $R^2$? Low $RSS$?
 
-:::: {.columns}
-::: {.column width="50%"}
+## First Things First: The Data-Generating Process (DGP) {.smaller}
 
-```{r}
-#| label: training-data-plot
-#| fig-width: 3.666
-#| fig-height: 2.5
-#| fig-align: left
-x <- seq(from = 0, to = 1, by = 0.1)
-n <- length(x)
-eps <- rnorm(n, 0, 0.04)
-y <- x + eps
-# But make one big outlier
-midpoint <- ceiling((3/4)*n)
-y[midpoint] <- 0
-of_data <- tibble::tibble(x=x, y=y)
-# Linear model
-lin_model <- lm(y ~ x)
-# But now polynomial regression
-poly_model <- lm(y ~ poly(x, degree = 10, raw=TRUE))
-#summary(model)
-ggplot(of_data, aes(x=x, y=y)) +
-  geom_point(size=g_pointsize/2) +
-  labs(
-    title = "Training Data",
-    color = "Model"
-  ) +
-  theme_dsan()
-```
+* From economic microfoundations, can derive that production cost curves (in presence of *economies of scale*) tend to take on forms like
 
-:::
-::: {.column width="50%"}
+$$
+C(x) = 250 + 195x - 24x^2 + x^3
+$$
 
 ```{r}
-#| label: training-linear-poly
-#| fig-width: 5
-#| fig-height: 2.5
-#| fig-align: left
-ggplot(of_data, aes(x=x, y=y)) +
-  geom_point(size=g_pointsize/2) +
-  geom_abline(aes(intercept=0, slope=1, color="Linear"), linewidth=1, show.legend = FALSE) +
-  stat_smooth(method = "lm",
-              formula = y ~ poly(x, 10, raw=TRUE),
-              se = FALSE, aes(color="Polynomial")) +
-  labs(
-    title = "A Perfect Model?",
-    color = "Model"
-  ) +
-  theme_dsan()
+#| label: cubic-dgp
+library(tidyverse)
+compute_prod_cost <- function(x) {
+    return(250 + 195*x - 24*(x^2) + x^3)
+}
+N <- 500
+x_vals <- runif(N, min=0, max=16)
+y_raw = compute_prod_cost(x_vals)
+y_noise = rnorm(N, mean=0, sd=100)
+y_vals <- y_raw + y_noise
+prod_df <- tibble(x=x_vals, y=y_vals)
+prod_df |> ggplot(aes(x=x, y=y)) +
+  geom_point() +
+  theme_classic(base_size=22)
 ```
 
-:::
-::::
+::: {.notes}
 
-:::: {.columns}
-::: {.column width="50%"}
-
-<center>
-Linear Model:
-</center>
-
-```{r,echo=TRUE}
-#| label: lin-model-metrics
-#| echo: true
-#| code-fold: show
-summary(lin_model)$r.squared
-get_rss(lin_model)
-```
+https://www.opportunityatlas.org/?%7B%22mapping%22%3A%22kfr%22%2C%22dataToggles%22%3A%7B%22parentIncome%22%3A%22p25%22%2C%22childRace%22%3A%22rP%22%2C%22childGender%22%3A%22gP%22%2C%22cohortTimeline%22%3A%22e%22%7D%2C%22compareDataToggles%22%3A%7B%22parentIncome%22%3A%22pall%22%2C%22childRace%22%3A%22rP%22%2C%22childGender%22%3A%22gP%22%2C%22cohortTimeline%22%3A%22e%22%7D%2C%22selectedChapterId%22%3A%22chapter1%22%2C%22compareFeatures%22%3A%22subgroup%22%2C%22selectedFeatureByID%22%3A%22cty11001%22%2C%22filters%22%3A%5B%5D%2C%22mode%22%3A%22standardMode%22%2C%22mapBounds%22%3A%5B%5B-78.90679442941929%2C38.087613189251755%5D%2C%5B-74.96364651649473%2C40.07482897415662%5D%5D%2C%22showStoryMarkers%22%3Atrue%2C%22showHistogram%22%3Afalse%2C%22propertyShownOnMap%22%3A%22kfr_rP_gP_p25_e%22%7D
 
 :::
-::: {.column width="50%"}
-
-<center>
-Polynomial Model:
-</center>
-
-```{r,echo=TRUE}
-#| label: poly-model-metrics
-#| echo: true
-#| code-fold: show
-summary(poly_model)$r.squared
-get_rss(poly_model)
-```
-:::
-
-::::
-
----
-
-# Cross-Validation {data-stack-name="Cross Validation"}
-
-## Naïve Approach: Validation Set
-
-## Better Approach: LOOCV
-
-## Best Approach: $K$-Fold CV
-
----
-
-# Model Selection Preview {data-stack-name="Model Selection"}
-
-## The Goal
-
-* Maximize **generalizability** by
-* Penalizing **complexity**
-
----
-
-## Resampling Methods
-
-* Cross-Validation and Bootstrap
-
-## Model Selection
-
-* Subset Selection
-* "Complexity Penalties"
-* LASSO 🤠
-
----

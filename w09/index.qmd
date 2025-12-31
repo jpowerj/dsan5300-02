@@ -1,10 +1,10 @@
 ---
-title: "Week 9: Generative vs. Discriminative Models"
-subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2025, Georgetown University</span>"
+title: "Week 9: Deep Learning"
+subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 bibliography: "../_DSAN5300.bib"
-date: 2025-03-17
+date: 2026-03-16
 date-format: full
 lecnum: 9
 categories:
@@ -12,7 +12,7 @@ categories:
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300-01 Week 9: {{< var w09.footer >}}"
+    footer: "DSAN 5300 Week 9: {{< var w09.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true
@@ -53,11 +53,11 @@ Today's Planned Schedule:
 
 | | Start | End | Topic |
 |:- |:- |:- |:- |
-| **Lecture** | 6:30pm | 7:00pm | [Separating Hyperplanes &rarr;](#learning-decision-boundaries) |
+| **Lecture** | 6:30pm | 7:00pm | [Single Layer Neural Networks &rarr;](#learning-decision-boundaries) |
 | | 7:00pm | 7:20pm | [Max-Margin Classifiers &rarr;](#max-margin-classifiers) | 
 | | 7:20pm | 8:00pm | [Support Vector *Classifiers* &rarr;](#support-vector-classifiers) |
 | **Break!** | 8:00pm | 8:10pm | |
-| | 8:10pm | 9:00pm | [Quiz 2 &rarr;](#quiz-time) |
+| | 8:10pm | 9:00pm | [Fancier Neural Networks &rarr;](#quiz-time) |
 
 : {tbl-colwidths="[12,12,12,64]"}
 
@@ -73,179 +73,390 @@ set.seed(5300)
 
 {{< include ../dsan-globals/_globals-tex.qmd >}}
 
-## Quick Roadmap {.crunch-title .crunch-ul .text-90 .crunch-li-first}
+## Quick Roadmap {.smaller .crunch-title .crunch-ul .text-90 .crunch-li-first}
 
-* Weeks 8-9: Shift from focus on **regression** to focus on **classification** (Though we use lessons from regression!)
-* Last Week (W08): SVMs as *new method* with this focus
-  * Emphasis on **boundary between classes** $\leadsto$ 2.5hrs on **separating hyperplanes**: in original feature space (Max-Margin, SVCs) or derived feature spaces (SVMs)
-* Now: Wait, didn't we discuss a classification method before, though its name confusingly had "regression" in it? 🤔
-  * Take **logistic regression** but use Bayes rule to "flip" from **regression[+thresholding]** task to **class-separation** task (think of SVM's max-width-of-"slab" objective!)
+* We made it! Cutting-edge method for [statistical]{style='text-decoration: line-through;'} *neural* learning
 
-<!-- * Best way I can summarize: logistic regression is great if we **care about $\beta_j$ values** (effect of $\uparrow X$ on $\Pr(Y = 1)$)... 
-  * Otherwise, if we care about best **separating** $Y = 0$ from $Y = 1$ (think of SVM's max-width-of-"slab" objective), we can optimize **separation boundary**, point where $\Pr(Y = 1) = \Pr(Y = 0)$ directly
--->
+{{< video https://www.youtube.com/watch?v=L5GMVdGy8rU width="100%" height="450" >}}
 
-## Logistic Regression Refresher {.crunch-title .math-90 .crunch-math .crunch-li .title-09 .crunch-ul}
+# Single-Layer Neural Networks {.smaller .title-12 data-stack-name="Single-Layer NNs"}
 
-* We don't have time for full refresher, but just remember how it involves learning $\beta_j$ values to minimize **loss** w.r.t.
+![Single-Layer NN, Adapted from ISLR Fig 10.1](images/nn_single_layer.svg){fig-align="center"}
 
-$$
-\begin{align*}
-&\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
-&\iff \Pr(Y = 1 \mid X = x_i) = \frac{e^{\beta_0 + \beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}}
-\end{align*}
-$$
+## Diagram $\leftrightarrow$ Math {.crunch-title .cols-va .crunch-math .crunch-quarto-figure .math-90 .inline-90 .crunch-ul .crunch-li-8 .title-09}
 
-* And then, if we want to **classify $x$** rather than just **predict** $\Pr(Y = 1 \mid X = x)$, we apply a threshold $t \in [0,1]$:
+:::: {.columns}
+::: {.column width="66%"}
 
-$$
-\widehat{y} = \begin{cases}
-1 &\text{if }\Pr(Y = 1 \mid X = x) = \frac{e^{\beta_0 + \beta_1 x}}{1 + e^{\beta_0 + \beta_1 x}} > t \\
-0 &\text{otherwise}
-\end{cases}
-$$
-
-## Intuition {.crunch-title .crunch-ul .title-09 .inline-90}
-
-* Logistic regression is called a **discriminative model**, since we are learning parameters $\beta_j$ that best produce a predicted **class** $\widehat{y_i}$ from **features** $\mathbf{x}_i$...
-* We're modeling $\Pr(Y = k \mid X)$ (for two classes, $k = 0$ and $k = 1$), hence the LHS of the Logistic Regression formula
-* But there are cases where we can **do better**^[*(More normally-distributed $X$ $\implies$ more likely to "beat" Logistic Regression)*] by instead modeling (learning parameters for) $\Pr(X \mid Y = k)$, for each $k$, then using Bayes rule to "flip" back to $\Pr(Y = k \mid X)$!<br>$\leadsto$ **LDA**, **QDA**, and **Naïve Bayes** classifiers
-
-# Linear Discriminant Analysis (LDA) {data-stack-name="LDA"}
-
-* *Not to be confused with the NLP model called "LDA"!*
-* *In that case LDA = "Latent Dirichlet Allocation"*
-
-## Bayes' Rule {.smaller .math-90 .crunch-ul}
-
-* First things first, we generalize from $Y \in \{0, 1\}$ to $K$ possible classes (labels), since the notation for $K$ classes here is not much more complex than 2 classes!
-* We label the pieces using ISLR's notation to make our lives easier:
-
-$$
-\underbrace{\Pr(Y = k \mid X = x)}_{p_k(x)} = \frac{
-  \overbrace{\Pr(X = x \mid Y = k)}^{f_k(x)} \overbrace{\Pr(Y = k)}^{\pi_k}
-}{
-  \sum_{\ell = 1}^{K} \underbrace{\Pr(X = x \mid Y = \ell)}_{f_{\ell}(x)} \underbrace{\Pr(Y = \ell)}_{\pi_{\ell}}
-} = \frac{f_k(x) \overbrace{\pi_k}^{\mathclap{\text{Prior}(k)}}}{\sum_{\ell = 1}^{K}f_{\ell}(x) \underbrace{\pi_\ell}_{\mathclap{\text{Prior}(\ell)}}}
-$$
-
-* So if we do have only two classes, $K = 2$ and $p_1(x) = \frac{f_1(x)\pi_1}{f_1(x)\pi_1 + f_0(x)\pi_0}$
-
-* Priors can be estimated as $n_k / n$. The hard work is in modeling $f_k(x)$! With estimates of these two "pieces" for each $k$, we can derive a classifier $\widehat{y}(x) = \argmax_k p_k(x)$
-
-## The LDA Assumption (One Feature $x$) {.smaller .crunch-title .title-11 .math-90 .crunch-ul .crunch-li-5}
-
-* Within each class $k$, values of $x$ are **normally distributed**:
-  
-$$
-(X \mid Y = k) \sim \mathcal{N}(\param{\mu_k}, \param{\sigma^2}) \iff f_k(x) = \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_k}{\sigma} \right)^2\right]
-$$
-
-* Plugging back into (notationally-simplified) classifier, we get
-
-$$
-\widehat{y}(x) = \argmax_{k}\left[ \frac{
-  \pi_k \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_k}{\sigma} \right)^2\right]
-}{
-  \sum_{\ell = 1}^{K}\pi_{\ell} \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_\ell}{\sigma} \right)^2\right]
-}\right],
-$$
-
-* Gross, BUT $\argmax_k p_k(x) = \argmax_k \log(p_k(x)) \leadsto$ "linear" discriminant $\delta_k(x)$:
-
-$$
-\widehat{y}(x) = \argmax_k[\delta_k(x)] = \argmax_{k}\left[ \overbrace{\frac{\mu_k}{\sigma^2}}^{\smash{m}} x ~ \overbrace{- \frac{\mu_k^2}{2\sigma^2} + \log(\pi_k)}^{\smash{b}} \right]
-$$
-
-## Decision Boundaries {.smaller .crunch-title .crunch-ul .crunch-math .math-90}
-
-* The **boundary** between two classes $k$ and $k'$ will be the point at which $\delta_k(x) = \delta_{k'}(x)$
-* For two classes, can solve $\delta_0(x) = \delta_1(x)$ for $x$ to obtain $x = \frac{\mu_0 + \mu_1}{2}$
-
-* To derive a boundary from **data**: $x = \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}$ $\Rightarrow$ Predict $1$ if $x > \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}$, $0$ otherwise
-
-![ISLR Figure 4.4: Estimating the Decision Boundary from data. The dashed line is the "true" boundary $x = \frac{\mu_0 + \mu_1}{2}$, while the solid line in the right panel is the boundary **estimated from data** as $x = \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}$.](images/4_4.svg){fig-align="center"}
-
-## Number of Parameters {.smaller .crunch-title}
-
-* $K = 2$ is special case, since lots of things cancel out, but in general need to estimate:
-
-| English | Notation | How Many | Formula |
-| - | - | - | - |
-| Prior for class $k$ | $\widehat{\pi}_k$ | $K - 1$ | $\widehat{\pi}_k = n_k / n$ |
-| Estimated mean for class $k$ | $\widehat{\mu}_k$ | $K$ | $\widehat{\mu}_k = \displaystyle \frac{1}{n_k}\sum_{\{i \mid y_i = k\}}x_i$ |
-| Estimated (shared) variance | $\widehat{\sigma}^2$ | 1 | $\widehat{\sigma}^2 = \displaystyle \frac{1}{n - K}\sum_{k = 1}^{K}\sum_{i:y_i = k}(x_i - \widehat{\mu}_k)^2$ |
-| | **Total:** | $2K$ | |
-
-* *(Keep in mind for fancier methods! This may blow up to be much larger than $n$)*
-
-## LDA with Multiple Features (Here $p = 2$) {.smaller .crunch-title .title-11 .crunch-ul}
-
-* Within each class $k$, values of $\mathbf{x}$ are **(multivariate) normally distributed**:
-  
-$$
-\left( \begin{bmatrix}X_1 \\ X_2\end{bmatrix} \middle| ~ Y = k \right) \sim \mathbf{\mathcal{N}}_2(\param{\boldsymbol\mu_k}, \param{\mathbf{\Sigma}})
-$$
-
-* Increasing $p$ to 2 and $K$ to 3 means more parameters, but still **linear boundaries**. It turns out: shared variance ($\sigma^2$ or $\mathbf{\Sigma}$) will **always** produce linear boundaries 🤔
-
-![ISLR Figure 4.6: Like before, dashed lines are "true" boundaries while solid lines are boundaries **estimated from data**](images/4_6.svg){fig-align="center"}
-
-## Quadratic Class Boundaries {.smaller .crunch-title .title-12 .crunch-ul .math-90 .crunch-math}
-
-* To achieve **non-linear** boundaries, estimate covariance matrix $\mathbf{\Sigma}_k$ for each class $k$:
-
-$$
-\left( \begin{bmatrix}X_1 \\ X_2\end{bmatrix} \middle| ~ Y = k \right) \sim \mathbf{\mathcal{N}}_2(\param{\boldsymbol\mu_k}, \param{\mathbf{\Sigma}_k})
-$$
-
-* Pros: Non-linear class boundaries! Cons: More parameters to estimate, does worse than LDA if data linearly-separable (or nearly linearly-separable). 
-* Deciding factor: do you think DGP produces normal classes with same variance?
-
-![ISLR Figure 4.9: Dashed [**purple**]{style='color: #b97dc3'} line is "true" boundary (Bayes decision boundary), dotted **black** line is LDA boundary, solid [**green**]{style='color: #009f86'} line is QDA boundary ](images/4_9.svg){fig-align="center"}
-
-## Key Advantage of Generative Model {.smaller .crunch-title .crunch-ul .table-va .title-11 .inline-90 .crunch-quarto-figure .crunch-td}
-
-* You get an actual "picture" of **what the data looks like!**
-
-| | |
-|:-:|:-:|:-:|:-:|
-| | $\widehat{f}_k(X_1)$ | $\widehat{f}_k(X_2)$ | $\widehat{f}_k(X_3)$ |
-| $k = 1$ | ![](images/4_10a1.svg){fig-align="center" width="70%"} | ![](images/4_10a2.svg){fig-align="center" width="70%"} | ![](images/4_10a3.svg){fig-align="center" width="70%"} |
-| $k = 2$ | ![](images/4_10b1.svg){fig-align="center" width="70%"} | ![](images/4_10b2.svg){fig-align="center" width="70%"} | ![](images/4_10b3.svg){fig-align="center" width="70%"} |
-
-: {tbl-colwidths="[10,30,30,30]"}
-
-## Classifying New Points {.smaller .crunch-title .crunch-ul .table-va .title-11 .inline-90 .crunch-quarto-figure .crunch-td}
-
-* For new feature values $x_{ij}$, compare **how likely** this value is under $k = 1$ vs. $k = 2$
-* Example: $\mathbf{x} = (0.4, 1.5, 1)^{\top}$
-
-| | |
-|:-:|:-:|:-:|:-:|
-| | $\widehat{f}_k(X_1)$ | $\widehat{f}_k(X_2)$ | $\widehat{f}_k(X_3)$ |
-| $k = 1$ | ![](images/4_10a1.svg){fig-align="center" width="50%"} | ![](images/4_10a2.svg){fig-align="center" width="50%"} | ![](images/4_10a3.svg){fig-align="center" width="50%"} |
-| | $f_1(0.4) = 0.368$ | $f_1(1.5) = 0.484$ | $f_1(1) = 0.226$ |
-| $k = 2$ | ![](images/4_10b1.svg){fig-align="center" width="50%"} | ![](images/4_10b2.svg){fig-align="center" width="50%"} | ![](images/4_10b3.svg){fig-align="center" width="50%"} |
-| | $f_2(0.4) = 0.030$ | $f_2(1.5) = 0.130$ | $f_2(1) = 0.616$ |
-
-: {tbl-colwidths="[10,30,30,30]"}
-
-# Quiz Time! {data-stack-name="Quiz"}
-
-## Appendix: Fuller Logistic Derivation {.smaller .crunch-title .title-09}
+* $p = 4$ features in [**Input Layer**]{.cb-in}
+* $K = 5$ [**Hidden Units**]{.cb-hidden}
+* [**Output Layer**]{.cb-out}: Regression on **activations** $a_k$ ([Hidden Unit]{.cb-hidden} outputs)
 
 $$
 \begin{align*}
-&\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
-&\iff \frac{\Pr(Y = 1 \mid X = x_i)}{1 - \Pr(Y = 1\ \mid X = x_i)} = e^{\beta_0 + \beta_1 X} \\
-&\iff \Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X}(1 - \Pr(Y = 1 \mid X)) \\
-&\iff \Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X} - e^{\beta_0 + \beta_1 X}\Pr(Y = 1 \mid X) \\
-&\iff \Pr(Y = 1 \mid X) + e^{\beta_0 + \beta_1 X}\Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X} \\
-&\iff \Pr(Y = 1 \mid X)(1 + e^{\beta_0 + \beta_1 X}) = e^{\beta_0 + \beta_1 X} \\
-&\iff \Pr(Y = 1 \mid X) = \frac{e^{\beta_0 + \beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}}
+{\color{#976464} y} &= { \color{#976464} \beta_0 } + {\color{#666693} \sum_{k=1}^{5} } {\color{#976464} \beta_k } { \color{#666693} \overbrace{\boxed{a_k} }^{\mathclap{k^\text{th}\text{ activation}}} } \\
+{\color{#976464} y} &= { \color{#976464} \beta_0 } + {\color{#666693} \sum_{k=1}^{5} } {\color{#976464} \beta_k } { \color{#666693} \underbrace{ g \mkern-4mu \left( w_{k0} + {\color{#679d67} \sum_{j=1}^{4} } w_{kj} {\color{#679d67} x_j} \right) }_{k^\text{th}\text{ activation}}}
 \end{align*}
 $$
+
+:::
+::: {.column width="34%"}
+
+![](images/nn_single_layer.svg){fig-align="center" width="100%"}
+
+:::
+::::
+
+## Matrix Form (Only if Sanity-Helping) {.smaller .crunch-title .title-12}
+
+![](images/nn_activation.svg){fig-align="center"}
+
+## Example
+
+* Rather than pondering over what that diagram can/can't do, consider two "true" DGPs:
+
+$$
+\begin{align*}
+Y &= {\color{#e69f00} X_1 X_2 } \\
+Y &= {\color{#56b4e9} X_1^2 + X_2^2 } \\
+Y &= {\color{#009E73} X_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} X_2}
+\end{align*}
+$$
+
+* How exactly is a neural net able to learn these relationships?
+
+## Sum of Squares {.smaller .crunch-title .crunch-math .cols-va .crunch-quarto-figure .crunch-ul}
+
+:::: {.columns}
+::: {.column width="45%"}
+
+* Can we learn $y = {\color{#56b4e9} x_1^2 + x_2^2 }$?
+* Let's use $g(x) = x^2$.
+* Let $\mathbf{w}_1 = (0, 1, 0)$, $\mathbf{w}_2 = (0, 0, 1)$.
+* Our two activations are:
+
+:::
+::: {.column width="55%"}
+
+![](images/nn_2_2.svg){fig-align="center" width="66.6%"}
+
+:::
+::::
+
+$$
+\begin{align*}
+{\color{#666693} a_1 } &= g(0 + (1)(x_1) + (0)(x_2)) = x_1^2 \\
+{\color{#666693} a_2 } &= g(0 + (0)(x_1) + (1)(x_2)) = x_2^2
+\end{align*}
+$$
+
+* So, if $\boldsymbol\beta = (0, 1, 1)$, then
+
+$$
+{\color{#976464} y } = 0 + (1)(x_1^2) + (1)(x_2^2) = {\color{#56b4e9} x_1^2 + x_2^2} \; ✅
+$$
+
+## Interaction Term {.smaller .crunch-title .crunch-math .cols-va .crunch-quarto-figure .crunch-ul}
+
+:::: {.columns}
+::: {.column width="45%"}
+
+* Can we learn $Y = {\color{#e69f00} x_1x_2}$?
+* Let's use $g(x) = x^2$ again.
+* Let $\mathbf{w}_1 = (0, 1, 1)$, $\mathbf{w}_2 = (0, 1, -1)$.
+* Our two activations are:
+
+:::
+::: {.column width="55%"}
+
+![](images/nn_2_2.svg){fig-align="center" width="66.6%"}
+
+:::
+::::
+
+$$
+\begin{align*}
+{\color{#666693} a_1 } &= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\
+{\color{#666693} a_2 } &= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2
+\end{align*}
+$$
+
+* So, if we let $\boldsymbol\beta = \left( 0, \frac{1}{4}, -\frac{1}{4} \right)$, then
+
+$$
+{\color{#976464} y } = 0 + \left(\frac{1}{4}\right)(x_1^2 + x_2^2 + 2x_1x_2) + \left(-\frac{1}{4}\right)(x_1^2 + x_2^2 - 2x_1x_2) = {\color{#e69f00} x_1x_2} \; ✅
+$$
+
+
+## The XOR Problem {.smaller .crunch-title .crunch-math .cols-va .crunch-quarto-figure .crunch-ul}
+
+:::: {.columns}
+::: {.column width="45%"}
+
+* Can we learn $Y = {\color{#009E73} x_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} x_2}$?
+* Let's use $g(x) = x^2$ once more.
+* Let $\mathbf{w}_1 = (0, 1, 1)$, $\mathbf{w}_2 = (0, 1, -1)$.
+* Our two activations are:
+
+:::
+::: {.column width="55%"}
+
+![](images/nn_2_2.svg){fig-align="center" width="66.6%"}
+
+:::
+::::
+
+$$
+\begin{align*}
+{\color{#666693} a_1 } &= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\
+{\color{#666693} a_2 } &= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2
+\end{align*}
+$$
+
+* So, if we let $\boldsymbol\beta = (0, 0, 1)$, then
+
+$$
+\begin{align*}
+{\color{#976464} y }(0,0) &= 0 + (0)(0^2 + 0^2 + 2(0)(0)) + (1)(0^2 + 0^2 - 2(0)(0)) = {\color{#009e73} 0} \; ✅ \\
+{\color{#976464} y }(0,1) &= 0 + (0)(0^2 + 1^2 + 2(0)(1)) + (1)(0^2 + 1^2 - 2(0)(1)) = {\color{#009e73} 1} \; ✅ \\
+{\color{#976464} y }(1,0) &= 0 + (0)(1^2 + 0^2 + 2(1)(0)) + (1)(1^2 + 0^2 - 2(1)(0)) = {\color{#009e73} 1} \; ✅ \\
+{\color{#976464} y }(1,1) &= 0 + (0)(1^2 + 1^2 + 2(1)(1)) + (1)(1^2 + 1^2 - 2(1)(1)) = {\color{#009e73} 0} \; ✅
+\end{align*}
+$$
+
+## But How? {.smaller .crunch-title .crunch-quarto-figure .crunch-img}
+
+* **Output Layer** is just linear regression on **activations** (Hidden Layer outputs)
+* We saw in Week 7 how good **basis function** allows regression to learn **any** function
+* Neural Networks: **GOAT non-linear basis function learners!**
+
+:::: {.columns}
+::: {.column width="33%"}
+
+```{r}
+#| label: fig-xor-problem
+#| crop: false
+#| fig-height: 8
+#| fig-cap: The DGP $Y = x_1 \oplus x_2$ produces points in $[0,1]^2$ which are not linearly separable
+library(tidyverse) |> suppressPackageStartupMessages()
+library(latex2exp) |> suppressPackageStartupMessages()
+xor_df <- tribble(
+    ~x1, ~x2, ~label,
+    0, 0, 0,
+    0, 1, 1,
+    1, 0, 1,
+    1, 1, 0
+) |>
+mutate(
+    h1 = (x1 - x2)^2,
+    label = factor(label)
+)
+xor_df |> ggplot(aes(x=x1, y=x2, label=label)) +
+  geom_point(
+    aes(color=label, shape=label),
+    size=g_pointsize * 2,
+    stroke=6
+  ) +
+  geom_point(aes(fill=label), color='black', shape=21, size=g_pointsize * 2.5, stroke=0.75, alpha=0.4) +
+  scale_x_continuous(breaks=c(0, 1)) +
+  scale_y_continuous(breaks=c(0, 1)) +
+  expand_limits(y=c(-0.1,1.1)) +
+  # 45 is minus sign, 95 is em-dash
+  scale_shape_manual(values=c(95, 43)) +
+  theme_dsan(base_size=32) +
+  remove_legend_title() +
+  labs(
+    x=TeX("$x_1$"),
+    y=TeX("$x_2$"),
+    title="XOR Problem: Original Features"
+  )
+```
+
+:::
+::: {.column width="33%"}
+
+```{r}
+#| label: fig-xor-problem-tr
+#| crop: false
+#| fig-height: 8
+#| fig-cap: Learned bases $h_1 = (x_1 - x_2)^2$ and $h_2 = (x_1 + x_2)^2$ enable **separating hyperplane** $h_1 = 0.5$
+library(tidyverse)
+xor_df <- tribble(
+    ~x1, ~x2, ~label,
+    0, 0, 0,
+    0, 1, 1,
+    1, 0, 1,
+    1, 1, 0
+) |>
+mutate(
+    h1 = (x1 - x2)^2,
+    h2 = (x1 + x2)^2,
+    h2 = ifelse(h1 > 0.5 & x2==0, h2 + 0.5, h2),
+    label = factor(label)
+)
+xor_df |> ggplot(aes(x=h1, y=h2, label=label)) +
+  geom_vline(xintercept=0.5, linetype="dashed", linewidth=1) +
+  # Negative space
+  geom_rect(xmin=-Inf, xmax=0.5, ymin=-Inf, ymax=Inf, fill=cb_palette[1], alpha=0.15) +
+  # Positive space
+  geom_rect(xmin=0.5, xmax=Inf, ymin=-Inf, ymax=Inf, fill=cb_palette[2], alpha=0.15) +
+  geom_point(
+    aes(color=label, shape=label),
+    size=g_pointsize * 2,
+    stroke=6
+  ) +
+  geom_point(aes(fill=label), color='black', shape=21, size=g_pointsize*2.5, stroke=0.75, alpha=0.4) +
+  expand_limits(y=c(-0.2,4.2)) +
+  # 45 is minus sign, 95 is em-dash
+  scale_shape_manual(values=c(95, 43)) +
+  theme_dsan(base_size=32) +
+  remove_legend_title() +
+  labs(
+    title="NN-Learned Feature Space",
+    x=TeX("$h_1(x_1, x_2)$"),
+    y=TeX("$h_2(x_1, x_2)$")
+  )
+```
+
+:::
+::: {.column width="33%"}
+
+```{r}
+#| label: fig-xor-inverse
+#| fig-height: 8
+#| fig-cap: Here, the blue area represents points where $h_1 = (x_1 - x_2)^2 > 0.5$
+library(tidyverse)
+x1_vals <- seq(from=0, to=1, by=0.0075)
+x2_vals <- seq(from=0, to=1, by=0.0075)
+grid_df <- expand.grid(x1=x1_vals, x2=x2_vals) |>
+  as_tibble() |>
+  mutate(
+    label=factor(as.numeric((x1-x2)^2 > 0.5))
+  )
+ggplot() +
+  geom_point(
+    data=grid_df,
+    aes(x=x1, y=x2, color=label),
+    alpha=0.4
+  ) +
+  geom_point(
+    data=xor_df,
+    aes(x=x1, y=x2, color=label, shape=label),
+    size=g_pointsize * 2,
+    stroke=6
+  ) +
+  geom_point(
+    data=xor_df,
+    aes(x=x1, y=x2, fill=label),
+    color='black', shape=21, size=g_pointsize*2.5, stroke=0.75, alpha=0.4
+  ) +
+  geom_abline(slope=1, intercept=0.7, linetype="dashed", linewidth=1) +
+  geom_abline(slope=1, intercept=-0.7, linetype="dashed", linewidth=1) +
+  scale_shape_manual(values=c(95, 43)) +
+  theme_dsan(base_size=32) +
+  remove_legend_title() +
+  labs(
+    title="XOR Problem: Inverted NN Features",
+    x=TeX("$X_1$"), y=TeX("$X_2$")
+  )
+```
+
+:::
+::::
+
+# Multilayer Neural Networks {.smaller .crunch-title .title-12 data-stack-name="Multilayer NNs"}
+
+![Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4](images/nn_multilayer.svg){fig-align="center"}
+
+## Input Representation {.smaller .crunch-title .cols-va}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+![From [*But what is a neural network?*](https://www.youtube.com/watch?v=aircAruvnKk), 3Blue1Brown](images/mnist_repr.jpg){fig-align="center" width="100%"}
+
+:::
+::: {.column width="50%"}
+
+![](images/nn_multilayer.svg){fig-align="center" width="100%"}
+
+:::
+::::
+
+## But Wait... Ten Outputs? {.smaller .crunch-title .crunch-ul .cols-va}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+![](images/nn_multilayer.svg){fig-align="center" width="100%"}
+
+:::
+::: {.column width="50%"}
+
+* The (magical) **softmax** function!
+
+$$
+z_d = \Pr(Y = d \mid X) = \frac{e^{y_d}}{\sum_{i=0}^{9}e^{y_i}}
+$$
+
+* Ensures that each $Z_d$ is a **probability!**
+
+$$
+\begin{align}
+0 \leq z_d &\leq 1 \; \; \forall ~ d \in \{0,\ldots,9\} \\
+\sum_{d=0}^{9}z_d &= 1
+\end{align}
+$$
+
+:::
+::::
+
+## Visualizing Softmax Results
+
+![[**Interactive Visualization: Handwritten-Digit Space**](https://n8programs.com/mnistLatentSpace/)](images/mnist.jpg)
+
+# Fancier Neural Networks {data-stack-name="Fancier NNs"}
+
+* Convolutional Neural Networks (CNNs)
+* Recurrent Neural Networks (RNNs)
+
+## CNNs {.crunch-title .crunch-ul}
+
+* Key point: Convolutional layers are **not** fully connected!
+* Each layer "pools" info from two units in previous layer
+
+![](images/cnn.svg){fig-align="center"}
+
+## Decoding the Thought Vector {.crunch-title .title-11 .crunch-ul .smaller .crunch-quarto-figure .crunch-img}
+
+* Hidden layers closer to input layer detect low-level "fine-grained" features
+* Hidden layers closer to output layer detect high-level "coarse-grained" features
+
+![](images/frown.jpg){fig-align="center" width="70%"}
+
+![](images/smile.jpg){fig-align="center" width="70%"}
+
+<center>
+
+[**Decoding the Thought Vector**](https://gabgoh.github.io/ThoughtVectors/)
+
+</center>
+
+## Variational Autoencoders
+
+![](images/nn_vae.svg){fig-align="center"}
+
+## RNNs {.smaller}
+
+*...More next week, tbh*
+
+![ISLR Figure 10.12](images/10_12.svg){fig-align="center"}
+
+## Ok But How Do We *Learn* The Weights? {.smaller .title-11}
+
+![[Backpropagation!](https://youtu.be/tIeHLnjs5U8?si=0CSS66763D5s5UVt) (3Blue1Brown Again!)](images/backprop.jpg){fig-align="center"}
+
+*(Full NN playlist [here](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi))*
 
 ## References
 
