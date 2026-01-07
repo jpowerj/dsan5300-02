@@ -1,0 +1,16 @@
+::::: {.callout-tip .r-fit-text title="The Goal of Statistical Learning"}
+:::: {.columns}
+::: {.column width="50%"}
+
+Find...
+
+* A function $\widehat{y} = f(x)$ ✅
+* That best predicts $Y$ for given values of $X$ ✅
+* For data that has not yet been observed! 😳❓
+
+:::
+::: {.column width="50%"}
+
+:::
+::::
+:::::

@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -46,7 +81,7 @@ div.csl-indent {
 }</style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -66,9 +101,12 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-15c81feddcf0f07396656db454c4efc4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-a61ec6811b477a7079f9194aa77c71f2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-15c81feddcf0f07396656db454c4efc4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-77ea3455e7d198e4d2775ffa16ea6185.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-9761be4a3b1f61eb7c7ea6993fc20313.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-77ea3455e7d198e4d2775ffa16ea6185.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -96,6 +134,9 @@ div.csl-indent {
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
@@ -454,7 +495,7 @@ window.Quarto = {
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2026-01-06, 12:35:54 AM</em></p>
+<p><em>Updated 2026-01-07, 05:12:22 AM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -466,16 +507,19 @@ window.Quarto = {
   <li><a href="#what-does-it-mean-to-learn" id="toc-what-does-it-mean-to-learn" class="nav-link active" data-scroll-target="#what-does-it-mean-to-learn">What Does It Mean to <em>Learn?</em></a>
   <ul class="collapse">
   <li><a href="#memorizing-vs.-learning" id="toc-memorizing-vs.-learning" class="nav-link" data-scroll-target="#memorizing-vs.-learning">Memorizing vs.&nbsp;Learning</a></li>
+  <li><a href="#leadsto-our-goal-this-semester" id="toc-leadsto-our-goal-this-semester" class="nav-link" data-scroll-target="#leadsto-our-goal-this-semester"><span class="math inline">\(\leadsto\)</span> Our Goal This Semester</a></li>
+  <li><a href="#why-not-yet-observed-real-data" id="toc-why-not-yet-observed-real-data" class="nav-link" data-scroll-target="#why-not-yet-observed-real-data">Why “Not Yet Observed”? (Real Data!)</a></li>
+  </ul></li>
+  <li><a href="#statistical-modeling" id="toc-statistical-modeling" class="nav-link" data-scroll-target="#statistical-modeling">Statistical Modeling</a>
+  <ul class="collapse">
   <li><a href="#scientific-models" id="toc-scientific-models" class="nav-link" data-scroll-target="#scientific-models">Scientific Models</a></li>
   <li><a href="#prediction-vs.-understanding" id="toc-prediction-vs.-understanding" class="nav-link" data-scroll-target="#prediction-vs.-understanding">Prediction vs.&nbsp;Understanding</a></li>
-  <li><a href="#leadsto-5300" id="toc-leadsto-5300" class="nav-link" data-scroll-target="#leadsto-5300">5000 <span class="math inline">\(\leadsto\)</span> 5300</a></li>
   </ul></li>
-  <li><a href="#why-statistical-learning" id="toc-why-statistical-learning" class="nav-link" data-scroll-target="#why-statistical-learning">Why <em>Statistical</em> Learning?</a>
+  <li><a href="#bias-variance-tradeoff" id="toc-bias-variance-tradeoff" class="nav-link" data-scroll-target="#bias-variance-tradeoff">Bias-Variance Tradeoff</a>
   <ul class="collapse">
-  <li><a href="#guarantees" id="toc-guarantees" class="nav-link" data-scroll-target="#guarantees">Guarantees!</a></li>
-  </ul></li>
-  <li><a href="#beyond-statistical-learning" id="toc-beyond-statistical-learning" class="nav-link" data-scroll-target="#beyond-statistical-learning">Beyond Statistical Learning</a>
-  <ul class="collapse">
+  <li><a href="#why-statistical-learning" id="toc-why-statistical-learning" class="nav-link" data-scroll-target="#why-statistical-learning">Why <em>Statistical</em> Learning?</a></li>
+  <li><a href="#bias-variance-decomposition" id="toc-bias-variance-decomposition" class="nav-link" data-scroll-target="#bias-variance-decomposition">Bias-Variance Decomposition</a></li>
+  <li><a href="#consequence-no-free-lunch" id="toc-consequence-no-free-lunch" class="nav-link" data-scroll-target="#consequence-no-free-lunch">Consequence: “No Free Lunch”!</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul></li>
   </ul>
@@ -548,13 +592,76 @@ window.Quarto = {
 </center>
 <section id="what-does-it-mean-to-learn" class="level1" data-stack-name="Learning">
 <h1 data-stack-name="Learning">What Does It Mean to <em>Learn?</em></h1>
+<p><em>Spoiler: For both humans <strong>and</strong> computers,</em></p>
+<center>
+<p><strong>learning <span class="math inline">\(\neq\)</span> memorization!</strong></p>
+</center>
+<div class="hidden">
+<div id="cell-py-imports" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> patchworklib <span class="im">as</span> pw</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="py-imports" class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 96x96 with 0 Axes&gt;</code></pre>
+</div>
+</div>
+<div class="hidden">
+<p><span class="math display">\[
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\bigexp}[1]{\exp\mkern-4mu\left[ #1 \right]}
+\newcommand{\bigexpect}[1]{\mathbb{E}\mkern-4mu \left[ #1 \right]}
+\newcommand{\definedas}{\overset{\small\text{def}}{=}}
+\newcommand{\definedalign}{\overset{\phantom{\text{defn}}}{=}}
+\newcommand{\eqeventual}{\overset{\text{eventually}}{=}}
+\newcommand{\Err}{\text{Err}}
+\newcommand{\expect}[1]{\mathbb{E}[#1]}
+\newcommand{\expectsq}[1]{\mathbb{E}^2[#1]}
+\newcommand{\fw}[1]{\texttt{#1}}
+\newcommand{\given}{\mid}
+\newcommand{\green}[1]{\color{green}{#1}}
+\newcommand{\heads}{\outcome{heads}}
+\newcommand{\iid}{\overset{\text{\small{iid}}}{\sim}}
+\newcommand{\lik}{\mathcal{L}}
+\newcommand{\loglik}{\ell}
+\DeclareMathOperator*{\maximize}{maximize}
+\DeclareMathOperator*{\minimize}{minimize}
+\newcommand{\mle}{\textsf{ML}}
+\newcommand{\nimplies}{\;\not\!\!\!\!\implies}
+\newcommand{\orange}[1]{\color{orange}{#1}}
+\newcommand{\outcome}[1]{\textsf{#1}}
+\newcommand{\param}[1]{{\color{purple} #1}}
+\newcommand{\pgsamplespace}{\{\green{1},\green{2},\green{3},\purp{4},\purp{5},\purp{6}\}}
+\newcommand{\pedge}[2]{\require{enclose}\enclose{circle}{~{#1}~} \rightarrow \; \enclose{circle}{\kern.01em {#2}~\kern.01em}}
+\newcommand{\pnode}[1]{\require{enclose}\enclose{circle}{\kern.1em {#1} \kern.1em}}
+\newcommand{\ponode}[1]{\require{enclose}\enclose{box}[background=lightgray]{{#1}}}
+\newcommand{\pnodesp}[1]{\require{enclose}\enclose{circle}{~{#1}~}}
+\newcommand{\purp}[1]{\color{purple}{#1}}
+\newcommand{\sign}{\text{Sign}}
+\newcommand{\spacecap}{\; \cap \;}
+\newcommand{\spacewedge}{\; \wedge \;}
+\newcommand{\tails}{\outcome{tails}}
+\newcommand{\Var}[1]{\text{Var}[#1]}
+\newcommand{\bigVar}[1]{\text{Var}\mkern-4mu \left[ #1 \right]}
+\]</span></p>
+</div>
+</div>
 <section id="memorizing-vs.-learning" class="level2 smaller crunch-title title-11 crunch-quarto-figure crunch-ul code-black table-crunch-td text-65 crunch-li-8 crunch-quarto-layout-panel">
 <h2 class="smaller crunch-title title-11 crunch-quarto-figure crunch-ul code-black table-crunch-td text-65 crunch-li-8 crunch-quarto-layout-panel anchored" data-anchor-id="memorizing-vs.-learning">Memorizing vs.&nbsp;Learning</h2>
 <table>
 <colgroup>
 <col style="width: 16%;">
+
 <col style="width: 36%;">
+
 <col style="width: 48%;">
+
 </colgroup>
 <tbody>
 <tr>
@@ -596,7 +703,7 @@ How is this possible?
 <div class="quarto-layout-row">
 <div id="syntax-left" class="table-nolines table-80 quarto-layout-cell" style="flex-basis: 42.0%;justify-content: center;">
 <center>
-<p>Our brains learn a <strong>syntax</strong>…</p>
+<p>Our brains learn a <strong>grammar</strong>…</p>
 <table class="caption-top table">
 <tbody>
 <tr class="odd">
@@ -661,40 +768,275 @@ How is this possible?
 </div>
 </div>
 </section>
-<section id="scientific-models" class="level2 smaller crunch-title title-12">
-<h2 class="smaller crunch-title title-12 anchored" data-anchor-id="scientific-models">Scientific Models</h2>
-<p><strong>Ptolemaic model</strong>: wrong? or just “less good” than <strong>Copernican model</strong>? How so?<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<div class="quarto-layout-panel" data-layout="[1,1,1,1]">
+<section id="leadsto-our-goal-this-semester" class="level2 crunch-title text-85">
+<h2 class="crunch-title text-85 anchored" data-anchor-id="leadsto-our-goal-this-semester"><span class="math inline">\(\leadsto\)</span> Our Goal This Semester</h2>
+<div class="force-fw callout callout-style-default callout-tip callout-titled" title="The Goal of Statistical Learning (V1)">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>The Goal of Statistical Learning (V1)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<table>
+<colgroup>
+<col style="width: 55%;">
+
+<col style="width: 45%;">
+
+</colgroup>
+<thead>
+<tr>
+<th>
+<strong>Given…</strong>
+</th>
+<th>
+<strong>Find…</strong>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tdvc">
+<ul>
+<li>A <strong>dataset</strong> <span class="math inline">\(\mathfrak{D} = ((\mathbf{x}_1, y_1), (\mathbf{x}_2, y_2), \ldots, (\mathbf{x}_n, y_n))\)</span><br><em>where <span class="math inline">\(\mathbf{x}_i\)</span> is a vector of <strong>attributes</strong> of <span class="math inline">\(i\)</span> and <span class="math inline">\(y_i\)</span> is a <strong>label</strong> (thing we want to learn to predict) for <span class="math inline">\(i\)</span></em></li>
+<li>Which we view as one <strong>sample</strong> from a <strong>Data-Generating Process (DGP)</strong>: <span class="math inline">\(\mathfrak{D} \sim \mathcal{D}\)</span></li>
+</ul>
+</td>
+<td class="tdvc">
+<ul>
+<li>A <strong>function</strong> <span class="math inline">\(\widehat{y} = f(\mathbf{x})\)</span> ✅</li>
+<li>That best <strong>predicts <span class="math inline">\(y\)</span></strong> for values of <span class="math inline">\(\mathbf{x}\)</span> ✅</li>
+<li>For data that has <strong>not yet been observed</strong> 😳❓</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="matrix-note" style="font-size: 60%;">
+<p><em>Note that we’ll often think of the dataset <span class="math inline">\(\mathfrak{D}\)</span> as being in matrix/vector form:</em></p>
+<p><span class="math display">\[
+\mathbf{X} = \begin{pmatrix}
+\mathbf{x}_1 \\ \mathbf{x}_2 \\ \vdots \\ \mathbf{x}_n
+\end{pmatrix}
+=
+\underbrace{
+  \begin{pmatrix}
+x_{1,1} &amp; x_{1,2} &amp; \cdots &amp; x_{1,p} \\
+x_{2,1} &amp; x_{2,2} &amp; \cdots &amp; x_{2,p} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+x_{n,1} &amp; x_{n,2} &amp; \cdots &amp; x_{n,p}
+\end{pmatrix}
+}_{n \times p \textbf{ Feature Matrix}}
+,
+\mathbf{y} =
+\underbrace{
+  \begin{pmatrix}
+y_1 \\ y_2 \\ \vdots \\ y_n
+\end{pmatrix}
+}_{\mathclap{\text{Length }n \text{ Label Vector}}}
+\]</span></p>
+</div>
+</section>
+<section id="why-not-yet-observed-real-data" class="level2 smaller crunch-title title-11 table-60 crunch-quarto-figure">
+<h2 class="smaller crunch-title title-11 table-60 crunch-quarto-figure anchored" data-anchor-id="why-not-yet-observed-real-data">Why “Not Yet Observed”? (Real Data!)</h2>
+<div id="cell-chns-load" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>chns_df <span class="op">=</span> pd.read_csv(<span class="st">"data/chns_2000_2011.csv"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># First use statmodels to get the intercept and slope for pop</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>height_model_result <span class="op">=</span> smf.ols(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  formula<span class="op">=</span><span class="st">'height_cm_2011 ~ daily_calories_2000'</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  data<span class="op">=</span>chns_df</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>).fit()</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>ols_params <span class="op">=</span> height_model_result.params</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>ols_int <span class="op">=</span> ols_params[<span class="st">'Intercept'</span>]</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>ols_slope <span class="op">=</span> ols_params[<span class="st">'daily_calories_2000'</span>]</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>x_mean <span class="op">=</span> chns_df[<span class="st">'daily_calories_2000'</span>].mean()</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>ols_at_mean <span class="op">=</span> ols_int <span class="op">+</span> ols_slope <span class="op">*</span> x_mean</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>chns_df.head(<span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="chns-load" class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">IDind</th>
+<th data-quarto-table-cell-role="th">daily_calories_2000</th>
+<th data-quarto-table-cell-role="th">daily_calories_2011</th>
+<th data-quarto-table-cell-role="th">height_cm_2000</th>
+<th data-quarto-table-cell-role="th">height_cm_2011</th>
+<th data-quarto-table-cell-role="th">age_2000</th>
+<th data-quarto-table-cell-role="th">age_2011</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>211101008005</td>
+<td>2267.826467</td>
+<td>2286.613966</td>
+<td>162.0</td>
+<td>175.0</td>
+<td>12.0</td>
+<td>24.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>211101008061</td>
+<td>1671.856407</td>
+<td>2166.041310</td>
+<td>120.2</td>
+<td>172.0</td>
+<td>6.0</td>
+<td>17.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>211103013003</td>
+<td>1884.064868</td>
+<td>1385.503177</td>
+<td>163.0</td>
+<td>164.5</td>
+<td>17.0</td>
+<td>28.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>211104001004</td>
+<td>3394.813400</td>
+<td>1526.421314</td>
+<td>142.0</td>
+<td>165.0</td>
+<td>12.0</td>
+<td>23.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div id="cell-chns-plot" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>cal_label <span class="op">=</span> <span class="st">"Daily Calories (3-Day Average), 2000"</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>height_label <span class="op">=</span> <span class="st">"Height (cm), 2011"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> pw.Brick(figsize<span class="op">=</span>(<span class="fl">3.5</span>,<span class="fl">1.75</span>))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>height_plot <span class="op">=</span> sns.regplot(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  chns_df,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  x<span class="op">=</span><span class="st">'daily_calories_2000'</span>, y<span class="op">=</span><span class="st">'height_cm_2011'</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  ci<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  color<span class="op">=</span><span class="st">'black'</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  scatter_kws<span class="op">=</span>{<span class="st">'s'</span>: <span class="dv">2</span>},</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  line_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'#E69F00'</span>),</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  ax<span class="op">=</span>ax</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="ss">f"Unobservable Population"</span>)<span class="op">;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(cal_label)<span class="op">;</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(height_label)<span class="op">;</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>ax</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/chns-plot-output-1.png" id="chns-plot" class="img-fluid quarto-figure quarto-figure-center anchored figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div id="cell-chns-sample-plot" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sample_size <span class="op">=</span> <span class="dv">30</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>num_samples <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>sample_dfs <span class="op">=</span> []</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>seed_start <span class="op">=</span> <span class="dv">5310</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cur_seed <span class="kw">in</span> <span class="bu">range</span>(seed_start, seed_start<span class="op">+</span>num_samples):</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  cur_sample_df <span class="op">=</span> chns_df.sample(n <span class="op">=</span> sample_size, random_state<span class="op">=</span>cur_seed)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  cur_sample_df[<span class="st">'sample_num'</span>] <span class="op">=</span> cur_seed <span class="op">-</span> seed_start</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  sample_dfs.append(cur_sample_df)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>combined_df <span class="op">=</span> pd.concat(sample_dfs, ignore_index<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># frame = pw.Brick(figsize=(4,3))</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>sample_plot <span class="op">=</span> sns.lmplot(</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  combined_df,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  x<span class="op">=</span><span class="st">'daily_calories_2000'</span>, y<span class="op">=</span><span class="st">'height_cm_2011'</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  hue<span class="op">=</span><span class="st">'sample_num'</span>, ci<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># palette=sns.color_palette("light:#5A9"),</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  palette<span class="op">=</span><span class="st">'Greys'</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  aspect<span class="op">=</span><span class="fl">1.67</span>, height<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  scatter_kws<span class="op">=</span>{<span class="st">'alpha'</span>: <span class="fl">0.1</span>},</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  truncate<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  legend<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>sample_plot.ax.axline(</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  xy1<span class="op">=</span>(x_mean,ols_at_mean),</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  slope<span class="op">=</span>ols_slope,</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  color<span class="op">=</span><span class="st">'#E69F00'</span>,</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>  lw<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>sample_plot.ax.set_title(<span class="ss">f"</span><span class="sc">{</span>num_samples<span class="sc">}</span><span class="ss"> Observed Samples (n = </span><span class="sc">{</span>sample_size<span class="sc">}</span><span class="ss"> Each)"</span>)<span class="op">;</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>sample_plot.set_xlabels(cal_label)<span class="op">;</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>sample_plot.set_ylabels(height_label)<span class="op">;</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/chns-sample-plot-output-1.png" id="chns-sample-plot" class="quarto-figure quarto-figure-center anchored figure-img" width="465" height="293"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Which line is “correct”? We don’t know! Samples may not arrive until <strong>the future!</strong></p>
+</section>
+</section>
+<section id="statistical-modeling" class="level1" data-stack-name="Modeling">
+<h1 data-stack-name="Modeling">Statistical Modeling</h1>
+<section id="scientific-models" class="level2 smaller crunch-title title-12 crunch-quarto-figure">
+<h2 class="smaller crunch-title title-12 crunch-quarto-figure anchored" data-anchor-id="scientific-models">Scientific Models</h2>
+<div class="quarto-layout-panel" data-layout="[1,2]">
 <div class="quarto-layout-row quarto-layout-valign-center">
-<div class="column quarto-layout-cell" style="flex-basis: 25.0%;justify-content: center;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/aristarchus_transparent.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="200"></p>
+<div class="column quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div id="fig-aristarchus" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aristarchus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/aristarchus_transparent.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Fig&nbsp;1: Aristarchus’ “cylindrical” model, circa 270 BC"><img src="images/aristarchus_transparent.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="200"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aristarchus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Fig&nbsp;1: Aristarchus’ “cylindrical” model, circa 270 BC
+</figcaption>
+</figure>
+</div>
+<div id="fig-arago" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-arago-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/cassini.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Fig&nbsp;2: Cassini (1659): planets don’t travel in circles [@arago_astronomie_1854]"><img src="images/cassini.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" width="200"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-arago-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Fig&nbsp;2: Cassini (1659): planets <em>don’t</em> travel in circles <span class="citation" data-cites="arago_astronomie_1854">(<a href="#ref-arago_astronomie_1854" role="doc-biblioref">Arago 1854</a>)</span>
+</figcaption>
 </figure>
 </div>
 </div>
-<div class="column quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="column quarto-layout-cell" style="flex-basis: 66.7%;justify-content: flex-start;">
+<p><strong>Ptolemaic model</strong>: wrong? or just “less good” than <strong>Copernican model</strong>? How so?<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/cassini.jpg" class="img-fluid figure-img" width="200"></p>
-<figcaption>From <span class="citation" data-cites="arago_astronomie_1854">Arago (<a href="#ref-arago_astronomie_1854" role="doc-biblioref">1854</a>)</span></figcaption>
-</figure>
-</div>
-</div>
-<div class="column quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/ptolemy.svg" class="img-fluid figure-img" width="200"></p>
+<p><img src="images/ptolemy_copernicus_book.jpeg" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption>From <span class="citation" data-cites="mcelreath_statistical_2020">McElreath (<a href="#ref-mcelreath_statistical_2020" role="doc-biblioref">2020</a>)</span></figcaption>
-</figure>
-</div>
-</div>
-<div class="column quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
-<p>Mikołaj Kopernik (Latinized as “Nicolaus Copernicus”)</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/DeRevolutionibus1543web.jpg" class="img-fluid figure-img" width="200"></p>
-<figcaption>From <span class="citation" data-cites="copernicus_revolutions_1543">Copernicus (<a href="#ref-copernicus_revolutions_1543" role="doc-biblioref">1543</a>)</span></figcaption>
 </figure>
 </div>
 </div>
@@ -723,44 +1065,70 @@ How is this possible?
 <p><em>Adapted from <a href="https://galileo.phys.virginia.edu/~mf1i/home.html">Michael Fowler’s Lecture Notes</a></em></p>
 </center>
 </section>
-<section id="leadsto-5300" class="level2">
-<h2 class="anchored" data-anchor-id="leadsto-5300">5000 <span class="math inline">\(\leadsto\)</span> 5300</h2>
-<div class="r-fit-text callout callout-style-default callout-tip no-icon callout-titled" title="<i class='bi bi-info-circle'></i> The Goal of Statistical Learning">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span><i class="bi bi-info-circle"></i> The Goal of Statistical Learning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Find…</p>
+</section>
+<section id="bias-variance-tradeoff" class="level1" data-stack-name="Bias-Variance Tradeoff">
+<h1 data-stack-name="Bias-Variance Tradeoff">Bias-Variance Tradeoff</h1>
+<section id="why-statistical-learning" class="level2">
+<h2 class="anchored" data-anchor-id="why-statistical-learning">Why <em>Statistical</em> Learning?</h2>
 <ul>
-<li>A function <span class="math inline">\(\widehat{y} = f(x)\)</span> ✅</li>
-<li>That best predicts <span class="math inline">\(Y\)</span> for given values of <span class="math inline">\(X\)</span> ✅</li>
-<li>For data that has not yet been observed! 😳❓</li>
+<li>Answer: Statistical theory provides us with <strong>guarantees</strong> about (e.g.) convergence or unbiasedness of our estimates</li>
+<li>Example next week: regression line estimated via OLS is <strong>Best Linear Unbiased Estimator (BLUE)</strong></li>
+<li>As we move from <strong>linear</strong> <span class="math inline">\(\leadsto\)</span> <strong>non-linear</strong> models we start losing guarantees like <em>“This method produces the best estimate of <span class="math inline">\(\underline{\hspace{40mm}}\)</span>”</em></li>
 </ul>
+</section>
+<section id="bias-variance-decomposition" class="level2 math-80">
+<h2 class="math-80 anchored" data-anchor-id="bias-variance-decomposition">Bias-Variance Decomposition</h2>
+<p>Model errors can be <strong>decomposed</strong> into three components:</p>
+<p><i class="bi bi-1-circle"></i> Model <strong>bias</strong>: Mismatch between DGP and model prediction</p>
+<p><i class="bi bi-2-circle"></i> Model <strong>variance</strong>: Sensitivity to re-draws from DGP</p>
+<p><i class="bi bi-3-circle"></i> <strong>Unavoidable</strong> error inherent in the DGP</p>
+<p><span class="math display">\[
+\mathbb{E}\mkern-4mu\left[ \left( y_0 - \widehat{f}(x_0) \right)^2 \right] = \left[ \text{Bias}\mkern-2mu\left( \hat{f}(x_0) \right) \right]^2 + \text{Var}\mkern-2mu\left[ \hat{f}(x_0) \right] + \text{Var}[\varepsilon]
+\]</span></p>
+<p><em>(<span class="citation" data-cites="james_introduction_2023">James et al. (<a href="#ref-james_introduction_2023" role="doc-biblioref">2023</a>)</span>, pg. 32!)</em></p>
+</section>
+<section id="consequence-no-free-lunch" class="level2 smaller crunch-title crunch-quarto-figure crunch-quarto-layout-panel text-65">
+<h2 class="smaller crunch-title crunch-quarto-figure crunch-quarto-layout-panel text-65 anchored" data-anchor-id="consequence-no-free-lunch">Consequence: “No Free Lunch”!</h2>
+<div class="columns">
+<div class="column" style="width:33%;">
+<center>
+<p><i class="bi bi-1-circle"></i> True DGP: Polynomial</p>
+</center>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/bias_variance_1.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></p>
+</figure>
+</div>
+</div><div class="column" style="width:33%;">
+<center>
+<p><i class="bi bi-2-circle"></i> True DGP: Linear</p>
+</center>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/bias_variance_2.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%"></p>
+</figure>
+</div>
+</div><div class="column" style="width:34%;">
+<center>
+<p><i class="bi bi-3-circle"></i> True DGP: Highly Nonlinear</p>
+</center>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/bias_variance_3.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:83.0%"></p>
+</figure>
 </div>
 </div>
+</div>
+<p>Squared bias (blue), variance (orange), unavoidable error (dashed line), and test MSE (red) for the three data sets in Chapter 1 of <span class="citation" data-cites="james_introduction_2023">James et al. (<a href="#ref-james_introduction_2023" role="doc-biblioref">2023</a>)</span>, pg. 33</p>
 </section>
-</section>
-<section id="why-statistical-learning" class="level1" data-stack-name="Statistical Learning">
-<h1 data-stack-name="Statistical Learning">Why <em>Statistical</em> Learning?</h1>
-<section id="guarantees" class="level2">
-<h2 class="anchored" data-anchor-id="guarantees">Guarantees!</h2>
-</section>
-</section>
-<section id="beyond-statistical-learning" class="level1" data-stack-name="Beyond Statistical Learning">
-<h1 data-stack-name="Beyond Statistical Learning">Beyond Statistical Learning</h1>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-arago_astronomie_1854" class="csl-entry" role="listitem">
 Arago, François. 1854. <em>Astronomie populaire</em>. Gide et J.Baudry.
 </div>
-<div id="ref-copernicus_revolutions_1543" class="csl-entry" role="listitem">
-Copernicus. 1543. <em>On the Revolutions of the Heavenly Spheres (Concise Edition)</em>. Edited by Marika Taylor. <span>Simon and Schuster</span>. <a href="https://books.google.com?id=jgecEAAAQBAJ">https://books.google.com?id=jgecEAAAQBAJ</a>.
+<div id="ref-james_introduction_2023" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, Robert Tibshirani, and Jonathan Taylor. 2023. <em>An <span>Introduction</span> to <span>Statistical Learning</span>: With <span>Applications</span> in <span>Python</span></em>. Springer Nature. <a href="https://books.google.com?id=ygzJEAAAQBAJ">https://books.google.com?id=ygzJEAAAQBAJ</a>.
 </div>
 <div id="ref-mcelreath_statistical_2020" class="csl-entry" role="listitem">
 McElreath, Richard. 2020. <em>Statistical <span>Rethinking</span>: <span>A Bayesian Course</span> with <span>Examples</span> in <span>R</span> and <span>STAN</span></em>. CRC Press. <a href="https://books.google.com?id=FuLWDwAAQBAJ">https://books.google.com?id=FuLWDwAAQBAJ</a>.
@@ -775,7 +1143,7 @@ McElreath, Richard. 2020. <em>Statistical <span>Rethinking</span>: <span>A Bayes
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>Oddly enough, Ptolemy’s model often <a href="https://inference-review.com/article/ptolemy-versus-copernicus">outperformed</a> Copernicus’ on <strong>prediction</strong> tasks!<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>For reasons we’ll discuss soon, Ptolemy’s model often <a href="https://inference-review.com/article/ptolemy-versus-copernicus">outperforms</a> Copernicus’ on <strong>prediction</strong> tasks!<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1192,8 +1560,40 @@ McElreath, Richard. 2020. <em>Statistical <span>Rethinking</span>: <span>A Bayes
   });
   </script>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/w01/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/w01/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
+</body></html>
