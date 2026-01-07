@@ -35,3 +35,59 @@ Mikołaj Kopernik (Latinized as "Nicolaus Copernicus")
 :::
 
 ---
+
+```{r}
+#| label: linear-fit
+#| fig-cap: "You: \"Fit the data... but you're only allowed to be linear!\" Computer: \"You got it boss!\""
+library(tidyverse)
+set.seed(5300)
+N <- 30
+x_vals <- runif(N, min=0, max=1)
+y_vals_raw <- 3 * x_vals
+y_noise <- rnorm(N, mean=0, sd=0.5)
+y_vals <- y_vals_raw + y_noise
+data_df <- tibble(x=x_vals, y=y_vals)
+data_df |> ggplot(aes(x=x, y=y)) +
+  geom_point(size=2) +
+  stat_smooth(
+    method="lm",
+    formula="y ~ x",
+    se=FALSE,
+    linewidth=1
+  ) +
+  labs(
+    title = paste0("Linear Regression, N = ",N)
+  ) +
+  theme_classic(base_size=28)
+```
+
+---
+
+```{r}
+#| label: poly-fit
+#| fig-cap: "You: \"Fit the data...\" Computer: \"You got it boss!\""
+data_df |> ggplot(aes(x=x, y=y)) +
+  geom_point(size=2.5) +
+  stat_smooth(
+    method="lm",
+    formula=y ~ poly(x, N, raw=TRUE),
+    se=FALSE,
+    linewidth=1
+  ) +
+  labs(
+    title = paste0("Polynomial Regression, N = ",N)
+  ) +
+  theme_classic(base_size=28)
+```
+
+---
+
+perfect_plot = sns.lmplot(
+  data=of_df,
+  x='x', y='y',
+  scatter_kws=dict(color='black'),
+  order=n,
+  ci=None
+);
+plt.title("A Perfect Model?");
+plt.show()

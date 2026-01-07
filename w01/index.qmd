@@ -23,6 +23,8 @@ format:
     df-print: kable
     footer: "DSAN 5300 Week 1: {{< var w01.footer >}}"
     output-file: "slides.html"
+    link-external-icon: true
+    link-external-newwindow: true
     html-math-method: mathjax
     scrollable: true
     slide-number: true
@@ -56,7 +58,21 @@ format:
 
 :::
 
-# What Does It Mean to *Learn?* {data-stack-name="Learning"}
+# Schedule {.smaller .small-title .crunch-title .crunch-callout data-name="Schedule"}
+
+Today's Planned Schedule:
+
+| | Start | End | Topic |
+|:- |:- |:- |:- |
+| **Lecture** | 6:30pm | 7:30pm | [What Does It Mean to *Learn*? &rarr;](#what-does-it-mean-to-learn) |
+| | 7:30pm | 8:00pm | [Nonlinear Learning &rarr;](#nonlinear-learning) |
+| **Break!** | 8:00pm | 8:10pm | |
+| | 8:10pm | 8:40pm | [Statistical Modeling &rarr;](#statistical-modeling) |
+| | 8:40pm | 9:00pm | [Bias-Variance Tradeoff &rarr;](#bias-variance-tradeoff) |
+
+: {tbl-colwidths="[12,12,12,64]"}
+
+# What Does It Mean to *Learn?* {data-stack-name="Linear Learning"}
 
 *Spoiler: For both humans **and** computers,*
 
@@ -76,6 +92,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import patchworklib as pw
 import statsmodels.formula.api as smf
+cb_palette = [
+    "#E69F00", "#56B4E9", "#009E73",
+    "#F0E442", "#0072B2", "#D55E00",
+    "#CC79A7"
+]
 ```
 
 {{< include ../dsan-globals/_globals-tex.qmd >}}
@@ -207,7 +228,9 @@ $$
 
 :::
 
-## Why "Not Yet Observed"? (Real Data!) {.smaller .crunch-title .title-11 .table-60 .crunch-quarto-figure}
+## Why "Not Yet Observed"? (Real Data!) {.smaller .crunch-title .title-11 .table-60 .crunch-quarto-figure .crunch-li .crunch-p}
+
+Data from [China Health and Nutrition Survey](https://chns.cpc.unc.edu/)
 
 ```{python}
 #| label: chns-load
@@ -243,9 +266,11 @@ height_plot = sns.regplot(
   line_kws=dict(color='#E69F00'),
   ax=ax
 );
-ax.set_title(f"Unobservable Population");
+ax.set_title(f"Unobservable Population: PRC");
 ax.set_xlabel(cal_label);
 ax.set_ylabel(height_label);
+ax.spines['right'].set_visible(False);
+ax.spines['top'].set_visible(False);
 ax
 ```
 
@@ -255,12 +280,14 @@ ax
 ```{python}
 #| label: chns-sample-plot
 #| fig-align: center
-sample_size = 30
-num_samples = 10
+sample_size = 25
+num_samples = 20
 sample_dfs = []
 seed_start = 5310
 for cur_seed in range(seed_start, seed_start+num_samples):
-  cur_sample_df = chns_df.sample(n = sample_size, random_state=cur_seed)
+  cur_sample_df = chns_df.sample(
+    n = sample_size, random_state=cur_seed
+  )
   cur_sample_df['sample_num'] = cur_seed - seed_start
   sample_dfs.append(cur_sample_df)
 combined_df = pd.concat(sample_dfs, ignore_index=True)
@@ -269,10 +296,11 @@ sample_plot = sns.lmplot(
   combined_df,
   x='daily_calories_2000', y='height_cm_2011',
   hue='sample_num', ci=None,
-  # palette=sns.color_palette("light:#5A9"),
-  palette='Greys',
+  palette=sns.color_palette("light:#000"),
+  # palette='Greys',
   aspect=1.67, height=3,
   scatter_kws={'alpha': 0.1},
+  line_kws={'alpha': 0.5},
   truncate=False,
   legend=None,
 );
@@ -280,7 +308,7 @@ sample_plot.ax.axline(
   xy1=(x_mean,ols_at_mean),
   slope=ols_slope,
   color='#E69F00',
-  lw=2,
+  lw=2.5,
 )
 sample_plot.ax.set_title(f"{num_samples} Observed Samples (n = {sample_size} Each)");
 sample_plot.set_xlabels(cal_label);
@@ -291,18 +319,201 @@ plt.show()
 :::
 ::::
 
-Which line is "correct"? We don't know! Samples may not arrive until **the future!**
+* Which line is "correct"? We don't know! Samples may not arrive until **the future!**
+* $\leadsto$ We need to incorporate **uncertainty about the future** into our **model**
 
-# Statistical Modeling {data-stack-name="Modeling"}
+# Nonlinear Learning {data-stack-name="Nonlinear Learning"}
+
+* An even messier complication: what happens if we consider prediction functions that aren't just straight lines?
+* The evil scourge of... **OVERFITTING**
+
+## Computers "Learning" = Computers Obediently Following Orders {.smaller .crunch-title .title-10 .crunch-ul .crunch-img .crunch-quarto-figure}
+
+:::: {layout="[2,1,2]" layout-valign="center"}
+::: {.column width="40%"}
+
+
+```{python}
+#| label: linear-fit
+#| fig-cap: "You: \"Fit the data... but you're only allowed to use lines!\" Computer: \"You got it boss!\""
+rng = np.random.default_rng(seed=5302)
+n = 10
+x_vals = rng.uniform(size=n, low=0, high=1)
+y_vals_raw = 3 * x_vals
+y_noise = rng.normal(size=n, loc=0, scale=0.5)
+y_vals = y_vals_raw + y_noise
+data_df = pd.DataFrame({'x': x_vals, 'y': y_vals})
+sns.lmplot(
+  data_df,
+  x='x', y='y',
+  scatter_kws=dict(color='black'),
+  ci=None
+)
+```
+
+:::
+::: {.column width="20%"}
+
+![Your computer is [Yes Man](https://youtu.be/g-QSuiXL6lY?si=w1vZl8DQnoX2jPaK&t=128)](images/yes_man.png){fig-align="center" width="185"}
+
+:::
+::: {.column width="40%"}
+
+```{python}
+#| label: poly-fit
+#| fig-cap: "You: \"Fit the data...\" Computer: \"You got it boss!\""
+sns.lmplot(
+  data_df,
+  x='x', y='y',
+  scatter_kws=dict(color='black'),
+  order=n,
+  ci=None
+)
+```
+
+:::
+::::
+
+::: {.notes}
+
+([Image Source](http://www.game-art-hq.com/89202/the-yes-man-from-fallout-game-art-overview/))
+
+:::
+
+## 5000: Accuracy $\leadsto$ 5300: Generalization {.smaller .crunch-title .title-11 .crunch-quarto-figure .crunch-img .crunch-li-8 .crunch-ul}
+
+* Training Accuracy: How well does it fit the data we can see?
+* Test Accuracy: How well does it **generalize** to future data?
+
+:::: {layout="[1,1]"}
+::: {#overfit-left}
+
+```{python}
+#| label: training-data-plot
+#| fig-align: center
+from sklearn.preprocessing import PolynomialFeatures
+x = np.arange(0, 1, 0.1)
+n = len(x)
+eps = rng.normal(size=n, loc=0, scale=0.04)
+y = x + eps
+# But make one big outlier
+midpoint = int(np.ceil((3/4)*n))
+y[midpoint] = 0
+of_df = pd.DataFrame({'x': x, 'y': y})
+# Linear model
+# lin_model = smf.ols(formula='y ~ x', data=of_data)
+train_plot = sns.lmplot(
+  data=of_df,
+  x='x', y='y',
+  scatter_kws=dict(color='black'),
+  ci=None,
+  fit_reg=False,
+  height=2.4,
+  aspect=2,
+)
+plt.title("Training Data");
+plt.show()
+```
+
+```{python}
+#| label: test-data-plot
+#| fig-align: center
+# Data setup
+x_test = np.arange(0, 1, 0.1)
+n_test = len(x_test)
+eps_test = rng.normal(size=n_test, loc=0, scale=0.04)
+y_test = x_test + eps_test
+of_test_df = pd.DataFrame({'x': x_test, 'y': y_test})
+test_points_plot = sns.lmplot(
+  data=of_df,
+  x='x', y='y',
+  scatter_kws=dict(color='black'),
+  line_kws=dict(color=cb_palette[0]),
+  ci=None,
+  height=2.4,
+  aspect=2,
+  fit_reg=False,
+);
+plt.title("Test Data");
+plt.show()
+```
+
+:::
+::: {#overfit-right}
+
+```{python}
+#| label: training-linear-poly
+#| fig-align: center
+perfect_plot = sns.lmplot(
+  data=of_df,
+  x='x', y='y',
+  scatter_kws=dict(color='black'),
+  line_kws=dict(color=cb_palette[0]),
+  ci=None,
+  height=2.4,
+  aspect=2,
+)
+perfect_plot.ax.set_ylim(-1, 1);
+sns.regplot(
+  data=of_df,
+  x='x', y='y',
+  order=n,
+  ci=None,
+  scatter_kws=dict(color='black'),
+  line_kws=dict(color=cb_palette[1])
+)
+plt.title("A Perfect Model?");
+plt.show()
+```
+
+```{python}
+#| label: lin-poly-newdata
+#| fig-align: center
+test_plot = sns.lmplot(
+  data=of_test_df,
+  x='x', y='y',
+  ci=None,
+  scatter_kws=dict(color='black'),
+  line_kws=dict(color=cb_palette[0]),
+  height=2.4, aspect=2,
+);
+test_plot.ax.set_ylim(-1, 1);
+sns.regplot(
+  data=of_df,
+  x='x', y='y',
+  order=n,
+  ci=None,
+  scatter_kws=dict(color='black'),
+  line_kws=dict(color=cb_palette[1]),
+  marker='',
+);
+plt.title("Evaluation: Unseen Test Data");
+plt.show()
+```
+
+:::
+::::
+
+# Statistical Modeling {data-stack-name="Modeling" .text-70 .crunch-title}
+
+So far:
+
+<i class='bi bi-1-circle'></i> Our models need to accommodate **irreducible** error (error inherent to DGP)
+
+<i class='bi bi-2-circle'></i> Our models need to **penalize complexity**, to prevent Yes Man from just "memorizing" training data
+
+<i class='bi bi-3-circle'></i> ...But, if we penalize **too harshly**, we lose the ability to model nonlinearity!
+
+Let's dive a bit more into <i class='bi bi-2-circle'></i>, via one of my fav examples from the history of science 🤓
 
 ## Scientific Models {.smaller .crunch-title .title-12 .crunch-quarto-figure}
 
 :::: {layout="[1,2]" layout-valign="center"}
 ::: {.column width="50%"}
 
-![Aristarchus' "cylindrical" model, circa 270 BC](images/aristarchus_transparent.png){#fig-aristarchus fig-align="center" width="200" .lightbox}
+![Aristarchus' model, circa 270 BC](images/aristarchus_transparent.png){#fig-aristarchus fig-align="center" width="200" .lightbox}
 
-![Cassini (1659): planets *don't* travel in circles [@arago_astronomie_1854]](images/cassini.jpg){#fig-arago fig-align="center" width="200" .lightbox}
+![Cassini (1659): planets *don't* exhibit circular orbit if Earth at center [@arago_astronomie_1854]](images/cassini.jpg){#fig-arago fig-align="center" width="200" .lightbox}
 
 :::
 ::: {.column width="50%"}
@@ -314,15 +525,17 @@ Which line is "correct"? We don't know! Samples may not arrive until **the futur
 :::
 ::::
 
-## Prediction vs. Understanding {.smaller}
+## Prediction vs. Understanding {.smaller .crunch-title .title-12 .crunch-p}
+
+Both models "predict" Mars' orbit relative to us equally well -- why might we still prefer geocentric model? *(Hint: How many **parameters** does each require?)*
 
 ```{=html}
-<div id="ptolemy" style="height: 500px;">
+<div id="ptolemy" style="height: 500px; margin-bottom: 0px;">
 <div id="canvases">
   <canvas id="traceCanvas"></canvas>
   <canvas id="canvas"></canvas>
 </div>
-<div id="buttondiv">
+<div id="buttondiv" style="margin-bottom: 0px;">
   <button data-inline="true" id="play-button" type="button">
     <i class="bi bi-play-fill"></i></span>
   </button>
@@ -335,13 +548,15 @@ Which line is "correct"? We don't know! Samples may not arrive until **the futur
 </div>
 ```
 
-<center>
+<center style="font-size: 70%;">
 
 *Adapted from [Michael Fowler's Lecture Notes](https://galileo.phys.virginia.edu/~mf1i/home.html)*
 
 </center>
 
 # Bias-Variance Tradeoff {data-stack-name="Bias-Variance Tradeoff"}
+
+* *(Why there's "no free lunch": we can't [easily] just ask a computer to find **the "best" model** for our data)*
 
 ## Why *Statistical* Learning?
 
@@ -353,7 +568,7 @@ Which line is "correct"? We don't know! Samples may not arrive until **the futur
 
 Model errors can be **decomposed** into three components:
 
-<i class='bi bi-1-circle'></i> Model **bias**: Mismatch between DGP and model prediction
+<i class='bi bi-1-circle'></i> Model **bias**: Mismatch between DGP and model prediction<br>*(too simple [lines for nonlinear DGP] or too complex [wiggly function for linear DGP])*
 
 <i class='bi bi-2-circle'></i> Model **variance**: Sensitivity to re-draws from DGP
 

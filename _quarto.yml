@@ -17,7 +17,8 @@ website:
       - text: "<i class='bi bi-house pe-1'></i> Home"
         href: index.qmd
       - text: "Zoom Link"
-        href: "https://georgetown.zoom.us/j/97371877594?pwd=oT8FiCC0RAhl8bHRsOuoZuRBzxJNQj.1"
+        # href: "https://georgetown.zoom.us/j/97371877594?pwd=oT8FiCC0RAhl8bHRsOuoZuRBzxJNQj.1"
+        href: "https://georgetown.zoom.us/j/93980006828"
         target: "_blank"
       - text: "Writeups"
         href: writeups/index.qmd

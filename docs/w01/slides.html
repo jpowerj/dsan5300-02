@@ -121,7 +121,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-32823bc3cd623ab3c9f39504c4ea4087.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-92873d09a6d7ebdc611da81435346e33.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -257,8 +257,61 @@ Amineh Zadbood
 
   <p class="date">Wednesday, January 7, 2026</p>
 </section>
+<section id="schedule" class="title-slide slide level1 smaller small-title crunch-title crunch-callout center" data-name="Schedule">
+<h1>Schedule</h1>
+<p>Today’s Planned Schedule:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 64%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Start</th>
+<th style="text-align: left;">End</th>
+<th style="text-align: left;">Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Lecture</strong></td>
+<td style="text-align: left;">6:30pm</td>
+<td style="text-align: left;">7:30pm</td>
+<td style="text-align: left;"><a href="#/what-does-it-mean-to-learn">What Does It Mean to <em>Learn</em>? →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7:30pm</td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;"><a href="#/nonlinear-learning">Nonlinear Learning →</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Break!</strong></td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;">8:40pm</td>
+<td style="text-align: left;"><a href="#/statistical-modeling">Statistical Modeling →</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">8:40pm</td>
+<td style="text-align: left;">9:00pm</td>
+<td style="text-align: left;"><a href="#/bias-variance-tradeoff">Bias-Variance Tradeoff →</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+
 <section>
-<section id="what-does-it-mean-to-learn" class="title-slide slide level1 center" data-stack-name="Learning">
+<section id="what-does-it-mean-to-learn" class="title-slide slide level1 center" data-stack-name="Linear Learning">
 <h1>What Does It Mean to <em>Learn?</em></h1>
 <p><em>Spoiler: For both humans <strong>and</strong> computers,</em></p>
 <center>
@@ -273,7 +326,12 @@ Amineh Zadbood
 <span id="cb1-3"><a></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-4"><a></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb1-5"><a></a><span class="im">import</span> patchworklib <span class="im">as</span> pw</span>
-<span id="cb1-6"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-6"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb1-7"><a></a>cb_palette <span class="op">=</span> [</span>
+<span id="cb1-8"><a></a>    <span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>, <span class="st">"#009E73"</span>,</span>
+<span id="cb1-9"><a></a>    <span class="st">"#F0E442"</span>, <span class="st">"#0072B2"</span>, <span class="st">"#D55E00"</span>,</span>
+<span id="cb1-10"><a></a>    <span class="st">"#CC79A7"</span></span>
+<span id="cb1-11"><a></a>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="hidden">
@@ -510,8 +568,9 @@ y_1 \\ y_2 \\ \vdots \\ y_n
 \]</span></p>
 </div>
 </section>
-<section id="why-not-yet-observed-real-data" class="slide level2 smaller crunch-title title-11 table-60 crunch-quarto-figure">
+<section id="why-not-yet-observed-real-data" class="slide level2 smaller crunch-title title-11 table-60 crunch-quarto-figure crunch-li crunch-p">
 <h2>Why “Not Yet Observed”? (Real Data!)</h2>
+<p>Data from <a href="https://chns.cpc.unc.edu/">China Health and Nutrition Survey</a></p>
 <div id="cell-chns-load" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
@@ -528,7 +587,7 @@ y_1 \\ y_2 \\ \vdots \\ y_n
 <span id="cb2-11"><a></a>ols_at_mean <span class="op">=</span> ols_int <span class="op">+</span> ols_slope <span class="op">*</span> x_mean</span>
 <span id="cb2-12"><a></a>chns_df.head(<span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div id="chns-load" class="cell-output cell-output-display" data-execution_count="389">
+<div id="chns-load" class="cell-output cell-output-display" data-execution_count="42">
 <div>
 <style scoped="">
     .dataframe tbody tr th:only-of-type {
@@ -621,12 +680,14 @@ y_1 \\ y_2 \\ \vdots \\ y_n
 <span id="cb3-10"><a></a>  line_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'#E69F00'</span>),</span>
 <span id="cb3-11"><a></a>  ax<span class="op">=</span>ax</span>
 <span id="cb3-12"><a></a>)<span class="op">;</span></span>
-<span id="cb3-13"><a></a>ax.set_title(<span class="ss">f"Unobservable Population"</span>)<span class="op">;</span></span>
+<span id="cb3-13"><a></a>ax.set_title(<span class="ss">f"Unobservable Population: PRC"</span>)<span class="op">;</span></span>
 <span id="cb3-14"><a></a>ax.set_xlabel(cal_label)<span class="op">;</span></span>
 <span id="cb3-15"><a></a>ax.set_ylabel(height_label)<span class="op">;</span></span>
-<span id="cb3-16"><a></a>ax</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-16"><a></a>ax.spines[<span class="st">'right'</span>].set_visible(<span class="va">False</span>)<span class="op">;</span></span>
+<span id="cb3-17"><a></a>ax.spines[<span class="st">'top'</span>].set_visible(<span class="va">False</span>)<span class="op">;</span></span>
+<span id="cb3-18"><a></a>ax</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="390">
+<div class="cell-output cell-output-display" data-execution_count="43">
 <div class="quarto-figure quarto-figure-center">
 <figure>
 <p><img data-src="index_files/figure-revealjs/chns-plot-output-1.png" id="chns-plot" class="quarto-figure quarto-figure-center"></p>
@@ -638,37 +699,40 @@ y_1 \\ y_2 \\ \vdots \\ y_n
 <div id="cell-chns-sample-plot" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>sample_size <span class="op">=</span> <span class="dv">30</span></span>
-<span id="cb4-2"><a></a>num_samples <span class="op">=</span> <span class="dv">10</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a></a>sample_size <span class="op">=</span> <span class="dv">25</span></span>
+<span id="cb4-2"><a></a>num_samples <span class="op">=</span> <span class="dv">20</span></span>
 <span id="cb4-3"><a></a>sample_dfs <span class="op">=</span> []</span>
 <span id="cb4-4"><a></a>seed_start <span class="op">=</span> <span class="dv">5310</span></span>
 <span id="cb4-5"><a></a><span class="cf">for</span> cur_seed <span class="kw">in</span> <span class="bu">range</span>(seed_start, seed_start<span class="op">+</span>num_samples):</span>
-<span id="cb4-6"><a></a>  cur_sample_df <span class="op">=</span> chns_df.sample(n <span class="op">=</span> sample_size, random_state<span class="op">=</span>cur_seed)</span>
-<span id="cb4-7"><a></a>  cur_sample_df[<span class="st">'sample_num'</span>] <span class="op">=</span> cur_seed <span class="op">-</span> seed_start</span>
-<span id="cb4-8"><a></a>  sample_dfs.append(cur_sample_df)</span>
-<span id="cb4-9"><a></a>combined_df <span class="op">=</span> pd.concat(sample_dfs, ignore_index<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-10"><a></a><span class="co"># frame = pw.Brick(figsize=(4,3))</span></span>
-<span id="cb4-11"><a></a>sample_plot <span class="op">=</span> sns.lmplot(</span>
-<span id="cb4-12"><a></a>  combined_df,</span>
-<span id="cb4-13"><a></a>  x<span class="op">=</span><span class="st">'daily_calories_2000'</span>, y<span class="op">=</span><span class="st">'height_cm_2011'</span>,</span>
-<span id="cb4-14"><a></a>  hue<span class="op">=</span><span class="st">'sample_num'</span>, ci<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-15"><a></a>  <span class="co"># palette=sns.color_palette("light:#5A9"),</span></span>
-<span id="cb4-16"><a></a>  palette<span class="op">=</span><span class="st">'Greys'</span>,</span>
-<span id="cb4-17"><a></a>  aspect<span class="op">=</span><span class="fl">1.67</span>, height<span class="op">=</span><span class="dv">3</span>,</span>
-<span id="cb4-18"><a></a>  scatter_kws<span class="op">=</span>{<span class="st">'alpha'</span>: <span class="fl">0.1</span>},</span>
-<span id="cb4-19"><a></a>  truncate<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb4-20"><a></a>  legend<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb4-21"><a></a>)<span class="op">;</span></span>
-<span id="cb4-22"><a></a>sample_plot.ax.axline(</span>
-<span id="cb4-23"><a></a>  xy1<span class="op">=</span>(x_mean,ols_at_mean),</span>
-<span id="cb4-24"><a></a>  slope<span class="op">=</span>ols_slope,</span>
-<span id="cb4-25"><a></a>  color<span class="op">=</span><span class="st">'#E69F00'</span>,</span>
-<span id="cb4-26"><a></a>  lw<span class="op">=</span><span class="dv">2</span>,</span>
-<span id="cb4-27"><a></a>)</span>
-<span id="cb4-28"><a></a>sample_plot.ax.set_title(<span class="ss">f"</span><span class="sc">{</span>num_samples<span class="sc">}</span><span class="ss"> Observed Samples (n = </span><span class="sc">{</span>sample_size<span class="sc">}</span><span class="ss"> Each)"</span>)<span class="op">;</span></span>
-<span id="cb4-29"><a></a>sample_plot.set_xlabels(cal_label)<span class="op">;</span></span>
-<span id="cb4-30"><a></a>sample_plot.set_ylabels(height_label)<span class="op">;</span></span>
-<span id="cb4-31"><a></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-6"><a></a>  cur_sample_df <span class="op">=</span> chns_df.sample(</span>
+<span id="cb4-7"><a></a>    n <span class="op">=</span> sample_size, random_state<span class="op">=</span>cur_seed</span>
+<span id="cb4-8"><a></a>  )</span>
+<span id="cb4-9"><a></a>  cur_sample_df[<span class="st">'sample_num'</span>] <span class="op">=</span> cur_seed <span class="op">-</span> seed_start</span>
+<span id="cb4-10"><a></a>  sample_dfs.append(cur_sample_df)</span>
+<span id="cb4-11"><a></a>combined_df <span class="op">=</span> pd.concat(sample_dfs, ignore_index<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-12"><a></a><span class="co"># frame = pw.Brick(figsize=(4,3))</span></span>
+<span id="cb4-13"><a></a>sample_plot <span class="op">=</span> sns.lmplot(</span>
+<span id="cb4-14"><a></a>  combined_df,</span>
+<span id="cb4-15"><a></a>  x<span class="op">=</span><span class="st">'daily_calories_2000'</span>, y<span class="op">=</span><span class="st">'height_cm_2011'</span>,</span>
+<span id="cb4-16"><a></a>  hue<span class="op">=</span><span class="st">'sample_num'</span>, ci<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb4-17"><a></a>  palette<span class="op">=</span>sns.color_palette(<span class="st">"light:#000"</span>),</span>
+<span id="cb4-18"><a></a>  <span class="co"># palette='Greys',</span></span>
+<span id="cb4-19"><a></a>  aspect<span class="op">=</span><span class="fl">1.67</span>, height<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb4-20"><a></a>  scatter_kws<span class="op">=</span>{<span class="st">'alpha'</span>: <span class="fl">0.1</span>},</span>
+<span id="cb4-21"><a></a>  line_kws<span class="op">=</span>{<span class="st">'alpha'</span>: <span class="fl">0.5</span>},</span>
+<span id="cb4-22"><a></a>  truncate<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb4-23"><a></a>  legend<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb4-24"><a></a>)<span class="op">;</span></span>
+<span id="cb4-25"><a></a>sample_plot.ax.axline(</span>
+<span id="cb4-26"><a></a>  xy1<span class="op">=</span>(x_mean,ols_at_mean),</span>
+<span id="cb4-27"><a></a>  slope<span class="op">=</span>ols_slope,</span>
+<span id="cb4-28"><a></a>  color<span class="op">=</span><span class="st">'#E69F00'</span>,</span>
+<span id="cb4-29"><a></a>  lw<span class="op">=</span><span class="fl">2.5</span>,</span>
+<span id="cb4-30"><a></a>)</span>
+<span id="cb4-31"><a></a>sample_plot.ax.set_title(<span class="ss">f"</span><span class="sc">{</span>num_samples<span class="sc">}</span><span class="ss"> Observed Samples (n = </span><span class="sc">{</span>sample_size<span class="sc">}</span><span class="ss"> Each)"</span>)<span class="op">;</span></span>
+<span id="cb4-32"><a></a>sample_plot.set_xlabels(cal_label)<span class="op">;</span></span>
+<span id="cb4-33"><a></a>sample_plot.set_ylabels(height_label)<span class="op">;</span></span>
+<span id="cb4-34"><a></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -679,12 +743,233 @@ y_1 \\ y_2 \\ \vdots \\ y_n
 </div>
 </div>
 </div></div>
-<p>Which line is “correct”? We don’t know! Samples may not arrive until <strong>the future!</strong></p>
+<ul>
+<li>Which line is “correct”? We don’t know! Samples may not arrive until <strong>the future!</strong></li>
+<li><span class="math inline">\(\leadsto\)</span> We need to incorporate <strong>uncertainty about the future</strong> into our <strong>model</strong></li>
+</ul>
 </section></section>
 <section>
-<section id="statistical-modeling" class="title-slide slide level1 center" data-stack-name="Modeling">
+<section id="nonlinear-learning" class="title-slide slide level1 center" data-stack-name="Nonlinear Learning">
+<h1>Nonlinear Learning</h1>
+<ul>
+<li>An even messier complication: what happens if we consider prediction functions that aren’t just straight lines?</li>
+<li>The evil scourge of… <strong>OVERFITTING</strong></li>
+</ul>
+</section>
+<section id="computers-learning-computers-obediently-following-orders" class="slide level2 smaller crunch-title title-10 crunch-ul crunch-img crunch-quarto-figure">
+<h2>Computers “Learning” = Computers Obediently Following Orders</h2>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a>rng <span class="op">=</span> np.random.default_rng(seed<span class="op">=</span><span class="dv">5302</span>)</span>
+<span id="cb5-2"><a></a>n <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb5-3"><a></a>x_vals <span class="op">=</span> rng.uniform(size<span class="op">=</span>n, low<span class="op">=</span><span class="dv">0</span>, high<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-4"><a></a>y_vals_raw <span class="op">=</span> <span class="dv">3</span> <span class="op">*</span> x_vals</span>
+<span id="cb5-5"><a></a>y_noise <span class="op">=</span> rng.normal(size<span class="op">=</span>n, loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb5-6"><a></a>y_vals <span class="op">=</span> y_vals_raw <span class="op">+</span> y_noise</span>
+<span id="cb5-7"><a></a>data_df <span class="op">=</span> pd.DataFrame({<span class="st">'x'</span>: x_vals, <span class="st">'y'</span>: y_vals})</span>
+<span id="cb5-8"><a></a>sns.lmplot(</span>
+<span id="cb5-9"><a></a>  data_df,</span>
+<span id="cb5-10"><a></a>  x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>,</span>
+<span id="cb5-11"><a></a>  scatter_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'black'</span>),</span>
+<span id="cb5-12"><a></a>  ci<span class="op">=</span><span class="va">None</span></span>
+<span id="cb5-13"><a></a>)</span>
+<span id="cb5-14"><a></a>sns.lmplot(</span>
+<span id="cb5-15"><a></a>  data_df,</span>
+<span id="cb5-16"><a></a>  x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>,</span>
+<span id="cb5-17"><a></a>  scatter_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'black'</span>),</span>
+<span id="cb5-18"><a></a>  order<span class="op">=</span>n,</span>
+<span id="cb5-19"><a></a>  ci<span class="op">=</span><span class="va">None</span></span>
+<span id="cb5-20"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-layout-panel" data-layout="[2,1,2]">
+<div class="quarto-layout-row quarto-layout-valign-center">
+<div class="column quarto-layout-cell" style="flex-basis: 40.0%;justify-content: flex-start;">
+<div id="cell-linear-fit" class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display">
+<div id="linear-fit" class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/linear-fit-output-1.png" width="464" height="464"></p>
+<figcaption>You: “Fit the data… but you’re only allowed to use lines!” Computer: “You got it boss!”</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column quarto-layout-cell" style="flex-basis: 20.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/yes_man.png" width="185"></p>
+<figcaption>Your computer is <a href="https://youtu.be/g-QSuiXL6lY?si=w1vZl8DQnoX2jPaK&amp;t=128">Yes Man</a></figcaption>
+</figure>
+</div>
+</div><div class="column quarto-layout-cell" style="flex-basis: 40.0%;justify-content: flex-start;">
+<div id="cell-poly-fit" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display">
+<div id="poly-fit" class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/poly-fit-output-1.png" width="464" height="463"></p>
+<figcaption>You: “Fit the data…” Computer: “You got it boss!”</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<aside class="notes">
+<p>(<a href="http://www.game-art-hq.com/89202/the-yes-man-from-fallout-game-art-overview/">Image Source</a>)</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="accuracy-leadsto-5300-generalization" class="slide level2 smaller crunch-title title-11 crunch-quarto-figure crunch-img crunch-li-8 crunch-ul">
+<h2>5000: Accuracy <span class="math inline">\(\leadsto\)</span> 5300: Generalization</h2>
+<ul>
+<li>Training Accuracy: How well does it fit the data we can see?</li>
+<li>Test Accuracy: How well does it <strong>generalize</strong> to future data?</li>
+</ul>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> PolynomialFeatures</span>
+<span id="cb6-2"><a></a>x <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.1</span>)</span>
+<span id="cb6-3"><a></a>n <span class="op">=</span> <span class="bu">len</span>(x)</span>
+<span id="cb6-4"><a></a>eps <span class="op">=</span> rng.normal(size<span class="op">=</span>n, loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span><span class="fl">0.04</span>)</span>
+<span id="cb6-5"><a></a>y <span class="op">=</span> x <span class="op">+</span> eps</span>
+<span id="cb6-6"><a></a><span class="co"># But make one big outlier</span></span>
+<span id="cb6-7"><a></a>midpoint <span class="op">=</span> <span class="bu">int</span>(np.ceil((<span class="dv">3</span><span class="op">/</span><span class="dv">4</span>)<span class="op">*</span>n))</span>
+<span id="cb6-8"><a></a>y[midpoint] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb6-9"><a></a>of_df <span class="op">=</span> pd.DataFrame({<span class="st">'x'</span>: x, <span class="st">'y'</span>: y})</span>
+<span id="cb6-10"><a></a><span class="co"># Linear model</span></span>
+<span id="cb6-11"><a></a><span class="co"># lin_model = smf.ols(formula='y ~ x', data=of_data)</span></span>
+<span id="cb6-12"><a></a>train_plot <span class="op">=</span> sns.lmplot(</span>
+<span id="cb6-13"><a></a>  data<span class="op">=</span>of_df,</span>
+<span id="cb6-14"><a></a>  x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>,</span>
+<span id="cb6-15"><a></a>  scatter_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'black'</span>),</span>
+<span id="cb6-16"><a></a>  ci<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-17"><a></a>  fit_reg<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-18"><a></a>  height<span class="op">=</span><span class="fl">2.4</span>,</span>
+<span id="cb6-19"><a></a>  aspect<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb6-20"><a></a>)</span>
+<span id="cb6-21"><a></a>plt.title(<span class="st">"Training Data"</span>)<span class="op">;</span></span>
+<span id="cb6-22"><a></a>plt.show()</span>
+<span id="cb6-23"><a></a><span class="co"># Data setup</span></span>
+<span id="cb6-24"><a></a>x_test <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.1</span>)</span>
+<span id="cb6-25"><a></a>n_test <span class="op">=</span> <span class="bu">len</span>(x_test)</span>
+<span id="cb6-26"><a></a>eps_test <span class="op">=</span> rng.normal(size<span class="op">=</span>n_test, loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span><span class="fl">0.04</span>)</span>
+<span id="cb6-27"><a></a>y_test <span class="op">=</span> x_test <span class="op">+</span> eps_test</span>
+<span id="cb6-28"><a></a>of_test_df <span class="op">=</span> pd.DataFrame({<span class="st">'x'</span>: x_test, <span class="st">'y'</span>: y_test})</span>
+<span id="cb6-29"><a></a>test_points_plot <span class="op">=</span> sns.lmplot(</span>
+<span id="cb6-30"><a></a>  data<span class="op">=</span>of_df,</span>
+<span id="cb6-31"><a></a>  x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>,</span>
+<span id="cb6-32"><a></a>  scatter_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'black'</span>),</span>
+<span id="cb6-33"><a></a>  line_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>cb_palette[<span class="dv">0</span>]),</span>
+<span id="cb6-34"><a></a>  ci<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-35"><a></a>  height<span class="op">=</span><span class="fl">2.4</span>,</span>
+<span id="cb6-36"><a></a>  aspect<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb6-37"><a></a>  fit_reg<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-38"><a></a>)<span class="op">;</span></span>
+<span id="cb6-39"><a></a>plt.title(<span class="st">"Test Data"</span>)<span class="op">;</span></span>
+<span id="cb6-40"><a></a>plt.show()</span>
+<span id="cb6-41"><a></a>perfect_plot <span class="op">=</span> sns.lmplot(</span>
+<span id="cb6-42"><a></a>  data<span class="op">=</span>of_df,</span>
+<span id="cb6-43"><a></a>  x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>,</span>
+<span id="cb6-44"><a></a>  scatter_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'black'</span>),</span>
+<span id="cb6-45"><a></a>  line_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>cb_palette[<span class="dv">0</span>]),</span>
+<span id="cb6-46"><a></a>  ci<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-47"><a></a>  height<span class="op">=</span><span class="fl">2.4</span>,</span>
+<span id="cb6-48"><a></a>  aspect<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb6-49"><a></a>)</span>
+<span id="cb6-50"><a></a>perfect_plot.ax.set_ylim(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)<span class="op">;</span></span>
+<span id="cb6-51"><a></a>sns.regplot(</span>
+<span id="cb6-52"><a></a>  data<span class="op">=</span>of_df,</span>
+<span id="cb6-53"><a></a>  x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>,</span>
+<span id="cb6-54"><a></a>  order<span class="op">=</span>n,</span>
+<span id="cb6-55"><a></a>  ci<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-56"><a></a>  scatter_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'black'</span>),</span>
+<span id="cb6-57"><a></a>  line_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>cb_palette[<span class="dv">1</span>])</span>
+<span id="cb6-58"><a></a>)</span>
+<span id="cb6-59"><a></a>plt.title(<span class="st">"A Perfect Model?"</span>)<span class="op">;</span></span>
+<span id="cb6-60"><a></a>plt.show()</span>
+<span id="cb6-61"><a></a>test_plot <span class="op">=</span> sns.lmplot(</span>
+<span id="cb6-62"><a></a>  data<span class="op">=</span>of_test_df,</span>
+<span id="cb6-63"><a></a>  x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>,</span>
+<span id="cb6-64"><a></a>  ci<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-65"><a></a>  scatter_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'black'</span>),</span>
+<span id="cb6-66"><a></a>  line_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>cb_palette[<span class="dv">0</span>]),</span>
+<span id="cb6-67"><a></a>  height<span class="op">=</span><span class="fl">2.4</span>, aspect<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb6-68"><a></a>)<span class="op">;</span></span>
+<span id="cb6-69"><a></a>test_plot.ax.set_ylim(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)<span class="op">;</span></span>
+<span id="cb6-70"><a></a>sns.regplot(</span>
+<span id="cb6-71"><a></a>  data<span class="op">=</span>of_df,</span>
+<span id="cb6-72"><a></a>  x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>,</span>
+<span id="cb6-73"><a></a>  order<span class="op">=</span>n,</span>
+<span id="cb6-74"><a></a>  ci<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb6-75"><a></a>  scatter_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'black'</span>),</span>
+<span id="cb6-76"><a></a>  line_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>cb_palette[<span class="dv">1</span>]),</span>
+<span id="cb6-77"><a></a>  marker<span class="op">=</span><span class="st">''</span>,</span>
+<span id="cb6-78"><a></a>)<span class="op">;</span></span>
+<span id="cb6-79"><a></a>plt.title(<span class="st">"Evaluation: Unseen Test Data"</span>)<span class="op">;</span></span>
+<span id="cb6-80"><a></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-layout-panel" data-layout="[1,1]">
+<div class="quarto-layout-row">
+<div id="overfit-left" class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="cell-training-data-plot" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/training-data-plot-output-1.png" id="training-data-plot" class="quarto-figure quarto-figure-center" width="445" height="236"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-test-data-plot" class="cell" data-execution_count="9">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/test-data-plot-output-1.png" id="test-data-plot" class="quarto-figure quarto-figure-center" width="445" height="236"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="overfit-right" class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="cell-training-linear-poly" class="cell" data-execution_count="10">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/training-linear-poly-output-1.png" id="training-linear-poly" class="quarto-figure quarto-figure-center" width="445" height="236"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-lin-poly-newdata" class="cell" data-execution_count="11">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/lin-poly-newdata-output-1.png" id="lin-poly-newdata" class="quarto-figure quarto-figure-center" width="454" height="236"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section></section>
+<section>
+<section id="statistical-modeling" class="title-slide slide level1 text-70 crunch-title center" data-stack-name="Modeling">
 <h1>Statistical Modeling</h1>
-
+<p>So far:</p>
+<p><i class="bi bi-1-circle"></i> Our models need to accommodate <strong>irreducible</strong> error (error inherent to DGP)</p>
+<p><i class="bi bi-2-circle"></i> Our models need to <strong>penalize complexity</strong>, to prevent Yes Man from just “memorizing” training data</p>
+<p><i class="bi bi-3-circle"></i> …But, if we penalize <strong>too harshly</strong>, we lose the ability to model nonlinearity!</p>
+<p>Let’s dive a bit more into <i class="bi bi-2-circle"></i>, via one of my fav examples from the history of science 🤓</p>
 </section>
 <section id="scientific-models" class="slide level2 smaller crunch-title title-12 crunch-quarto-figure scrollable">
 <h2>Scientific Models</h2>
@@ -694,20 +979,20 @@ y_1 \\ y_2 \\ \vdots \\ y_n
 <div id="fig-aristarchus" class="lightbox quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-aristarchus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/aristarchus_transparent.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Fig&nbsp;1: Aristarchus’ “cylindrical” model, circa 270 BC"><img data-src="images/aristarchus_transparent.png" class="quarto-figure quarto-figure-center" width="200"></a>
+<a href="images/aristarchus_transparent.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Fig&nbsp;1: Aristarchus’ model, circa 270 BC"><img data-src="images/aristarchus_transparent.png" class="quarto-figure quarto-figure-center" width="200"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aristarchus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Fig&nbsp;1: Aristarchus’ “cylindrical” model, circa 270 BC
+Fig&nbsp;1: Aristarchus’ model, circa 270 BC
 </figcaption>
 </figure>
 </div>
 <div id="fig-arago" class="lightbox quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-arago-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/cassini.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Fig&nbsp;2: Cassini (1659): planets don’t travel in circles [@arago_astronomie_1854]"><img data-src="images/cassini.jpg" class="quarto-figure quarto-figure-center" width="200"></a>
+<a href="images/cassini.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Fig&nbsp;2: Cassini (1659): planets don’t exhibit circular orbit if Earth at center [@arago_astronomie_1854]"><img data-src="images/cassini.jpg" class="quarto-figure quarto-figure-center" width="200"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-arago-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Fig&nbsp;2: Cassini (1659): planets <em>don’t</em> travel in circles <span class="citation" data-cites="arago_astronomie_1854">(<a href="#/references" role="doc-biblioref" onclick="">Arago 1854</a>)</span>
+Fig&nbsp;2: Cassini (1659): planets <em>don’t</em> exhibit circular orbit if Earth at center <span class="citation" data-cites="arago_astronomie_1854">(<a href="#/references" role="doc-biblioref" onclick="">Arago 1854</a>)</span>
 </figcaption>
 </figure>
 </div>
@@ -722,14 +1007,15 @@ Fig&nbsp;2: Cassini (1659): planets <em>don’t</em> travel in circles <span cla
 </div></div>
 </div>
 <aside><ol class="aside-footnotes"><li id="fn1"><p>For reasons we’ll discuss soon, Ptolemy’s model often <a href="https://inference-review.com/article/ptolemy-versus-copernicus">outperforms</a> Copernicus’ on <strong>prediction</strong> tasks!</p></li></ol></aside></section>
-<section id="prediction-vs.-understanding" class="slide level2 smaller">
+<section id="prediction-vs.-understanding" class="slide level2 smaller crunch-title title-12 crunch-p">
 <h2>Prediction vs.&nbsp;Understanding</h2>
-<div id="ptolemy" style="height: 500px;">
+<p>Both models “predict” Mars’ orbit relative to us equally well – why might we still prefer geocentric model? <em>(Hint: How many <strong>parameters</strong> does each require?)</em></p>
+<div id="ptolemy" style="height: 500px; margin-bottom: 0px;">
 <div id="canvases">
   <canvas id="traceCanvas"></canvas>
   <canvas id="canvas"></canvas>
 </div>
-<div id="buttondiv">
+<div id="buttondiv" style="margin-bottom: 0px;">
   <button data-inline="true" id="play-button" type="button">
     <i class="bi bi-play-fill"></i>
   </button>
@@ -740,14 +1026,16 @@ Fig&nbsp;2: Cassini (1659): planets <em>don’t</em> travel in circles <span cla
   <button data-inline="true" id="line_of_sight" type="button">Line of Sight</button>
 </div>
 </div>
-<center>
+<center style="font-size: 70%;">
 <p><em>Adapted from <a href="https://galileo.phys.virginia.edu/~mf1i/home.html">Michael Fowler’s Lecture Notes</a></em></p>
 </center>
 </section></section>
 <section>
 <section id="bias-variance-tradeoff" class="title-slide slide level1 center" data-stack-name="Bias-Variance Tradeoff">
 <h1>Bias-Variance Tradeoff</h1>
-
+<ul>
+<li><em>(Why there’s “no free lunch”: we can’t [easily] just ask a computer to find <strong>the “best” model</strong> for our data)</em></li>
+</ul>
 </section>
 <section id="why-statistical-learning" class="slide level2">
 <h2>Why <em>Statistical</em> Learning?</h2>
@@ -760,7 +1048,7 @@ Fig&nbsp;2: Cassini (1659): planets <em>don’t</em> travel in circles <span cla
 <section id="bias-variance-decomposition" class="slide level2 math-80">
 <h2>Bias-Variance Decomposition</h2>
 <p>Model errors can be <strong>decomposed</strong> into three components:</p>
-<p><i class="bi bi-1-circle"></i> Model <strong>bias</strong>: Mismatch between DGP and model prediction</p>
+<p><i class="bi bi-1-circle"></i> Model <strong>bias</strong>: Mismatch between DGP and model prediction<br><em>(too simple [lines for nonlinear DGP] or too complex [wiggly function for linear DGP])</em></p>
 <p><i class="bi bi-2-circle"></i> Model <strong>variance</strong>: Sensitivity to re-draws from DGP</p>
 <p><i class="bi bi-3-circle"></i> <strong>Unavoidable</strong> error inherent in the DGP</p>
 <p><span class="math display">\[
@@ -1119,6 +1407,13 @@ McElreath, Richard. 2020. <em>Statistical <span>Rethinking</span>: <span>A Bayes
               if (link.dataset.originalHref !== undefined) {
                 link.href = link.dataset.originalHref;
               }
+                // target, if specified
+                link.setAttribute("target", "_blank");
+                if (link.getAttribute("rel") === null) {
+                  link.setAttribute("rel", "noopener");
+                }
+                // default icon
+                link.classList.add("external");
             }
           }
         function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
