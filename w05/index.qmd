@@ -1,19 +1,19 @@
 ---
-title: "Week 4: Cross-Validation for Model Assessment"
+title: "Week 5: Cross-Validation for Model Assessment"
 subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 bibliography: "../_DSAN5300.bib"
-date: 2026-02-02
+date: 2026-02-09
 date-format: full
-lecnum: 4
+lecnum: 5
 cache: true
 categories:
   - "Class Sessions"
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300 Week 4: {{< var w04.footer >}}"
+    footer: "DSAN 5300 Week 5: {{< var w05.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true

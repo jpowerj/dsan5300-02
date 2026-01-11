@@ -1,18 +1,18 @@
 ---
-title: "Week 8: Generative vs. Discriminative Models"
+title: "Week 9: Generative vs. Discriminative Models"
 subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 bibliography: "../_DSAN5300.bib"
-date: 2026-03-09
+date: 2026-03-16
 date-format: full
-lecnum: 8
+lecnum: 9
 categories:
   - "Class Sessions"
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300 Week 8: {{< var w08.footer >}}"
+    footer: "DSAN 5300 Week 9: {{< var w09.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true

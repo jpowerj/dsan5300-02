@@ -1,19 +1,19 @@
 ---
-title: "Week 6: Basis Functions and Splines"
+title: "Week 7: Basis Functions and Splines"
 subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 bibliography: "../_DSAN5300.bib"
-date: 2026-02-17
+date: 2026-02-23
 date-format: full
-lecnum: 6
+lecnum: 7
 cache: true
 categories:
   - "Class Sessions"
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300 Week 6: {{< var w06.footer >}}"
+    footer: "DSAN 5300 Week 7: {{< var w07.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true

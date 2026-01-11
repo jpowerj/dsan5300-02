@@ -1,18 +1,18 @@
 ---
-title: "Week 12: Machine Learning for Causal Inference"
+title: "Week 13: Machine Learning for Causal Inference"
 subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 bibliography: "../_DSAN5300.bib"
-date: 2026-04-13
+date: 2026-04-20
 date-format: full
-lecnum: 12
+lecnum: 13
 categories:
   - "Class Sessions"
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300 Week 12: {{< var w12.footer >}}"
+    footer: "DSAN 5300 Week 13: {{< var w13.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true

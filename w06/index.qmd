@@ -1,19 +1,19 @@
 ---
-title: "Week 5: Regularization for Model Selection"
+title: "Week 6: Regularization for Model Selection"
 subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 bibliography: "../_DSAN5300.bib"
-date: 2026-02-09
+date: 2026-02-17
 date-format: full
 cache: true
-lecnum: 5
+lecnum: 6
 categories:
   - "Class Sessions"
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300 Week 5: {{< var w05.footer >}}"
+    footer: "DSAN 5300 Week 6: {{< var w06.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true

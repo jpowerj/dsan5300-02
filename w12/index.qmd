@@ -1,18 +1,18 @@
 ---
-title: "Week 11: Survival Analysis"
+title: "Week 12: Survival Analysis"
 subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 bibliography: "../_DSAN5300.bib"
-date: 2026-03-30
+date: 2026-04-13
 date-format: full
-lecnum: 11
+lecnum: 12
 categories:
   - "Class Sessions"
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300 Week 11: {{< var w11.footer >}}"
+    footer: "DSAN 5300 Week 12: {{< var w12.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true

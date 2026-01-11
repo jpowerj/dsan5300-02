@@ -1,18 +1,18 @@
 ---
-title: "Week 7: Support Vector Machines"
+title: "Week 8: Support Vector Machines"
 subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
 bibliography: "../_DSAN5300.bib"
-date: 2026-02-23
+date: 2026-03-09
 date-format: full
-lecnum: 7
+lecnum: 8
 categories:
   - "Class Sessions"
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300 Week 7: {{< var w07.footer >}}"
+    footer: "DSAN 5300 Week 8: {{< var w08.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true
