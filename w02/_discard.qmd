@@ -91,3 +91,21 @@ mil_plot
 Squared resids plot
 
 ![[Image Source](https://gregorygundersen.com/blog/2020/01/04/ols/)](images/rss.png){fig-align="center"}
+
+---
+
+Derivative cheatsheet
+
+| Type of Thing | Thing | Change in Thing when $x$ Changes by Tiny Amount |
+|:-|:-|:-|
+| Polynomial | $f(x) = x^n$ | $f'(x) = \frac{\partial}{\partial x}f(x) = nx^{n-1}$ |
+| Fraction | $f(x) = \frac{1}{x}$ | Use Polynomial rule (since $\frac{1}{x} = x^{-1}$) to get $f'(x) = -\frac{1}{x^2}$ |
+| Logarithm | $f(x) = \ln(x)$ | $f'(x) = \frac{\partial}{\partial x} = \frac{1}{x}$ |
+| Exponential | $f(x) = e^x$ | $f'(x) = \frac{\partial}{\partial x}e^x = e^x$ (🧐❗️) |
+| Multiplication | $f(x) = g(x)h(x)$ | $f'(x) = g'(x)h(x) + g(x)h'(x)$ |
+| Division | $f(x) = \frac{g(x)}{h(x)}$ | Too hard to memorize... turn it into Multiplication, as $f(x) = g(x)(h(x))^{-1}$ |
+| Composition (Chain Rule) | $f(x) = g(h(x))$ | $f'(x) = g'(h(x))h'(x)$ |
+| Fancy Logarithm | $f(x) = \ln(g(x))$ | $f'(x) = \frac{g'(x)}{g(x)}$ by Chain Rule |
+| Fancy Exponential | $f(x) = e^{g(x)}$ | $f'(x) = g'(x)e^{g(x)}$ by Chain Rule |
+
+: {tbl-colwidths="[24, 24, 52]"}

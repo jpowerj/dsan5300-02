@@ -116,7 +116,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-32823bc3cd623ab3c9f39504c4ea4087.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-e25fdd79262ba544bd7e51cad97db23a.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -233,8 +233,67 @@ Jeff Jacobs
 
   <p class="date">Monday, January 12, 2026</p>
 </section>
+<section id="schedule" class="title-slide slide level1 smaller small-title crunch-title crunch-callout center" data-name="Schedule">
+<h1>Schedule</h1>
+<p>Today’s Planned Schedule:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 64%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Start</th>
+<th style="text-align: left;">End</th>
+<th style="text-align: left;">Topic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Lecture</strong></td>
+<td style="text-align: left;">6:30pm</td>
+<td style="text-align: left;">7:10pm</td>
+<td style="text-align: left;"><a href="#/linear-regression">Simple Linear Regression →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7:10pm</td>
+<td style="text-align: left;">7:30pm</td>
+<td style="text-align: left;"><a href="#/deriving-the-least-squares-estimate">Deriving the OLS Solution →</a></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">7:30pm</td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;"><a href="#/interpreting-output">Interpreting OLS Output →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Break!</strong></td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;">8:30pm</td>
+<td style="text-align: left;"><a href="#/quiz-review">Quiz Review →</a></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: left;">8:30pm</td>
+<td style="text-align: left;">9:00pm</td>
+<td style="text-align: left;">Quiz 2!</td>
+</tr>
+</tbody>
+</table>
+</section>
+
 <section>
-<section id="linear-regression" class="title-slide slide level1 title-12 crunch-title crunch-ul crunch-li-8 not-title-slide center" data-stack-name="Linear Regression">
+<section id="linear-regression" class="title-slide slide level1 title-12 crunch-title crunch-ul crunch-li-8 center" data-stack-name="Linear Regression">
 <h1>Linear Regression</h1>
 <ul>
 <li><p>What happens to my <strong>dependent variable</strong> <span class="math inline">\(Y\)</span> when my <strong>independent variable</strong> <span class="math inline">\(X\)</span> increases by <strong>1 unit</strong>?</p></li>
@@ -257,7 +316,7 @@ Jeff Jacobs
 <li><em>Sanity Note 1</em>: <i class="bi bi-bullseye"></i> <span class="math inline">\(\Rightarrow\)</span> measuring error via <strong>vertical</strong> distance from line</li>
 <li><em>Sanity Note 2:</em> <i class="bi bi-bullseye"></i> <span class="math inline">\(\Rightarrow\)</span> modeling distribution of <span class="math inline">\(\boxed{Y \mid X}\)</span>, not <span class="math inline">\((X,Y)\)</span>!
 <ul>
-<li>Predicting <span class="math inline">\(Y\)</span> from <span class="math inline">\(X\)</span> <strong><em>and</em></strong> <span class="math inline">\(X\)</span> from <span class="math inline">\(Y\)</span> <span class="math inline">\(\Rightarrow\)</span> <strong>principal component line <span class="math inline">\(\neq\)</span> regression line</strong>!</li>
+<li>Predicting <span class="math inline">\(Y\)</span> from <span class="math inline">\(X\)</span> <strong><em>and</em></strong> <span class="math inline">\(X\)</span> from <span class="math inline">\(Y\)</span> <span class="math inline">\(\Rightarrow\)</span> <strong>principal component line <span class="math inline">\(\neq\)</span> regression</strong>!</li>
 </ul></li>
 </ul>
 </div>
@@ -314,10 +373,10 @@ Jeff Jacobs
 <div class="quarto-layout-row quarto-layout-valign-center">
 <div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <div class="cell-output-display">
-<div id="fig-pc-line" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<div id="fig-pc-line" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-pc-line-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img data-src="index_files/figure-revealjs/fig-pc-line-1.png" class="quarto-figure quarto-figure-center" width="576">
+<img data-src="index_files/figure-revealjs/fig-pc-line-1.png" width="576">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pc-line-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: The line that minimizes blue distances does <strong>not</strong> predict <span class="math inline">\(Y\)</span> as well as regression line, despite intuitive appeal!
@@ -328,10 +387,10 @@ Figure&nbsp;1: The line that minimizes blue distances does <strong>not</strong> 
 </div>
 <div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <div class="cell-output-display">
-<div id="fig-reg-line" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<div id="fig-reg-line" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-reg-line-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img data-src="index_files/figure-revealjs/fig-reg-line-1.png" class="quarto-figure quarto-figure-center" width="576">
+<img data-src="index_files/figure-revealjs/fig-reg-line-1.png" width="576">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-reg-line-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: The line that minimizes green distances <strong>optimally</strong> predicts <span class="math inline">\(Y\)</span> from <span class="math inline">\(X\)</span>, in a mathematically-provable sense!
@@ -352,11 +411,11 @@ Figure&nbsp;2: The line that minimizes green distances <strong>optimally</strong
 <li><strong>Principal Component Line</strong> can be used to <strong>project</strong> the data onto its <strong>dimension of highest variance</strong> (recap from 5000!)</li>
 <li>More simply: PCA can <strong>discover</strong> meaningful axes in data (<strong>unsupervised</strong> learning / <strong>exploratory</strong> data analysis settings)</li>
 </ul>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/gdp-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/gdp-plot-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -368,11 +427,11 @@ Figure&nbsp;2: The line that minimizes green distances <strong>optimally</strong
 <section id="create-your-own-dimension" class="slide level2">
 <h2>Create Your Own Dimension!</h2>
 
-<img data-src="index_files/figure-revealjs/pca-plot-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="index_files/figure-revealjs/pca-plot-1.png" width="960" class="r-stretch"></section>
 <section id="and-use-it-for-eda" class="slide level2">
 <h2>…And Use It for EDA</h2>
 
-<img data-src="index_files/figure-revealjs/pca-facet-plot-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="index_files/figure-revealjs/pca-facet-plot-1.png" width="960" class="r-stretch"></section>
 <section id="but-in-our-case" class="slide level2 crunch-title crunch-ul text-90">
 <h2>But in Our Case…</h2>
 <ul>
@@ -451,30 +510,30 @@ Y = \underbrace{\param{\beta_0}}_{\mathclap{\text{Intercept}}} + \underbrace{\pa
 <div class="quarto-layout-panel" data-layout="[65,35]">
 <div class="quarto-layout-row quarto-layout-valign-center">
 <div class="column quarto-layout-cell" style="flex-basis: 65.0%;justify-content: flex-start;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/large-resids-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/large-resids-plot-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column quarto-layout-cell" style="flex-basis: 35.0%;justify-content: flex-start;">
 <p>Sum?</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>0.0000000000</code></pre>
 </div>
 </div>
 <p>Sum of Squares?</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>3.8405017200</code></pre>
 </div>
 </div>
 <p>Sum of absolute vals?</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>7.6806094387</code></pre>
 </div>
@@ -484,30 +543,30 @@ Y = \underbrace{\param{\beta_0}}_{\mathclap{\text{Intercept}}} + \underbrace{\pa
 <div class="quarto-layout-panel" data-layout="[65,35]">
 <div class="quarto-layout-row quarto-layout-valign-center">
 <div class="column quarto-layout-cell" style="flex-basis: 65.0%;justify-content: flex-start;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/small-resids-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/small-resids-plot-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column quarto-layout-cell" style="flex-basis: 35.0%;justify-content: flex-start;">
 <p>Sum?</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>0.0000000000</code></pre>
 </div>
 </div>
 <p>Sum of Squares?</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>1.9748635217</code></pre>
 </div>
 </div>
 <p>Sum of absolute vals?</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>5.5149697440</code></pre>
 </div>
@@ -527,21 +586,21 @@ Y = \underbrace{\param{\beta_0}}_{\mathclap{\text{Intercept}}} + \underbrace{\pa
 </ul>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/abs-x-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/abs-x-plot-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/x2-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/x2-plot-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -557,21 +616,21 @@ Y = \underbrace{\param{\beta_0}}_{\mathclap{\text{Intercept}}} + \underbrace{\pa
 <div class="quarto-layout-panel" data-layout="[1,1]">
 <div class="quarto-layout-row quarto-layout-valign-center">
 <div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/resid-quadratic-abs-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/resid-quadratic-abs-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/resid-quadratic-squared-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/resid-quadratic-squared-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -597,15 +656,31 @@ Y = \underbrace{\param{\beta_0}}_{\mathclap{\text{Intercept}}} + \underbrace{\pa
 </section>
 <section id="where-did-that-mathbbey-mid-x-x_i-come-from" class="slide level2 smaller title-11">
 <h2>Where Did That <span class="math inline">\(\mathbb{E}[Y \mid X = x_i]\)</span> Come From?</h2>
+<ul>
+<li>From our assumption that the irreducible <strong>errors</strong> <span class="math inline">\(\varepsilon_i\)</span> are <strong>normally distributed</strong> <span class="math inline">\(\mathcal{N}(0, \sigma^2)\)</span></li>
+</ul>
 
-<img data-src="images/regression_normal_dist.jpg" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://digfir-published.macmillanusa.com/psbe4e/psbe4e_ch10_2.html">Image Source</a></p></section>
-<section id="but-what-about-other-types-of-vars" class="slide level2 title-08 crunch-title">
+<img data-src="images/regression_normal_dist.jpg" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://digfir-published.macmillanusa.com/psbe4e/psbe4e_ch10_2.html">Image Source</a></p><ul>
+<li>Kind of an immensely important point, since it <strong>gives us a hint for checking whether model assumptions hold</strong>: spread around the regression line should be <span class="math inline">\(\mathcal{N}(0, \sigma^2)\)</span></li>
+</ul>
+</section>
+<section id="heteroskedasticity" class="slide level2 smaller crunch-title">
+<h2>Heteroskedasticity</h2>
+<ul>
+<li>If spread <strong>increases</strong> or <strong>decreases</strong> for larger <span class="math inline">\(x\)</span>, for example, then <span class="math inline">\(\varepsilon \nsim \mathcal{N}(0, \sigma^2)\)</span></li>
+</ul>
+
+<img data-src="images/3_11.svg" class="r-stretch quarto-figure-center"><p class="caption">Figure 3.11 from <span class="citation" data-cites="james_introduction_2023">James et al. (<a href="#/references" role="doc-biblioref" onclick="">2023</a>)</span></p></section>
+<section id="but-what-about-other-types-of-vars" class="slide level2 title-08 crunch-title text-90">
 <h2>But… What About Other Types of Vars?</h2>
 <ul>
-<li>5000: you saw, e.g., nominal, ordinal, cardinal vars</li>
+<li>5000: you saw <strong>nominal</strong>, <strong>ordinal</strong>, <strong>cardinal</strong> vars</li>
 <li>5100: you wrestled with <strong>discrete</strong> vs.&nbsp;<strong>continuous</strong> RVs</li>
 <li>Good News #1: Regression can handle <strong>all</strong> these types+more!</li>
-<li>Good News #2: Distinctions between <strong>classification</strong> and <strong>regression</strong> start to diminish as you learn fancier regression methods! (One key tool here: <strong>link functions</strong>)</li>
+<li>Good News #2: Distinctions between <strong>classification</strong> and <strong>regression</strong> diminish as you learn fancier regression methods!
+<ul>
+<li>tldr: Predict continuous probabilities <span class="math inline">\(\Pr(Y) \in [0,1]\)</span> (regression), then guess 1 if <span class="math inline">\(\Pr(Y) &gt; 0.5\)</span> (classification)</li>
+</ul></li>
 <li>By end of 5300 you should have something on your toolbelt for handling most cases like <em>“I want to do [regression / classification], but my data is [not cardinal+continuous]”</em></li>
 </ul>
 </section></section>
@@ -614,36 +689,36 @@ Y = \underbrace{\param{\beta_0}}_{\mathclap{\text{Intercept}}} + \underbrace{\pa
 <h1>Deriving the Least Squares Estimate</h1>
 
 </section>
-<section id="a-sketch-hw-is-the-full-thing" class="slide level2 smaller">
+<section id="a-sketch-hw-is-the-full-thing" class="slide level2 smaller crunch-title crunch-ul">
 <h2>A Sketch (HW is the Full Thing)</h2>
 <ul>
-<li>OLS for regression <strong>without</strong> intercept <span class="math inline">\(\param{\beta_0}\)</span>: Which <strong>line through origin</strong> best predicts <span class="math inline">\(Y\)</span>?</li>
+<li>OLS for regression <strong>without</strong> intercept: Which <span class="boxed"><strong>line through origin</strong></span> best predicts <span class="math inline">\(Y\)</span>?</li>
 <li>(Good practice + reminder of how <strong>restricted</strong> linear models are!)</li>
 </ul>
 <p><span class="math display">\[
 Y = \beta_1 X + \varepsilon
 \]</span></p>
 
-<img data-src="index_files/figure-revealjs/random-lines-origin-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="index_files/figure-revealjs/random-lines-origin-1.png" width="960" class="r-stretch"></section>
 <section id="evaluating-with-residuals" class="slide level2 smaller">
 <h2>Evaluating with Residuals</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/possible-choice-1-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/possible-choice-1-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/choice-1-resid-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/choice-1-resid-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -651,21 +726,21 @@ Y = \beta_1 X + \varepsilon
 </div></div>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/possible-choice-2-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/possible-choice-2-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/choice-2-resid-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/choice-2-resid-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -676,7 +751,7 @@ Y = \beta_1 X + \varepsilon
 <h2>Now the Math</h2>
 <p><span class="math display">\[
 \begin{align*}
-\beta_1^* = \argmin_{\beta_1}\left[ \sum_{i=1}^{n}(\widehat{y}_i - y_i)^2 \right] = \argmin_{\beta_1}\left[ \sum_{i=1}^{n}(\beta_1x_i - y_i)^2 \right]
+\beta_1^* = \overbrace{\argmin}^{\begin{array}{c} \text{\small{Find thing}} \\[-5mm] \text{\small{that minimizes}}\end{array}}_{\beta_1}\left[ \sum_{i=1}^{n}(y_i - \widehat{y}_i)^2 \right] = \argmin_{\beta_1}\left[ \sum_{i=1}^{n}(y_i - \beta_1x_i)^2 \right]
 \end{align*}
 \]</span></p>
 <p>We can compute this derivative to obtain:</p>
@@ -700,7 +775,7 @@ Y = \beta_1 X + \varepsilon
 <center>
 <strong>In (Base) R: <code>lm()</code></strong>
 </center>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>lin_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> TV, <span class="at">data=</span>ad_df)</span>
@@ -736,7 +811,7 @@ F-statistic: 312.1 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
 <center>
 <strong>In Python: <code>smf.ols()</code></strong>
 </center>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
@@ -772,17 +847,17 @@ Notes:
 <h2>Interpreting Output</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/mil-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/mil-plot-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -807,7 +882,7 @@ F-statistic: 6.771 on 1 and 79 DF,  p-value: 0.01106</code></pre>
 </div>
 </div></div>
 </section>
-<section id="zooming-in-coefficients" class="slide level2 smaller-table crunch-title">
+<section id="zooming-in-coefficients" class="slide level2 table-75 crunch-title">
 <h2>Zooming In: Coefficients</h2>
 <div class="coef-table">
 <table class="caption-top">
@@ -861,7 +936,7 @@ F-statistic: 6.771 on 1 and 79 DF,  p-value: 0.01106</code></pre>
 \widehat{y} \approx \class{cb1}{\overset{\beta_0}{\underset{\small \pm 0.595}{0.620}}} +  \class{cb2}{\overset{\beta_1}{\underset{\small \pm 0.020}{0.053}}} \cdot x
 \]</span></p>
 </section>
-<section id="zooming-in-significance" class="slide level2 crunch-title smaller-table crunch-details crunch-quarto-figure">
+<section id="zooming-in-significance" class="slide level2 crunch-title table-75 crunch-details crunch-quarto-figure">
 <h2>Zooming In: Significance</h2>
 <div class="coef-table">
 <table class="caption-top">
@@ -938,29 +1013,27 @@ F-statistic: 6.771 on 1 and 79 DF,  p-value: 0.01106</code></pre>
 <h2>The Residual Plot</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<ul>
-<li><p>A key <strong>assumption</strong> required for OLS: <strong>“homoskedasticity”</strong></p></li>
-<li><p>Given our model</p>
+<p>Recall <strong>homoskedasticity</strong> assumption: Given our model</p>
 <p><span class="math display">\[
-y_i = \beta_0 + \beta_1x_i + \varepsilon_i
-\]</span></p></li>
-</ul>
-<p>the errors <span class="math inline">\(\varepsilon_i\)</span> <strong>should not vary systematically with <span class="math inline">\(i\)</span></strong> * Formally: <span class="math inline">\(\forall i \left[ \Var{\varepsilon_i} = \sigma^2 \right]\)</span></p>
+  y_i = \beta_0 + \beta_1x_i + \varepsilon_i
+  \]</span></p>
+<p>the errors <span class="math inline">\(\varepsilon_i\)</span> <strong>should not vary systematically with <span class="math inline">\(i\)</span></strong></p>
+<p>Formally: <span class="math inline">\(\forall i \left[ \Var{\varepsilon_i} = \sigma^2 \right]\)</span></p>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/residual-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/residual-plot-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/heteroskedastic-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/heteroskedastic-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -974,21 +1047,21 @@ y_i = \beta_0 + \beta_1x_i + \varepsilon_i
 </ul>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/qq-plot-heteroskedastic-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/qq-plot-heteroskedastic-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/qq-plot-gdp-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/qq-plot-gdp-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1008,15 +1081,15 @@ y_i = \beta_0 + \beta_1x_i + \varepsilon_i
 <li><span class="math inline">\(\beta_j\)</span> interpretation: a one-unit increase in <span class="math inline">\(x_{i,j}\)</span> is associated with a <span class="math inline">\(\beta_j\)</span> unit increase in <span class="math inline">\(y_i\)</span>, <strong>holding all other independent variables constant</strong></li>
 </ul>
 </section>
-<section id="visualizing-multiple-linear-regression" class="slide level2">
+<section id="visualizing-multiple-linear-regression" class="slide level2 crunch-title title-09">
 <h2>Visualizing Multiple Linear Regression</h2>
 
-<img data-src="images/3_5.svg" class="r-stretch quarto-figure-center"><p class="caption">(ISLR, Fig 3.5): <em>A pronounced non-linear relationship. Positive residuals (visible above the surface) tend to lie along the 45-degree line, where budgets are split evenly. Negative residuals (most not visible) tend to be away from this line, where budgets are more lopsided.</em></p></section>
-<section id="interpreting-mlr" class="slide level2 smaller">
+<img data-src="images/3_5.svg" class="r-stretch quarto-figure-center"><p class="caption">(ISLR Fig 3.5): <em>A pronounced non-linear relationship. Positive residuals (visible above the surface) tend to lie along the 45° line, where budgets are split evenly. Negative residuals (most not visible) tend to be away from this line, where budgets are more lopsided.</em></p></section>
+<section id="interpreting-mlr" class="slide level2 text-75 crunch-title crunch-p">
 <h2>Interpreting MLR</h2>
 <div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<div class="column" style="width:55%;">
+<div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1040,81 +1113,70 @@ Multiple R-squared:  0.8972,    Adjusted R-squared:  0.8956
 F-statistic: 570.3 on 3 and 196 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-</div><div class="column" style="width:50%;">
+</div><div class="column" style="width:45%;">
+<p><strong>Holding <code>radio</code> and <code>newspaper</code> spending constant</strong>…</p>
 <ul>
-<li><strong>Holding <code>radio</code> and <code>newspaper</code> spending constant</strong>…
+<li>An <strong>increase of $1K</strong> in spending on <code>TV</code> ads is associated with…</li>
+<li>An <strong>increase in sales of 46 units</strong></li>
+</ul>
+<p><strong>Holding <code>TV</code> and <code>newspaper</code> spending constant</strong>…</p>
 <ul>
-<li>An <strong>increase of $1K</strong> in spending on <code>TV</code> advertising is associated with</li>
-<li>An <strong>increase in sales of about 46 units</strong></li>
-</ul></li>
-<li><strong>Holding <code>TV</code> and <code>newspaper</code> spending constant</strong>…
-<ul>
-<li>An <strong>increase of $1K</strong> in spending on <code>radio</code> advertising is associated with</li>
-<li>An <strong>increase in sales of about 189 units</strong></li>
-</ul></li>
+<li>An <strong>increase of $1K</strong> in spending on <code>radio</code> ads is associated with…</li>
+<li>An <strong>increase in sales of 189 units</strong></li>
 </ul>
 </div></div>
 </section>
-<section id="but-wait" class="slide level2 smaller">
+<section id="but-wait" class="slide level2 smaller crunch-title title-11 crunch-p crunch-math math-90">
 <h2>But Wait…</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<center>
+<p><span class="math display">\[
+\texttt{sales} = \overset{*}{\beta_0} + \overset{*}{\beta_1}\texttt{newspaper}
+\]</span></p>
+</center>
+<div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = sales ~ TV + radio + newspaper, data = ad_df)
-
-Residuals:
-    Min      1Q  Median      3Q     Max 
--8.8277 -0.8908  0.2418  1.1893  2.8292 
-
-Coefficients:
-             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)  2.938889   0.311908   9.422   &lt;2e-16 ***
-TV           0.045765   0.001395  32.809   &lt;2e-16 ***
-radio        0.188530   0.008611  21.893   &lt;2e-16 ***
-newspaper   -0.001037   0.005871  -0.177     0.86    
+<pre><code>             Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept) 12.351407   0.621420 19.8761 &lt; 2.2e-16 ***
+newspaper    0.054693   0.016576  3.2996  0.001148 ** 
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 1.686 on 196 degrees of freedom
-Multiple R-squared:  0.8972,    Adjusted R-squared:  0.8956 
-F-statistic: 570.3 on 3 and 196 DF,  p-value: &lt; 2.2e-16</code></pre>
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
+<center>
+<p><span class="math display">\[
+\texttt{sales} = \overset{*}{\beta_0} + \overset{*}{\beta_1}\texttt{TV} + \overset{*}{\beta_2}\texttt{radio} + \overset{(~~)}{\beta_3}\texttt{paper}
+\]</span></p>
+</center>
+<div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = sales ~ newspaper, data = ad_df)
-
-Residuals:
-     Min       1Q   Median       3Q      Max 
--11.2272  -3.3873  -0.8392   3.5059  12.7751 
-
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 12.35141    0.62142   19.88  &lt; 2e-16 ***
-newspaper    0.05469    0.01658    3.30  0.00115 ** 
+<pre><code>              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  2.9388894  0.3119082  9.4223   &lt;2e-16 ***
+TV           0.0457646  0.0013949 32.8086   &lt;2e-16 ***
+radio        0.1885300  0.0086112 21.8935   &lt;2e-16 ***
+newspaper   -0.0010375  0.0058710 -0.1767   0.8599    
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 5.092 on 198 degrees of freedom
-Multiple R-squared:  0.05212,   Adjusted R-squared:  0.04733 
-F-statistic: 10.89 on 1 and 198 DF,  p-value: 0.001148</code></pre>
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
 </div></div>
+<div id="mlr-difference" style="font-size: 110%">
 <ul>
-<li>MLR results can be <strong>drastically different</strong> from SLR results, because of <strong>correlations</strong> (next slide)</li>
-<li>This is a good thing! It’s how we’re able to <strong>control for</strong> confounding variables!</li>
+<li><code>newspaper</code> <span class="math inline">\(\overset{*}{\rightarrow}\)</span> <code>sales</code> in SLR, but <code>newspaper</code> <span class="math inline">\(\overset{*}{\not\rightarrow}\)</span> <code>sales</code> in MLR?</li>
+<li><strong>Correlations</strong> <span class="math inline">\(\Rightarrow\)</span> MLR results can be <strong>drastically different</strong> from SLR results</li>
+<li>This is a good thing! It’s how we’re able to <strong>control for</strong> confounding vars!</li>
 </ul>
+</div>
 </section>
 <section id="correlations-among-features" class="slide level2 smaller">
 <h2>Correlations Among Features</h2>
-<div class="cell" data-layout-align="center">
+<div class="cell center-output">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">cor</span>(ad_df <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>id))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  TV      radio  newspaper     sales
 TV        1.00000000 0.05480866 0.05664787 0.7822244
@@ -1124,26 +1186,26 @@ sales     0.78222442 0.57622257 0.22829903 1.0000000</code></pre>
 </div>
 </div>
 <ul>
-<li>Observe how <span class="math inline">\(\text{cor}(\texttt{radio}, \texttt{newspaper}) \approx 0.35\)</span></li>
+<li>Observe how <span class="math inline">\(\text{cor}(\texttt{radio}, \texttt{newspaper}) \approx 0.35\)</span> (highest feat-feat correlation)</li>
 <li>In markets where we spend more on <code>radio</code> our sales will tend to be higher…</li>
 <li>Corr matrix <span class="math inline">\(\implies\)</span> we spend more on <code>newspaper</code> in those same markets…</li>
 <li>In SLR which only examines <code>sales</code> vs.&nbsp;<code>newspaper</code>, we (<strong>correctly!</strong>) observe that higher values of <code>newspaper</code> are associated with higher values of <code>sales</code>…</li>
-<li>In essence, <code>newspaper</code> advertising is a surrogate for <code>radio</code> advertising <span class="math inline">\(\implies\)</span> in our SLR, <code>newspaper</code> “gets credit” for the association between <code>radio</code> and <code>sales</code></li>
+<li>In essence, <code>newspaper</code> advertising is a <strong>surrogate</strong> for <code>radio</code> advertising <span class="math inline">\(\implies\)</span> in our SLR, <code>newspaper</code> “gets credit” for the association between <code>radio</code> and <code>sales</code></li>
 </ul>
 </section>
-<section id="another-mlr-superpower-incorporating-categorical-vars" class="slide level2 smaller title-09 math-90">
-<h2>Another MLR Superpower: Incorporating Categorical Vars</h2>
+<section id="regression-superpower-incorporating-categorical-vars" class="slide level2 smaller title-09 math-90">
+<h2>Regression Superpower: Incorporating Categorical Vars</h2>
 <p><em>(Preview for next week)</em></p>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p><span class="math display">\[
 Y = \beta_0 + \beta_1 \times \texttt{income}
 \]</span></p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/credit-plot-slr-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/credit-plot-slr-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1155,26 +1217,251 @@ Y = &amp;\beta_0 + \beta_1 \times \texttt{income} + \beta_2 \times \texttt{Stude
 &amp;+ \beta_3 \times (\texttt{Student} \times \texttt{Income})
 \end{align*}
 \]</span></p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
+<div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/credit-plot-students-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/credit-plot-students-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div></div>
 <ul>
-<li>Why do we need the <span class="math inline">\(\texttt{Student} \times \texttt{Income}\)</span> term?</li>
+<li>How does the <span class="math inline">\(\texttt{Student} \times \texttt{Income}\)</span> term help?</li>
 <li>Understanding this setup will open up a <strong>vast</strong> array of possibilities for regression 😎</li>
 </ul>
+</section></section>
+<section>
+<section id="quiz-review" class="title-slide slide level1 center" data-stack-name="Quiz">
+<h1>Quiz Review</h1>
+
+</section>
+<section id="objective-functions" class="slide level2 crunch-title text-82 crunch-ul crunch-callout crunch-math">
+<h2>Objective Functions</h2>
+<p>“Fitting” a statistical model to data means <strong>minimizing</strong> some <strong>loss function</strong> that measures “how bad” our predictions are:</p>
+<div title="Optimization Problems: General Form">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Optimization Problems: General Form</strong></p>
+</div>
+<div class="callout-content">
+<p>Find <span class="math inline">\(x^*\)</span>, the solution to</p>
+<p><span class="math display">\[
+\begin{align}
+    \min_{x} ~ &amp; f(x) &amp;\text{(Objective function)} \\
+    \text{s.t. } ~ &amp; g(x) = 0 &amp;\text{(Constraints)}
+\end{align}
+\]</span></p>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li>Earlier we were able to write <span class="math inline">\(x^* = \argmax_x{f(x)}\)</span>, since there were no constraints. Is there a way to write a formula like this <em>with</em> constraints?</li>
+<li>Answer: Yes! Thx Giuseppe-Luigi Lagrangia = Joseph-Louis <strong>Lagrange</strong>:</li>
+</ul>
+<p><span class="math display">\[
+x^* = \argmax_{x,~\lambda}f(x) - \lambda[g(x)]
+\]</span></p>
+
+<aside><div>
+<p><em>(Why worry about constraints when OLS is unconstrained? …Soon we’ll need to <strong>penalize complexity!</strong>)</em></p>
+</div></aside></section>
+<section id="example-problem" class="slide level2 text-80 crunch-title crunch-math-15">
+<h2>Example Problem</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div title="Example 1: Unconstrained Optimization">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Example 1: Unconstrained Optimization</strong></p>
+</div>
+<div class="callout-content">
+<p>Find <span class="math inline">\(x^*\)</span>, the solution to</p>
+<p><span class="math display">\[
+\begin{align}
+    \min_{x} ~ &amp; f(x) = 3x^2 - x \\
+    \text{s.t. } ~ &amp; \varnothing
+\end{align}
+\]</span></p>
+</div>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div title="Our Plan">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Our Plan</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>Compute the derivative <span class="math inline">\(f'(x) = \frac{\partial}{\partial x}f(x)\)</span>,</li>
+<li>Set it equal to zero: <span class="math inline">\(f'(x) = 0\)</span>, and</li>
+<li>Solve this equality for <span class="math inline">\(x\)</span>, i.e., find values <span class="math inline">\(x^*\)</span> satisfying <span class="math inline">\(f'(x^*) = 0\)</span></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<p>Computing the derivative:</p>
+<p><span class="math display">\[
+f'(x) = \frac{\partial}{\partial x}f(x) = \frac{\partial}{\partial x}\left[3x^2 - x\right] = 6x - 1,
+\]</span></p>
+<p>Solving for <span class="math inline">\(x^*\)</span>, the value(s) satisfying <span class="math inline">\(\frac{\partial}{\partial x}f'(x^*) = 0\)</span> for just-derived <span class="math inline">\(f'(x)\)</span>:</p>
+<p><span class="math display">\[
+f'(x^*) = 0 \iff 6x^* - 1 = 0 \iff x^* = \frac{1}{6}.
+\]</span></p>
+</section>
+<section id="derivative-cheatsheet" class="slide level2 smaller crunch-title title-12 text-65">
+<h2>Derivative Cheatsheet</h2>
+<colspec>
+</colspec><table>
+<colgroup><col style="width: 24%;">
+
+<col style="width: 24%;">
+
+<col style="width: 52%;">
+
+</colgroup>
+<thead>
+<tr>
+<th class="tdvc">
+Type of Thing
+</th>
+<th class="tdvc">
+Thing
+</th>
+<th>
+Change in Thing when <span class="math inline">\(x\)</span> Changes by Tiny Amount
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Polynomial
+</td>
+<td>
+<span class="math inline">\(f(x) = x^n\)</span>
+</td>
+<td>
+<span class="math inline">\(f'(x) = \frac{\partial}{\partial x}f(x) = nx^{n-1}\)</span>
+</td>
+</tr>
+<tr>
+<td class="tdvc">
+Fraction
+</td>
+<td class="tdvc">
+<span class="math inline">\(f(x) = \frac{1}{x}\)</span>
+</td>
+<td>
+Use Polynomial rule (since <span class="math inline">\(\frac{1}{x} = x^{-1}\)</span>) to get <span class="math inline">\(f'(x) = -\frac{1}{x^2}\)</span>
+</td>
+</tr>
+<tr>
+<td>
+Logarithm
+</td>
+<td>
+<span class="math inline">\(f(x) = \ln(x)\)</span>
+</td>
+<td>
+<span class="math inline">\(f'(x) = \frac{\partial}{\partial x} = \frac{1}{x}\)</span>
+</td>
+</tr>
+<tr>
+<td>
+Exponential
+</td>
+<td>
+<span class="math inline">\(f(x) = e^x\)</span>
+</td>
+<td>
+<span class="math inline">\(f'(x) = \frac{\partial}{\partial x}e^x = e^x\)</span> (🧐❗️)
+</td>
+</tr>
+<tr>
+<td>
+Multiplication
+</td>
+<td>
+<span class="math inline">\(f(x) = g(x)h(x)\)</span>
+</td>
+<td>
+<span class="math inline">\(f'(x) = g'(x)h(x) + g(x)h'(x)\)</span>
+</td>
+</tr>
+<tr>
+<td class="tdvc">
+Division
+</td>
+<td class="tdvc">
+<span class="math inline">\(f(x) = \frac{g(x)}{h(x)}\)</span>
+</td>
+<td>
+Too hard to memorize… turn it into Multiplication, as <span class="math inline">\(f(x) = g(x)(h(x))^{-1}\)</span>
+</td>
+</tr>
+<tr>
+<td>
+Composition (Chain Rule)
+</td>
+<td class="tdvc">
+<span class="math inline">\(f(x) = g(h(x))\)</span>
+</td>
+<td class="tdvc">
+<span class="math inline">\(f'(x) = g'(h(x))h'(x)\)</span>
+</td>
+</tr>
+<tr>
+<td>
+Fancy Logarithm
+</td>
+<td>
+<span class="math inline">\(f(x) = \ln(g(x))\)</span>
+</td>
+<td>
+<span class="math inline">\(f'(x) = \frac{g'(x)}{g(x)}\)</span> by Chain Rule
+</td>
+</tr>
+<tr>
+<td>
+Fancy Exponential
+</td>
+<td>
+<span class="math inline">\(f(x) = e^{g(x)}\)</span>
+</td>
+<td>
+<span class="math inline">\(f'(x) = g'(x)e^{g(x)}\)</span> by Chain Rule
+</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-gelman_data_2007" class="csl-entry" role="listitem">
 Gelman, Andrew, and Jennifer Hill. 2007. <em>Data <span>Analysis Using Regression</span> and <span>Multilevel</span>/<span>Hierarchical Models</span></em>. Cambridge University Press. <a href="https://www.dropbox.com/scl/fi/asbumi3g0gqa4xl9va7wp/Andrew-Gelman-Jennifer-Hill-Data-Analysis-Using-Regression-and-Multilevel_Hierarchical-Models.pdf?rlkey=zf8icjhm7rswvxrpm7d10m65o&amp;dl=1">https://www.dropbox.com/scl/fi/asbumi3g0gqa4xl9va7wp/Andrew-Gelman-Jennifer-Hill-Data-Analysis-Using-Regression-and-Multilevel_Hierarchical-Models.pdf?rlkey=zf8icjhm7rswvxrpm7d10m65o&amp;dl=1</a>.
+</div>
+<div id="ref-james_introduction_2023" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, Robert Tibshirani, and Jonathan Taylor. 2023. <em>An <span>Introduction</span> to <span>Statistical Learning</span>: With <span>Applications</span> in <span>Python</span></em>. Springer Nature. <a href="https://books.google.com?id=ygzJEAAAQBAJ">https://books.google.com?id=ygzJEAAAQBAJ</a>.
 </div>
 </div>
 

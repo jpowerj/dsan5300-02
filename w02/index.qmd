@@ -18,7 +18,7 @@ format:
     scrollable: true
     slide-number: true
     code-fold: true
-    cache: false
+    cache: true
     theme: [default, "../dsan-globals/jjquarto.scss"]
     include-in-header:
       text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
@@ -34,6 +34,9 @@ format:
     output-file: "index.html"
     html-math-method: mathjax
     code-fold: true
+    theme:
+      light: [default, "../dsan-globals/jjquarto.scss"]
+      dark: [darkly, "../dsan-globals/jjquarto.scss"]
     cache: true
     include-in-header:
       text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
@@ -47,7 +50,22 @@ format:
 
 :::
 
-# Linear Regression {data-stack-name="Linear Regression" .title-12 .crunch-title .crunch-ul .crunch-li-8 .not-title-slide}
+# Schedule {.smaller .small-title .crunch-title .crunch-callout data-name="Schedule"}
+
+Today's Planned Schedule:
+
+| | Start | End | Topic |
+|:- |:- |:- |:- |
+| **Lecture** | 6:30pm | 7:10pm | [Simple Linear Regression &rarr;](#linear-regression) |
+| | 7:10pm | 7:30pm | [Deriving the OLS Solution &rarr;](#deriving-the-least-squares-estimate) |
+| | 7:30pm | 8:00pm | [Interpreting OLS Output &rarr;](#interpreting-output) |
+| **Break!** | 8:00pm | 8:10pm | |
+| | 8:10pm | 8:30pm | [Quiz Review &rarr;](#quiz-review) |
+| | 8:30pm | 9:00pm | Quiz 2! |
+
+: {tbl-colwidths="[12,12,12,64]"}
+
+# Linear Regression {data-stack-name="Linear Regression" .title-12 .crunch-title .crunch-ul .crunch-li-8}
 
 * What happens to my **dependent variable** $Y$ when my **independent variable** $X$ increases by **1 unit**?
 * Keep the **goal** in front of your mind:
@@ -62,7 +80,7 @@ format:
 
 * *Sanity Note 1*: <i class='bi bi-bullseye'></i> $\Rightarrow$ measuring error via **vertical** distance from line
 * *Sanity Note 2:* <i class='bi bi-bullseye'></i> $\Rightarrow$ modeling distribution of $\boxed{Y \mid X}$, not $(X,Y)$!
-  * Predicting $Y$ from $X$ ***and*** $X$ from $Y$ $\Rightarrow$ **principal component line $\neq$ regression line**!
+  * Predicting $Y$ from $X$ ***and*** $X$ from $Y$ $\Rightarrow$ **principal component line $\neq$ regression**!
 
 :::
 
@@ -88,6 +106,7 @@ set.seed(5300)
 ```{r}
 #| label: fig-pc-line
 #| fig-width: 6
+#| warning: false
 #| fig-cap: The line that minimizes blue distances does **not** predict $Y$ as well as regression line, despite intuitive appeal!
 library(tidyverse)
 set.seed(5321)
@@ -112,6 +131,7 @@ ggplot(df, aes(x=x, y=y)) +
 ```{r}
 #| label: fig-reg-line
 #| fig-width: 6
+#| warning: false
 #| fig-cap: The line that minimizes green distances **optimally** predicts $Y$ from $X$, in a mathematically-provable sense!
 ggplot(df, aes(x=x, y=y)) +
   geom_abline(slope=1, intercept=0, linetype="dashed", color=cbPalette[1], linewidth=g_linewidth*1.5) +
@@ -246,6 +266,7 @@ Given data $(X, Y)$, we estimate $\widehat{y} = \widehat{\beta}_0 + \widehat{\be
 
 ```{r}
 #| label: ad-plots
+#| warning: false
 #| fig-align: center
 library(tidyverse)
 ad_df <- read_csv("assets/Advertising.csv") |> rename(id=`...1`)
@@ -448,9 +469,10 @@ ggplot(data.frame(x=c(-4,4)), aes(x=x)) +
 
 ```{r}
 #| label: x2-plot
+#| warning: false
 #| fig-height: 7
 library(latex2exp)
-x2_label <- latex2exp("$f(x) = x^2$")
+x2_label <- TeX("$f(x) = x^2$")
 ggplot(data.frame(x=c(-4,4)), aes(x=x)) +
   stat_function(
     fun =~ .x^2,
@@ -584,21 +606,32 @@ $$
 
 ## Where Did That $\mathbb{E}[Y \mid X = x_i]$ Come From? {.smaller .title-11}
 
+* From our assumption that the irreducible **errors** $\varepsilon_i$ are **normally distributed** $\mathcal{N}(0, \sigma^2)$
+
 ![[Image Source](https://digfir-published.macmillanusa.com/psbe4e/psbe4e_ch10_2.html)](images/regression_normal_dist.jpg){fig-align="center"}
 
-## But... What About Other Types of Vars? {.title-08 .crunch-title}
+* Kind of an immensely important point, since it **gives us a hint for checking whether model assumptions hold**: spread around the regression line should be $\mathcal{N}(0, \sigma^2)$
 
-* 5000: you saw, e.g., nominal, ordinal, cardinal vars
+## Heteroskedasticity {.smaller .crunch-title}
+
+* If spread **increases** or **decreases** for larger $x$, for example, then $\varepsilon \nsim \mathcal{N}(0, \sigma^2)$
+
+![Figure 3.11 from @james_introduction_2023](images/3_11.svg){fig-align="center"}
+
+## But... What About Other Types of Vars? {.title-08 .crunch-title .text-90}
+
+* 5000: you saw **nominal**, **ordinal**, **cardinal** vars
 * 5100: you wrestled with **discrete** vs. **continuous** RVs
 * Good News #1: Regression can handle **all** these types+more!
-* Good News #2: Distinctions between **classification** and **regression** start to diminish as you learn fancier regression methods! (One key tool here: **link functions**)
+* Good News #2: Distinctions between **classification** and **regression** diminish as you learn fancier regression methods!
+  * tldr: Predict continuous probabilities $\Pr(Y) \in [0,1]$ (regression), then guess 1 if $\Pr(Y) > 0.5$ (classification)
 * By end of 5300 you should have something on your toolbelt for handling most cases like *"I want to do [regression / classification], but my data is [not cardinal+continuous]"*
 
 # Deriving the Least Squares Estimate {data-stack-name="Deriving OLS"}
 
-## A Sketch (HW is the Full Thing) {.smaller}
+## A Sketch (HW is the Full Thing) {.smaller .crunch-title .crunch-ul}
 
-* OLS for regression **without** intercept $\param{\beta_0}$: Which **line through origin** best predicts $Y$?
+* OLS for regression **without** intercept: Which [**line through origin**]{.boxed} best predicts $Y$?
 * (Good practice + reminder of how **restricted** linear models are!)
 
 $$
@@ -607,6 +640,7 @@ $$
 
 ```{r}
 #| label: random-lines-origin
+#| warning: false
 library(latex2exp)
 set.seed(5300)
 # rand_slope <- log(runif(80, min=0, max=1))
@@ -625,7 +659,7 @@ y0_vals <- 0.5 * x_vals + 0.25
 y_noise <- rnorm(num_points, 0, 0.07)
 y_vals <- y0_vals + y_noise
 rand_df <- tibble::tibble(x=x_vals, y=y_vals)
-title_exp <- latex2exp("Parameter Space ($\\beta_1$)")
+title_exp <- TeX("Parameter Space ($\\beta_1$)")
 # Main plot object
 gen_lines_plot <- function(point_size=2.5) {
   lines_plot <- rand_df |> ggplot(aes(x=x, y=y)) +
@@ -676,13 +710,14 @@ main_lines_plot +
 
 ```{r}
 #| label: possible-choice-1
+#| warning: false
 rc1_df <- possible_lines |> slice(n() - 14)
 # Predictions for this choice
 rc1_pred_df <- rand_df |> mutate(
   y_pred = rc1_df$slope * x,
   resid = y - y_pred
 )
-rc1_label <- latex2exp(paste0("Estimate 1: $\\beta_1 \\approx ",round(rc1_df$slope, 3),"$"))
+rc1_label <- TeX(paste0("Estimate 1: $\\beta_1 \\approx ",round(rc1_df$slope, 3),"$"))
 rc1_lines_plot <- gen_lines_plot(point_size=5)
 rc1_lines_plot +
   geom_abline(
@@ -696,7 +731,7 @@ rc1_lines_plot +
     aes(x=x, y=y, xend=x, yend=y_pred),
     # color=cb_palette[1]
   ) +
-  xlim(0, 1) + ylim(0, 1) +
+  xlim(0, 1) + ylim(0, 1.5) +
   labs(
     title = rc1_label
   )
@@ -707,9 +742,10 @@ rc1_lines_plot +
 
 ```{r}
 #| label: choice-1-resid
+#| warning: false
 gen_resid_plot <- function(pred_df) {
   rc_rss <- sum((pred_df$resid)^2)
-  rc_resid_label <- latex2exp(paste0("Residuals: RSS $\\approx$ ",round(rc_rss,3)))
+  rc_resid_label <- TeX(paste0("Residuals: RSS $\\approx$ ",round(rc_rss,3)))
   rc_resid_plot <- pred_df |> ggplot(aes(x=x, y=resid)) +
     geom_point(size=5) +
     geom_hline(
@@ -722,6 +758,7 @@ gen_resid_plot <- function(pred_df) {
     ) +
     theme_dsan(base_size=28) +
     theme(axis.line.x = element_blank()) +
+    ylim(-0.75, 0.25) +
     labs(
       title=rc_resid_label
     )
@@ -739,13 +776,14 @@ rc1_resid_plot
 
 ```{r}
 #| label: possible-choice-2
+#| warning: false
 rc2_df <- possible_lines |> slice(n() - 9)
 # Predictions for this choice
 rc2_pred_df <- rand_df |> mutate(
   y_pred = rc2_df$slope * x,
   resid = y - y_pred
 )
-rc2_label <- latex2exp(paste0("Estimate 2: $\\beta_1 \\approx ",round(rc2_df$slope,3),"$"))
+rc2_label <- TeX(paste0("Estimate 2: $\\beta_1 \\approx ",round(rc2_df$slope,3),"$"))
 rc2_lines_plot <- gen_lines_plot(point_size=5)
 rc2_lines_plot +
   geom_abline(
@@ -758,11 +796,12 @@ rc2_lines_plot +
     data=rc2_pred_df,
     aes(
       x=x, y=y, xend=x,
-      yend=ifelse(y_pred <= 1, y_pred, Inf)
+      # yend=ifelse(y_pred <= 1, y_pred, Inf)
+      yend=y_pred
     )
     # color=cb_palette[1]
   ) +
-  xlim(0, 1) + ylim(0, 1) +
+  xlim(0, 1) + ylim(0, 1.5) +
   labs(
     title=rc2_label
   )
@@ -784,7 +823,7 @@ rc2_resid_plot
 
 $$
 \begin{align*}
-\beta_1^* = \argmin_{\beta_1}\left[ \sum_{i=1}^{n}(\widehat{y}_i - y_i)^2 \right] = \argmin_{\beta_1}\left[ \sum_{i=1}^{n}(\beta_1x_i - y_i)^2 \right]
+\beta_1^* = \overbrace{\argmin}^{\begin{array}{c} \text{\small{Find thing}} \\[-5mm] \text{\small{that minimizes}}\end{array}}_{\beta_1}\left[ \sum_{i=1}^{n}(y_i - \widehat{y}_i)^2 \right] = \argmin_{\beta_1}\left[ \sum_{i=1}^{n}(y_i - \beta_1x_i)^2 \right]
 \end{align*}
 $$
 
@@ -870,6 +909,7 @@ smf.ols(
 
 ```{r}
 #| label: mil-plot-intro
+#| warning: false
 library(tidyverse)
 gdp_df <- read_csv("assets/gdp_pca.csv")
 mil_plot <- gdp_df |> ggplot(aes(x=industrial, y=military)) +
@@ -885,6 +925,7 @@ mil_plot <- gdp_df |> ggplot(aes(x=industrial, y=military)) +
 
 ```{r}
 #| label: mil-plot
+#| warning: false
 #| fig-height: 8
 mil_plot + theme_dsan("quarter")
 ```
@@ -894,6 +935,7 @@ mil_plot + theme_dsan("quarter")
 
 ```{r}
 #| label: mil-reg
+#| warning: false
 gdp_model <- lm(military ~ industrial, data=gdp_df)
 summary(gdp_model)
 ```
@@ -901,7 +943,7 @@ summary(gdp_model)
 :::
 ::::
 
-## Zooming In: Coefficients {.smaller-table .crunch-title}
+## Zooming In: Coefficients {.table-75 .crunch-title}
 
 ::: {.coef-table}
 
@@ -919,7 +961,7 @@ $$
 \widehat{y} \approx \class{cb1}{\overset{\beta_0}{\underset{\small \pm 0.595}{0.620}}} +  \class{cb2}{\overset{\beta_1}{\underset{\small \pm 0.020}{0.053}}} \cdot x
 $$
 
-## Zooming In: Significance {.crunch-title .smaller-table .crunch-details .crunch-quarto-figure}
+## Zooming In: Significance {.crunch-title .table-75 .crunch-details .crunch-quarto-figure}
 
 ::: {.coef-table}
 
@@ -940,6 +982,7 @@ $$
 #| label: t-stat-intercept
 #| fig-align: center
 #| fig-height: 6
+#| warning: false
 library(ggplot2)
 int_tstat <- 1.041
 int_tstat_str <- sprintf("%.02f", int_tstat)
@@ -984,6 +1027,7 @@ ggplot(data=data.frame(x=c(-3,3)), aes(x=x)) +
 #| label: t-stat-coef
 #| fig-align: center
 #| fig-height: 6
+#| warning: false
 library(ggplot2)
 coef_tstat <- 2.602
 coef_tstat_str <- sprintf("%.02f", coef_tstat)
@@ -1026,21 +1070,22 @@ ggplot(data=data.frame(x=c(-4,4)), aes(x=x)) +
 ::: columns
 ::: {.column width="50%"}
 
-* A key **assumption** required for OLS: **"homoskedasticity"**
-* Given our model
+Recall **homoskedasticity** assumption: Given our model
 
   $$
   y_i = \beta_0 + \beta_1x_i + \varepsilon_i
   $$
 
 the errors $\varepsilon_i$ **should not vary systematically with $i$**
-* Formally: $\forall i \left[ \Var{\varepsilon_i} = \sigma^2 \right]$
+
+Formally: $\forall i \left[ \Var{\varepsilon_i} = \sigma^2 \right]$
 
 :::
 ::: {.column width="50%"}
 
 ```{r}
 #| label: residual-plot
+#| warning: false
 library(broom)
 gdp_resid_df <- augment(gdp_model)
 ggplot(gdp_resid_df, aes(x = industrial, y = .resid)) +
@@ -1087,7 +1132,7 @@ ggplot(df_het, aes(x = .fitted, y = .resid)) +
 #| fig-height: 9
 ggplot(df_het, aes(sample=.resid)) +
   stat_qq(size = g_pointsize/2) + stat_qq_line(linewidth = g_linewidth) +
-  dsan_theme("half") +
+  dsan_theme(base_size=30) +
   labs(
     title = "Q-Q Plot for Heteroskedastic Data",
     x = "Normal Distribution Quantiles",
@@ -1103,7 +1148,7 @@ ggplot(df_het, aes(sample=.resid)) +
 #| fig-height: 9
 ggplot(gdp_resid_df, aes(sample=.resid)) +
   stat_qq(size = g_pointsize/2) + stat_qq_line(linewidth = g_linewidth) +
-  dsan_theme("half") +
+  dsan_theme(base_size=30) +
   labs(
     title = "Q-Q Plot for Industrial ~ Military Residuals",
     x = "Normal Distribution Quantiles",
@@ -1125,14 +1170,14 @@ $$
 
 * $\beta_j$ interpretation: a one-unit increase in $x_{i,j}$ is associated with a $\beta_j$ unit increase in $y_i$, **holding all other independent variables constant**
 
-## Visualizing Multiple Linear Regression
+## Visualizing Multiple Linear Regression {.crunch-title .title-09}
 
-![(ISLR, Fig 3.5): *A pronounced non-linear relationship. Positive residuals (visible above the surface) tend to lie along the 45-degree line, where budgets are split evenly. Negative residuals (most not visible) tend to be away from this line, where budgets are more lopsided.*](images/3_5.svg){fig-align="center"}
+![(ISLR Fig 3.5): *A pronounced non-linear relationship. Positive residuals (visible above the surface) tend to lie along the 45° line, where budgets are split evenly. Negative residuals (most not visible) tend to be away from this line, where budgets are more lopsided.*](images/3_5.svg){fig-align="center"}
 
-## Interpreting MLR {.smaller}
+## Interpreting MLR {.text-75 .crunch-title .crunch-p}
 
 :::: {.columns}
-::: {.column width="50%"}
+::: {.column width="55%"}
 
 ```{r}
 #| label: mlr-results
@@ -1142,57 +1187,86 @@ print(summary(mlr_model))
 ```
 
 :::
-::: {.column width="50%"}
+::: {.column width="45%"}
 
-* **Holding `radio` and `newspaper` spending constant**...
-  * An **increase of $1K** in spending on `TV` advertising is associated with
-  * An **increase in sales of about 46 units**
-* **Holding `TV` and `newspaper` spending constant**...
-  * An **increase of $1K** in spending on `radio` advertising is associated with
-  * An **increase in sales of about 189 units**
+**Holding `radio` and `newspaper` spending constant**...
+
+* An **increase of $1K** in spending on `TV` ads is associated with...
+* An **increase in sales of 46 units**
+
+**Holding `TV` and `newspaper` spending constant**...
+
+* An **increase of $1K** in spending on `radio` ads is associated with...
+* An **increase in sales of 189 units**
 
 :::
 ::::
 
-## But Wait... {.smaller}
+## But Wait... {.smaller .crunch-title .title-11 .crunch-p .crunch-math .math-90}
 
 :::: {.columns}
 ::: {.column width="50%"}
 
+<center>
+
+$$
+\texttt{sales} = \overset{*}{\beta_0} + \overset{*}{\beta_1}\texttt{newspaper}
+$$
+
+</center>
+
 ```{r}
-#| label: mlr-result-side
-print(summary(mlr_model))
+#| label: lr-result-side
+library(stats)
+lr_model <- lm(sales ~ newspaper, data=ad_df)
+printCoefmat(coef(summary(lr_model)))
 ```
 
 :::
 ::: {.column width="50%"}
 
+<center>
+
+$$
+\texttt{sales} = \overset{*}{\beta_0} + \overset{*}{\beta_1}\texttt{TV} + \overset{*}{\beta_2}\texttt{radio} + \overset{(~~)}{\beta_3}\texttt{paper}
+$$
+
+</center>
+
 ```{r}
-#| label: lr-result-side
-lr_model <- lm(sales ~ newspaper, data=ad_df)
-print(summary(lr_model))
+#| label: mlr-result-side
+# print(summary(mlr_model))
+printCoefmat(coef(summary(mlr_model)))
 ```
 
 :::
 ::::
 
-* MLR results can be **drastically different** from SLR results, because of **correlations** (next slide)
-* This is a good thing! It's how we're able to **control for** confounding variables!
+::: {#mlr-difference style="font-size: 110%"}
+
+* `newspaper` $\overset{*}{\rightarrow}$ `sales` in SLR, but `newspaper` $\overset{*}{\not\rightarrow}$ `sales` in MLR?
+* **Correlations** $\Rightarrow$ MLR results can be **drastically different** from SLR results
+* This is a good thing! It's how we're able to **control for** confounding vars!
+
+:::
 
 ## Correlations Among Features {.smaller}
 
 ```{r}
 #| label: feature-corr-matrix
+#| echo: true
+#| code-fold: true
+#| classes: center-output
 cor(ad_df |> select(-id))
 ```
 
-* Observe how $\text{cor}(\texttt{radio}, \texttt{newspaper}) \approx 0.35$ 
+* Observe how $\text{cor}(\texttt{radio}, \texttt{newspaper}) \approx 0.35$ (highest feat-feat correlation)
 * In markets where we spend more on `radio` our sales will tend to be higher...
 * Corr matrix $\implies$ we spend more on `newspaper` in those same markets...
 * In SLR which only examines `sales` vs. `newspaper`, we (**correctly!**) observe that higher values of `newspaper` are associated with higher values of `sales`...
-* In essence, `newspaper` advertising is a surrogate for `radio` advertising $\implies$ in our SLR, `newspaper` "gets credit" for the association between `radio` and `sales`
+* In essence, `newspaper` advertising is a **surrogate** for `radio` advertising $\implies$ in our SLR, `newspaper` "gets credit" for the association between `radio` and `sales`
 
-## Another MLR Superpower: Incorporating Categorical Vars {.smaller .title-09 .math-90}
+## Regression Superpower: Incorporating Categorical Vars {.smaller .title-09 .math-90}
 
 *(Preview for next week)*
 
@@ -1205,6 +1279,7 @@ $$
 
 ```{r}
 #| label: credit-plot-slr
+#| warning: false
 credit_df <- read_csv("assets/Credit.csv")
 credit_plot <- credit_df |> ggplot(aes(x=Income, y=Balance)) +
   geom_point(size=0.5*g_pointsize) +
@@ -1230,6 +1305,7 @@ $$
 
 ```{r}
 #| label: credit-plot-students
+#| warning: false
 student_plot <- credit_df |> ggplot(aes(x=Income, y=Balance, color=Student)) +
   geom_point(size=0.5*g_pointsize) +
   geom_smooth(method='lm', formula="y ~ x", linewidth=1) +
@@ -1245,8 +1321,147 @@ student_plot
 :::
 ::::
 
-* Why do we need the $\texttt{Student} \times \texttt{Income}$ term?
+* How does the $\texttt{Student} \times \texttt{Income}$ term help?
 * Understanding this setup will open up a **vast** array of possibilities for regression 😎
+
+# Quiz Review {data-stack-name="Quiz"}
+
+## Objective Functions {.crunch-title .text-82 .crunch-ul .crunch-callout .crunch-math}
+
+"Fitting" a statistical model to data means **minimizing** some **loss function** that measures "how bad" our predictions are:
+
+::: {.callout-note title="Optimization Problems: General Form"}
+
+Find $x^*$, the solution to
+
+$$
+\begin{align}
+	\min_{x} ~ & f(x) &\text{(Objective function)} \\
+	\text{s.t. } ~ & g(x) = 0 &\text{(Constraints)}
+\end{align}
+$$
+
+:::
+
+* Earlier we were able to write $x^* = \argmax_x{f(x)}$, since there were no constraints. Is there a way to write a formula like this *with* constraints?
+* Answer: Yes! Thx Giuseppe-Luigi Lagrangia = Joseph-Louis **Lagrange**:
+
+$$
+x^* = \argmax_{x,~\lambda}f(x) - \lambda[g(x)]
+$$
+
+::: {.aside}
+
+*(Why worry about constraints when OLS is unconstrained? ...Soon we'll need to **penalize complexity!**)*
+
+:::
+
+## Example Problem {.text-80 .crunch-title .crunch-math-15}
+
+::::: {.columns}
+:::: {.column width="50%"}
+
+::: {.callout-note title="Example 1: Unconstrained Optimization"}
+
+Find $x^*$, the solution to
+
+$$
+\begin{align}
+	\min_{x} ~ & f(x) = 3x^2 - x \\
+	\text{s.t. } ~ & \varnothing
+\end{align}
+$$
+
+:::
+::::
+:::: {.column width="50%"}
+
+::: {.callout-tip title="Our Plan"}
+
+* Compute the derivative $f'(x) = \frac{\partial}{\partial x}f(x)$,
+* Set it equal to zero: $f'(x) = 0$, and
+* Solve this equality for $x$, i.e., find values $x^*$ satisfying $f'(x^*) = 0$
+
+:::
+
+::::
+:::::
+
+Computing the derivative:
+
+$$
+f'(x) = \frac{\partial}{\partial x}f(x) = \frac{\partial}{\partial x}\left[3x^2 - x\right] = 6x - 1,
+$$
+
+Solving for $x^*$, the value(s) satisfying $\frac{\partial}{\partial x}f'(x^*) = 0$ for just-derived $f'(x)$:
+
+$$
+f'(x^*) = 0 \iff 6x^* - 1 = 0 \iff x^* = \frac{1}{6}.
+$$
+
+## Derivative Cheatsheet {.smaller .crunch-title .title-12 .text-65}
+
+<table>
+<colspec>
+<col style="width: 24%;"></col>
+<col style="width: 24%;"></col>
+<col style="width: 52%;"></col>
+</colspec>
+<thead>
+<tr>
+  <th class='tdvc'>Type of Thing</th>
+  <th class='tdvc'>Thing</th>
+  <th>Change in Thing when $x$ Changes by Tiny Amount</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Polynomial</td>
+<td>$f(x) = x^n$</td>
+<td>$f'(x) = \frac{\partial}{\partial x}f(x) = nx^{n-1}$</td>
+</tr>
+<tr>
+<td class='tdvc'>Fraction</td>
+<td class='tdvc'>$f(x) = \frac{1}{x}$</td>
+<td>Use Polynomial rule (since $\frac{1}{x} = x^{-1}$) to get $f'(x) = -\frac{1}{x^2}$</td>
+</tr>
+<tr>
+<td>Logarithm</td>
+<td>$f(x) = \ln(x)$</td>
+<td>$f'(x) = \frac{\partial}{\partial x} = \frac{1}{x}$</td>
+</tr>
+<tr>
+<td>Exponential</td>
+<td>$f(x) = e^x$</td>
+<td>$f'(x) = \frac{\partial}{\partial x}e^x = e^x$ (🧐❗️)</td>
+</tr>
+<tr>
+<td>Multiplication</td>
+<td>$f(x) = g(x)h(x)$</td>
+<td>$f'(x) = g'(x)h(x) + g(x)h'(x)$</td>
+</tr>
+<tr>
+<td class='tdvc'>Division</td>
+<td class='tdvc'>$f(x) = \frac{g(x)}{h(x)}$</td>
+<td>Too hard to memorize... turn it into Multiplication, as $f(x) = g(x)(h(x))^{-1}$</td>
+</tr>
+<tr>
+<td>Composition (Chain Rule)</td>
+<td class='tdvc'>$f(x) = g(h(x))$</td>
+<td class='tdvc'>$f'(x) = g'(h(x))h'(x)$</td>
+</tr>
+<tr>
+<td>Fancy Logarithm</td>
+<td>$f(x) = \ln(g(x))$</td>
+<td>$f'(x) = \frac{g'(x)}{g(x)}$ by Chain Rule</td>
+</tr>
+<tr>
+<td>Fancy Exponential</td>
+<td>$f(x) = e^{g(x)}$</td>
+<td>$f'(x) = g'(x)e^{g(x)}$ by Chain Rule</td>
+</tr>
+</tbody>
+</table>
 
 ## References
 
