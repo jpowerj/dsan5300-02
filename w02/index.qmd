@@ -18,7 +18,7 @@ format:
     scrollable: true
     slide-number: true
     code-fold: true
-    cache: true
+    cache: false
     theme: [default, "../dsan-globals/jjquarto.scss"]
     include-in-header:
       text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
@@ -47,16 +47,24 @@ format:
 
 :::
 
-# Linear Regression {data-stack-name="Linear Regression"}
+# Linear Regression {data-stack-name="Linear Regression" .title-12 .crunch-title .crunch-ul .crunch-li-8 .not-title-slide}
 
-* What happens to my **dependent variable** $Y$ when my **independent variable** $X$ changes by **1 unit**?
-* Whenever you carry out a regression, keep the **goal** in the front of your mind:
+* What happens to my **dependent variable** $Y$ when my **independent variable** $X$ increases by **1 unit**?
+* Keep the **goal** in front of your mind:
 
-  ::: {.callout-tip .r-fit-text title="<i class='bi bi-info-circle'></i> The Goal of Regression" icon="false"}
+  ::: {.callout-tip .r-fit-text title="<i class='bi bi-bullseye'></i> The Goal of Regression" icon="false"}
 
   **Find a line $\widehat{y} = mx + b$ that best predicts $Y$ for given values of $X$**
 
   :::
+
+::: {#sanity-notes style="font-size: 67%"}
+
+* *Sanity Note 1*: <i class='bi bi-bullseye'></i> $\Rightarrow$ measuring error via **vertical** distance from line
+* *Sanity Note 2:* <i class='bi bi-bullseye'></i> $\Rightarrow$ modeling distribution of $\boxed{Y \mid X}$, not $(X,Y)$!
+  * Predicting $Y$ from $X$ ***and*** $X$ from $Y$ $\Rightarrow$ **principal component line $\neq$ regression line**!
+
+:::
 
 ::: {.hidden}
 
@@ -71,15 +79,16 @@ set.seed(5300)
 {{< include ../dsan-globals/_globals-tex.qmd >}}
 
 
-## How Do We Define "Best"? {.smaller}
+## How Do We Define "Best"? {.smaller .crunch-title .crunch-ul .crunch-quarto-figure .crunch-img .crunch-li-8}
 
 * Intuitively, two different ways to measure **how well a line fits the data**:
 
 ::: {layout="[1,1]" layout-valign="center"}
 
 ```{r}
-#| label: pc-line
+#| label: fig-pc-line
 #| fig-width: 6
+#| fig-cap: The line that minimizes blue distances does **not** predict $Y$ as well as regression line, despite intuitive appeal!
 library(tidyverse)
 set.seed(5321)
 N <- 11
@@ -89,7 +98,7 @@ mean_y <- mean(y)
 spread <- y - mean_y
 df <- tibble(x = x, y = y, spread = spread)
 ggplot(df, aes(x=x, y=y)) +
-  geom_abline(slope=1, intercept=0, linetype="dashed", color=cbPalette[1], linewidth=g_linewidth*2) +
+  geom_abline(slope=1, intercept=0, linetype="dashed", color=cbPalette[1], linewidth=g_linewidth*1.5) +
   geom_segment(xend=(x+y)/2, yend=(x+y)/2, linewidth=g_linewidth*2, color=cbPalette[2]) +
   geom_point(size=g_pointsize) +
   coord_equal() +
@@ -101,11 +110,12 @@ ggplot(df, aes(x=x, y=y)) +
 ```
 
 ```{r}
-#| label: reg-line
+#| label: fig-reg-line
 #| fig-width: 6
+#| fig-cap: The line that minimizes green distances **optimally** predicts $Y$ from $X$, in a mathematically-provable sense!
 ggplot(df, aes(x=x, y=y)) +
-  geom_abline(slope=1, intercept=0, linetype="dashed", color=cbPalette[1], linewidth=g_linewidth*2) +
-  geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +
+  geom_abline(slope=1, intercept=0, linetype="dashed", color=cbPalette[1], linewidth=g_linewidth*1.5) +
+  geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cb_palette[3]) +
   geom_point(size=g_pointsize) +
   coord_equal() +
   xlim(0, 1) + ylim(0, 1) +
@@ -121,14 +131,122 @@ ggplot(df, aes(x=x, y=y)) +
 On the difference between these two lines, and why it matters, I cannot recommend @gelman_data_2007 enough!
 :::
 
-## Predictive Example: Advertising Effects {.smaller .title-12}
 
-* **Independent variable**: $ put into advertisements
-* **Dependent variable**: Sales
-* **Goal**: Figure out a good way to **allocate** an advertising budget
+## Principal Component Analysis {.smaller .crunch-title .crunch-ul .shift-footnotes-20 .crunch-li-8}
+
+* **Principal Component Line** can be used to **project** the data onto its **dimension of highest variance** (recap from 5000!)
+* More simply: PCA can **discover** meaningful axes in data (**unsupervised** learning / **exploratory** data analysis settings)
+
+```{r}
+#| label: gdp-plot
+#| warning: false
+#| fig-width: 10
+#| fig-height: 4
+library(readr)
+library(ggplot2)
+gdp_df <- read_csv("assets/gdp_pca.csv")
+
+dist_to_line <- function(x0, y0, a, c) {
+    numer <- abs(a * x0 - y0 + c)
+    denom <- sqrt(a * a + 1)
+    return(numer / denom)
+}
+# Finding PCA line for industrial vs. exports
+x <- gdp_df$industrial
+y <- gdp_df$exports
+lossFn <- function(lineParams, x0, y0) {
+    a <- lineParams[1]
+    c <- lineParams[2]
+    return(sum(dist_to_line(x0, y0, a, c)))
+}
+o <- optim(c(0, 0), lossFn, x0 = x, y0 = y)
+ggplot(gdp_df, aes(x = industrial, y = exports)) +
+    geom_point(size=g_pointsize/2) +
+    geom_abline(aes(slope = o$par[1], intercept = o$par[2], color="pca"), linewidth=g_linewidth, show.legend = TRUE) +
+    geom_smooth(aes(color="lm"), method = "lm", se = FALSE, linewidth=g_linewidth, key_glyph = "blank") +
+    scale_color_manual(element_blank(), values=c("pca"=cbPalette[2],"lm"=cbPalette[1]), labels=c("Regression","PCA")) +
+    dsan_theme("half") +
+    remove_legend_title() +
+    labs(
+      title = "PCA Line vs. Regression Line",
+	    x = "Industrial Production (% of GDP)",
+	    y = "Exports (% of GDP)"
+    )
+```
+
+::: {.aside}
+See [this amazing blog post](https://juliasilge.com/blog/un-voting/) using PCA, with 2 dimensions, to explore UN voting patterns!
+:::
+
+## Create Your Own Dimension!
+
+```{r}
+#| label: pca-plot
+#| warning: false
+ggplot(gdp_df, aes(pc1, .fittedPC2)) +
+    geom_point(size = g_pointsize/2) +
+    geom_hline(aes(yintercept=0, color='PCA Line'), linetype='solid', size=g_linesize) +
+    geom_rug(sides = "b", linewidth=g_linewidth/1.2, length = unit(0.1, "npc"), color=cbPalette[3]) +
+    expand_limits(y=-1.6) +
+    scale_color_manual(element_blank(), values=c("PCA Line"=cbPalette[2])) +
+    dsan_theme("full") +
+    remove_legend_title() +
+    labs(
+      title = "Exports vs. Industrial Production in Principal Component Space",
+      x = "First Principal Component (Dimension of Greatest Variance)",
+      y = "Second Principal Component"
+    )
+```
+
+## ...And Use It for EDA
+
+```{r}
+#| label: pca-facet-plot
+#| warning: false
+library(dplyr)
+library(tidyr)
+plot_df <- gdp_df %>% select(c(country_code, pc1, agriculture, military))
+long_df <- plot_df %>% pivot_longer(!c(country_code, pc1), names_to = "var", values_to = "val")
+long_df <- long_df |> mutate(
+  var = case_match(
+    var,
+    "agriculture" ~ "Agricultural Production",
+    "military" ~ "Military Spending"
+  )
+)
+ggplot(long_df, aes(x = pc1, y = val, facet = var)) +
+    geom_point() +
+    geom_smooth(method=lm, formula='y ~ x') +
+    facet_wrap(vars(var), scales = "free") +
+	dsan_theme("full") +
+	labs(
+		x = "\"Industrial-Export Dimension\" (First PC)",
+		y = "% of GDP"
+	)
+```
+
+## But in Our Case... {.crunch-title .crunch-ul .text-90}
+
+* $x$ and $y$ dimensions **already have meaning**, and we have a **hypothesis** about effect of $x$ on $y$!
+
+::: {.callout-tip title="The Regression Hypothesis $\mathcal{H}_{\text{reg}}$"}
+Given data $(X, Y)$, we estimate $\widehat{y} = \widehat{\beta}_0 + \widehat{\beta}_1x$, hypothesizing that:
+
+* Starting from $y = \underbrace{\widehat{\beta}_0}_{\mathclap{\text{Intercept}}}$ when $x = 0$,
+* An **increase** of $x$ by **1 unit** is associated with an **increase** of $y$ by **$\underbrace{\widehat{\beta}_1}_{\mathclap{\text{Coefficient}}}$ units**
+:::
+
+* We want to measure **how well** our line predicts $y$ for any given $x$ value $\implies$ **vertical distance** from regression line
+
+## Example: Advertising Effects {.smaller .title-12 .crunch-title .crunch-ul}
+
+* **Independent variable**: \$ put into advertisements; **Dependent variable**: Sales
+* **Goal 1**: *Predict* sales for a given allocation
+* **Goal 2**: *Infer* best allocation for a given advertising budget (more simply: a new $1K appears! Where should we invest it?)
 
 ```{r}
 #| label: ad-plots
+#| fig-align: center
 library(tidyverse)
 ad_df <- read_csv("assets/Advertising.csv") |> rename(id=`...1`)
 long_df <- ad_df |> pivot_longer(-c(id, sales), names_to="medium", values_to="allocation")
@@ -143,49 +261,58 @@ long_df |> ggplot(aes(x=allocation, y=sales)) +
   )
 ```
 
-## Explanatory Example: Industrialization Effects {.smaller}
-
-```{r}
-#| label: mil-plot-intro
-library(tidyverse)
-gdp_df <- read_csv("assets/gdp_pca.csv")
-mil_plot <- gdp_df |> ggplot(aes(x=industrial, y=military)) +
-  geom_point(size=0.5*g_pointsize) +
-  geom_smooth(method='lm', formula="y ~ x", linewidth=1) +
-  theme_dsan() +
-  labs(
-    title="Military Exports vs. Industrialization",
-    x="Industrial Production (% of GDP)",
-    y="Military Exports (% of All Exports)"
-  )
-mil_plot
-```
-
-## Simple Linear Regression {.smaller}
+## Simple Linear Regression {.smaller .crunch-title .crunch-ul .crunch-math}
 
 * For now, we treat **Newspaper**, **Radio**, **TV** advertising separately: how much do **sales** increase per $1 into [medium]? (Later we'll consider them jointly: multiple regression)
-* **Our model**:
 
-  $$
-  Y = \underbrace{\param{\beta_0}}_{\mathclap{\text{Intercept}}} + \underbrace{\param{\beta_1}}_{\mathclap{\text{Slope}}}X + \varepsilon
-  $$
+:::: {.columns}
+::: {.column width="50%"}
 
-* This model generates **predictions** via
+<center>
 
-  $$
-  \widehat{y} = \underbrace{\widehat{\beta_0}}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-5mm] \text{intercept}\end{array}}} ~+~ \underbrace{\widehat{\beta_1}}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-4mm] \text{slope}\end{array}}}\cdot x
-  $$
+**Our model**:
+
+</center>
+
+$$
+Y = \underbrace{\param{\beta_0}}_{\mathclap{\text{Intercept}}} + \underbrace{\param{\beta_1}}_{\mathclap{\text{Slope}}}X + \varepsilon
+$$
+
+:::
+::: {.column width="50%"}
+
+<center>
+
+...Generates **predictions** via:
+
+</center>
+
+$$
+\widehat{y} = \underbrace{\widehat{\beta}_0}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-5mm] \text{intercept}\end{array}}} ~+~ \underbrace{\widehat{\beta}_1}_{\mathclap{\small\begin{array}{c}\text{Estimated} \\[-4mm] \text{slope}\end{array}}}\cdot x
+$$
+
+:::
+::::
 
 * Note how these predictions will be **wrong** (unless the data is perfectly linear)
 * We've accounted for this in our model (by including $\varepsilon$ term)!
-* But, we'd like to find estimates $\widehat{\beta}_0$ and $\widehat{\beta}_1$ that produce the "least wrong" predictions: motivates focus on **residuals...**
+* But, we'd like to find estimates $\widehat{\beta}_0$ and $\widehat{\beta}_1$ that produce the **"least wrong" predictions**: motivates focus on **residuals $\widehat{\varepsilon}_i$...**
 
-## Least Squares: Minimizing Residuals {.smaller .crunch-title .crunch-quarto-figure}
+$$
+\widehat{\varepsilon}_i = \underbrace{y_i}_{\mathclap{\small\begin{array}{c}\text{Real} \\[-5mm] \text{label}\end{array}}} - \underbrace{\widehat{y}_i}_{\mathclap{\small\begin{array}{c}\text{Predicted} \\[-5mm] \text{label}\end{array}}}
+= \underbrace{y_i}_{\mathclap{\small\begin{array}{c}\text{Real} \\[-5mm] \text{label}\end{array}}} - \underbrace{
+  \left(
+    \widehat{\beta}_0 + \widehat{\beta}_1 \cdot x
+  \right)
+}_{\text{\small{Predicted label}}}
+$$
+
+## Least Squares: Minimizing Residuals {.smaller .crunch-title .title-11 .crunch-quarto-figure .crunch-p .crunch-quarto-layout-panel .crunch-img}
 
 What can we **optimize** to ensure these residuals are as small as possible?
 
-:::: {.columns}
-::: {.column width="60%"}
+:::: {layout="[65,35]" layout-valign="center"}
+::: {.column width="65%"}
 
 ```{r}
 #| label: large-resids-plot
@@ -203,16 +330,13 @@ sim_lg_df |> ggplot(aes(x=x, y=y)) +
   geom_point(size=g_pointsize) +
   # coord_equal() +
   theme_dsan("half") +
-  scale_color_manual("Spread", values=c("Positive"=cbPalette[3],"Negative"=cbPalette[6]), labels=c("Positive"="Positive","Negative"="Negative")) +
-  labs(
-    title = "Regression Line"
-  )
+  scale_color_manual("Spread", values=c("Positive"=cbPalette[3],"Negative"=cbPalette[6]), labels=c("Positive"="Positive","Negative"="Negative"))
 ```
 
 :::
-::: {.column width="40%"}
+::: {.column width="35%"}
 
-* Sum?
+Sum?
 
 ```{r}
 #| label: large-resids-sum-of-spread
@@ -220,7 +344,7 @@ large_sum <- sum(sim_lg_df$spread)
 writeLines(fmt_decimal(large_sum))
 ```
 
-* Sum of Squares?
+Sum of Squares?
 
 ```{r}
 #| label: large-resids-sum-of-spread-squared
@@ -228,11 +352,19 @@ large_sqsum <- sum((sim_lg_df$spread)^2)
 writeLines(fmt_decimal(large_sqsum))
 ```
 
+Sum of absolute vals?
+
+```{r}
+#| label: large-resids-sum-of-abs
+large_abssum <- sum(abs(sim_lg_df$spread))
+writeLines(fmt_decimal(large_abssum))
+```
+
 :::
 ::::
 
-:::: {.columns}
-::: {.column width="60%"}
+:::: {layout="[65,35]" layout-valign="center"}
+::: {.column width="65%"}
 
 ```{r}
 #| label: small-resids-plot
@@ -250,16 +382,13 @@ sim_sm_df |> ggplot(aes(x=x, y=y)) +
   geom_point(size=g_pointsize) +
   # coord_equal() +
   theme_dsan("half") +
-  scale_color_manual("Spread", values=c("Positive"=cbPalette[3],"Negative"=cbPalette[6]), labels=c("Positive"="Positive","Negative"="Negative")) +
-  labs(
-    title = "Regression Line"
-  )
+  scale_color_manual("Spread", values=c("Positive"=cbPalette[3],"Negative"=cbPalette[6]), labels=c("Positive"="Positive","Negative"="Negative"))
 ```
 
 :::
-::: {.column width="40%"}
+::: {.column width="35%"}
 
-* Sum?
+Sum?
 
 ```{r}
 #| label: small-resids-sum
@@ -267,12 +396,20 @@ small_rsum <- sum(sim_sm_df$spread)
 writeLines(fmt_decimal(small_rsum))
 ```
 
-* Sum of Squares?
+Sum of Squares?
 
 ```{r}
 #| label: small-resids-sum-of-squares
 small_sqrsum <- sum((sim_sm_df$spread)^2)
 writeLines(fmt_decimal(small_sqrsum))
+```
+
+Sum of absolute vals?
+
+```{r}
+#| label: small-resids-sum-of-abs
+small_abssum <- sum(abs(sim_sm_df$spread))
+writeLines(fmt_decimal(small_abssum))
 ```
 
 :::
@@ -281,28 +418,11 @@ writeLines(fmt_decimal(small_sqrsum))
 ## Why Not Absolute Value? {.smaller .crunch-title .crunch-code .crunch-ul .crunch-quarto-figure}
 
 * Two feasible ways to prevent positive and negative residuals **cancelling out**:
-  * **Absolute value** $\left|y - \widehat{y}\right|$ or **squaring** $\left( y - \widehat{y} \right)^2$
-* But remember that we're aiming to **minimize** these residuals...
-* Ghost of calculus past 😱: which is **differentiable** everywhere?
+  * [**Absolute error** $\left|y - \widehat{y}\right|$]{.cb1} or [**squared error** $\left( y - \widehat{y} \right)^2$]{.cb2}
+* But remember: we're aiming to **minimize** 👀 these residuals; ghost of calculus past 😱
+* We *minimize* by taking *derivatives*... which one is **differentiable** everywhere?
 
 :::: {.columns}
-::: {.column width="50%"}
-
-```{r}
-#| label: x2-plot
-#| fig-height: 7
-library(latex2exp)
-x2_label <- latex2exp("$f(x) = x^2$")
-ggplot(data.frame(x=c(-4,4)), aes(x=x)) +
-  stat_function(fun=~ .x^2, linewidth = g_linewidth) +
-  dsan_theme("quarter") +
-  labs(
-    title=x2_label,
-    y="f(x)"
-  )
-```
-
-:::
 ::: {.column width="50%"}
 
 ```{r}
@@ -310,7 +430,11 @@ ggplot(data.frame(x=c(-4,4)), aes(x=x)) +
 #| fig-height: 7
 # Could use facet_grid() here, but it doesn't work too nicely with stat_function() :(
 ggplot(data.frame(x=c(-4,4)), aes(x=x)) +
-  stat_function(fun=~ abs(.x), linewidth=g_linewidth) +
+  stat_function(
+    fun =~ abs(.x),
+    linewidth=g_linewidth * 1.5,
+    color=cb_palette[1],
+  ) +
   dsan_theme("quarter") +
   labs(
     title="f(x) = |x|",
@@ -319,11 +443,125 @@ ggplot(data.frame(x=c(-4,4)), aes(x=x)) +
 ```
 
 :::
+::: {.column width="50%"}
+
+
+```{r}
+#| label: x2-plot
+#| fig-height: 7
+library(latex2exp)
+x2_label <- latex2exp("$f(x) = x^2$")
+ggplot(data.frame(x=c(-4,4)), aes(x=x)) +
+  stat_function(
+    fun =~ .x^2,
+    linewidth = g_linewidth * 1.5,
+    color=cb_palette[2],
+  ) +
+  dsan_theme("quarter") +
+  labs(
+    title=x2_label,
+    y="f(x)"
+  )
+```
+
+:::
 ::::
 
-## Outliers Penalized Quadratically {.smaller}
+## Outliers Penalized Quadratically {.smaller .crunch-title .crunch-ul .crunch-quarto-layout-panel}
 
-![[Image Source](https://gregorygundersen.com/blog/2020/01/04/ols/)](images/rss.png){fig-align="center"}
+* May feel arbitrary at first (we're "forced" to use squared error because of calculus?)
+* It also has **important consequences** for "learnability" via gradient descent!
+
+:::: {layout="[1,1]" layout-valign="center"}
+::: {.column width="50%"}
+
+```{r}
+#| label: resid-quadratic-abs
+#| fig-height: 8
+library(latex2exp)
+set.seed(5300)
+slope <- 0.5
+x_vals <- seq(from = -20, to = 20, length.out = 15)
+N <- length(x_vals)
+y_vals <- slope * x_vals + rnorm(N, 0, 5)
+spread_vals <- y_vals - slope * x_vals
+sim_lg_df <- tibble(
+  x = x_vals, y = y_vals, spread = spread_vals
+)
+abs_sum <- round(sum(abs(sim_lg_df$spread)), 3)
+abs_label <- TeX(paste0("$\\Sigma = ",abs_sum,"$"))
+sim_lg_df |> ggplot(aes(x=x, y=y)) +
+  geom_point(size=g_pointsize * 0.9) +
+  geom_abline(
+    slope=slope,
+    intercept=0,
+    linetype="dashed",
+    color='black',
+    linewidth=g_linewidth
+  ) +
+  geom_segment(
+    aes(xend=x, yend=slope * x),
+    arrow=arrow(
+      angle=90,
+      length=unit(0.125,'inches'),
+      ends='both'
+    ),
+    linewidth=1.5*g_linewidth,
+    color=cb_palette[7],
+    alpha=0.9,
+  ) +
+  ylim(-15, 15) +
+  xlim(-20, 27.5) +
+  coord_equal() +
+  theme_dsan(base_size=28) +
+  labs(title="Absolute Penalties") +
+  geom_text(
+    data=data.frame(x=15, y=-10), label=abs_label,
+    size=12
+  )
+```
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| label: resid-quadratic-squared
+#| fig-height: 8
+sq_sum <- round(sum((sim_lg_df$spread)^2), 3)
+sq_label <- TeX(paste0("$\\Sigma = ",sq_sum,"$"))
+sim_lg_df |> ggplot(aes(x=x, y=y)) +
+  geom_point(size=g_pointsize * 0.9) +
+  geom_abline(
+    slope=slope,
+    intercept=0,
+    linetype="dashed",
+    color='black',
+    linewidth=g_linewidth
+  ) +
+  geom_rect(
+    aes(
+      xmin=x,
+      xmax=x+abs(spread),
+      ymin=ifelse(spread < 0, y, y - spread),
+      ymax=ifelse(spread < 0, y - spread, y)
+    ),
+    color='black',
+    fill=cb_palette[7],
+    alpha=0.2,
+  ) +
+  ylim(-15, 15) +
+  xlim(-20, 27.5) +
+  coord_equal() +
+  theme_dsan(base_size=30) +
+  labs(title="Squared Penalties") +
+  geom_text(
+    data=data.frame(x=15, y=-10), label=sq_label,
+    size=12
+  )
+```
+
+:::
+::::
 
 ## Key Features of Regression Line {.crunch-math .math-90}
 
@@ -348,7 +586,7 @@ $$
 
 ![[Image Source](https://digfir-published.macmillanusa.com/psbe4e/psbe4e_ch10_2.html)](images/regression_normal_dist.jpg){fig-align="center"}
 
-## But... What About All the Other Types of Vars? {.title-08}
+## But... What About Other Types of Vars? {.title-08 .crunch-title}
 
 * 5000: you saw, e.g., nominal, ordinal, cardinal vars
 * 5100: you wrestled with **discrete** vs. **continuous** RVs
@@ -629,6 +867,21 @@ smf.ols(
 
 :::: {.columns}
 ::: {.column width="50%"}
+
+```{r}
+#| label: mil-plot-intro
+library(tidyverse)
+gdp_df <- read_csv("assets/gdp_pca.csv")
+mil_plot <- gdp_df |> ggplot(aes(x=industrial, y=military)) +
+  geom_point(size=0.5*g_pointsize) +
+  geom_smooth(method='lm', formula="y ~ x", linewidth=1) +
+  theme_dsan() +
+  labs(
+    title="Military Exports vs. Industrialization",
+    x="Industrial Production (% of GDP)",
+    y="Military Exports (% of All Exports)"
+  )
+```
 
 ```{r}
 #| label: mil-plot

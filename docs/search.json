@@ -2082,49 +2082,70 @@
     "href": "w02/slides.html#how-do-we-define-best",
     "title": "Week 2: Linear Regression",
     "section": "How Do We Define “Best”?",
-    "text": "How Do We Define “Best”?\n\nIntuitively, two different ways to measure how well a line fits the data:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nOn the difference between these two lines, and why it matters, I cannot recommend Gelman and Hill (2007) enough!"
+    "text": "How Do We Define “Best”?\n\nIntuitively, two different ways to measure how well a line fits the data:\n\n\n\n\n\n\n\n\n\n\n\nFigure 1: The line that minimizes blue distances does not predict \\(Y\\) as well as regression line, despite intuitive appeal!\n\n\n\n\n\n\n\n\n\n\n\n\n\nFigure 2: The line that minimizes green distances optimally predicts \\(Y\\) from \\(X\\), in a mathematically-provable sense!\n\n\n\n\n\n\n\n\n\nOn the difference between these two lines, and why it matters, I cannot recommend Gelman and Hill (2007) enough!"
   },
   {
-    "objectID": "w02/slides.html#predictive-example-advertising-effects",
-    "href": "w02/slides.html#predictive-example-advertising-effects",
+    "objectID": "w02/slides.html#principal-component-analysis",
+    "href": "w02/slides.html#principal-component-analysis",
     "title": "Week 2: Linear Regression",
-    "section": "Predictive Example: Advertising Effects",
-    "text": "Predictive Example: Advertising Effects\n\nIndependent variable: $ put into advertisements\nDependent variable: Sales\nGoal: Figure out a good way to allocate an advertising budget"
+    "section": "Principal Component Analysis",
+    "text": "Principal Component Analysis\n\nPrincipal Component Line can be used to project the data onto its dimension of highest variance (recap from 5000!)\nMore simply: PCA can discover meaningful axes in data (unsupervised learning / exploratory data analysis settings)\n\n\n\n\n\n\n\n\n\n\n\n\nSee this amazing blog post using PCA, with 2 dimensions, to explore UN voting patterns!"
   },
   {
-    "objectID": "w02/slides.html#explanatory-example-industrialization-effects",
-    "href": "w02/slides.html#explanatory-example-industrialization-effects",
+    "objectID": "w02/slides.html#create-your-own-dimension",
+    "href": "w02/slides.html#create-your-own-dimension",
     "title": "Week 2: Linear Regression",
-    "section": "Explanatory Example: Industrialization Effects",
-    "text": "Explanatory Example: Industrialization Effects"
+    "section": "Create Your Own Dimension!",
+    "text": "Create Your Own Dimension!"
+  },
+  {
+    "objectID": "w02/slides.html#and-use-it-for-eda",
+    "href": "w02/slides.html#and-use-it-for-eda",
+    "title": "Week 2: Linear Regression",
+    "section": "…And Use It for EDA",
+    "text": "…And Use It for EDA"
+  },
+  {
+    "objectID": "w02/slides.html#but-in-our-case",
+    "href": "w02/slides.html#but-in-our-case",
+    "title": "Week 2: Linear Regression",
+    "section": "But in Our Case…",
+    "text": "But in Our Case…\n\n\\(x\\) and \\(y\\) dimensions already have meaning, and we have a hypothesis about effect of \\(x\\) on \\(y\\)!\n\n\n\n\n\n\n\n\nThe Regression Hypothesis \\(\\mathcal{H}_{\\text{reg}}\\)\n\n\nGiven data \\((X, Y)\\), we estimate \\(\\widehat{y} = \\widehat{\\beta}_0 + \\widehat{\\beta}_1x\\), hypothesizing that:\n\nStarting from \\(y = \\underbrace{\\widehat{\\beta}_0}_{\\mathclap{\\text{Intercept}}}\\) when \\(x = 0\\),\nAn increase of \\(x\\) by 1 unit is associated with an increase of \\(y\\) by \\(\\underbrace{\\widehat{\\beta}_1}_{\\mathclap{\\text{Coefficient}}}\\) units\n\n\n\n\n\n\nWe want to measure how well our line predicts \\(y\\) for any given \\(x\\) value \\(\\implies\\) vertical distance from regression line"
+  },
+  {
+    "objectID": "w02/slides.html#example-advertising-effects",
+    "href": "w02/slides.html#example-advertising-effects",
+    "title": "Week 2: Linear Regression",
+    "section": "Example: Advertising Effects",
+    "text": "Example: Advertising Effects\n\nIndependent variable: $ put into advertisements; Dependent variable: Sales\nGoal 1: Predict sales for a given allocation\nGoal 2: Infer best allocation for a given advertising budget (more simply: a new $1K appears! Where should we invest it?)"
   },
   {
     "objectID": "w02/slides.html#simple-linear-regression",
     "href": "w02/slides.html#simple-linear-regression",
     "title": "Week 2: Linear Regression",
     "section": "Simple Linear Regression",
-    "text": "Simple Linear Regression\n\nFor now, we treat Newspaper, Radio, TV advertising separately: how much do sales increase per $1 into [medium]? (Later we’ll consider them jointly: multiple regression)\nOur model:\n\\[\nY = \\underbrace{\\param{\\beta_0}}_{\\mathclap{\\text{Intercept}}} + \\underbrace{\\param{\\beta_1}}_{\\mathclap{\\text{Slope}}}X + \\varepsilon\n\\]\nThis model generates predictions via\n\\[\n\\widehat{y} = \\underbrace{\\widehat{\\beta_0}}_{\\mathclap{\\small\\begin{array}{c}\\text{Estimated} \\\\[-5mm] \\text{intercept}\\end{array}}} ~+~ \\underbrace{\\widehat{\\beta_1}}_{\\mathclap{\\small\\begin{array}{c}\\text{Estimated} \\\\[-4mm] \\text{slope}\\end{array}}}\\cdot x\n\\]\nNote how these predictions will be wrong (unless the data is perfectly linear)\nWe’ve accounted for this in our model (by including \\(\\varepsilon\\) term)!\nBut, we’d like to find estimates \\(\\widehat{\\beta}_0\\) and \\(\\widehat{\\beta}_1\\) that produce the “least wrong” predictions: motivates focus on residuals…"
+    "text": "Simple Linear Regression\n\nFor now, we treat Newspaper, Radio, TV advertising separately: how much do sales increase per $1 into [medium]? (Later we’ll consider them jointly: multiple regression)\n\n\n\n\nOur model:\n\n\\[\nY = \\underbrace{\\param{\\beta_0}}_{\\mathclap{\\text{Intercept}}} + \\underbrace{\\param{\\beta_1}}_{\\mathclap{\\text{Slope}}}X + \\varepsilon\n\\]\n\n\n…Generates predictions via:\n\n\\[\n\\widehat{y} = \\underbrace{\\widehat{\\beta}_0}_{\\mathclap{\\small\\begin{array}{c}\\text{Estimated} \\\\[-5mm] \\text{intercept}\\end{array}}} ~+~ \\underbrace{\\widehat{\\beta}_1}_{\\mathclap{\\small\\begin{array}{c}\\text{Estimated} \\\\[-4mm] \\text{slope}\\end{array}}}\\cdot x\n\\]\n\n\nNote how these predictions will be wrong (unless the data is perfectly linear)\nWe’ve accounted for this in our model (by including \\(\\varepsilon\\) term)!\nBut, we’d like to find estimates \\(\\widehat{\\beta}_0\\) and \\(\\widehat{\\beta}_1\\) that produce the “least wrong” predictions: motivates focus on residuals \\(\\widehat{\\varepsilon}_i\\)…\n\n\\[\n\\widehat{\\varepsilon}_i = \\underbrace{y_i}_{\\mathclap{\\small\\begin{array}{c}\\text{Real} \\\\[-5mm] \\text{label}\\end{array}}} - \\underbrace{\\widehat{y}_i}_{\\mathclap{\\small\\begin{array}{c}\\text{Predicted} \\\\[-5mm] \\text{label}\\end{array}}}\n= \\underbrace{y_i}_{\\mathclap{\\small\\begin{array}{c}\\text{Real} \\\\[-5mm] \\text{label}\\end{array}}} - \\underbrace{\n  \\left(\n    \\widehat{\\beta}_0 + \\widehat{\\beta}_1 \\cdot x\n  \\right)\n}_{\\text{\\small{Predicted label}}}\n\\]"
   },
   {
     "objectID": "w02/slides.html#least-squares-minimizing-residuals",
     "href": "w02/slides.html#least-squares-minimizing-residuals",
     "title": "Week 2: Linear Regression",
     "section": "Least Squares: Minimizing Residuals",
-    "text": "Least Squares: Minimizing Residuals\nWhat can we optimize to ensure these residuals are as small as possible?\n\n\n\n\n\n\n\n\n\n\n\n\n\nSum?\n\n\n\n0.0000000000\n\n\n\nSum of Squares?\n\n\n\n3.8405017200\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSum?\n\n\n\n0.0000000000\n\n\n\nSum of Squares?\n\n\n\n1.9748635217"
+    "text": "Least Squares: Minimizing Residuals\nWhat can we optimize to ensure these residuals are as small as possible?\n\n\n\n\n\n\n\n\n\n\n\n\n\nSum?\n\n\n0.0000000000\n\n\nSum of Squares?\n\n\n3.8405017200\n\n\nSum of absolute vals?\n\n\n7.6806094387\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSum?\n\n\n0.0000000000\n\n\nSum of Squares?\n\n\n1.9748635217\n\n\nSum of absolute vals?\n\n\n5.5149697440"
   },
   {
     "objectID": "w02/slides.html#why-not-absolute-value",
     "href": "w02/slides.html#why-not-absolute-value",
     "title": "Week 2: Linear Regression",
     "section": "Why Not Absolute Value?",
-    "text": "Why Not Absolute Value?\n\nTwo feasible ways to prevent positive and negative residuals cancelling out:\n\nAbsolute value \\(\\left|y - \\widehat{y}\\right|\\) or squaring \\(\\left( y - \\widehat{y} \\right)^2\\)\n\nBut remember that we’re aiming to minimize these residuals…\nGhost of calculus past 😱: which is differentiable everywhere?"
+    "text": "Why Not Absolute Value?\n\nTwo feasible ways to prevent positive and negative residuals cancelling out:\n\nAbsolute error \\(\\left|y - \\widehat{y}\\right|\\) or squared error \\(\\left( y - \\widehat{y} \\right)^2\\)\n\nBut remember: we’re aiming to minimize 👀 these residuals; ghost of calculus past 😱\nWe minimize by taking derivatives… which one is differentiable everywhere?"
   },
   {
     "objectID": "w02/slides.html#outliers-penalized-quadratically",
     "href": "w02/slides.html#outliers-penalized-quadratically",
     "title": "Week 2: Linear Regression",
     "section": "Outliers Penalized Quadratically",
-    "text": "Outliers Penalized Quadratically\n\nImage Source"
+    "text": "Outliers Penalized Quadratically\n\nMay feel arbitrary at first (we’re “forced” to use squared error because of calculus?)\nIt also has important consequences for “learnability” via gradient descent!"
   },
   {
     "objectID": "w02/slides.html#key-features-of-regression-line",
@@ -2141,11 +2162,11 @@
     "text": "Where Did That \\(\\mathbb{E}[Y \\mid X = x_i]\\) Come From?\n\nImage Source"
   },
   {
-    "objectID": "w02/slides.html#but-what-about-all-the-other-types-of-vars",
-    "href": "w02/slides.html#but-what-about-all-the-other-types-of-vars",
+    "objectID": "w02/slides.html#but-what-about-other-types-of-vars",
+    "href": "w02/slides.html#but-what-about-other-types-of-vars",
     "title": "Week 2: Linear Regression",
-    "section": "But… What About All the Other Types of Vars?",
-    "text": "But… What About All the Other Types of Vars?\n\n5000: you saw, e.g., nominal, ordinal, cardinal vars\n5100: you wrestled with discrete vs. continuous RVs\nGood News #1: Regression can handle all these types+more!\nGood News #2: Distinctions between classification and regression start to diminish as you learn fancier regression methods! (One key tool here: link functions)\nBy end of 5300 you should have something on your toolbelt for handling most cases like “I want to do [regression / classification], but my data is [not cardinal+continuous]”"
+    "section": "But… What About Other Types of Vars?",
+    "text": "But… What About Other Types of Vars?\n\n5000: you saw, e.g., nominal, ordinal, cardinal vars\n5100: you wrestled with discrete vs. continuous RVs\nGood News #1: Regression can handle all these types+more!\nGood News #2: Distinctions between classification and regression start to diminish as you learn fancier regression methods! (One key tool here: link functions)\nBy end of 5300 you should have something on your toolbelt for handling most cases like “I want to do [regression / classification], but my data is [not cardinal+continuous]”"
   },
   {
     "objectID": "w02/slides.html#a-sketch-hw-is-the-full-thing",
@@ -2274,27 +2295,57 @@
     "href": "w02/index.html#how-do-we-define-best",
     "title": "Week 2: Linear Regression",
     "section": "How Do We Define “Best”?",
-    "text": "How Do We Define “Best”?\n\nIntuitively, two different ways to measure how well a line fits the data:\n\n\nCode\nlibrary(tidyverse)\nset.seed(5321)\nN &lt;- 11\nx &lt;- seq(from = 0, to = 1, by = 1 / (N - 1))\ny &lt;- x + rnorm(N, 0, 0.2)\nmean_y &lt;- mean(y)\nspread &lt;- y - mean_y\ndf &lt;- tibble(x = x, y = y, spread = spread)\nggplot(df, aes(x=x, y=y)) +\n  geom_abline(slope=1, intercept=0, linetype=\"dashed\", color=cbPalette[1], linewidth=g_linewidth*2) +\n  geom_segment(xend=(x+y)/2, yend=(x+y)/2, linewidth=g_linewidth*2, color=cbPalette[2]) +\n  geom_point(size=g_pointsize) +\n  coord_equal() +\n  xlim(0, 1) + ylim(0, 1) +\n  dsan_theme(\"half\") +\n  labs(\n    title = \"Principal Component Line\"\n  )\nggplot(df, aes(x=x, y=y)) +\n  geom_abline(slope=1, intercept=0, linetype=\"dashed\", color=cbPalette[1], linewidth=g_linewidth*2) +\n  geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +\n  geom_point(size=g_pointsize) +\n  coord_equal() +\n  xlim(0, 1) + ylim(0, 1) +\n  dsan_theme(\"half\") +\n  labs(\n    title = \"Regression Line\"\n  )\n\n\n\n\n\nWarning: Removed 1 row containing missing values or values outside the scale range\n(`geom_segment()`).\n\n\nWarning: Removed 1 row containing missing values or values outside the scale range\n(`geom_point()`).\n\n\n\n\n\n\n\n\n\n\n\nWarning: Removed 1 row containing missing values or values outside the scale range\n(`geom_segment()`).\n\n\nWarning: Removed 1 row containing missing values or values outside the scale range\n(`geom_point()`).\n\n\n\n\n\n\n\n\n\n\n\n\n\nOn the difference between these two lines, and why it matters, I cannot recommend Gelman and Hill (2007) enough!",
+    "text": "How Do We Define “Best”?\n\nIntuitively, two different ways to measure how well a line fits the data:\n\n\nCode\nlibrary(tidyverse)\nset.seed(5321)\nN &lt;- 11\nx &lt;- seq(from = 0, to = 1, by = 1 / (N - 1))\ny &lt;- x + rnorm(N, 0, 0.2)\nmean_y &lt;- mean(y)\nspread &lt;- y - mean_y\ndf &lt;- tibble(x = x, y = y, spread = spread)\nggplot(df, aes(x=x, y=y)) +\n  geom_abline(slope=1, intercept=0, linetype=\"dashed\", color=cbPalette[1], linewidth=g_linewidth*1.5) +\n  geom_segment(xend=(x+y)/2, yend=(x+y)/2, linewidth=g_linewidth*2, color=cbPalette[2]) +\n  geom_point(size=g_pointsize) +\n  coord_equal() +\n  xlim(0, 1) + ylim(0, 1) +\n  dsan_theme(\"half\") +\n  labs(\n    title = \"Principal Component Line\"\n  )\nggplot(df, aes(x=x, y=y)) +\n  geom_abline(slope=1, intercept=0, linetype=\"dashed\", color=cbPalette[1], linewidth=g_linewidth*1.5) +\n  geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cb_palette[3]) +\n  geom_point(size=g_pointsize) +\n  coord_equal() +\n  xlim(0, 1) + ylim(0, 1) +\n  dsan_theme(\"half\") +\n  labs(\n    title = \"Regression Line\"\n  )\n\n\n\n\n\nWarning: Removed 1 row containing missing values or values outside the scale range\n(`geom_segment()`).\n\n\nWarning: Removed 1 row containing missing values or values outside the scale range\n(`geom_point()`).\n\n\n\n\n\n\n\n\nFigure 1: The line that minimizes blue distances does not predict \\(Y\\) as well as regression line, despite intuitive appeal!\n\n\n\n\n\n\n\nWarning: Removed 1 row containing missing values or values outside the scale range\n(`geom_segment()`).\n\n\nWarning: Removed 1 row containing missing values or values outside the scale range\n(`geom_point()`).\n\n\n\n\n\n\n\n\nFigure 2: The line that minimizes green distances optimally predicts \\(Y\\) from \\(X\\), in a mathematically-provable sense!\n\n\n\n\n\n\n\n\n\nOn the difference between these two lines, and why it matters, I cannot recommend Gelman and Hill (2007) enough!",
     "crumbs": [
       "Week 2: {{< var w02.date-md >}}"
     ]
   },
   {
-    "objectID": "w02/index.html#predictive-example-advertising-effects",
-    "href": "w02/index.html#predictive-example-advertising-effects",
+    "objectID": "w02/index.html#principal-component-analysis",
+    "href": "w02/index.html#principal-component-analysis",
     "title": "Week 2: Linear Regression",
-    "section": "Predictive Example: Advertising Effects",
-    "text": "Predictive Example: Advertising Effects\n\nIndependent variable: $ put into advertisements\nDependent variable: Sales\nGoal: Figure out a good way to allocate an advertising budget\n\n\n\nCode\nlibrary(tidyverse)\nad_df &lt;- read_csv(\"assets/Advertising.csv\") |&gt; rename(id=`...1`)\n\n\nNew names:\nRows: 200 Columns: 5\n── Column specification\n──────────────────────────────────────────────────────── Delimiter: \",\" dbl\n(5): ...1, TV, radio, newspaper, sales\nℹ Use `spec()` to retrieve the full column specification for this data. ℹ\nSpecify the column types or set `show_col_types = FALSE` to quiet this message.\n• `` -&gt; `...1`\n\n\nCode\nlong_df &lt;- ad_df |&gt; pivot_longer(-c(id, sales), names_to=\"medium\", values_to=\"allocation\")\nlong_df |&gt; ggplot(aes(x=allocation, y=sales)) +\n  geom_point() +\n  facet_wrap(vars(medium), scales=\"free_x\") +\n  geom_smooth(method='lm', formula=\"y ~ x\") +\n  theme_dsan() +\n  labs(\n    x = \"Allocation ($1K)\",\n    y = \"Sales (1K Units)\"\n  )",
+    "section": "Principal Component Analysis",
+    "text": "Principal Component Analysis\n\nPrincipal Component Line can be used to project the data onto its dimension of highest variance (recap from 5000!)\nMore simply: PCA can discover meaningful axes in data (unsupervised learning / exploratory data analysis settings)\n\n\n\nCode\nlibrary(readr)\nlibrary(ggplot2)\ngdp_df &lt;- read_csv(\"assets/gdp_pca.csv\")\n\ndist_to_line &lt;- function(x0, y0, a, c) {\n    numer &lt;- abs(a * x0 - y0 + c)\n    denom &lt;- sqrt(a * a + 1)\n    return(numer / denom)\n}\n# Finding PCA line for industrial vs. exports\nx &lt;- gdp_df$industrial\ny &lt;- gdp_df$exports\nlossFn &lt;- function(lineParams, x0, y0) {\n    a &lt;- lineParams[1]\n    c &lt;- lineParams[2]\n    return(sum(dist_to_line(x0, y0, a, c)))\n}\no &lt;- optim(c(0, 0), lossFn, x0 = x, y0 = y)\nggplot(gdp_df, aes(x = industrial, y = exports)) +\n    geom_point(size=g_pointsize/2) +\n    geom_abline(aes(slope = o$par[1], intercept = o$par[2], color=\"pca\"), linewidth=g_linewidth, show.legend = TRUE) +\n    geom_smooth(aes(color=\"lm\"), method = \"lm\", se = FALSE, linewidth=g_linewidth, key_glyph = \"blank\") +\n    scale_color_manual(element_blank(), values=c(\"pca\"=cbPalette[2],\"lm\"=cbPalette[1]), labels=c(\"Regression\",\"PCA\")) +\n    dsan_theme(\"half\") +\n    remove_legend_title() +\n    labs(\n      title = \"PCA Line vs. Regression Line\",\n        x = \"Industrial Production (% of GDP)\",\n        y = \"Exports (% of GDP)\"\n    )\n\n\n\n\n\n\n\n\n\n\n\nSee this amazing blog post using PCA, with 2 dimensions, to explore UN voting patterns!",
     "crumbs": [
       "Week 2: {{< var w02.date-md >}}"
     ]
   },
   {
-    "objectID": "w02/index.html#explanatory-example-industrialization-effects",
-    "href": "w02/index.html#explanatory-example-industrialization-effects",
+    "objectID": "w02/index.html#create-your-own-dimension",
+    "href": "w02/index.html#create-your-own-dimension",
     "title": "Week 2: Linear Regression",
-    "section": "Explanatory Example: Industrialization Effects",
-    "text": "Explanatory Example: Industrialization Effects\n\n\nCode\nlibrary(tidyverse)\ngdp_df &lt;- read_csv(\"assets/gdp_pca.csv\")\n\n\nRows: 89 Columns: 14\n── Column specification ────────────────────────────────────────────────────────\nDelimiter: \",\"\nchr  (2): country_code, country_name\ndbl (12): .rownames, services, agriculture, industrial, manufacturing, resou...\n\nℹ Use `spec()` to retrieve the full column specification for this data.\nℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.\n\n\nCode\nmil_plot &lt;- gdp_df |&gt; ggplot(aes(x=industrial, y=military)) +\n  geom_point(size=0.5*g_pointsize) +\n  geom_smooth(method='lm', formula=\"y ~ x\", linewidth=1) +\n  theme_dsan() +\n  labs(\n    title=\"Military Exports vs. Industrialization\",\n    x=\"Industrial Production (% of GDP)\",\n    y=\"Military Exports (% of All Exports)\"\n  )\nmil_plot\n\n\nWarning: Removed 8 rows containing non-finite outside the scale range\n(`stat_smooth()`).\n\n\nWarning: Removed 8 rows containing missing values or values outside the scale range\n(`geom_point()`).",
+    "section": "Create Your Own Dimension!",
+    "text": "Create Your Own Dimension!\n\n\nCode\nggplot(gdp_df, aes(pc1, .fittedPC2)) +\n    geom_point(size = g_pointsize/2) +\n    geom_hline(aes(yintercept=0, color='PCA Line'), linetype='solid', size=g_linesize) +\n    geom_rug(sides = \"b\", linewidth=g_linewidth/1.2, length = unit(0.1, \"npc\"), color=cbPalette[3]) +\n    expand_limits(y=-1.6) +\n    scale_color_manual(element_blank(), values=c(\"PCA Line\"=cbPalette[2])) +\n    dsan_theme(\"full\") +\n    remove_legend_title() +\n    labs(\n      title = \"Exports vs. Industrial Production in Principal Component Space\",\n      x = \"First Principal Component (Dimension of Greatest Variance)\",\n      y = \"Second Principal Component\"\n    )",
+    "crumbs": [
+      "Week 2: {{< var w02.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w02/index.html#and-use-it-for-eda",
+    "href": "w02/index.html#and-use-it-for-eda",
+    "title": "Week 2: Linear Regression",
+    "section": "…And Use It for EDA",
+    "text": "…And Use It for EDA\n\n\nCode\nlibrary(dplyr)\nlibrary(tidyr)\nplot_df &lt;- gdp_df %&gt;% select(c(country_code, pc1, agriculture, military))\nlong_df &lt;- plot_df %&gt;% pivot_longer(!c(country_code, pc1), names_to = \"var\", values_to = \"val\")\nlong_df &lt;- long_df |&gt; mutate(\n  var = case_match(\n    var,\n    \"agriculture\" ~ \"Agricultural Production\",\n    \"military\" ~ \"Military Spending\"\n  )\n)\nggplot(long_df, aes(x = pc1, y = val, facet = var)) +\n    geom_point() +\n    geom_smooth(method=lm, formula='y ~ x') +\n    facet_wrap(vars(var), scales = \"free\") +\n    dsan_theme(\"full\") +\n    labs(\n        x = \"\\\"Industrial-Export Dimension\\\" (First PC)\",\n        y = \"% of GDP\"\n    )",
+    "crumbs": [
+      "Week 2: {{< var w02.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w02/index.html#but-in-our-case",
+    "href": "w02/index.html#but-in-our-case",
+    "title": "Week 2: Linear Regression",
+    "section": "But in Our Case…",
+    "text": "But in Our Case…\n\n\\(x\\) and \\(y\\) dimensions already have meaning, and we have a hypothesis about effect of \\(x\\) on \\(y\\)!\n\n\n\n\n\n\n\nTipThe Regression Hypothesis \\(\\mathcal{H}_{\\text{reg}}\\)\n\n\n\nGiven data \\((X, Y)\\), we estimate \\(\\widehat{y} = \\widehat{\\beta}_0 + \\widehat{\\beta}_1x\\), hypothesizing that:\n\nStarting from \\(y = \\underbrace{\\widehat{\\beta}_0}_{\\mathclap{\\text{Intercept}}}\\) when \\(x = 0\\),\nAn increase of \\(x\\) by 1 unit is associated with an increase of \\(y\\) by \\(\\underbrace{\\widehat{\\beta}_1}_{\\mathclap{\\text{Coefficient}}}\\) units\n\n\n\n\nWe want to measure how well our line predicts \\(y\\) for any given \\(x\\) value \\(\\implies\\) vertical distance from regression line",
+    "crumbs": [
+      "Week 2: {{< var w02.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w02/index.html#example-advertising-effects",
+    "href": "w02/index.html#example-advertising-effects",
+    "title": "Week 2: Linear Regression",
+    "section": "Example: Advertising Effects",
+    "text": "Example: Advertising Effects\n\nIndependent variable: $ put into advertisements; Dependent variable: Sales\nGoal 1: Predict sales for a given allocation\nGoal 2: Infer best allocation for a given advertising budget (more simply: a new $1K appears! Where should we invest it?)\n\n\n\nCode\nlibrary(tidyverse)\nad_df &lt;- read_csv(\"assets/Advertising.csv\") |&gt; rename(id=`...1`)\n\n\nNew names:\nRows: 200 Columns: 5\n── Column specification\n──────────────────────────────────────────────────────── Delimiter: \",\" dbl\n(5): ...1, TV, radio, newspaper, sales\nℹ Use `spec()` to retrieve the full column specification for this data. ℹ\nSpecify the column types or set `show_col_types = FALSE` to quiet this message.\n• `` -&gt; `...1`\n\n\nCode\nlong_df &lt;- ad_df |&gt; pivot_longer(-c(id, sales), names_to=\"medium\", values_to=\"allocation\")\nlong_df |&gt; ggplot(aes(x=allocation, y=sales)) +\n  geom_point() +\n  facet_wrap(vars(medium), scales=\"free_x\") +\n  geom_smooth(method='lm', formula=\"y ~ x\") +\n  theme_dsan() +\n  labs(\n    x = \"Allocation ($1K)\",\n    y = \"Sales (1K Units)\"\n  )",
     "crumbs": [
       "Week 2: {{< var w02.date-md >}}"
     ]
@@ -2304,7 +2355,7 @@
     "href": "w02/index.html#simple-linear-regression",
     "title": "Week 2: Linear Regression",
     "section": "Simple Linear Regression",
-    "text": "Simple Linear Regression\n\nFor now, we treat Newspaper, Radio, TV advertising separately: how much do sales increase per $1 into [medium]? (Later we’ll consider them jointly: multiple regression)\nOur model:\n\\[\nY = \\underbrace{\\param{\\beta_0}}_{\\mathclap{\\text{Intercept}}} + \\underbrace{\\param{\\beta_1}}_{\\mathclap{\\text{Slope}}}X + \\varepsilon\n\\]\nThis model generates predictions via\n\\[\n\\widehat{y} = \\underbrace{\\widehat{\\beta_0}}_{\\mathclap{\\small\\begin{array}{c}\\text{Estimated} \\\\[-5mm] \\text{intercept}\\end{array}}} ~+~ \\underbrace{\\widehat{\\beta_1}}_{\\mathclap{\\small\\begin{array}{c}\\text{Estimated} \\\\[-4mm] \\text{slope}\\end{array}}}\\cdot x\n\\]\nNote how these predictions will be wrong (unless the data is perfectly linear)\nWe’ve accounted for this in our model (by including \\(\\varepsilon\\) term)!\nBut, we’d like to find estimates \\(\\widehat{\\beta}_0\\) and \\(\\widehat{\\beta}_1\\) that produce the “least wrong” predictions: motivates focus on residuals…",
+    "text": "Simple Linear Regression\n\nFor now, we treat Newspaper, Radio, TV advertising separately: how much do sales increase per $1 into [medium]? (Later we’ll consider them jointly: multiple regression)\n\n\n\n\nOur model:\n\n\\[\nY = \\underbrace{\\param{\\beta_0}}_{\\mathclap{\\text{Intercept}}} + \\underbrace{\\param{\\beta_1}}_{\\mathclap{\\text{Slope}}}X + \\varepsilon\n\\]\n\n\n…Generates predictions via:\n\n\\[\n\\widehat{y} = \\underbrace{\\widehat{\\beta}_0}_{\\mathclap{\\small\\begin{array}{c}\\text{Estimated} \\\\[-5mm] \\text{intercept}\\end{array}}} ~+~ \\underbrace{\\widehat{\\beta}_1}_{\\mathclap{\\small\\begin{array}{c}\\text{Estimated} \\\\[-4mm] \\text{slope}\\end{array}}}\\cdot x\n\\]\n\n\n\nNote how these predictions will be wrong (unless the data is perfectly linear)\nWe’ve accounted for this in our model (by including \\(\\varepsilon\\) term)!\nBut, we’d like to find estimates \\(\\widehat{\\beta}_0\\) and \\(\\widehat{\\beta}_1\\) that produce the “least wrong” predictions: motivates focus on residuals \\(\\widehat{\\varepsilon}_i\\)…\n\n\\[\n\\widehat{\\varepsilon}_i = \\underbrace{y_i}_{\\mathclap{\\small\\begin{array}{c}\\text{Real} \\\\[-5mm] \\text{label}\\end{array}}} - \\underbrace{\\widehat{y}_i}_{\\mathclap{\\small\\begin{array}{c}\\text{Predicted} \\\\[-5mm] \\text{label}\\end{array}}}\n= \\underbrace{y_i}_{\\mathclap{\\small\\begin{array}{c}\\text{Real} \\\\[-5mm] \\text{label}\\end{array}}} - \\underbrace{\n  \\left(\n    \\widehat{\\beta}_0 + \\widehat{\\beta}_1 \\cdot x\n  \\right)\n}_{\\text{\\small{Predicted label}}}\n\\]",
     "crumbs": [
       "Week 2: {{< var w02.date-md >}}"
     ]
@@ -2314,7 +2365,7 @@
     "href": "w02/index.html#least-squares-minimizing-residuals",
     "title": "Week 2: Linear Regression",
     "section": "Least Squares: Minimizing Residuals",
-    "text": "Least Squares: Minimizing Residuals\nWhat can we optimize to ensure these residuals are as small as possible?\n\n\n\n\nCode\nN &lt;- 21\nx &lt;- seq(from = 0, to = 1, by = 1 / (N - 1))\ny &lt;- x + rnorm(N, 0, 0.25)\nmean_y &lt;- mean(y)\nspread &lt;- y - mean_y\nsim_lg_df &lt;- tibble(x = x, y = y, spread = spread)\nsim_lg_df |&gt; ggplot(aes(x=x, y=y)) +\n  geom_abline(slope=1, intercept=0, linetype=\"dashed\", color=cbPalette[1], linewidth=g_linewidth) +\n  # geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +\n  geom_segment(aes(xend=x, yend=x, color=ifelse(y&gt;x,\"Positive\",\"Negative\")), linewidth=1.5*g_linewidth) +\n  geom_point(size=g_pointsize) +\n  # coord_equal() +\n  theme_dsan(\"half\") +\n  scale_color_manual(\"Spread\", values=c(\"Positive\"=cbPalette[3],\"Negative\"=cbPalette[6]), labels=c(\"Positive\"=\"Positive\",\"Negative\"=\"Negative\")) +\n  labs(\n    title = \"Regression Line\"\n  )\n\n\n\n\n\n\n\n\n\n\n\nSum?\n\n\n\nCode\nlarge_sum &lt;- sum(sim_lg_df$spread)\nwriteLines(fmt_decimal(large_sum))\n\n\n0.0000000000\n\n\n\nSum of Squares?\n\n\n\nCode\nlarge_sqsum &lt;- sum((sim_lg_df$spread)^2)\nwriteLines(fmt_decimal(large_sqsum))\n\n\n3.8405017200\n\n\n\n\n\n\n\n\nCode\nN &lt;- 21\nx &lt;- seq(from = 0, to = 1, by = 1 / (N - 1))\ny &lt;- x + rnorm(N, 0, 0.05)\nmean_y &lt;- mean(y)\nspread &lt;- y - mean_y\nsim_sm_df &lt;- tibble(x = x, y = y, spread = spread)\nsim_sm_df |&gt; ggplot(aes(x=x, y=y)) +\n  geom_abline(slope=1, intercept=0, linetype=\"dashed\", color=cbPalette[1], linewidth=g_linewidth) +\n  # geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +\n  geom_segment(aes(xend=x, yend=x, color=ifelse(y&gt;x,\"Positive\",\"Negative\")), linewidth=1.5*g_linewidth) +\n  geom_point(size=g_pointsize) +\n  # coord_equal() +\n  theme_dsan(\"half\") +\n  scale_color_manual(\"Spread\", values=c(\"Positive\"=cbPalette[3],\"Negative\"=cbPalette[6]), labels=c(\"Positive\"=\"Positive\",\"Negative\"=\"Negative\")) +\n  labs(\n    title = \"Regression Line\"\n  )\n\n\n\n\n\n\n\n\n\n\n\nSum?\n\n\n\nCode\nsmall_rsum &lt;- sum(sim_sm_df$spread)\nwriteLines(fmt_decimal(small_rsum))\n\n\n0.0000000000\n\n\n\nSum of Squares?\n\n\n\nCode\nsmall_sqrsum &lt;- sum((sim_sm_df$spread)^2)\nwriteLines(fmt_decimal(small_sqrsum))\n\n\n1.9748635217",
+    "text": "Least Squares: Minimizing Residuals\nWhat can we optimize to ensure these residuals are as small as possible?\n\nCode\nN &lt;- 21\nx &lt;- seq(from = 0, to = 1, by = 1 / (N - 1))\ny &lt;- x + rnorm(N, 0, 0.25)\nmean_y &lt;- mean(y)\nspread &lt;- y - mean_y\nsim_lg_df &lt;- tibble(x = x, y = y, spread = spread)\nsim_lg_df |&gt; ggplot(aes(x=x, y=y)) +\n  geom_abline(slope=1, intercept=0, linetype=\"dashed\", color=cbPalette[1], linewidth=g_linewidth) +\n  # geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +\n  geom_segment(aes(xend=x, yend=x, color=ifelse(y&gt;x,\"Positive\",\"Negative\")), linewidth=1.5*g_linewidth) +\n  geom_point(size=g_pointsize) +\n  # coord_equal() +\n  theme_dsan(\"half\") +\n  scale_color_manual(\"Spread\", values=c(\"Positive\"=cbPalette[3],\"Negative\"=cbPalette[6]), labels=c(\"Positive\"=\"Positive\",\"Negative\"=\"Negative\"))\nlarge_sum &lt;- sum(sim_lg_df$spread)\nwriteLines(fmt_decimal(large_sum))\nlarge_sqsum &lt;- sum((sim_lg_df$spread)^2)\nwriteLines(fmt_decimal(large_sqsum))\nlarge_abssum &lt;- sum(abs(sim_lg_df$spread))\nwriteLines(fmt_decimal(large_abssum))\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSum?\n\n\n0.0000000000\n\n\nSum of Squares?\n\n\n3.8405017200\n\n\nSum of absolute vals?\n\n\n7.6806094387\n\n\n\n\n\n\nCode\nN &lt;- 21\nx &lt;- seq(from = 0, to = 1, by = 1 / (N - 1))\ny &lt;- x + rnorm(N, 0, 0.05)\nmean_y &lt;- mean(y)\nspread &lt;- y - mean_y\nsim_sm_df &lt;- tibble(x = x, y = y, spread = spread)\nsim_sm_df |&gt; ggplot(aes(x=x, y=y)) +\n  geom_abline(slope=1, intercept=0, linetype=\"dashed\", color=cbPalette[1], linewidth=g_linewidth) +\n  # geom_segment(xend=x, yend=x, linewidth=g_linewidth*2, color=cbPalette[2]) +\n  geom_segment(aes(xend=x, yend=x, color=ifelse(y&gt;x,\"Positive\",\"Negative\")), linewidth=1.5*g_linewidth) +\n  geom_point(size=g_pointsize) +\n  # coord_equal() +\n  theme_dsan(\"half\") +\n  scale_color_manual(\"Spread\", values=c(\"Positive\"=cbPalette[3],\"Negative\"=cbPalette[6]), labels=c(\"Positive\"=\"Positive\",\"Negative\"=\"Negative\"))\nsmall_rsum &lt;- sum(sim_sm_df$spread)\nwriteLines(fmt_decimal(small_rsum))\nsmall_sqrsum &lt;- sum((sim_sm_df$spread)^2)\nwriteLines(fmt_decimal(small_sqrsum))\nsmall_abssum &lt;- sum(abs(sim_sm_df$spread))\nwriteLines(fmt_decimal(small_abssum))\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSum?\n\n\n0.0000000000\n\n\nSum of Squares?\n\n\n1.9748635217\n\n\nSum of absolute vals?\n\n\n5.5149697440",
     "crumbs": [
       "Week 2: {{< var w02.date-md >}}"
     ]
@@ -2324,7 +2375,7 @@
     "href": "w02/index.html#why-not-absolute-value",
     "title": "Week 2: Linear Regression",
     "section": "Why Not Absolute Value?",
-    "text": "Why Not Absolute Value?\n\nTwo feasible ways to prevent positive and negative residuals cancelling out:\n\nAbsolute value \\(\\left|y - \\widehat{y}\\right|\\) or squaring \\(\\left( y - \\widehat{y} \\right)^2\\)\n\nBut remember that we’re aiming to minimize these residuals…\nGhost of calculus past 😱: which is differentiable everywhere?\n\n\n\n\n\nCode\nlibrary(latex2exp)\nx2_label &lt;- latex2exp(\"$f(x) = x^2$\")\n\n\nWarning in latex2exp(\"$f(x) = x^2$\"): 'latex2exp' is deprecated.\nUse 'TeX' instead.\nSee help(\"Deprecated\") and help(\"latex2exp-deprecated\").\n\n\nCode\nggplot(data.frame(x=c(-4,4)), aes(x=x)) +\n  stat_function(fun=~ .x^2, linewidth = g_linewidth) +\n  dsan_theme(\"quarter\") +\n  labs(\n    title=x2_label,\n    y=\"f(x)\"\n  )\n\n\n\n\n\n\n\n\n\n\n\n\nCode\n# Could use facet_grid() here, but it doesn't work too nicely with stat_function() :(\nggplot(data.frame(x=c(-4,4)), aes(x=x)) +\n  stat_function(fun=~ abs(.x), linewidth=g_linewidth) +\n  dsan_theme(\"quarter\") +\n  labs(\n    title=\"f(x) = |x|\",\n    y=\"f(x)\"\n  )",
+    "text": "Why Not Absolute Value?\n\nTwo feasible ways to prevent positive and negative residuals cancelling out:\n\nAbsolute error \\(\\left|y - \\widehat{y}\\right|\\) or squared error \\(\\left( y - \\widehat{y} \\right)^2\\)\n\nBut remember: we’re aiming to minimize 👀 these residuals; ghost of calculus past 😱\nWe minimize by taking derivatives… which one is differentiable everywhere?\n\n\n\n\n\nCode\n# Could use facet_grid() here, but it doesn't work too nicely with stat_function() :(\nggplot(data.frame(x=c(-4,4)), aes(x=x)) +\n  stat_function(\n    fun =~ abs(.x),\n    linewidth=g_linewidth * 1.5,\n    color=cb_palette[1],\n  ) +\n  dsan_theme(\"quarter\") +\n  labs(\n    title=\"f(x) = |x|\",\n    y=\"f(x)\"\n  )\n\n\n\n\n\n\n\n\n\n\n\n\nCode\nlibrary(latex2exp)\nx2_label &lt;- latex2exp(\"$f(x) = x^2$\")\n\n\nWarning in latex2exp(\"$f(x) = x^2$\"): 'latex2exp' is deprecated.\nUse 'TeX' instead.\nSee help(\"Deprecated\") and help(\"latex2exp-deprecated\").\n\n\nCode\nggplot(data.frame(x=c(-4,4)), aes(x=x)) +\n  stat_function(\n    fun =~ .x^2,\n    linewidth = g_linewidth * 1.5,\n    color=cb_palette[2],\n  ) +\n  dsan_theme(\"quarter\") +\n  labs(\n    title=x2_label,\n    y=\"f(x)\"\n  )",
     "crumbs": [
       "Week 2: {{< var w02.date-md >}}"
     ]
@@ -2334,7 +2385,7 @@
     "href": "w02/index.html#outliers-penalized-quadratically",
     "title": "Week 2: Linear Regression",
     "section": "Outliers Penalized Quadratically",
-    "text": "Outliers Penalized Quadratically\n\n\n\nImage Source",
+    "text": "Outliers Penalized Quadratically\n\nMay feel arbitrary at first (we’re “forced” to use squared error because of calculus?)\nIt also has important consequences for “learnability” via gradient descent!\n\n\nCode\nlibrary(latex2exp)\nset.seed(5300)\nslope &lt;- 0.5\nx_vals &lt;- seq(from = -20, to = 20, length.out = 15)\nN &lt;- length(x_vals)\ny_vals &lt;- slope * x_vals + rnorm(N, 0, 5)\nspread_vals &lt;- y_vals - slope * x_vals\nsim_lg_df &lt;- tibble(\n  x = x_vals, y = y_vals, spread = spread_vals\n)\nabs_sum &lt;- round(sum(abs(sim_lg_df$spread)), 3)\nabs_label &lt;- TeX(paste0(\"$\\\\Sigma = \",abs_sum,\"$\"))\nsim_lg_df |&gt; ggplot(aes(x=x, y=y)) +\n  geom_point(size=g_pointsize * 0.9) +\n  geom_abline(\n    slope=slope,\n    intercept=0,\n    linetype=\"dashed\",\n    color='black',\n    linewidth=g_linewidth\n  ) +\n  geom_segment(\n    aes(xend=x, yend=slope * x),\n    arrow=arrow(\n      angle=90,\n      length=unit(0.125,'inches'),\n      ends='both'\n    ),\n    linewidth=1.5*g_linewidth,\n    color=cb_palette[7],\n    alpha=0.9,\n  ) +\n  ylim(-15, 15) +\n  xlim(-20, 27.5) +\n  coord_equal() +\n  theme_dsan(base_size=28) +\n  labs(title=\"Absolute Penalties\") +\n  geom_text(\n    data=data.frame(x=15, y=-10), label=abs_label,\n    size=12\n  )\nsq_sum &lt;- round(sum((sim_lg_df$spread)^2), 3)\nsq_label &lt;- TeX(paste0(\"$\\\\Sigma = \",sq_sum,\"$\"))\nsim_lg_df |&gt; ggplot(aes(x=x, y=y)) +\n  geom_point(size=g_pointsize * 0.9) +\n  geom_abline(\n    slope=slope,\n    intercept=0,\n    linetype=\"dashed\",\n    color='black',\n    linewidth=g_linewidth\n  ) +\n  geom_rect(\n    aes(\n      xmin=x,\n      xmax=x+abs(spread),\n      ymin=ifelse(spread &lt; 0, y, y - spread),\n      ymax=ifelse(spread &lt; 0, y - spread, y)\n    ),\n    color='black',\n    fill=cb_palette[7],\n    alpha=0.2,\n  ) +\n  ylim(-15, 15) +\n  xlim(-20, 27.5) +\n  coord_equal() +\n  theme_dsan(base_size=30) +\n  labs(title=\"Squared Penalties\") +\n  geom_text(\n    data=data.frame(x=15, y=-10), label=sq_label,\n    size=12\n  )\n\n\n\n\n\n\nWarning in is.na(x): is.na() applied to non-(list or vector) of type\n'expression'\n\n\n\n\n\n\n\n\n\n\n\n\n\nWarning in is.na(x): is.na() applied to non-(list or vector) of type\n'expression'",
     "crumbs": [
       "Week 2: {{< var w02.date-md >}}"
     ]
@@ -2360,11 +2411,11 @@
     ]
   },
   {
-    "objectID": "w02/index.html#but-what-about-all-the-other-types-of-vars",
-    "href": "w02/index.html#but-what-about-all-the-other-types-of-vars",
+    "objectID": "w02/index.html#but-what-about-other-types-of-vars",
+    "href": "w02/index.html#but-what-about-other-types-of-vars",
     "title": "Week 2: Linear Regression",
-    "section": "But… What About All the Other Types of Vars?",
-    "text": "But… What About All the Other Types of Vars?\n\n5000: you saw, e.g., nominal, ordinal, cardinal vars\n5100: you wrestled with discrete vs. continuous RVs\nGood News #1: Regression can handle all these types+more!\nGood News #2: Distinctions between classification and regression start to diminish as you learn fancier regression methods! (One key tool here: link functions)\nBy end of 5300 you should have something on your toolbelt for handling most cases like “I want to do [regression / classification], but my data is [not cardinal+continuous]”",
+    "section": "But… What About Other Types of Vars?",
+    "text": "But… What About Other Types of Vars?\n\n5000: you saw, e.g., nominal, ordinal, cardinal vars\n5100: you wrestled with discrete vs. continuous RVs\nGood News #1: Regression can handle all these types+more!\nGood News #2: Distinctions between classification and regression start to diminish as you learn fancier regression methods! (One key tool here: link functions)\nBy end of 5300 you should have something on your toolbelt for handling most cases like “I want to do [regression / classification], but my data is [not cardinal+continuous]”",
     "crumbs": [
       "Week 2: {{< var w02.date-md >}}"
     ]
@@ -2414,7 +2465,7 @@
     "href": "w02/index.html#interpreting-output",
     "title": "Week 2: Linear Regression",
     "section": "Interpreting Output",
-    "text": "Interpreting Output\n\n\n\n\nCode\nmil_plot + theme_dsan(\"quarter\")\n\n\nWarning: Removed 8 rows containing non-finite outside the scale range\n(`stat_smooth()`).\n\n\nWarning: Removed 8 rows containing missing values or values outside the scale range\n(`geom_point()`).\n\n\n\n\n\n\n\n\n\n\n\n\nCode\ngdp_model &lt;- lm(military ~ industrial, data=gdp_df)\nsummary(gdp_model)\n\n\n\nCall:\nlm(formula = military ~ industrial, data = gdp_df)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-2.3354 -1.0997 -0.3870  0.6081  6.7508 \n\nCoefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)  \n(Intercept)  0.61969    0.59526   1.041   0.3010  \nindustrial   0.05253    0.02019   2.602   0.0111 *\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 1.671 on 79 degrees of freedom\n  (8 observations deleted due to missingness)\nMultiple R-squared:  0.07895,   Adjusted R-squared:  0.06729 \nF-statistic: 6.771 on 1 and 79 DF,  p-value: 0.01106",
+    "text": "Interpreting Output\n\n\n\n\nCode\nlibrary(tidyverse)\ngdp_df &lt;- read_csv(\"assets/gdp_pca.csv\")\n\n\nRows: 89 Columns: 14\n── Column specification ────────────────────────────────────────────────────────\nDelimiter: \",\"\nchr  (2): country_code, country_name\ndbl (12): .rownames, services, agriculture, industrial, manufacturing, resou...\n\nℹ Use `spec()` to retrieve the full column specification for this data.\nℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.\n\n\nCode\nmil_plot &lt;- gdp_df |&gt; ggplot(aes(x=industrial, y=military)) +\n  geom_point(size=0.5*g_pointsize) +\n  geom_smooth(method='lm', formula=\"y ~ x\", linewidth=1) +\n  theme_dsan() +\n  labs(\n    title=\"Military Exports vs. Industrialization\",\n    x=\"Industrial Production (% of GDP)\",\n    y=\"Military Exports (% of All Exports)\"\n  )\n\n\n\n\nCode\nmil_plot + theme_dsan(\"quarter\")\n\n\nWarning: Removed 8 rows containing non-finite outside the scale range\n(`stat_smooth()`).\n\n\nWarning: Removed 8 rows containing missing values or values outside the scale range\n(`geom_point()`).\n\n\n\n\n\n\n\n\n\n\n\n\nCode\ngdp_model &lt;- lm(military ~ industrial, data=gdp_df)\nsummary(gdp_model)\n\n\n\nCall:\nlm(formula = military ~ industrial, data = gdp_df)\n\nResiduals:\n    Min      1Q  Median      3Q     Max \n-2.3354 -1.0997 -0.3870  0.6081  6.7508 \n\nCoefficients:\n            Estimate Std. Error t value Pr(&gt;|t|)  \n(Intercept)  0.61969    0.59526   1.041   0.3010  \nindustrial   0.05253    0.02019   2.602   0.0111 *\n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n\nResidual standard error: 1.671 on 79 degrees of freedom\n  (8 observations deleted due to missingness)\nMultiple R-squared:  0.07895,   Adjusted R-squared:  0.06729 \nF-statistic: 6.771 on 1 and 79 DF,  p-value: 0.01106",
     "crumbs": [
       "Week 2: {{< var w02.date-md >}}"
     ]
@@ -3652,14 +3703,14 @@
     "href": "writeups/machine-learning/index.html#so-whats-the-issue",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "So What’s the Issue?",
-    "text": "So What’s the Issue?\n\n\n\nx &lt;- seq(from = 0, to = 1, by = 0.1)\nn &lt;- length(x)\neps &lt;- rnorm(n, 0, 0.04)\ny &lt;- x + eps\n# But make one big outlier\nmidpoint &lt;- ceiling((3/4)*n)\ny[midpoint] &lt;- 0\nof_data &lt;- tibble::tibble(x=x, y=y)\n# Linear model\nlin_model &lt;- lm(y ~ x)\n# But now polynomial regression\npoly_model &lt;- lm(y ~ poly(x, degree = 10, raw=TRUE))\n#summary(model)\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  labs(\n    title = \"Training Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw=TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  labs(\n    title = \"A Perfect Model?\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\nsummary(lin_model)$r.squared\n\n[1] 0.5377524\n\nget_rss(lin_model)\n\n[1] 0.5258856\n\n\n\nPolynomial Model:\n\n\nsummary(poly_model)$r.squared\n\n[1] 1\n\nget_rss(poly_model)\n\n[1] 0"
+    "text": "So What’s the Issue?\n\n\n\nx &lt;- seq(from = 0, to = 1, by = 0.1)\nn &lt;- length(x)\neps &lt;- rnorm(n, 0, 0.04)\ny &lt;- x + eps\n# But make one big outlier\nmidpoint &lt;- ceiling((3/4)*n)\ny[midpoint] &lt;- 0\nof_data &lt;- tibble::tibble(x=x, y=y)\n# Linear model\nlin_model &lt;- lm(y ~ x)\n# But now polynomial regression\npoly_model &lt;- lm(y ~ poly(x, degree = 10, raw=TRUE))\n#summary(model)\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  labs(\n    title = \"Training Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw=TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  labs(\n    title = \"A Perfect Model?\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\nsummary(lin_model)$r.squared\n\n[1] 0.5280638\n\nget_rss(lin_model)\n\n[1] 0.5119513\n\n\n\nPolynomial Model:\n\n\nsummary(poly_model)$r.squared\n\n[1] 1\n\nget_rss(poly_model)\n\n[1] 0"
   },
   {
     "objectID": "writeups/machine-learning/index.html#generalization",
     "href": "writeups/machine-learning/index.html#generalization",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "Generalization",
-    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n# Data setup\nx_test &lt;- seq(from = 0, to = 1, by = 0.1)\nn_test &lt;- length(x_test)\neps_test &lt;- rnorm(n_test, 0, 0.04)\ny_test &lt;- x_test + eps_test\nof_data_test &lt;- tibble::tibble(x=x_test, y=y_test)\nlin_y_pred_test &lt;- predict(lin_model, as.data.frame(x_test))\n#lin_y_pred_test\nlin_resids_test &lt;- y_test - lin_y_pred_test\n#lin_resids_test\nlin_rss_test &lt;- sum(lin_resids_test^2)\n#lin_rss_test\n# Lin R2 = 1 - RSS/TSS\ntss_test &lt;- sum((y_test - mean(y_test))^2)\nlin_r2_test &lt;- 1 - (lin_rss_test / tss_test)\n#lin_r2_test\n# Now the poly model\npoly_y_pred_test &lt;- predict(poly_model, as.data.frame(x_test))\npoly_resids_test &lt;- y_test - poly_y_pred_test\npoly_rss_test &lt;- sum(poly_resids_test^2)\n#poly_rss_test\n# RSS\npoly_r2_test &lt;- 1 - (poly_rss_test / tss_test)\n#poly_r2_test\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw = TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  dsan_theme() +\n  geom_point(data=of_data_test, aes(x=x_test, y=y_test), size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  labs(\n    title = \"Performance on Unseen Test Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\nlin_r2_test\n\n[1] 0.8369245\n\nlin_rss_test\n\n[1] 0.1973134\n\n\n\nPolynomial Model:\n\n\npoly_r2_test\n\n[1] 0.4609462\n\npoly_rss_test\n\n[1] 0.6522288"
+    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n# Data setup\nx_test &lt;- seq(from = 0, to = 1, by = 0.1)\nn_test &lt;- length(x_test)\neps_test &lt;- rnorm(n_test, 0, 0.04)\ny_test &lt;- x_test + eps_test\nof_data_test &lt;- tibble::tibble(x=x_test, y=y_test)\nlin_y_pred_test &lt;- predict(lin_model, as.data.frame(x_test))\n#lin_y_pred_test\nlin_resids_test &lt;- y_test - lin_y_pred_test\n#lin_resids_test\nlin_rss_test &lt;- sum(lin_resids_test^2)\n#lin_rss_test\n# Lin R2 = 1 - RSS/TSS\ntss_test &lt;- sum((y_test - mean(y_test))^2)\nlin_r2_test &lt;- 1 - (lin_rss_test / tss_test)\n#lin_r2_test\n# Now the poly model\npoly_y_pred_test &lt;- predict(poly_model, as.data.frame(x_test))\npoly_resids_test &lt;- y_test - poly_y_pred_test\npoly_rss_test &lt;- sum(poly_resids_test^2)\n#poly_rss_test\n# RSS\npoly_r2_test &lt;- 1 - (poly_rss_test / tss_test)\n#poly_r2_test\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw = TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  dsan_theme() +\n  geom_point(data=of_data_test, aes(x=x_test, y=y_test), size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  labs(\n    title = \"Performance on Unseen Test Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\nlin_r2_test\n\n[1] 0.8339393\n\nlin_rss_test\n\n[1] 0.1851373\n\n\n\nPolynomial Model:\n\n\npoly_r2_test\n\n[1] 0.3599075\n\npoly_rss_test\n\n[1] 0.7136247"
   },
   {
     "objectID": "writeups/machine-learning/index.html#how-to-avoid-overfitting",
@@ -3834,14 +3885,14 @@
     "href": "writeups/machine-learning/slides.html#so-whats-the-issue",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "So What’s the Issue?",
-    "text": "So What’s the Issue?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\n\nCode\nsummary(lin_model)$r.squared\n\n\n[1] 0.5761976\n\n\nCode\nget_rss(lin_model)\n\n\n[1] 0.5608401\n\n\n\nPolynomial Model:\n\n\n\nCode\nsummary(poly_model)$r.squared\n\n\n[1] 1\n\n\nCode\nget_rss(poly_model)\n\n\n[1] 0"
+    "text": "So What’s the Issue?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\n\nCode\nsummary(lin_model)$r.squared\n\n\n[1] 0.5437894\n\n\nCode\nget_rss(lin_model)\n\n\n[1] 0.5175736\n\n\n\nPolynomial Model:\n\n\n\nCode\nsummary(poly_model)$r.squared\n\n\n[1] 1\n\n\nCode\nget_rss(poly_model)\n\n\n[1] 0"
   },
   {
     "objectID": "writeups/machine-learning/slides.html#generalization",
     "href": "writeups/machine-learning/slides.html#generalization",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "Generalization",
-    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\n\nCode\nlin_r2_test\n\n\n[1] 0.888065\n\n\nCode\nlin_rss_test\n\n\n[1] 0.1205109\n\n\n\nPolynomial Model:\n\n\n\nCode\npoly_r2_test\n\n\n[1] 0.3300095\n\n\nCode\npoly_rss_test\n\n\n[1] 0.7213217"
+    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\n\nCode\nlin_r2_test\n\n\n[1] 0.8664882\n\n\nCode\nlin_rss_test\n\n\n[1] 0.1457587\n\n\n\nPolynomial Model:\n\n\n\nCode\npoly_r2_test\n\n\n[1] 0.398951\n\n\nCode\npoly_rss_test\n\n\n[1] 0.6561829"
   },
   {
     "objectID": "writeups/machine-learning/slides.html#how-to-avoid-overfitting",

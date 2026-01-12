@@ -65,3 +65,29 @@ Residual standard error: 1.671 on 79 degrees of freedom
 Multiple R-squared:  0.07895,   Adjusted R-squared:  0.06729 
 F-statistic: 6.771 on 1 and 79 DF,  p-value: 0.01106
 </pre>
+
+---
+
+## Explanatory Example: Industrialization Effects {.smaller}
+
+```{r}
+#| label: mil-plot-intro
+library(tidyverse)
+gdp_df <- read_csv("assets/gdp_pca.csv")
+mil_plot <- gdp_df |> ggplot(aes(x=industrial, y=military)) +
+  geom_point(size=0.5*g_pointsize) +
+  geom_smooth(method='lm', formula="y ~ x", linewidth=1) +
+  theme_dsan() +
+  labs(
+    title="Military Exports vs. Industrialization",
+    x="Industrial Production (% of GDP)",
+    y="Military Exports (% of All Exports)"
+  )
+mil_plot
+```
+
+---
+
+Squared resids plot
+
+![[Image Source](https://gregorygundersen.com/blog/2020/01/04/ols/)](images/rss.png){fig-align="center"}
