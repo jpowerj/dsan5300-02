@@ -2005,7 +2005,27 @@
     "href": "writeups/index.html",
     "title": "Extra Writeups",
     "section": "",
-    "text": "Order By\n      Default\n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nTitle\n\n\n\nWeek\n\n\n\nAssignment\n\n\n\n\n\n\n\n\nGetting Started with Lab 9\n\n\n11\n\n\nLab 9\n\n\n\n\n\n\nGetting Started with HW 3\n\n\n9\n\n\nHW 3\n\n\n\n\n\n\nDSAN 5300 Exam 2 Study Guide\n\n\n8\n\n\nQuiz 2\n\n\n\n\n\n\nGetting Started with HW 2\n\n\n5\n\n\nHW 2\n\n\n\n\n\n\nGetting Started with HW 1\n\n\n3\n\n\nHW 1\n\n\n\n\n\n\nUsing Python to Plot… Whatever’s Going On in 3D\n\n\n3\n\n\nGeneral\n\n\n\n\n\n\nQuiz 1 Study Guide\n\n\n2\n\n\nQuiz 1\n\n\n\n\n\n\nGetting Started with Lab 1\n\n\n2\n\n\nLab 1\n\n\n\n\n\n\nExtra Slides: A Slightly Deeper Dive Into Machine Learning\n\n\n2\n\n\nGeneral\n\n\n\n\n\n\nRegression vs. PCA\n\n\n2\n\n\nGeneral\n\n\n\n\n\n\nMathematical Optimization\n\n\n1\n\n\nGeneral\n\n\n\n\n\n\nNo matching items",
+    "text": "Order By\n      Default\n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nTitle\n\n\n\nWeek\n\n\n\nAssignment\n\n\n\n\n\n\n\n\nGetting Started with HW 1\n\n\n3\n\n\nHW 1\n\n\n\n\n\n\nQuiz 3 Study Guide Appendix: The Matrix-Form OLS Solution\n\n\n3\n\n\nQuiz 3\n\n\n\n\n\n\nUsing Python to Plot… Whatever’s Going On in 3D\n\n\n3\n\n\nGeneral\n\n\n\n\n\n\nGetting Started with Lab 1\n\n\n2\n\n\nLab 1\n\n\n\n\n\n\nRegression vs. PCA\n\n\n2\n\n\nGeneral\n\n\n\n\n\n\nMathematical Optimization\n\n\n1\n\n\nGeneral\n\n\n\n\n\n\nNo matching items",
+    "crumbs": [
+      "Writeups"
+    ]
+  },
+  {
+    "objectID": "writeups/index.html#current-semester",
+    "href": "writeups/index.html#current-semester",
+    "title": "Extra Writeups",
+    "section": "",
+    "text": "Order By\n      Default\n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nTitle\n\n\n\nWeek\n\n\n\nAssignment\n\n\n\n\n\n\n\n\nGetting Started with HW 1\n\n\n3\n\n\nHW 1\n\n\n\n\n\n\nQuiz 3 Study Guide Appendix: The Matrix-Form OLS Solution\n\n\n3\n\n\nQuiz 3\n\n\n\n\n\n\nUsing Python to Plot… Whatever’s Going On in 3D\n\n\n3\n\n\nGeneral\n\n\n\n\n\n\nGetting Started with Lab 1\n\n\n2\n\n\nLab 1\n\n\n\n\n\n\nRegression vs. PCA\n\n\n2\n\n\nGeneral\n\n\n\n\n\n\nMathematical Optimization\n\n\n1\n\n\nGeneral\n\n\n\n\n\n\nNo matching items",
+    "crumbs": [
+      "Writeups"
+    ]
+  },
+  {
+    "objectID": "writeups/index.html#previous-semesters",
+    "href": "writeups/index.html#previous-semesters",
+    "title": "Extra Writeups",
+    "section": "Previous Semesters",
+    "text": "Previous Semesters\nWriteups from previous versions of the course are provided here as well, since the content remains similar even though the labels (which content goes into which weeks) and in-depth-ness may change over time!\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\nTitle\n\n\n\nWeek\n\n\n\nAssignment\n\n\n\n\n\n\n\n\nGetting Started with Lab 9\n\n\n11\n\n\nLab 9\n\n\n\n\n\n\nGetting Started with HW 3\n\n\n9\n\n\nHW 3\n\n\n\n\n\n\nDSAN 5300 Exam 2 Study Guide\n\n\n8\n\n\nQuiz 2\n\n\n\n\n\n\nGetting Started with HW 2\n\n\n5\n\n\nHW 2\n\n\n\n\n\n\nQuiz 1 Study Guide\n\n\n2\n\n\nQuiz 1\n\n\n\n\n\n\nExtra Slides: A Slightly Deeper Dive Into Machine Learning\n\n\n2\n\n\nGeneral\n\n\n\n\n\n\nNo matching items",
     "crumbs": [
       "Writeups"
     ]
@@ -3806,14 +3826,14 @@
     "href": "writeups/machine-learning/index.html#so-whats-the-issue",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "So What’s the Issue?",
-    "text": "So What’s the Issue?\n\n\n\nx &lt;- seq(from = 0, to = 1, by = 0.1)\nn &lt;- length(x)\neps &lt;- rnorm(n, 0, 0.04)\ny &lt;- x + eps\n# But make one big outlier\nmidpoint &lt;- ceiling((3/4)*n)\ny[midpoint] &lt;- 0\nof_data &lt;- tibble::tibble(x=x, y=y)\n# Linear model\nlin_model &lt;- lm(y ~ x)\n# But now polynomial regression\npoly_model &lt;- lm(y ~ poly(x, degree = 10, raw=TRUE))\n#summary(model)\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  labs(\n    title = \"Training Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw=TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  labs(\n    title = \"A Perfect Model?\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\nsummary(lin_model)$r.squared\n\n[1] 0.5682597\n\nget_rss(lin_model)\n\n[1] 0.5719233\n\n\n\nPolynomial Model:\n\n\nsummary(poly_model)$r.squared\n\n[1] 1\n\nget_rss(poly_model)\n\n[1] 0"
+    "text": "So What’s the Issue?\n\n\n\nx &lt;- seq(from = 0, to = 1, by = 0.1)\nn &lt;- length(x)\neps &lt;- rnorm(n, 0, 0.04)\ny &lt;- x + eps\n# But make one big outlier\nmidpoint &lt;- ceiling((3/4)*n)\ny[midpoint] &lt;- 0\nof_data &lt;- tibble::tibble(x=x, y=y)\n# Linear model\nlin_model &lt;- lm(y ~ x)\n# But now polynomial regression\npoly_model &lt;- lm(y ~ poly(x, degree = 10, raw=TRUE))\n#summary(model)\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  labs(\n    title = \"Training Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw=TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  labs(\n    title = \"A Perfect Model?\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\nsummary(lin_model)$r.squared\n\n[1] 0.5453947\n\nget_rss(lin_model)\n\n[1] 0.5492971\n\n\n\nPolynomial Model:\n\n\nsummary(poly_model)$r.squared\n\n[1] 1\n\nget_rss(poly_model)\n\n[1] 0"
   },
   {
     "objectID": "writeups/machine-learning/index.html#generalization",
     "href": "writeups/machine-learning/index.html#generalization",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "Generalization",
-    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n# Data setup\nx_test &lt;- seq(from = 0, to = 1, by = 0.1)\nn_test &lt;- length(x_test)\neps_test &lt;- rnorm(n_test, 0, 0.04)\ny_test &lt;- x_test + eps_test\nof_data_test &lt;- tibble::tibble(x=x_test, y=y_test)\nlin_y_pred_test &lt;- predict(lin_model, as.data.frame(x_test))\n#lin_y_pred_test\nlin_resids_test &lt;- y_test - lin_y_pred_test\n#lin_resids_test\nlin_rss_test &lt;- sum(lin_resids_test^2)\n#lin_rss_test\n# Lin R2 = 1 - RSS/TSS\ntss_test &lt;- sum((y_test - mean(y_test))^2)\nlin_r2_test &lt;- 1 - (lin_rss_test / tss_test)\n#lin_r2_test\n# Now the poly model\npoly_y_pred_test &lt;- predict(poly_model, as.data.frame(x_test))\npoly_resids_test &lt;- y_test - poly_y_pred_test\npoly_rss_test &lt;- sum(poly_resids_test^2)\n#poly_rss_test\n# RSS\npoly_r2_test &lt;- 1 - (poly_rss_test / tss_test)\n#poly_r2_test\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw = TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  dsan_theme() +\n  geom_point(data=of_data_test, aes(x=x_test, y=y_test), size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  labs(\n    title = \"Performance on Unseen Test Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\nlin_r2_test\n\n[1] 0.9219121\n\nlin_rss_test\n\n[1] 0.08888745\n\n\n\nPolynomial Model:\n\n\npoly_r2_test\n\n[1] 0.4080611\n\npoly_rss_test\n\n[1] 0.6738042"
+    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n# Data setup\nx_test &lt;- seq(from = 0, to = 1, by = 0.1)\nn_test &lt;- length(x_test)\neps_test &lt;- rnorm(n_test, 0, 0.04)\ny_test &lt;- x_test + eps_test\nof_data_test &lt;- tibble::tibble(x=x_test, y=y_test)\nlin_y_pred_test &lt;- predict(lin_model, as.data.frame(x_test))\n#lin_y_pred_test\nlin_resids_test &lt;- y_test - lin_y_pred_test\n#lin_resids_test\nlin_rss_test &lt;- sum(lin_resids_test^2)\n#lin_rss_test\n# Lin R2 = 1 - RSS/TSS\ntss_test &lt;- sum((y_test - mean(y_test))^2)\nlin_r2_test &lt;- 1 - (lin_rss_test / tss_test)\n#lin_r2_test\n# Now the poly model\npoly_y_pred_test &lt;- predict(poly_model, as.data.frame(x_test))\npoly_resids_test &lt;- y_test - poly_y_pred_test\npoly_rss_test &lt;- sum(poly_resids_test^2)\n#poly_rss_test\n# RSS\npoly_r2_test &lt;- 1 - (poly_rss_test / tss_test)\n#poly_r2_test\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw = TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  dsan_theme() +\n  geom_point(data=of_data_test, aes(x=x_test, y=y_test), size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  labs(\n    title = \"Performance on Unseen Test Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\nlin_r2_test\n\n[1] 0.8962617\n\nlin_rss_test\n\n[1] 0.121014\n\n\n\nPolynomial Model:\n\n\npoly_r2_test\n\n[1] 0.4277367\n\npoly_rss_test\n\n[1] 0.667563"
   },
   {
     "objectID": "writeups/machine-learning/index.html#how-to-avoid-overfitting",
@@ -3988,14 +4008,14 @@
     "href": "writeups/machine-learning/slides.html#so-whats-the-issue",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "So What’s the Issue?",
-    "text": "So What’s the Issue?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\n\nCode\nsummary(lin_model)$r.squared\n\n\n[1] 0.5389802\n\n\nCode\nget_rss(lin_model)\n\n\n[1] 0.5402513\n\n\n\nPolynomial Model:\n\n\n\nCode\nsummary(poly_model)$r.squared\n\n\n[1] 1\n\n\nCode\nget_rss(poly_model)\n\n\n[1] 0"
+    "text": "So What’s the Issue?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\n\nCode\nsummary(lin_model)$r.squared\n\n\n[1] 0.5563055\n\n\nCode\nget_rss(lin_model)\n\n\n[1] 0.5706897\n\n\n\nPolynomial Model:\n\n\n\nCode\nsummary(poly_model)$r.squared\n\n\n[1] 1\n\n\nCode\nget_rss(poly_model)\n\n\n[1] 0"
   },
   {
     "objectID": "writeups/machine-learning/slides.html#generalization",
     "href": "writeups/machine-learning/slides.html#generalization",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "Generalization",
-    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\n\nCode\nlin_r2_test\n\n\n[1] 0.8823343\n\n\nCode\nlin_rss_test\n\n\n[1] 0.128768\n\n\n\nPolynomial Model:\n\n\n\nCode\npoly_r2_test\n\n\n[1] 0.3975732\n\n\nCode\npoly_rss_test\n\n\n[1] 0.6592687"
+    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\n\nCode\nlin_r2_test\n\n\n[1] 0.8959697\n\n\nCode\nlin_rss_test\n\n\n[1] 0.1242319\n\n\n\nPolynomial Model:\n\n\n\nCode\npoly_r2_test\n\n\n[1] 0.4412373\n\n\nCode\npoly_rss_test\n\n\n[1] 0.6672688"
   },
   {
     "objectID": "writeups/machine-learning/slides.html#how-to-avoid-overfitting",

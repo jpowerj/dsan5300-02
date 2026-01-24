@@ -78,7 +78,7 @@ ul.task-list li input[type="checkbox"] {
 <script>
 
   window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
+    const listingTargetEl = window.document.querySelector('#listing-current-writeups .list');
     if (!listingTargetEl) {
       // No listing discovered, do not attach.
       return; 
@@ -91,7 +91,35 @@ ul.task-list li input[type="checkbox"] {
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
+    window['quarto-listings']['listing-current-writeups'] = new List('listing-current-writeups', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-prev-writeups .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-title','listing-weeknum','listing-assignment',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-title-sort'] }],
+      
+      searchColumns: ["listing-date","listing-title","listing-author"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-prev-writeups'] = new List('listing-prev-writeups', options);
 
     if (window['quarto-listing-loaded']) {
       window['quarto-listing-loaded']();
@@ -462,13 +490,20 @@ window.Quarto = {
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2026-01-24, 07:05:31 AM</em></p>
+<p><em>Updated 2026-01-24, 06:30:58 PM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(11)</span></div><div class="category" data-category="RXh0cmElMjBXcml0ZXVwcw==">Extra Writeups <span class="quarto-category-count">(11)</span></div></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#current-semester" id="toc-current-semester" class="nav-link active" data-scroll-target="#current-semester">Current Semester</a></li>
+  <li><a href="#previous-semesters" id="toc-previous-semesters" class="nav-link" data-scroll-target="#previous-semesters">Previous Semesters</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/writeups/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(12)</span></div><div class="category" data-category="RXh0cmElMjBXcml0ZXVwcw==">Extra Writeups <span class="quarto-category-count">(12)</span></div></div></div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
@@ -492,15 +527,13 @@ window.Quarto = {
 </header>
 
 
-
-
-
-
-<div class="quarto-listing quarto-listing-container-table" id="listing-listing">
+<section id="current-semester" class="level2">
+<h2 class="anchored" data-anchor-id="current-semester">Current Semester</h2>
+<div id="listing-current-writeups" class="quarto-listing quarto-listing-container-table">
 <div class="listing-actions-group">
    <div class="input-group input-group-sm quarto-listing-sort">
     <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
-    <select id="listing-listing-sort" class="form-select" aria-label="Order By" onchange="window['quarto-listings']['listing-listing'].sort(this.options[this.selectedIndex].value, { order: this.options[this.selectedIndex].getAttribute('data-direction')})">
+    <select id="listing-current-writeups-sort" class="form-select" aria-label="Order By" onchange="window['quarto-listings']['listing-current-writeups'].sort(this.options[this.selectedIndex].value, { order: this.options[this.selectedIndex].getAttribute('data-direction')})">
       <option value="" disabled="" selected="" hidden="">Order By</option>
       <option value="index" data-direction="asc">Default</option>
       <option value="listing-title-sort" data-direction="asc">
@@ -533,63 +566,7 @@ Assignment
 </thead>
 <tbody class="list">
 
-<tr data-index="0" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1744668073000" data-listing-file-modified-sort="1744668073000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="759" data-listing-title-sort="Getting Started with Lab 9" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
- if (href) { window.location=href ; return false; }">
-<td>
-<a href="../writeups/lab-9/index.html" class="title listing-title">Getting Started with Lab 9</a>
-</td>
-<td>
-<span class="listing-weeknum">11</span>
-</td>
-<td>
-<span class="listing-assignment">Lab 9</span>
-</td>
-
-</tr>
-
-<tr data-index="1" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1744668073000" data-listing-file-modified-sort="1744668073000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="431" data-listing-title-sort="Getting Started with HW 3" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
- if (href) { window.location=href ; return false; }">
-<td>
-<a href="../writeups/hw3-guide/index.html" class="title listing-title">Getting Started with HW 3</a>
-</td>
-<td>
-<span class="listing-weeknum">9</span>
-</td>
-<td>
-<span class="listing-assignment">HW 3</span>
-</td>
-
-</tr>
-
-<tr data-index="2" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1744668073000" data-listing-file-modified-sort="1744668073000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2165" data-listing-title-sort="DSAN 5300 Exam 2 Study Guide" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
- if (href) { window.location=href ; return false; }">
-<td>
-<a href="../writeups/quiz-2/index.html" class="title listing-title">DSAN 5300 Exam 2 Study Guide</a>
-</td>
-<td>
-<span class="listing-weeknum">8</span>
-</td>
-<td>
-<span class="listing-assignment">Quiz 2</span>
-</td>
-
-</tr>
-
-<tr data-index="3" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1744668073000" data-listing-file-modified-sort="1744668073000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="367" data-listing-title-sort="Getting Started with HW 2" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
- if (href) { window.location=href ; return false; }">
-<td>
-<a href="../writeups/hw2-guide/index.html" class="title listing-title">Getting Started with HW 2</a>
-</td>
-<td>
-<span class="listing-weeknum">5</span>
-</td>
-<td>
-<span class="listing-assignment">HW 2</span>
-</td>
-
-</tr>
-
-<tr data-index="4" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1744668073000" data-listing-file-modified-sort="1744668073000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2852" data-listing-title-sort="Getting Started with HW 1" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+<tr data-index="0" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1769297322000" data-listing-file-modified-sort="1769297322875" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="15" data-listing-word-count-sort="2852" data-listing-title-sort="Getting Started with HW 1" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
  if (href) { window.location=href ; return false; }">
 <td>
 <a href="../writeups/hw1-guide/index.html" class="title listing-title">Getting Started with HW 1</a>
@@ -603,7 +580,21 @@ Assignment
 
 </tr>
 
-<tr data-index="5" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-file-modified-sort="1767138620898" data-listing-reading-time-sort="8" data-listing-word-count-sort="1425" data-listing-title-sort="Using Python to Plot... Whatever's Going On in 3D" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+<tr data-index="1" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1769296983000" data-listing-file-modified-sort="1769296983979" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1167" data-listing-title-sort="Quiz 3 Study Guide Appendix: The Matrix-Form OLS Solution" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+ if (href) { window.location=href ; return false; }">
+<td>
+<a href="../writeups/quiz-3-appendix/index.html" class="title listing-title">Quiz 3 Study Guide Appendix: The Matrix-Form OLS Solution</a>
+</td>
+<td>
+<span class="listing-weeknum">3</span>
+</td>
+<td>
+<span class="listing-assignment">Quiz 3</span>
+</td>
+
+</tr>
+
+<tr data-index="2" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-file-modified-sort="1769297309272" data-listing-reading-time-sort="8" data-listing-word-count-sort="1425" data-listing-title-sort="Using Python to Plot... Whatever's Going On in 3D" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
  if (href) { window.location=href ; return false; }">
 <td>
 <a href="../writeups/3d-plots/index.html" class="title listing-title">Using Python to Plot… Whatever’s Going On in 3D</a>
@@ -617,21 +608,7 @@ Assignment
 
 </tr>
 
-<tr data-index="6" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1744668073000" data-listing-file-modified-sort="1744668073000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1582" data-listing-title-sort="Quiz 1 Study Guide" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
- if (href) { window.location=href ; return false; }">
-<td>
-<a href="../writeups/quiz-1/index.html" class="title listing-title">Quiz 1 Study Guide</a>
-</td>
-<td>
-<span class="listing-weeknum">2</span>
-</td>
-<td>
-<span class="listing-assignment">Quiz 1</span>
-</td>
-
-</tr>
-
-<tr data-index="7" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-file-modified-sort="1744668073000" data-listing-reading-time-sort="10" data-listing-word-count-sort="1803" data-listing-title-sort="Getting Started with Lab 1" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+<tr data-index="3" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-file-modified-sort="1769297432023" data-listing-reading-time-sort="10" data-listing-word-count-sort="1803" data-listing-title-sort="Getting Started with Lab 1" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
  if (href) { window.location=href ; return false; }">
 <td>
 <a href="../writeups/lab-1/index.html" class="title listing-title">Getting Started with Lab 1</a>
@@ -645,21 +622,7 @@ Assignment
 
 </tr>
 
-<tr data-index="8" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1744668073000" data-listing-file-modified-sort="1744668073000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="18" data-listing-word-count-sort="3491" data-listing-title-sort="Extra Slides: A Slightly Deeper Dive Into Machine Learning" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
- if (href) { window.location=href ; return false; }">
-<td>
-<a href="../writeups/machine-learning/index.html" class="title listing-title">Extra Slides: A Slightly Deeper Dive Into Machine Learning</a>
-</td>
-<td>
-<span class="listing-weeknum">2</span>
-</td>
-<td>
-<span class="listing-assignment">General</span>
-</td>
-
-</tr>
-
-<tr data-index="9" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1744668073000" data-listing-file-modified-sort="1744668073000" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2058" data-listing-title-sort="Regression vs. PCA" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+<tr data-index="4" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1769297427000" data-listing-file-modified-sort="1769297427176" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2058" data-listing-title-sort="Regression vs. PCA" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
  if (href) { window.location=href ; return false; }">
 <td>
 <a href="../writeups/regression-vs-pca/index.html" class="title listing-title">Regression vs.&nbsp;PCA</a>
@@ -673,7 +636,7 @@ Assignment
 
 </tr>
 
-<tr data-index="10" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-file-modified-sort="1744668073000" data-listing-reading-time-sort="27" data-listing-word-count-sort="5337" data-listing-title-sort="Mathematical Optimization" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+<tr data-index="5" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-file-modified-sort="1769297423030" data-listing-reading-time-sort="27" data-listing-word-count-sort="5337" data-listing-title-sort="Mathematical Optimization" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
  if (href) { window.location=href ; return false; }">
 <td>
 <a href="../writeups/optimization/index.html" class="title listing-title">Mathematical Optimization</a>
@@ -690,7 +653,142 @@ Assignment
 </tbody>
 </table>
 <div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</div>
+</section>
+<section id="previous-semesters" class="level2">
+<h2 class="anchored" data-anchor-id="previous-semesters">Previous Semesters</h2>
+<p>Writeups from previous versions of the course are provided here as well, since the content remains similar even though the labels (which content goes into which weeks) and in-depth-ness may change over time!</p>
+<div id="listing-prev-writeups" class="quarto-listing quarto-listing-container-table">
+<div class="listing-actions-group">
+   <div class="input-group input-group-sm quarto-listing-sort">
+    <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
+    <select id="listing-prev-writeups-sort" class="form-select" aria-label="Order By" onchange="window['quarto-listings']['listing-prev-writeups'].sort(this.options[this.selectedIndex].value, { order: this.options[this.selectedIndex].getAttribute('data-direction')})">
+      <option value="" disabled="" selected="" hidden="">Order By</option>
+      <option value="index" data-direction="asc">Default</option>
+      <option value="listing-title-sort" data-direction="asc">
+        Title
+      </option>
+    </select>
+  </div>
+    <div class="input-group input-group-sm quarto-listing-filter">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="text" class="search form-control" placeholder="Filter">
+    </div>
+</div>
+<table class="quarto-listing-table table table-hover">
+<thead>
+<tr>
+
+<th>
+<a class="sort" data-sort="listing-title-sort" onclick="if (this.classList.contains('sort-asc')) { this.classList.add('sort-desc'); this.classList.remove('sort-asc') } else { this.classList.add('sort-asc'); this.classList.remove('sort-desc')} return false;">Title</a>
+</th>
+
+<th>
+Week
+</th>
+
+<th>
+Assignment
+</th>
+
+</tr>
+</thead>
+<tbody class="list">
+
+<tr data-index="0" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1769297429000" data-listing-file-modified-sort="1769297429820" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="759" data-listing-title-sort="Getting Started with Lab 9" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+ if (href) { window.location=href ; return false; }">
+<td>
+<a href="../writeups/lab-9/index.html" class="title listing-title">Getting Started with Lab 9</a>
+</td>
+<td>
+<span class="listing-weeknum">11</span>
+</td>
+<td>
+<span class="listing-assignment">Lab 9</span>
+</td>
+
+</tr>
+
+<tr data-index="1" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1769297433000" data-listing-file-modified-sort="1769297433363" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="431" data-listing-title-sort="Getting Started with HW 3" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+ if (href) { window.location=href ; return false; }">
+<td>
+<a href="../writeups/hw3-guide/index.html" class="title listing-title">Getting Started with HW 3</a>
+</td>
+<td>
+<span class="listing-weeknum">9</span>
+</td>
+<td>
+<span class="listing-assignment">HW 3</span>
+</td>
+
+</tr>
+
+<tr data-index="2" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1769297407000" data-listing-file-modified-sort="1769297407367" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="11" data-listing-word-count-sort="2165" data-listing-title-sort="DSAN 5300 Exam 2 Study Guide" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+ if (href) { window.location=href ; return false; }">
+<td>
+<a href="../writeups/quiz-2/index.html" class="title listing-title">DSAN 5300 Exam 2 Study Guide</a>
+</td>
+<td>
+<span class="listing-weeknum">8</span>
+</td>
+<td>
+<span class="listing-assignment">Quiz 2</span>
+</td>
+
+</tr>
+
+<tr data-index="3" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1769297343000" data-listing-file-modified-sort="1769297343666" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="367" data-listing-title-sort="Getting Started with HW 2" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+ if (href) { window.location=href ; return false; }">
+<td>
+<a href="../writeups/hw2-guide/index.html" class="title listing-title">Getting Started with HW 2</a>
+</td>
+<td>
+<span class="listing-weeknum">5</span>
+</td>
+<td>
+<span class="listing-assignment">HW 2</span>
+</td>
+
+</tr>
+
+<tr data-index="4" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1769297419000" data-listing-file-modified-sort="1769297419383" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1582" data-listing-title-sort="Quiz 1 Study Guide" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+ if (href) { window.location=href ; return false; }">
+<td>
+<a href="../writeups/quiz-1/index.html" class="title listing-title">Quiz 1 Study Guide</a>
+</td>
+<td>
+<span class="listing-weeknum">2</span>
+</td>
+<td>
+<span class="listing-assignment">Quiz 1</span>
+</td>
+
+</tr>
+
+<tr data-index="5" data-categories="RXh0cmElMjBXcml0ZXVwcw==" data-listing-date-sort="1769297424000" data-listing-file-modified-sort="1769297424982" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="18" data-listing-word-count-sort="3491" data-listing-title-sort="Extra Slides: A Slightly Deeper Dive Into Machine Learning" data-listing-filename-sort="index.qmd" onclick="href = this.querySelector('a').getAttribute('href');
+ if (href) { window.location=href ; return false; }">
+<td>
+<a href="../writeups/machine-learning/index.html" class="title listing-title">Extra Slides: A Slightly Deeper Dive Into Machine Learning</a>
+</td>
+<td>
+<span class="listing-weeknum">2</span>
+</td>
+<td>
+<span class="listing-assignment">General</span>
+</td>
+
+</tr>
+
+</tbody>
+</table>
+<div class="listing-no-matching d-none">No matching items</div>
+</div>
+
+
+
+</section>
+
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
@@ -1109,4 +1207,4 @@ Assignment
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/writeups/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/writeups/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

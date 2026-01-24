@@ -2,17 +2,18 @@
   {
     "listing": "/writeups/index.html",
     "items": [
+      "/writeups/hw1-guide/index.html",
+      "/writeups/quiz-3-appendix/index.html",
+      "/writeups/3d-plots/index.html",
+      "/writeups/lab-1/index.html",
+      "/writeups/regression-vs-pca/index.html",
+      "/writeups/optimization/index.html",
       "/writeups/lab-9/index.html",
       "/writeups/hw3-guide/index.html",
       "/writeups/quiz-2/index.html",
       "/writeups/hw2-guide/index.html",
-      "/writeups/hw1-guide/index.html",
-      "/writeups/3d-plots/index.html",
       "/writeups/quiz-1/index.html",
-      "/writeups/lab-1/index.html",
-      "/writeups/machine-learning/index.html",
-      "/writeups/regression-vs-pca/index.html",
-      "/writeups/optimization/index.html"
+      "/writeups/machine-learning/index.html"
     ]
   },
   {

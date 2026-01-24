@@ -3,8 +3,11 @@ title: "Quiz 3 Study Guide Appendix: The Matrix-Form OLS Solution"
 author: "Jeff Jacobs"
 date: last-modified
 sidebar: mainnav
+term: current
 weeknum: 3
 assignment: "Quiz 3"
+categories:
+  - "Extra Writeups"
 format:
   html:
     df-print: kable

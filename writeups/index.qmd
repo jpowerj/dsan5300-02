@@ -2,20 +2,50 @@
 title: "Extra Writeups"
 sidebar: mainnav
 listing:
-  sort-ui: true
-  filter-ui: true
-  type: table
-  include:
-    categories: "{Extra Writeups,Clarifications}"
-  fields: [title,weeknum,assignment]
-  field-display-names: 
-    title: "Title"
-    weeknum: "Week"
-    # categories: "Category"
-    assignment: "Assignment"
-  sort: "weeknum desc"
-  table-hover: true
-  date-format: medium
-  categories: true
+  - id: current-writeups
+    sort-ui: true
+    filter-ui: true
+    type: table
+    include:
+      categories: "{Extra Writeups,Clarifications}"
+      term: "{current}"
+    fields: [title,weeknum,assignment]
+    field-display-names: 
+      title: "Title"
+      weeknum: "Week"
+      # categories: "Category"
+      assignment: "Assignment"
+    sort: "weeknum desc"
+    table-hover: true
+    date-format: medium
+    categories: true
+  - id: prev-writeups
+    sort-ui: true
+    filter-ui: true
+    type: table
+    include:
+      categories: "{Extra Writeups,Clarifications}"
+      term: "{previous}"
+    fields: [title,weeknum,assignment]
+    field-display-names: 
+      title: "Title"
+      weeknum: "Week"
+      # categories: "Category"
+      assignment: "Assignment"
+    sort: "weeknum desc"
+    table-hover: true
+    date-format: medium
+    categories: true
 ---
 
+## Current Semester
+
+::: {#current-writeups}
+:::
+
+## Previous Semesters
+
+Writeups from previous versions of the course are provided here as well, since the content remains similar even though the labels (which content goes into which weeks) and in-depth-ness may change over time!
+
+::: {#prev-writeups}
+:::

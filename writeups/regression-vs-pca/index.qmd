@@ -8,6 +8,7 @@ categories: ["Extra Writeups"]
 bibliography: "../../_DSAN5300.bib"
 weeknum: 2
 assignment: "General"
+term: current
 cache: true
 format:
   revealjs:

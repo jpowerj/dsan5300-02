@@ -6,6 +6,7 @@ sidebar: mainnav
 weeknum: 8
 assignment: "Quiz 2"
 date-format: full
+term: previous
 categories:
   - "Extra Writeups"
 format:

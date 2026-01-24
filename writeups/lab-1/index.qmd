@@ -4,6 +4,7 @@ subtitle: "DSAN 5300: Statistical Learning"
 sidebar: mainnav
 weeknum: 2
 assignment: "Lab 1"
+term: current
 categories:
   - "Extra Writeups"
 cache: true
