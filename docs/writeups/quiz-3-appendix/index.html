@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Jeff Jacobs">
+<meta name="dcterms.date" content="2026-01-24">
 
-<title>Quiz 1 Study Guide – DSAN 5300-02</title>
+<title>Quiz 3 Study Guide Appendix: The Matrix-Form OLS Solution – DSAN 5300-02</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,41 +21,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -477,22 +444,16 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a>
+  <li><a href="#part-1-constructing-a-helpful-mathbfx-matrix" id="toc-part-1-constructing-a-helpful-mathbfx-matrix" class="nav-link active" data-scroll-target="#part-1-constructing-a-helpful-mathbfx-matrix">Part 1: Constructing a Helpful <span class="math inline">\(\mathbf{X}\)</span> Matrix</a></li>
+  <li><a href="#part-2-deriving-the-ols-solution-in-terms-of-mathbfx" id="toc-part-2-deriving-the-ols-solution-in-terms-of-mathbfx" class="nav-link" data-scroll-target="#part-2-deriving-the-ols-solution-in-terms-of-mathbfx">Part 2: Deriving the OLS Solution In Terms of <span class="math inline">\(\mathbf{X}\)</span></a>
   <ul class="collapse">
-  <li><a href="#parametric-modeling" id="toc-parametric-modeling" class="nav-link" data-scroll-target="#parametric-modeling">(1) “Parametric” Modeling</a></li>
-  <li><a href="#optimization-in-general" id="toc-optimization-in-general" class="nav-link" data-scroll-target="#optimization-in-general">(2) Optimization in General</a></li>
-  <li><a href="#gradient-descent" id="toc-gradient-descent" class="nav-link" data-scroll-target="#gradient-descent">(3) Gradient Descent</a></li>
-  <li><a href="#more-efficient-optimization-methods" id="toc-more-efficient-optimization-methods" class="nav-link" data-scroll-target="#more-efficient-optimization-methods">(4) More Efficient Optimization Methods</a></li>
+  <li><a href="#part-2.1-the-matrix-matrix-product" id="toc-part-2.1-the-matrix-matrix-product" class="nav-link" data-scroll-target="#part-2.1-the-matrix-matrix-product">Part 2.1: The Matrix-Matrix Product</a></li>
+  <li><a href="#part-2.2-the-matrix-inverse" id="toc-part-2.2-the-matrix-inverse" class="nav-link" data-scroll-target="#part-2.2-the-matrix-inverse">Part 2.2: The Matrix Inverse</a></li>
+  <li><a href="#part-2.3-the-matrix-vector-product" id="toc-part-2.3-the-matrix-vector-product" class="nav-link" data-scroll-target="#part-2.3-the-matrix-vector-product">Part 2.3: The Matrix-Vector Product</a></li>
   </ul></li>
-  <li><a href="#a-full-on-lecture-replacement" id="toc-a-full-on-lecture-replacement" class="nav-link" data-scroll-target="#a-full-on-lecture-replacement">A Full-On Lecture Replacement</a></li>
-  <li><a href="#practice-problems" id="toc-practice-problems" class="nav-link" data-scroll-target="#practice-problems">Practice Problems</a>
-  <ul class="collapse">
-  <li><a href="#problem-1-handling-binary-features" id="toc-problem-1-handling-binary-features" class="nav-link" data-scroll-target="#problem-1-handling-binary-features">Problem 1: Handling Binary Features</a></li>
-  <li><a href="#hypothesis-1-additive-contribution" id="toc-hypothesis-1-additive-contribution" class="nav-link" data-scroll-target="#hypothesis-1-additive-contribution">Hypothesis 1: Additive Contribution</a></li>
-  <li><a href="#hypothesis-2-interactive-contribution" id="toc-hypothesis-2-interactive-contribution" class="nav-link" data-scroll-target="#hypothesis-2-interactive-contribution">Hypothesis 2: Interactive Contribution</a></li>
-  </ul></li>
+  <li><a href="#part-3-rewriting-in-terms-of-variance-and-covariance" id="toc-part-3-rewriting-in-terms-of-variance-and-covariance" class="nav-link" data-scroll-target="#part-3-rewriting-in-terms-of-variance-and-covariance">Part 3: Rewriting In Terms of Variance and Covariance</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/writeups/quiz-1/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/writeups/quiz-3-appendix/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -500,22 +461,24 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Quiz 1 Study Guide</h1>
-<p class="subtitle lead">DSAN 5300: Statistical Learning</p>
-  <div class="quarto-categories">
-    <div class="quarto-category">Extra Writeups</div>
-  </div>
-  </div>
+<h1 class="title">Quiz 3 Study Guide Appendix: The Matrix-Form OLS Solution</h1>
+</div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Jeff Jacobs </p>
+          </div>
+  </div>
     
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Monday, April 14, 2025</p>
+      <p class="date">January 24, 2026</p>
     </div>
   </div>
   
@@ -527,191 +490,241 @@ window.Quarto = {
 </header>
 
 
-<div class="callout callout-style-default callout-note callout-titled" title="Update Log">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<section id="part-1-constructing-a-helpful-mathbfx-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="part-1-constructing-a-helpful-mathbfx-matrix">Part 1: Constructing a Helpful <span class="math inline">\(\mathbf{X}\)</span> Matrix</h2>
+<p>Though we could repeat the steps from the Problem-1.5 solution in the Quiz 3 study guide, with everything re-written out in matrix form, what I think is most helpful is if you just recall the model and solution from Problem-1.2. That model had the form <span class="math inline">\(Y = \beta_1 X\)</span>, and the derived OLS estimate for <span class="math inline">\(\beta_1\)</span> was</p>
+<p><span class="math display">\[
+\beta_1^* = \frac{\sum_{i=1}^{n}x_iy_i}{\sum_{i=1}^{n}x_ix_i}.
+\]</span></p>
+<p>To arrive at the matrix-form derivation of the OLS estimates for the <strong>full</strong> <span class="math inline">\(Y = \beta_0 + \beta_1 X\)</span> model, the German mathematician Gauss<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> noticed that you can just construct an <span class="math inline">\(n \times 2\)</span> <strong>matrix</strong> <span class="math inline">\(\mathbf{X}\)</span>, whose first column is just a vector of <span class="math inline">\(n\)</span> <span class="math inline">\(1\)</span>s and whose second column is the vector of <span class="math inline">\(x_i\)</span> values <span class="math inline">\((x_1, x_2, \ldots, x_n)\)</span>, and then the full two-term model “collapses” down into a simpler format that looks eerily similar to the Problem-1.2 model:</p>
+<p><span class="math display">\[
+\mathbf{y} = \mathbf{X}^{\top}\symbf{\beta},
+\]</span></p>
+<p>where the vector <span class="math inline">\(\mathbf{y}\)</span> is just the column vector of all <span class="math inline">\(y_i\)</span> values, <span class="math inline">\(\mathbf{y} = (y_1, y_2, \ldots, y_n)^{\top}\)</span> and the vector <span class="math inline">\(\symbf{\beta}\)</span> is the column vector of all coefficients, <span class="math inline">\(\symbf{\beta} = (\beta_0, \beta_1)^{\top}\)</span>.</p>
+</section>
+<section id="part-2-deriving-the-ols-solution-in-terms-of-mathbfx" class="level2">
+<h2 class="anchored" data-anchor-id="part-2-deriving-the-ols-solution-in-terms-of-mathbfx">Part 2: Deriving the OLS Solution In Terms of <span class="math inline">\(\mathbf{X}\)</span></h2>
+<p>With this setup, we can derive an ultra-simple closed-form solution which <em>almost</em> looks identical to the Problem-1.2 solution. To look fully identical, the solution would have to look something like the following:</p>
+<p><span class="math display">\[
+\symbf{\beta}^* = \frac{\mathbf{X}^{\top}\mathbf{y}}{\mathbf{X}^{\top}\mathbf{X}}
+\]</span></p>
+<p>Unfortunately, since “division” cannot be defined unambiguously like this for matrices<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, we have to specify whether we want “division” in terms of left-multiplication or right-multiplication by the inverse matrix <span class="math inline">\((\mathbf{X}^{\top}\mathbf{X})^{-1}\)</span>.</p>
+<p>By looking at the dimensions of the two vectors alongside Gauss’ constructed <span class="math inline">\(\mathbf{X}\)</span> matrix, you’ll find that the only valid way to obtain the <span class="math inline">\(2 \times 1\)</span> vector of optimal solutions <span class="math inline">\(\symbf{\beta}^*\)</span> that we want is to <strong>left-multiply</strong> our numerator <span class="math inline">\(\mathbf{X}^{\top}\mathbf{y}\)</span> by the inverse matrix <span class="math inline">\((\mathbf{X}^{\top}\mathbf{X})^{-1}\)</span>, and thus we obtain the <strong>real</strong>, working OLS solution:</p>
+<p><span class="math display">\[
+\symbf{\beta}^* = (\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{y}
+\]</span></p>
+<p>By working through the three main “things” happening on the RHS of this equation (The <span class="math inline">\(\mathbf{X}^{\top}\mathbf{X}\)</span> matrix-matrix multiplication, the matrix inversion, and the <span class="math inline">\(\mathbf{X}^{\top}\mathbf{y}\)</span> matrix-vector multiplication), you can derive the exact same result you’d get from going through the messier non-matrix algebra, in a much cleaner form!</p>
+<section id="part-2.1-the-matrix-matrix-product" class="level3">
+<h3 class="anchored" data-anchor-id="part-2.1-the-matrix-matrix-product">Part 2.1: The Matrix-Matrix Product</h3>
+<p>Since <span class="math inline">\(\mathbf{X}\)</span> has the form <span class="math inline">\(\begin{pmatrix}\mathbf{1} &amp; \mathbf{x}\end{pmatrix}\)</span>, an <span class="math inline">\(n \times 2\)</span> matrix, its transpose <span class="math inline">\(\mathbf{X}^{\top}\)</span> has the form <span class="math inline">\(\begin{pmatrix}\mathbf{1}^{\top} \\ \mathbf{x}^{\top}\end{pmatrix}\)</span>, a <span class="math inline">\(2 \times n\)</span> matrix. The product of these two matrices, therefore, is a <span class="math inline">\(2 \times 2\)</span> matrix that looks as follows:</p>
+<p><span class="math display">\[
+\mathbf{X}^{\top}\mathbf{X} =
+\begin{bmatrix}
+1 &amp; 1 &amp; \cdots &amp; 1 \\
+x_1 &amp; x_2 &amp; \cdots &amp; x_n
+\end{bmatrix}
+\begin{bmatrix}
+1 &amp; x_1 \\
+1 &amp; x_2 \\
+\vdots &amp; \vdots \\
+1 &amp; x_n
+\end{bmatrix}
+=
+\begin{bmatrix}
+n &amp; \sum_{i=1}^{n}x_i \\
+\sum_{i=1}^{n}x_i &amp; \sum_{i=1}^{n}x_i^2
+\end{bmatrix}
+\]</span></p>
+</section>
+<section id="part-2.2-the-matrix-inverse" class="level3">
+<h3 class="anchored" data-anchor-id="part-2.2-the-matrix-inverse">Part 2.2: The Matrix Inverse</h3>
+<div class="callout callout-style-default callout-tip callout-titled" title="$2 \times 2$ Matrix Inverses">
+<div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Update Log
+<span class="screen-reader-only">Tip</span><span class="math inline">\(2 \times 2\)</span> Matrix Inverses
 </div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
 <div class="callout-body-container callout-body">
-<ul>
-<li><a href="#practice-problems">Practice problems</a> added <strong>2 February 2025, 8:30pm</strong></li>
-<li>First published <strong>26 January 2025, 3:30pm</strong></li>
-</ul>
+<p>Although inverting a matrix by hand, in general, can be an involved process, inverting a <span class="math inline">\(2 \times 2\)</span> matrix specifically is the easiest case, since we can use the following “shortcut” equation:</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+a &amp; b \\
+c &amp; d
+\end{bmatrix}^{-1}
+=
+\frac{1}{ad-bc}\begin{bmatrix}
+d &amp; -b \\
+-c &amp; a
+\end{bmatrix},
+\]</span></p>
+<p>Where the denominator (the determinant of the original matrix) is in my head as <em>“product of diagonals minus product of off-diagonals”</em>, and the RHS matrix itself is in my head as <em>“diagonals get swapped, off-diagonals get negated”</em>.</p>
+<p><span class="math inline">\(~\)</span></p>
+<p>If you are trying to remember this shortcut but you’re unsure whether you’ve remembered it correctly, you can always check by right-multiplying your guess by the original matrix, and seeing if the result is the <span class="math inline">\(2 \times 2\)</span> identity matrix (if it is, you’ve successfully remembered the inverse!):</p>
+<p><span class="math display">\[
+\frac{1}{ad-bc}
+\begin{bmatrix}
+d &amp; -b \\
+-c &amp; a
+\end{bmatrix}
+\begin{bmatrix}
+a &amp; b \\
+c &amp; d
+\end{bmatrix}
+=
+\frac{1}{ad-bc}
+\begin{bmatrix}
+da - bc &amp; db - bd \\
+-ca + ca &amp; -cb + ad
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 &amp; 0 \\
+0 &amp; 1
+\end{bmatrix} \checkmark
+\]</span></p>
 </div>
 </div>
+<p>Using the “shortcut” <span class="math inline">\(2 \times 2\)</span> matrix inverse formula, we can compute the inverse of this matrix, <span class="math inline">\((\mathbf{X}^{\top}\mathbf{X})^{-1}\)</span>, as:</p>
+<p><span class="math display">\[
+(\mathbf{X}^{\top}\mathbf{X})^{-1} =
+\frac{1}{
+  n\sum_{i=1}^{n}x_i^2 - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i
+}
+\begin{bmatrix}
+\sum_{i=1}^{n}x_i^2 &amp; -\sum_{i=1}^{n}x_i \\
+-\sum_{i=1}^{n}x_i &amp; n
+\end{bmatrix}
+\]</span></p>
+<p>This looks messy at first, but we can rewrite lots of these terms by using our simplifying notations <span class="math inline">\(\overline{x} = \frac{1}{n}\sum_{i=1}^{n}x_i\)</span> and <span class="math inline">\(\overline{y} = \frac{1}{n}\sum_{i=1}^{n}y_i\)</span>, and noting that <span class="math inline">\(n\overline{x} = \sum_{i=1}^{n}x_i\)</span> and <span class="math inline">\(n\overline{y} = \sum_{i=1}^{n}y_i\)</span>:</p>
+<p><span class="math display">\[
+(\mathbf{X}^{\top}\mathbf{X})^{-1} =
+\frac{1}{
+  n\sum_{i=1}^{n}x_i^2 - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i
+}
+\begin{bmatrix}
+\sum_{i=1}^{n}x_i^2 &amp; -\sum_{i=1}^{n}x_i \\
+-\sum_{i=1}^{n}x_i &amp; n
+\end{bmatrix}
+\]</span></p>
+</section>
+<section id="part-2.3-the-matrix-vector-product" class="level3">
+<h3 class="anchored" data-anchor-id="part-2.3-the-matrix-vector-product">Part 2.3: The Matrix-Vector Product</h3>
+<p>Finally, we compute the matrix-vector product <span class="math inline">\(\mathbf{X}^{\top}\mathbf{y}\)</span>:</p>
+<p><span class="math display">\[
+\mathbf{X}^{\top}\mathbf{y} =
+\begin{bmatrix}
+1 &amp; 1 &amp; \cdots &amp; 1 \\
+x_1 &amp; x_2 &amp; \cdots &amp; x_n
+\end{bmatrix}
+\begin{bmatrix}
+y_1 \\
+y_2 \\
+\vdots \\
+y_n
+\end{bmatrix}
+=
+\begin{bmatrix}
+\sum_{i=1}^{n}y_i \\
+\sum_{i=1}^{n}x_iy_i
+\end{bmatrix}
+\]</span></p>
+<p>And our end result is the product of the two “pieces” we just computed!</p>
+<p><span class="math display">\[
+\begin{aligned}
+\symbf{\beta}^* &amp;= (\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{y} \\
+&amp;= \frac{1}{
+  n\sum_{i=1}^{n}x_i^2 - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i
+}
+\begin{bmatrix}
+\sum_{i=1}^{n}x_i^2 &amp; -\sum_{i=1}^{n}x_i \\
+-\sum_{i=1}^{n}x_i &amp; n
+\end{bmatrix}
+\begin{bmatrix}
+\sum_{i=1}^{n}y_i \\
+\sum_{i=1}^{n}x_iy_i
+\end{bmatrix} \\
+&amp;= \frac{1}{
+  n\sum_{i=1}^{n}x_i^2 - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i
+}
+\begin{bmatrix}
+\sum_{i=1}^{n}x_i^2\sum_{i=1}^{n}y_i - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_iy_i \\
+-\sum_{i=1}^{n}x_i\sum_{i=1}^{n}y_i + n\sum_{i=1}^{n}x_iy_i
+\end{bmatrix}
+\end{aligned}
+\]</span></p>
+</section>
+</section>
+<section id="part-3-rewriting-in-terms-of-variance-and-covariance" class="level2">
+<h2 class="anchored" data-anchor-id="part-3-rewriting-in-terms-of-variance-and-covariance">Part 3: Rewriting In Terms of Variance and Covariance</h2>
+<p>I know the solution thus far looks horrific and messy, but let’s “zoom in” on the estimate for <span class="math inline">\(\beta_1\)</span>, the second element in this <span class="math inline">\(2 \times 1\)</span> column vector. Taking just this second entry and dividing it by the denominator of the fraction outside the matrix, we have:</p>
+<p><span class="math display">\[
+\beta_1^* = \frac{n\sum_{i=1}^{n}x_iy_i - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}y_i}{n\sum_{i=1}^{n}x_ix_i - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i}
+=
+\frac{n\sum_{i=1}^{n}x_iy_i - n\overline{x}n\overline{y}}{n\sum_{i=1}^{n}x_ix_i - n\overline{x}n\overline{x}}
+\]</span></p>
+<p>Multiplying anything by <span class="math inline">\(1\)</span> doesn’t change its value, so in this case we can multiply this expression by <span class="math inline">\(\frac{1/n^2}{1/n^2}\)</span> (that is, multiply both the numerator and denominator by <span class="math inline">\(\frac{1}{n^2}\)</span>) without modifying its value, to obtain:</p>
+<p><span class="math display">\[
+\beta_1^* = \frac{
+  \frac{1}{n}\sum_{i=1}^{n}x_iy_i - \overline{x}\overline{y}
+}{
+  \frac{1}{n}\sum_{i=1}^{n}x_ix_i - \overline{x}\overline{x}
+}
+\]</span></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Alternative Forms for Variance and Covariance">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<section id="overview" class="level2">
-<h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>Hello DSAN 5300 Section 01 friends! First, please take a look at the <a href="https://drive.google.com/open?id=1YfOVtoUf8rBd-EF5pUygLj3odFWd2hw_&amp;usp=drive_fs"><strong>course-wide study guide</strong></a> that was sent out over email by Prof.&nbsp;James! This guide just contains my additional summarization and some practice problems that I hope might link the concepts to stuff I’ve mentioned specifically in <strong>Section 01</strong>.</p>
-<p>The key topics that the Quiz will cover can be organized into the following four subheadings:</p>
-<section id="parametric-modeling" class="level3">
-<h3 class="anchored" data-anchor-id="parametric-modeling">(1) “Parametric” Modeling</h3>
-<p>What does it mean to have a <strong>“parametric”</strong> model? For example, in a model such as regression, which we write as</p>
-<p><span class="math display">\[
-Y = \beta_0 + \beta1_ X + \varepsilon,
-\]</span></p>
-<p>which of the things in that equation are parameters of the model and which are not parameters (for example, which are just variables that we plug data into)?</p>
-</section>
-<section id="optimization-in-general" class="level3">
-<h3 class="anchored" data-anchor-id="optimization-in-general">(2) Optimization in General</h3>
-<p>Once we’ve identified the parameters in a model, how do we evaluate how “good” or “bad” a certain setting for the parameters is? (The answer being, a loss function)</p>
-</section>
-<section id="gradient-descent" class="level3">
-<h3 class="anchored" data-anchor-id="gradient-descent">(3) Gradient Descent</h3>
-<p>Once we have a loss function, how does the gradient allow us to choose a random value for the parameter and then “make our way” towards the optimal value? The answer to this question is the main content in <a href="../lab-1/">this previous writeup</a></p>
-<p>As a refresher, a <strong>gradient</strong> is just the vector equivalent of a derivative. For example, in calculus we learn how</p>
-<p><span class="math display">\[
-f(x) = x^2
-\]</span></p>
-<p>has a derivative</p>
-<p><span class="math display">\[
-\frac{\partial f}{\partial x} = 2x.
-\]</span></p>
-<p>So in this class, if <span class="math inline">\(\mathbf{x}\)</span> is now a vector like <span class="math inline">\(\mathbf{x} = (x_1,x_2)\)</span> instead of just a single number, the <strong>gradient</strong> or <strong>vector-valued derivative</strong> of <span class="math inline">\(f\)</span> with respect to <span class="math inline">\(\mathbf{x}\)</span>, <span class="math inline">\(\nabla_{\mathbf{x}} f\)</span>, is</p>
-<p><span class="math display">\[
-\nabla_{\mathbf{x}} f = \frac{\partial f}{\partial \mathbf{x}} = \left( \frac{\partial f}{\partial x_1}, \frac{\partial f}{\partial x_2} \right)
-\]</span></p>
-<p>If it helps, try to notice/keep in mind how the <span class="math inline">\(\mathbf{x}\)</span> in <span class="math inline">\(\frac{\partial f}{\partial \mathbf{x}}\)</span> is a <strong>vector</strong>, whereas the <span class="math inline">\(x_1\)</span> in <span class="math inline">\(\frac{\partial f}{\partial x_1}\)</span> is a <strong>scalar</strong>. In other words, although the first and second terms in this expression may look scary, each entry within the parentheses on the RHS of that equality (the third term) is just the “regular” univariate derivative that you learn in calculus class!</p>
-</section>
-<section id="more-efficient-optimization-methods" class="level3">
-<h3 class="anchored" data-anchor-id="more-efficient-optimization-methods">(4) More Efficient Optimization Methods</h3>
-<p>Here the idea (or, the way I see these “fancier” methods, at least) is, they use additional information about the loss function above and beyond just <span class="math inline">\(L(x)\)</span> and its derivative <span class="math inline">\(L'(x)\)</span>.</p>
-<p>So, <a href="https://en.wikipedia.org/wiki/Newton%27s_method">Newton’s method</a> for example uses the second derivative <span class="math inline">\(L''(x)\)</span> as an additional piece of information about the curvature of the loss function, whereas the <a href="https://en.wikipedia.org/wiki/Secant_method">secant method</a> is slower than Newton’s method but doesn’t require us to know this second derivative <span class="math inline">\(L''(x)\)</span> (since it approximates it).</p>
-</section>
-</section>
-<section id="a-full-on-lecture-replacement" class="level2">
-<h2 class="anchored" data-anchor-id="a-full-on-lecture-replacement">A Full-On Lecture Replacement</h2>
-<p>To try and fully “fill in” the missing week here, I can just give you all the resource that is literally a recording of the class I learned this stuff from, and that I later TAed. That way if you have additional questions I’ll be able to refer specifically to the examples/materials that Prof.&nbsp;Ng uses in the following video:</p>
-<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/4b4MUYve_U8" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
-</section>
-<section id="practice-problems" class="level2">
-<h2 class="anchored" data-anchor-id="practice-problems">Practice Problems</h2>
-<section id="problem-1-handling-binary-features" class="level3">
-<h3 class="anchored" data-anchor-id="problem-1-handling-binary-features">Problem 1: Handling Binary Features</h3>
-<p>A team of data scientists working for the Los Angeles Lakers NBA team has developed a basic <strong>single linear regression</strong> model relating the <strong>number of minutes played by LeBron James</strong> <span class="math inline">\(M\)</span> to their team’s <strong>total points</strong> <span class="math inline">\(T\)</span> in a game:</p>
-<p><span class="math display">\[
-T = \beta_0 + \beta_1 M
-\]</span></p>
-<p>They then estimated <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> from data on the past two seasons, arriving at estimates</p>
-<p><span class="math display">\[
-\widehat{\beta}_0 = 80 \text{ and }\widehat{\beta}_1 = 0.9
-\]</span></p>
-<p>Plotting the resulting regression estimation function <span class="math inline">\(\widehat{t} = 80 + 0.9 m\)</span> on top of the data, they therefore obtain a figure that looks as follows:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>total_games <span class="ot">&lt;-</span> <span class="dv">164</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>minute_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(total_games, <span class="at">min=</span><span class="dv">0</span>, <span class="at">max=</span><span class="dv">48</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>pts_raw <span class="ot">&lt;-</span> <span class="dv">80</span> <span class="sc">+</span> <span class="fl">0.9</span> <span class="sc">*</span> minute_vals</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>pts_noise <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(total_games, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="dv">5</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>pts_obs <span class="ot">&lt;-</span> pts_raw <span class="sc">+</span> pts_noise</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>lebron_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">minutes=</span>minute_vals, <span class="at">points=</span>pts_obs)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>lebron_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>minutes, <span class="at">y=</span>points)) <span class="sc">+</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">'y ~ x'</span>, <span class="at">se=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">title=</span><span class="st">"Team Points vs. LeBron James Minutes Played"</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Minutes Played by LeBron (M)"</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Lakers Total Points (T)"</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">14</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/lebron-base-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Alternative Forms for Variance and Covariance
 </div>
 </div>
+<div class="callout-body-container callout-body">
+<p>To obtain our final simplification of the expression for <span class="math inline">\(\beta_1^*\)</span>, we can write out the definitions of covariance and variance and then start “multiplying out” the terms — they will quickly start to resemble the numerator and denominator above!</p>
+<p>First, using the definition of variance,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{Var}[X] &amp;= \frac{1}{n}\sum_{i=1}^{n}(x_i - \overline{x})^2 \\
+&amp;= \frac{1}{n}\sum_{i=1}^{n}(x_ix_i - 2x_i\overline{x} + \overline{x}^2) \\
+&amp;= \frac{1}{n}\sum_{i=1}^{n}x_ix_i - 2\overline{x}\frac{1}{n}\sum_{i=1}^{n}x_i + \frac{1}{n}n\overline{x}^2 \\
+&amp;= \frac{1}{n}\sum_{i=1}^{n}x_ix_i - 2\overline{x}^2 + \overline{x}^2 \\
+&amp;= \frac{1}{n}\sum_{i=1}^{n}x_ix_i - \overline{x}\overline{x},
+\end{aligned}
+\]</span></p>
+<p>which exactly matches the denominator in the expression for <span class="math inline">\(\beta_1^*\)</span> above. Now note that the covariance between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> is</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{Cov}[X,Y] &amp;= \frac{1}{n}\sum_{i=1}^{n}(x_i - \overline{x})(y_i - \overline{y}) \\
+&amp;= \frac{1}{n}\sum_{i=1}^{n}x_iy_i - x_i\overline{y} - y_i\overline{x} + \overline{x}\overline{y} \\
+&amp;= \frac{1}{n}\sum_{i=1}^{n}x_iy_i - \frac{1}{n}\sum_{i=1}^{n}x_i\overline{y} - \frac{1}{n}\sum_{i=1}^{n}y_i\overline{x} + \frac{1}{n}\sum_{i=1}^{n}\overline{x}\overline{y} \\
+&amp;= \frac{1}{n}\sum_{i=1}^{n}x_iy_i - \overline{y}\frac{1}{n}\sum_{i=1}^{n}x_i - \overline{x}\frac{1}{n}\sum_{i=1}^{n}y_i + \overline{x}\overline{y} \\
+&amp;= \frac{1}{n}\sum_{i=1}^{n}x_iy_i - \overline{y}\overline{x} - \overline{x}\overline{y} + \overline{x}\overline{y} \\
+&amp;= \frac{1}{n}\sum_{i=1}^{n}x_iy_i - \overline{x}\overline{y},
+\end{aligned}
+\]</span></p>
+<p>which exactly matches the numerator in the expression for <span class="math inline">\(\beta_1^*\)</span> above.</p>
 </div>
-<p>However, as of this morning, a <a href="https://www.espn.com/nba/story/_/id/43659380/sources-mavericks-trading-doncic-lakers-anthony-davis">big trade</a> has been made sending Slovenian basketball phenom Luka Doncic to the Lakers(!)</p>
-<p>So, the Lakers’ data science team is frantically running simulations to model the potential impact Luka will have on their team’s performance, and especially how it will affect their model plotted above, of team performance vs.&nbsp;LeBron’s minutes played. They therefore construct a <strong>dummy variable</strong> <span class="math inline">\(D\)</span>, for <strong>D</strong>oncic, which has the value 1 for games with Doncic on the Lakers and 0 for games without Doncic on the Lakers.</p>
-<p>In the next two questions you will consider two hypotheses regarding Luka’s potential contribution, and the appropriate model for each of the two hypotheses!</p>
-</section>
-<section id="hypothesis-1-additive-contribution" class="level3">
-<h3 class="anchored" data-anchor-id="hypothesis-1-additive-contribution">Hypothesis 1: Additive Contribution</h3>
-<p>A member of the data science team named <strong>Addison</strong> hypothesizes that Luka’s contribution will be <strong>“additive”</strong> with respect to LeBron’s performance, in the sense that:</p>
-<ul>
-<li>The team’s total points will now <strong>shift upwards</strong> by some amount, regardless of the number of minutes played by LeBron, but</li>
-<li>The team’s total points will still increase by about 0.9 points <strong>per additional minute</strong> that LeBron plays.</li>
-</ul>
-<p>For example, Doncic scored about <a href="https://www.basketball-reference.com/players/d/doncilu01.html#all_per_game_stats">34 points per game</a> last season, while the player he was traded for, Anthony Davis, scored about <a href="https://www.basketball-reference.com/players/d/davisan02.html#all_per_game_stats">25 points per game</a> in that same season, so (by this <a href="https://en.wikipedia.org/wiki/Back-of-the-envelope_calculation">“back of the envelope”</a> calculation) Addison hypothesizes that the team’s total points with Doncic may be 9 higher than its total points without Doncic, for <strong>any</strong> amount of minutes that LeBron plays.</p>
-<p>Using this information,</p>
-<ul>
-<li>Write out a linear regression model which would allow this hypothesis to be tested (once data from games with Luka comes in),</li>
-<li>Use the “split into cases” method from class to specify what the prediction equation will look like when <span class="math inline">\(D = 0\)</span> and when <span class="math inline">\(D = 1\)</span>, and then</li>
-<li>Write the hypothesis explicitly in terms of the <strong>parameters</strong> (<span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span>, etc.) of the regression model.</li>
-</ul>
-<p><strong>Solution:</strong></p>
-<p>Since Addison’s hypothesis implies that the <strong>slope</strong> from the above model would remain the same, but that the <strong>intercept</strong> would increase, we do <strong>not</strong> need an interaction term between <span class="math inline">\(M\)</span> and <span class="math inline">\(T\)</span> in our model. Therefore, we can model Addison’s hypothesis using a simple MLR model <strong>without</strong> any interaction terms:</p>
+</div>
+<p>From these two re-writings of <span class="math inline">\(\text{Var}[X]\)</span> and <span class="math inline">\(\text{Cov}[X,Y]\)</span>, we have that the OLS coefficient estimate <span class="math inline">\(\beta_1^*\)</span> can be written precisely as just:</p>
 <p><span class="math display">\[
-T = \beta_0 + \beta_1 M + \beta_2 D
+\beta_1^* = \frac{\text{Cov}[X,Y]}{\text{Var}[X]},
 \]</span></p>
-<p>Next, we can split this modeling equation into cases, to see what predictions it will generate when <span class="math inline">\(D = 1\)</span> separately from the predictions it will generate when <span class="math inline">\(D = 0\)</span>:</p>
-<p><span class="math display">\[
-T = \begin{cases}
-\beta_0 + \beta_1 M &amp;\text{if }D = 0 \\
-\beta_0 + \beta_1 M + \beta_2 &amp;\text{if }D = 1
-\end{cases}
-\]</span></p>
-<p>Lastly, we can see from these cases that the value of <strong><span class="math inline">\(\beta_2\)</span> specifcally</strong> is what would tell us how much the Lakers’ total points <strong>shift</strong> in games with Doncic (<span class="math inline">\(D = 1\)</span>) compared to games without Doncic (<span class="math inline">\(D = 0\)</span>). So, Addison’s hypothesis can be written as</p>
-<p><span class="math display">\[
-\mathcal{H}_{\text{Addison}}: \beta_2 = 9
-\]</span></p>
-<p>With the hypothesis written out in this way, we could now test Addison’s hypothesis by collecting data, estimating <span class="math inline">\(\beta_2\)</span> from this data, and using e.g.&nbsp;the standard error, <span class="math inline">\(T\)</span>-statistic, and <span class="math inline">\(p\)</span>-value information provided in the regression output!</p>
-</section>
-<section id="hypothesis-2-interactive-contribution" class="level3">
-<h3 class="anchored" data-anchor-id="hypothesis-2-interactive-contribution">Hypothesis 2: Interactive Contribution</h3>
-<p>A second member of the data science team named <strong>Interacthony</strong> hypothesizes that Luka’s contribution will in fact <strong>“boost”</strong> LeBron’s performance, in the sense that:</p>
-<ul>
-<li>The team’s total points will now <strong>shift upwards</strong> by some amount, <strong>even when LeBron doesn’t play at all</strong>, but also</li>
-<li>Doncic and LeBron will complement each other’s play style, such that LeBron will now “convert” each additional minute of play into a greater number of points for the team.</li>
-</ul>
-<p>For example, whereas in the model plotted above each additional minute played by LeBron translated into an additional <strong>0.9 points</strong> for the Lakers, Interacthony now hypothesizes (in addition to Addison’s hypothesis from the previous question) that in games with Doncic (games with <span class="math inline">\(D = 1\)</span>) each additional minute played by LeBron will translate into an additional <strong>1.1 points</strong> for the Lakers.</p>
-<p>So, like in the previous part, your task is to:</p>
-<ul>
-<li>Write out a linear regression model which would allow Interacthony’s two hypotheses to be tested (once data from games with Luka comes in),</li>
-<li>Use the “split into cases” method from class to specify what the prediction equation will look like when <span class="math inline">\(D = 0\)</span> and when <span class="math inline">\(D = 1\)</span>, and then</li>
-<li>Write the two hypotheses explicitly in terms of the <strong>parameters</strong> (<span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span>, etc.) of the regression model.</li>
-</ul>
-<p><strong>Solution:</strong></p>
-<p>In this case, we need a model which will allow both the <strong>intercept</strong> <em>and</em> the <strong>slope</strong> of the earlier model to change based on whether or not Doncic is on the Lakers. So, we now need an <strong>interaction</strong> term, to enable both intercept and slope to vary, as we discussed in class. The base model we should use here is therefore</p>
-<p><span class="math display">\[
-T = \beta_0 + \beta_1 M + \beta_2 D + \beta_3 (M \times D)
-\]</span></p>
-<p>Writing out the cases for <span class="math inline">\(D = 0\)</span> and <span class="math inline">\(D = 1\)</span> reveals why this interaction term is necessary to allow both intercept and slope to vary:</p>
-<p><span class="math display">\[
-\begin{align*}
-T &amp;= \begin{cases}
-\beta_0 + \beta_1 M &amp;\text{if }D = 0 \\
-\beta_0 + \beta_1 M + \beta_2 + \beta_3 M &amp;\text{if }D = 1
-\end{cases} \\
-&amp;= \begin{cases}
-\beta_0 + \beta_1 M &amp;\text{if }D = 0 \\
-(\beta_0 + \beta_2) + (\beta_1 + \beta_3) M &amp;\text{if }D = 1
-\end{cases}
-\end{align*}
-\]</span></p>
-<p>And so we see that <span class="math inline">\(\beta_2\)</span> represents the amount by which the <strong>intercept</strong> would change and <span class="math inline">\(\beta_3\)</span> the amount by which the <strong>slope</strong> would change for datapoints with <span class="math inline">\(D = 1\)</span>. Thus, we can write Interacthony’s two hypotheses as:</p>
-<p><span class="math display">\[
-\begin{align*}
-\mathcal{H}_{\text{Inter}}^{1}: \beta_2 &amp;= 9 \\
-\mathcal{H}_{\text{Inter}}^{2}: \beta_3 &amp;= (1.1 - 0.9) = 0.2
-\end{align*}
-\]</span></p>
+<p>meaning that we can interpret it as representing, in essence, the <strong>proportion of the total variance in <span class="math inline">\(X\)</span> that is “captured by” the covariance of <span class="math inline">\(X\)</span> with <span class="math inline">\(Y\)</span>!</strong></p>
 
 
 </section>
-</section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>This is an oversimplification, since matrix algebra itself wasn’t formalized until about 50 years later, with Arthur Cayley’s 1858 <em>Memoir on the Theory of Matrices</em>. But Gauss’ formulation was quickly “translated” into Cayley’s format. You don’t need to know any of this!<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>For two real numbers <span class="math inline">\(x\)</span> and <span class="math inline">\(y \neq 0\)</span>, division <span class="math inline">\(\frac{x}{y}\)</span> is well-defined because we can rewrite this quotient as either the product <span class="math inline">\(x \cdot (y)^{-1}\)</span> or the product <span class="math inline">\((y)^{-1} \cdot x\)</span> and obtain the same value. For two matrices <span class="math inline">\(\mathbf{X}\)</span> and <span class="math inline">\(\mathbf{Y}\)</span>, however (technically we need to specify <a href="https://en.wikipedia.org/wiki/General_linear_group"><span class="math inline">\(\mathbf{Y} \in GL_n(\mathbb{R})\)</span></a> for the same reason we specified <span class="math inline">\(y \neq 0\)</span>!), we run into an issue: the right-multiplication <span class="math inline">\(\mathbf{X}\mathbf{Y}^{-1}\)</span> and the left-multiplication <span class="math inline">\(\mathbf{Y}^{-1}\mathbf{X}\)</span> can produce two different matrices, meaning that there are two different “ways to divide” <span class="math inline">\(\mathbf{X}\)</span> by <span class="math inline">\(\mathbf{Y}\)</span>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
@@ -1137,4 +1150,4 @@ T &amp;= \begin{cases}
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/writeups/quiz-1/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/writeups/quiz-3-appendix/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></div></div></footer></body></html>

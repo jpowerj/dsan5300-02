@@ -1,0 +1,257 @@
+---
+title: "Quiz 3 Study Guide Appendix: The Matrix-Form OLS Solution"
+author: "Jeff Jacobs"
+date: last-modified
+sidebar: mainnav
+weeknum: 3
+assignment: "Quiz 3"
+format:
+  html:
+    df-print: kable
+    html-math-method: mathjax
+    toc: true
+    link-external-icon: true
+    link-external-newwindow: true
+---
+
+## Part 1: Constructing a Helpful $\mathbf{X}$ Matrix
+
+Though we could repeat the steps from the Problem-1.5 solution in the Quiz 3 study guide, with everything re-written out in matrix form, what I think is most helpful is if you just recall the model and solution from Problem-1.2. That model had the form $Y = \beta_1 X$, and the derived OLS estimate for $\beta_1$ was
+
+$$
+\beta_1^* = \frac{\sum_{i=1}^{n}x_iy_i}{\sum_{i=1}^{n}x_ix_i}.
+$$
+
+To arrive at the matrix-form derivation of the OLS estimates for the **full** $Y = \beta_0 + \beta_1 X$ model, the German mathematician Gauss^[This is an oversimplification, since matrix algebra itself wasn't formalized until about 50 years later, with Arthur Cayley's 1858 *Memoir on the Theory of Matrices*. But Gauss' formulation was quickly "translated" into Cayley's format. You don't need to know any of this!] noticed that you can just construct an $n \times 2$ **matrix** $\mathbf{X}$, whose first column is just a vector of $n$ $1$s and whose second column is the vector of $x_i$ values $(x_1, x_2, \ldots, x_n)$, and then the full two-term model "collapses" down into a simpler format that looks eerily similar to the Problem-1.2 model:
+
+$$
+\mathbf{y} = \mathbf{X}^{\top}\symbf{\beta},
+$$
+
+where the vector $\mathbf{y}$ is just the column vector of all $y_i$ values, $\mathbf{y} = (y_1, y_2, \ldots, y_n)^{\top}$ and the vector $\symbf{\beta}$ is the column vector of all coefficients, $\symbf{\beta} = (\beta_0, \beta_1)^{\top}$.
+
+## Part 2: Deriving the OLS Solution In Terms of $\mathbf{X}$
+
+With this setup, we can derive an ultra-simple closed-form solution which *almost* looks identical to the Problem-1.2 solution. To look fully identical, the solution would have to look something like the following:
+
+$$
+\symbf{\beta}^* = \frac{\mathbf{X}^{\top}\mathbf{y}}{\mathbf{X}^{\top}\mathbf{X}}
+$$
+
+Unfortunately, since "division" cannot be defined unambiguously like this for matrices^[For two real numbers $x$ and $y \neq 0$, division $\frac{x}{y}$ is well-defined because we can rewrite this quotient as either the product $x \cdot (y)^{-1}$ or the product $(y)^{-1} \cdot x$ and obtain the same value. For two matrices $\mathbf{X}$ and $\mathbf{Y}$, however (technically we need to specify [$\mathbf{Y} \in GL_n(\mathbb{R})$](https://en.wikipedia.org/wiki/General_linear_group) for the same reason we specified $y \neq 0$!), we run into an issue: the right-multiplication $\mathbf{X}\mathbf{Y}^{-1}$ and the left-multiplication $\mathbf{Y}^{-1}\mathbf{X}$ can produce two different matrices, meaning that there are two different "ways to divide" $\mathbf{X}$ by $\mathbf{Y}$.], we have to specify whether we want "division" in terms of left-multiplication or right-multiplication by the inverse matrix $(\mathbf{X}^{\top}\mathbf{X})^{-1}$.
+
+By looking at the dimensions of the two vectors alongside Gauss' constructed $\mathbf{X}$ matrix, you'll find that the only valid way to obtain the $2 \times 1$ vector of optimal solutions $\symbf{\beta}^*$ that we want is to **left-multiply** our numerator $\mathbf{X}^{\top}\mathbf{y}$ by the inverse matrix $(\mathbf{X}^{\top}\mathbf{X})^{-1}$, and thus we obtain the **real**, working OLS solution:
+
+$$
+\symbf{\beta}^* = (\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{y}
+$$
+
+By working through the three main "things" happening on the RHS of this equation (The $\mathbf{X}^{\top}\mathbf{X}$ matrix-matrix multiplication, the matrix inversion, and the $\mathbf{X}^{\top}\mathbf{y}$ matrix-vector multiplication), you can derive the exact same result you'd get from going through the messier non-matrix algebra, in a much cleaner form!
+
+### Part 2.1: The Matrix-Matrix Product
+
+Since $\mathbf{X}$ has the form $\begin{pmatrix}\mathbf{1} & \mathbf{x}\end{pmatrix}$, an $n \times 2$ matrix, its transpose $\mathbf{X}^{\top}$ has the form $\begin{pmatrix}\mathbf{1}^{\top} \\ \mathbf{x}^{\top}\end{pmatrix}$, a $2 \times n$ matrix. The product of these two matrices, therefore, is a $2 \times 2$ matrix that looks as follows:
+
+$$
+\mathbf{X}^{\top}\mathbf{X} = 
+\begin{bmatrix}
+1 & 1 & \cdots & 1 \\
+x_1 & x_2 & \cdots & x_n
+\end{bmatrix}
+\begin{bmatrix}
+1 & x_1 \\
+1 & x_2 \\
+\vdots & \vdots \\
+1 & x_n
+\end{bmatrix}
+=
+\begin{bmatrix}
+n & \sum_{i=1}^{n}x_i \\
+\sum_{i=1}^{n}x_i & \sum_{i=1}^{n}x_i^2
+\end{bmatrix}
+$$
+
+### Part 2.2: The Matrix Inverse
+
+::: {.callout-tip title="$2 \times 2$ Matrix Inverses"}
+
+Although inverting a matrix by hand, in general, can be an involved process, inverting a $2 \times 2$ matrix specifically is the easiest case, since we can use the following "shortcut" equation:
+
+$$
+\begin{bmatrix}
+a & b \\
+c & d
+\end{bmatrix}^{-1}
+=
+\frac{1}{ad-bc}\begin{bmatrix}
+d & -b \\
+-c & a
+\end{bmatrix},
+$$
+
+Where the denominator (the determinant of the original matrix) is in my head as *"product of diagonals minus product of off-diagonals"*, and the RHS matrix itself is in my head as *"diagonals get swapped, off-diagonals get negated"*.
+
+$~$
+
+If you are trying to remember this shortcut but you're unsure whether you've remembered it correctly, you can always check by right-multiplying your guess by the original matrix, and seeing if the result is the $2 \times 2$ identity matrix (if it is, you've successfully remembered the inverse!):
+
+$$
+\frac{1}{ad-bc}
+\begin{bmatrix}
+d & -b \\
+-c & a
+\end{bmatrix}
+\begin{bmatrix}
+a & b \\
+c & d
+\end{bmatrix}
+=
+\frac{1}{ad-bc}
+\begin{bmatrix}
+da - bc & db - bd \\
+-ca + ca & -cb + ad
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 \\
+0 & 1
+\end{bmatrix} \checkmark
+$$
+
+:::
+
+Using the "shortcut" $2 \times 2$ matrix inverse formula, we can compute the inverse of this matrix, $(\mathbf{X}^{\top}\mathbf{X})^{-1}$, as:
+
+$$
+(\mathbf{X}^{\top}\mathbf{X})^{-1} =
+\frac{1}{
+  n\sum_{i=1}^{n}x_i^2 - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i
+}
+\begin{bmatrix}
+\sum_{i=1}^{n}x_i^2 & -\sum_{i=1}^{n}x_i \\
+-\sum_{i=1}^{n}x_i & n
+\end{bmatrix}
+$$
+
+This looks messy at first, but we can rewrite lots of these terms by using our simplifying notations $\overline{x} = \frac{1}{n}\sum_{i=1}^{n}x_i$ and $\overline{y} = \frac{1}{n}\sum_{i=1}^{n}y_i$, and noting that $n\overline{x} = \sum_{i=1}^{n}x_i$ and $n\overline{y} = \sum_{i=1}^{n}y_i$:
+
+$$
+(\mathbf{X}^{\top}\mathbf{X})^{-1} =
+\frac{1}{
+  n\sum_{i=1}^{n}x_i^2 - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i
+}
+\begin{bmatrix}
+\sum_{i=1}^{n}x_i^2 & -\sum_{i=1}^{n}x_i \\
+-\sum_{i=1}^{n}x_i & n
+\end{bmatrix}
+$$
+
+### Part 2.3: The Matrix-Vector Product
+
+Finally, we compute the matrix-vector product $\mathbf{X}^{\top}\mathbf{y}$:
+
+$$
+\mathbf{X}^{\top}\mathbf{y} =
+\begin{bmatrix}
+1 & 1 & \cdots & 1 \\
+x_1 & x_2 & \cdots & x_n
+\end{bmatrix}
+\begin{bmatrix}
+y_1 \\
+y_2 \\
+\vdots \\
+y_n
+\end{bmatrix}
+=
+\begin{bmatrix}
+\sum_{i=1}^{n}y_i \\
+\sum_{i=1}^{n}x_iy_i
+\end{bmatrix}
+$$
+
+And our end result is the product of the two "pieces" we just computed!
+
+$$
+\begin{aligned}
+\symbf{\beta}^* &= (\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{y} \\
+&= \frac{1}{
+  n\sum_{i=1}^{n}x_i^2 - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i
+}
+\begin{bmatrix}
+\sum_{i=1}^{n}x_i^2 & -\sum_{i=1}^{n}x_i \\
+-\sum_{i=1}^{n}x_i & n
+\end{bmatrix}
+\begin{bmatrix}
+\sum_{i=1}^{n}y_i \\
+\sum_{i=1}^{n}x_iy_i
+\end{bmatrix} \\
+&= \frac{1}{
+  n\sum_{i=1}^{n}x_i^2 - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i
+}
+\begin{bmatrix}
+\sum_{i=1}^{n}x_i^2\sum_{i=1}^{n}y_i - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_iy_i \\
+-\sum_{i=1}^{n}x_i\sum_{i=1}^{n}y_i + n\sum_{i=1}^{n}x_iy_i
+\end{bmatrix}
+\end{aligned}
+$$
+
+## Part 3: Rewriting In Terms of Variance and Covariance
+
+I know the solution thus far looks horrific and messy, but let's "zoom in" on the estimate for $\beta_1$, the second element in this $2 \times 1$ column vector. Taking just this second entry and dividing it by the denominator of the fraction outside the matrix, we have:
+
+$$
+\beta_1^* = \frac{n\sum_{i=1}^{n}x_iy_i - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}y_i}{n\sum_{i=1}^{n}x_ix_i - \sum_{i=1}^{n}x_i\sum_{i=1}^{n}x_i}
+=
+\frac{n\sum_{i=1}^{n}x_iy_i - n\overline{x}n\overline{y}}{n\sum_{i=1}^{n}x_ix_i - n\overline{x}n\overline{x}}
+$$
+
+Multiplying anything by $1$ doesn't change its value, so in this case we can multiply this expression by $\frac{1/n^2}{1/n^2}$ (that is, multiply both the numerator and denominator by $\frac{1}{n^2}$) without modifying its value, to obtain:
+
+$$
+\beta_1^* = \frac{
+  \frac{1}{n}\sum_{i=1}^{n}x_iy_i - \overline{x}\overline{y}
+}{
+  \frac{1}{n}\sum_{i=1}^{n}x_ix_i - \overline{x}\overline{x}
+}
+$$
+
+::: {.callout-tip title="Alternative Forms for Variance and Covariance"}
+
+To obtain our final simplification of the expression for $\beta_1^*$, we can write out the definitions of covariance and variance and then start "multiplying out" the terms — they will quickly start to resemble the numerator and denominator above!
+
+First, using the definition of variance,
+
+$$
+\begin{aligned}
+\text{Var}[X] &= \frac{1}{n}\sum_{i=1}^{n}(x_i - \overline{x})^2 \\
+&= \frac{1}{n}\sum_{i=1}^{n}(x_ix_i - 2x_i\overline{x} + \overline{x}^2) \\
+&= \frac{1}{n}\sum_{i=1}^{n}x_ix_i - 2\overline{x}\frac{1}{n}\sum_{i=1}^{n}x_i + \frac{1}{n}n\overline{x}^2 \\
+&= \frac{1}{n}\sum_{i=1}^{n}x_ix_i - 2\overline{x}^2 + \overline{x}^2 \\
+&= \frac{1}{n}\sum_{i=1}^{n}x_ix_i - \overline{x}\overline{x},
+\end{aligned}
+$$
+
+which exactly matches the denominator in the expression for $\beta_1^*$ above. Now note that the covariance between $x$ and $y$ is
+
+$$
+\begin{aligned}
+\text{Cov}[X,Y] &= \frac{1}{n}\sum_{i=1}^{n}(x_i - \overline{x})(y_i - \overline{y}) \\
+&= \frac{1}{n}\sum_{i=1}^{n}x_iy_i - x_i\overline{y} - y_i\overline{x} + \overline{x}\overline{y} \\
+&= \frac{1}{n}\sum_{i=1}^{n}x_iy_i - \frac{1}{n}\sum_{i=1}^{n}x_i\overline{y} - \frac{1}{n}\sum_{i=1}^{n}y_i\overline{x} + \frac{1}{n}\sum_{i=1}^{n}\overline{x}\overline{y} \\
+&= \frac{1}{n}\sum_{i=1}^{n}x_iy_i - \overline{y}\frac{1}{n}\sum_{i=1}^{n}x_i - \overline{x}\frac{1}{n}\sum_{i=1}^{n}y_i + \overline{x}\overline{y} \\
+&= \frac{1}{n}\sum_{i=1}^{n}x_iy_i - \overline{y}\overline{x} - \overline{x}\overline{y} + \overline{x}\overline{y} \\
+&= \frac{1}{n}\sum_{i=1}^{n}x_iy_i - \overline{x}\overline{y},
+\end{aligned}
+$$
+
+which exactly matches the numerator in the expression for $\beta_1^*$ above.
+
+:::
+
+From these two re-writings of $\text{Var}[X]$ and $\text{Cov}[X,Y]$, we have that the OLS coefficient estimate $\beta_1^*$ can be written precisely as just:
+
+$$
+\beta_1^* = \frac{\text{Cov}[X,Y]}{\text{Var}[X]},
+$$
+
+meaning that we can interpret it as representing, in essence, the **proportion of the total variance in $X$ that is "captured by" the covariance of $X$ with $Y$!**
