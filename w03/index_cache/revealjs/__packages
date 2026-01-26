@@ -9,3 +9,5 @@ stringr
 forcats
 lubridate
 ggExtra
+latex2exp
+broom

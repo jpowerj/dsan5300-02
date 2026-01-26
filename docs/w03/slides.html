@@ -234,7 +234,7 @@ Jeff Jacobs
   <p class="date">Monday, January 26, 2026</p>
 </section>
 <section>
-<section id="recap-linear-regression" class="title-slide slide level1 center" data-stack-name="Recap">
+<section id="recap-linear-regression" class="title-slide slide level1 title-11 center" data-stack-name="Recap">
 <h1>Recap: Linear Regression</h1>
 <ul>
 <li><p>What happens to my <strong>dependent variable</strong> <span class="math inline">\(Y\)</span> when my <strong>independent variable</strong> <span class="math inline">\(X\)</span> changes by <strong>1 unit</strong>?</p></li>
@@ -356,18 +356,18 @@ Jeff Jacobs
 <div class="quarto-layout-row quarto-layout-valign-center">
 <div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="index_files/figure-revealjs/pc-line-1.png" width="576"></p>
+<p><img data-src="index_files/figure-revealjs/pc-line-1.png" class="quarto-figure quarto-figure-center" width="576"></p>
 </figure>
 </div>
 </div>
 </div>
 <div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="index_files/figure-revealjs/reg-line-1.png" width="576"></p>
+<p><img data-src="index_files/figure-revealjs/reg-line-1.png" class="quarto-figure quarto-figure-center" width="576"></p>
 </figure>
 </div>
 </div>
@@ -379,11 +379,701 @@ Jeff Jacobs
 <p>On the difference between these two lines, and why it matters, I cannot recommend <span class="citation" data-cites="gelman_data_2007">Gelman and Hill (<a href="#/references" role="doc-biblioref" onclick="">2007</a>)</span> enough!</p>
 </div></aside></section></section>
 <section>
+<section id="deriving-the-least-squares-estimate" class="title-slide slide level1 center" data-stack-name="Deriving OLS">
+<h1>Deriving the Least Squares Estimate</h1>
+
+</section>
+<section id="a-sketch" class="slide level2 smaller crunch-title crunch-ul">
+<h2>A Sketch</h2>
+<ul>
+<li>OLS for regression <strong>without</strong> intercept: Which <span class="boxed"><strong>line through origin</strong></span> best predicts <span class="math inline">\(Y\)</span>?</li>
+<li>(Good practice + reminder of how <strong>restricted</strong> linear models are!)</li>
+</ul>
+<p><span class="math display">\[
+Y = \beta_1 X + \varepsilon
+\]</span></p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(latex2exp)</span>
+<span id="cb3-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
+<span id="cb3-3"><a></a><span class="co"># rand_slope &lt;- log(runif(80, min=0, max=1))</span></span>
+<span id="cb3-4"><a></a><span class="co"># rand_slope[41:80] &lt;- -rand_slope[41:80]</span></span>
+<span id="cb3-5"><a></a><span class="co"># rand_lines &lt;- tibble::tibble(</span></span>
+<span id="cb3-6"><a></a><span class="co">#   id=1:80, slope=rand_slope, intercept=0</span></span>
+<span id="cb3-7"><a></a><span class="co"># )</span></span>
+<span id="cb3-8"><a></a><span class="co"># angles &lt;- runif(100, -pi/2, pi/2)</span></span>
+<span id="cb3-9"><a></a>angles <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="sc">-</span>pi<span class="sc">/</span><span class="dv">2</span>, <span class="at">to=</span>pi<span class="sc">/</span><span class="dv">2</span>, <span class="at">length.out=</span><span class="dv">50</span>)</span>
+<span id="cb3-10"><a></a>possible_lines <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb3-11"><a></a>  <span class="at">slope=</span><span class="fu">tan</span>(angles), <span class="at">intercept=</span><span class="dv">0</span></span>
+<span id="cb3-12"><a></a>)</span>
+<span id="cb3-13"><a></a>num_points <span class="ot">&lt;-</span> <span class="dv">30</span></span>
+<span id="cb3-14"><a></a>x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(num_points, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb3-15"><a></a>y0_vals <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> x_vals <span class="sc">+</span> <span class="fl">0.25</span></span>
+<span id="cb3-16"><a></a>y_noise <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(num_points, <span class="dv">0</span>, <span class="fl">0.07</span>)</span>
+<span id="cb3-17"><a></a>y_vals <span class="ot">&lt;-</span> y0_vals <span class="sc">+</span> y_noise</span>
+<span id="cb3-18"><a></a>rand_df <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x=</span>x_vals, <span class="at">y=</span>y_vals)</span>
+<span id="cb3-19"><a></a>title_exp <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="st">"Parameter Space ($</span><span class="sc">\\</span><span class="st">beta_1$)"</span>)</span>
+<span id="cb3-20"><a></a><span class="co"># Main plot object</span></span>
+<span id="cb3-21"><a></a>gen_lines_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">point_size=</span><span class="fl">2.5</span>) {</span>
+<span id="cb3-22"><a></a>  lines_plot <span class="ot">&lt;-</span> rand_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
+<span id="cb3-23"><a></a>    <span class="fu">geom_point</span>(<span class="at">size=</span>point_size) <span class="sc">+</span></span>
+<span id="cb3-24"><a></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>, <span class="at">linewidth=</span><span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb3-25"><a></a>    <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">0</span>, <span class="at">linewidth=</span><span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb3-26"><a></a>    <span class="co"># Point at origin</span></span>
+<span id="cb3-27"><a></a>    <span class="fu">geom_point</span>(<span class="at">data=</span><span class="fu">data.frame</span>(<span class="at">x=</span><span class="dv">0</span>, <span class="at">y=</span><span class="dv">0</span>), <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb3-28"><a></a>    <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb3-29"><a></a>    <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb3-30"><a></a>    <span class="co"># coord_fixed() +</span></span>
+<span id="cb3-31"><a></a>    <span class="fu">theme_dsan_min</span>(<span class="at">base_size=</span><span class="dv">28</span>)</span>
+<span id="cb3-32"><a></a>  <span class="fu">return</span>(lines_plot)</span>
+<span id="cb3-33"><a></a>}</span>
+<span id="cb3-34"><a></a>main_lines_plot <span class="ot">&lt;-</span> <span class="fu">gen_lines_plot</span>()</span>
+<span id="cb3-35"><a></a>main_lines_plot <span class="sc">+</span></span>
+<span id="cb3-36"><a></a>  <span class="co"># Parameter space of possible lines</span></span>
+<span id="cb3-37"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb3-38"><a></a>    <span class="at">data=</span>possible_lines,</span>
+<span id="cb3-39"><a></a>    <span class="fu">aes</span>(<span class="at">slope=</span>slope, <span class="at">intercept=</span>intercept, <span class="at">color=</span><span class="st">'possible'</span>),</span>
+<span id="cb3-40"><a></a>    <span class="co"># linetype="dotted",</span></span>
+<span id="cb3-41"><a></a>    <span class="co"># linewidth=0.75,</span></span>
+<span id="cb3-42"><a></a>    <span class="at">alpha=</span><span class="fl">0.25</span></span>
+<span id="cb3-43"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb3-44"><a></a>  <span class="co"># True DGP</span></span>
+<span id="cb3-45"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb3-46"><a></a>    <span class="fu">aes</span>(</span>
+<span id="cb3-47"><a></a>      <span class="at">slope=</span><span class="fl">0.5</span>,</span>
+<span id="cb3-48"><a></a>      <span class="at">intercept=</span><span class="fl">0.25</span>,</span>
+<span id="cb3-49"><a></a>      <span class="at">color=</span><span class="st">'true'</span></span>
+<span id="cb3-50"><a></a>    ), <span class="at">linewidth=</span><span class="dv">1</span>, <span class="at">alpha=</span><span class="fl">0.8</span></span>
+<span id="cb3-51"><a></a>  ) <span class="sc">+</span> </span>
+<span id="cb3-52"><a></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb3-53"><a></a>    <span class="fu">element_blank</span>(),</span>
+<span id="cb3-54"><a></a>    <span class="at">values=</span><span class="fu">c</span>(<span class="st">'possible'</span><span class="ot">=</span><span class="st">"black"</span>, <span class="st">'true'</span><span class="ot">=</span>cb_palette[<span class="dv">2</span>]),</span>
+<span id="cb3-55"><a></a>    <span class="at">labels=</span><span class="fu">c</span>(<span class="st">'possible'</span><span class="ot">=</span><span class="st">"Possible Fits"</span>, <span class="st">'true'</span><span class="ot">=</span><span class="st">"True DGP"</span>)</span>
+<span id="cb3-56"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb3-57"><a></a>  <span class="fu">remove_legend_title</span>() <span class="sc">+</span></span>
+<span id="cb3-58"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-59"><a></a>    <span class="at">title=</span>title_exp</span>
+<span id="cb3-60"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+
+</div>
+<img data-src="index_files/figure-revealjs/random-lines-origin-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="evaluating-with-residuals" class="slide level2 smaller">
+<h2>Evaluating with Residuals</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a>rc1_df <span class="ot">&lt;-</span> possible_lines <span class="sc">|&gt;</span> <span class="fu">slice</span>(<span class="fu">n</span>() <span class="sc">-</span> <span class="dv">14</span>)</span>
+<span id="cb4-2"><a></a><span class="co"># Predictions for this choice</span></span>
+<span id="cb4-3"><a></a>rc1_pred_df <span class="ot">&lt;-</span> rand_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb4-4"><a></a>  <span class="at">y_pred =</span> rc1_df<span class="sc">$</span>slope <span class="sc">*</span> x,</span>
+<span id="cb4-5"><a></a>  <span class="at">resid =</span> y <span class="sc">-</span> y_pred</span>
+<span id="cb4-6"><a></a>)</span>
+<span id="cb4-7"><a></a>rc1_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(<span class="st">"Estimate 1: $</span><span class="sc">\\</span><span class="st">beta_1 </span><span class="sc">\\</span><span class="st">approx "</span>,<span class="fu">round</span>(rc1_df<span class="sc">$</span>slope, <span class="dv">3</span>),<span class="st">"$"</span>))</span>
+<span id="cb4-8"><a></a>rc1_lines_plot <span class="ot">&lt;-</span> <span class="fu">gen_lines_plot</span>(<span class="at">point_size=</span><span class="dv">5</span>)</span>
+<span id="cb4-9"><a></a>rc1_lines_plot <span class="sc">+</span></span>
+<span id="cb4-10"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb4-11"><a></a>    <span class="at">data=</span>rc1_df,</span>
+<span id="cb4-12"><a></a>    <span class="fu">aes</span>(<span class="at">intercept=</span>intercept, <span class="at">slope=</span>slope),</span>
+<span id="cb4-13"><a></a>    <span class="at">linewidth=</span><span class="dv">2</span>,</span>
+<span id="cb4-14"><a></a>    <span class="at">color=</span>cb_palette[<span class="dv">1</span>]</span>
+<span id="cb4-15"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb4-16"><a></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb4-17"><a></a>    <span class="at">data=</span>rc1_pred_df,</span>
+<span id="cb4-18"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">xend=</span>x, <span class="at">yend=</span>y_pred),</span>
+<span id="cb4-19"><a></a>    <span class="co"># color=cb_palette[1]</span></span>
+<span id="cb4-20"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb4-21"><a></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">1</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb4-22"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-23"><a></a>    <span class="at">title =</span> rc1_label</span>
+<span id="cb4-24"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/possible-choice-1-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>gen_resid_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(pred_df) {</span>
+<span id="cb5-2"><a></a>  rc_rss <span class="ot">&lt;-</span> <span class="fu">sum</span>((pred_df<span class="sc">$</span>resid)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb5-3"><a></a>  rc_resid_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(<span class="st">"Residuals: RSS $</span><span class="sc">\\</span><span class="st">approx$ "</span>,<span class="fu">round</span>(rc_rss,<span class="dv">3</span>)))</span>
+<span id="cb5-4"><a></a>  rc_resid_plot <span class="ot">&lt;-</span> pred_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>resid)) <span class="sc">+</span></span>
+<span id="cb5-5"><a></a>    <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb5-6"><a></a>    <span class="fu">geom_hline</span>(</span>
+<span id="cb5-7"><a></a>      <span class="at">yintercept=</span><span class="dv">0</span>,</span>
+<span id="cb5-8"><a></a>      <span class="at">color=</span>cb_palette[<span class="dv">1</span>],</span>
+<span id="cb5-9"><a></a>      <span class="at">linewidth=</span><span class="fl">1.5</span></span>
+<span id="cb5-10"><a></a>    ) <span class="sc">+</span></span>
+<span id="cb5-11"><a></a>    <span class="fu">geom_segment</span>(</span>
+<span id="cb5-12"><a></a>      <span class="fu">aes</span>(<span class="at">xend=</span>x, <span class="at">yend=</span><span class="dv">0</span>)</span>
+<span id="cb5-13"><a></a>    ) <span class="sc">+</span></span>
+<span id="cb5-14"><a></a>    <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb5-15"><a></a>    <span class="fu">theme</span>(<span class="at">axis.line.x =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb5-16"><a></a>    <span class="fu">ylim</span>(<span class="sc">-</span><span class="fl">0.75</span>, <span class="fl">0.25</span>) <span class="sc">+</span></span>
+<span id="cb5-17"><a></a>    <span class="fu">labs</span>(</span>
+<span id="cb5-18"><a></a>      <span class="at">title=</span>rc_resid_label</span>
+<span id="cb5-19"><a></a>    )</span>
+<span id="cb5-20"><a></a>  <span class="fu">return</span>(rc_resid_plot)</span>
+<span id="cb5-21"><a></a>}</span>
+<span id="cb5-22"><a></a>rc1_resid_plot <span class="ot">&lt;-</span> <span class="fu">gen_resid_plot</span>(rc1_pred_df)</span>
+<span id="cb5-23"><a></a>rc1_resid_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/choice-1-resid-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a>rc2_df <span class="ot">&lt;-</span> possible_lines <span class="sc">|&gt;</span> <span class="fu">slice</span>(<span class="fu">n</span>() <span class="sc">-</span> <span class="dv">9</span>)</span>
+<span id="cb6-2"><a></a><span class="co"># Predictions for this choice</span></span>
+<span id="cb6-3"><a></a>rc2_pred_df <span class="ot">&lt;-</span> rand_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb6-4"><a></a>  <span class="at">y_pred =</span> rc2_df<span class="sc">$</span>slope <span class="sc">*</span> x,</span>
+<span id="cb6-5"><a></a>  <span class="at">resid =</span> y <span class="sc">-</span> y_pred</span>
+<span id="cb6-6"><a></a>)</span>
+<span id="cb6-7"><a></a>rc2_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(<span class="st">"Estimate 2: $</span><span class="sc">\\</span><span class="st">beta_1 </span><span class="sc">\\</span><span class="st">approx "</span>,<span class="fu">round</span>(rc2_df<span class="sc">$</span>slope,<span class="dv">3</span>),<span class="st">"$"</span>))</span>
+<span id="cb6-8"><a></a>rc2_lines_plot <span class="ot">&lt;-</span> <span class="fu">gen_lines_plot</span>(<span class="at">point_size=</span><span class="dv">5</span>)</span>
+<span id="cb6-9"><a></a>rc2_lines_plot <span class="sc">+</span></span>
+<span id="cb6-10"><a></a>  <span class="fu">geom_abline</span>(</span>
+<span id="cb6-11"><a></a>    <span class="at">data=</span>rc2_df,</span>
+<span id="cb6-12"><a></a>    <span class="fu">aes</span>(<span class="at">intercept=</span>intercept, <span class="at">slope=</span>slope),</span>
+<span id="cb6-13"><a></a>    <span class="at">linewidth=</span><span class="dv">2</span>,</span>
+<span id="cb6-14"><a></a>    <span class="at">color=</span>cb_palette[<span class="dv">3</span>]</span>
+<span id="cb6-15"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb6-16"><a></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb6-17"><a></a>    <span class="at">data=</span>rc2_pred_df,</span>
+<span id="cb6-18"><a></a>    <span class="fu">aes</span>(</span>
+<span id="cb6-19"><a></a>      <span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">xend=</span>x,</span>
+<span id="cb6-20"><a></a>      <span class="co"># yend=ifelse(y_pred &lt;= 1, y_pred, Inf)</span></span>
+<span id="cb6-21"><a></a>      <span class="at">yend=</span>y_pred</span>
+<span id="cb6-22"><a></a>    )</span>
+<span id="cb6-23"><a></a>    <span class="co"># color=cb_palette[1]</span></span>
+<span id="cb6-24"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb6-25"><a></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">1</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb6-26"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-27"><a></a>    <span class="at">title=</span>rc2_label</span>
+<span id="cb6-28"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/possible-choice-2-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>rc2_resid_plot <span class="ot">&lt;-</span> <span class="fu">gen_resid_plot</span>(rc2_pred_df)</span>
+<span id="cb7-2"><a></a>rc2_resid_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/choice-2-resid-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="now-the-math" class="slide level2 smaller">
+<h2>Now the Math</h2>
+<p><span class="math display">\[
+\begin{align*}
+\beta_1^* = \overbrace{\argmin}^{\begin{array}{c} \text{\small{Find thing}} \\[-5mm] \text{\small{that minimizes}}\end{array}}_{\beta_1}\left[ \sum_{i=1}^{n}(y_i - \widehat{y}_i)^2 \right] = \argmin_{\beta_1}\left[ \sum_{i=1}^{n}(y_i - \beta_1x_i)^2 \right]
+\end{align*}
+\]</span></p>
+<p>We can compute this derivative to obtain:</p>
+<p><span class="math display">\[
+\frac{\partial}{\partial\beta_1}\left[ \sum_{i=1}^{n}(\beta_1x_i - y_i)^2 \right] = \sum_{i=1}^{n}\frac{\partial}{\partial\beta_1}(\beta_1x_i - y_i)^2 = \sum_{i=1}^{n}2(\beta_1x_i - y_i)x_i
+\]</span></p>
+<p>And our first-order condition means that:</p>
+<p><span class="math display">\[
+\sum_{i=1}^{n}2(\beta_1^*x_i - y_i)x_i = 0 \iff \beta_1^*\sum_{i=1}^{n}x_i^2 = \sum_{i=1}^{n}x_iy_i \iff \boxed{\beta_1^* = \frac{\sum_{i=1}^{n}x_iy_i}{\sum_{i=1}^{n}x_i^2}}
+\]</span></p>
+</section></section>
+<section>
+<section id="doing-things-with-regression" class="title-slide slide level1 center" data-stack-name="Interpreting Results">
+<h1>Doing Things With Regression</h1>
+
+</section>
+<section id="regression-r-vs.-statsmodels" class="slide level2 smaller output-75">
+<h2>Regression: <code>R</code> vs.&nbsp;<code>statsmodels</code></h2>
+<div class="columns">
+<div class="column" style="width:45%;">
+<center>
+<strong>In (Base) R: <code>lm()</code></strong>
+</center>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a>ad_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'assets/Advertising.csv'</span>)</span>
+<span id="cb8-2"><a></a>lin_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> TV, <span class="at">data=</span>ad_df)</span>
+<span id="cb8-3"><a></a><span class="fu">summary</span>(lin_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = sales ~ TV, data = ad_df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-8.3860 -1.9545 -0.1913  2.0671  7.2124 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 7.032594   0.457843   15.36   &lt;2e-16 ***
+TV          0.047537   0.002691   17.67   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 3.259 on 198 degrees of freedom
+Multiple R-squared:  0.6119,    Adjusted R-squared:  0.6099 
+F-statistic: 312.1 on 1 and 198 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>General syntax:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="fu">lm</span>(</span>
+<span id="cb10-2"><a></a>  dependent <span class="sc">~</span> independent <span class="sc">+</span> controls,</span>
+<span id="cb10-3"><a></a>  <span class="at">data =</span> my_df</span>
+<span id="cb10-4"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column" style="width:55%;">
+<center>
+<strong>In Python: <code>smf.ols()</code></strong>
+</center>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb11-2"><a></a>results <span class="op">=</span> smf.ols(<span class="st">"sales ~ TV"</span>, data<span class="op">=</span>ad_df).fit()</span>
+<span id="cb11-3"><a></a><span class="bu">print</span>(results.summary(slim<span class="op">=</span><span class="va">True</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                  sales   R-squared:                       0.612
+Model:                            OLS   Adj. R-squared:                  0.610
+No. Observations:                 200   F-statistic:                     312.1
+Covariance Type:            nonrobust   Prob (F-statistic):           1.47e-42
+==============================================================================
+                 coef    std err          t      P&gt;|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept      7.0326      0.458     15.360      0.000       6.130       7.935
+TV             0.0475      0.003     17.668      0.000       0.042       0.053
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
+</div>
+</div>
+<p>General syntax:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a></a>smf.ols(</span>
+<span id="cb13-2"><a></a>  <span class="st">"dependent ~ independent + controls"</span>,</span>
+<span id="cb13-3"><a></a>  data <span class="op">=</span> my_df</span>
+<span id="cb13-4"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div></div>
+</section>
+<section id="interpreting-output" class="slide level2 smaller">
+<h2>Interpreting Output</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb14-2"><a></a>gdp_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/gdp_pca.csv"</span>)</span>
+<span id="cb14-3"><a></a>mil_plot <span class="ot">&lt;-</span> gdp_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>industrial, <span class="at">y=</span>military)) <span class="sc">+</span></span>
+<span id="cb14-4"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span><span class="sc">*</span>g_pointsize) <span class="sc">+</span></span>
+<span id="cb14-5"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">"y ~ x"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb14-6"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
+<span id="cb14-7"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-8"><a></a>    <span class="at">title=</span><span class="st">"Military Exports vs. Industrialization"</span>,</span>
+<span id="cb14-9"><a></a>    <span class="at">x=</span><span class="st">"Industrial Production (% of GDP)"</span>,</span>
+<span id="cb14-10"><a></a>    <span class="at">y=</span><span class="st">"Military Exports (% of All Exports)"</span></span>
+<span id="cb14-11"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a>mil_plot <span class="sc">+</span> <span class="fu">theme_dsan</span>(<span class="st">"quarter"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/mil-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a>gdp_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(military <span class="sc">~</span> industrial, <span class="at">data=</span>gdp_df)</span>
+<span id="cb16-2"><a></a><span class="fu">summary</span>(gdp_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = military ~ industrial, data = gdp_df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.3354 -1.0997 -0.3870  0.6081  6.7508 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)  0.61969    0.59526   1.041   0.3010  
+industrial   0.05253    0.02019   2.602   0.0111 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.671 on 79 degrees of freedom
+  (8 observations deleted due to missingness)
+Multiple R-squared:  0.07895,   Adjusted R-squared:  0.06729 
+F-statistic: 6.771 on 1 and 79 DF,  p-value: 0.01106</code></pre>
+</div>
+</div>
+</div></div>
+</section>
+<section id="zooming-in-coefficients" class="slide level2 table-75 crunch-title">
+<h2>Zooming In: Coefficients</h2>
+<div class="coef-table">
+<table class="caption-top">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 20%">
+<col style="width: 22%">
+<col style="width: 26%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;"></th>
+<th style="text-align: center;">Estimate</th>
+<th>Std. Error</th>
+<th>t value</th>
+<th>Pr(&gt;|t|)</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><span class="cb1"><strong>(Intercept)</strong></span></td>
+<td style="text-align: center;"><span class="cb1">0.61969</span></td>
+<td><span class="cb1">0.59526</span></td>
+<td><span class="cb1 bold">1.041</span></td>
+<td><span class="cb1 bold">0.3010</span></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="cb2"><strong>industrial</strong></span></td>
+<td style="text-align: center;"><span class="cb2">0.05253</span></td>
+<td><span class="cb2">0.02019</span></td>
+<td><span class="cb2 bold">2.602</span></td>
+<td><span class="cb2 bold">0.0111</span></td>
+<td><span class="cb2 bold">*</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"></td>
+<td style="text-align: center;"><span class="coef-label"><span class="math inline">\(\widehat{\beta}\)</span></span></td>
+<td><span class="coef-label">Uncertainty</span></td>
+<td><span class="coef-label">Test stat <span class="math inline">\(t\)</span></span></td>
+<td><span class="coef-label">How extreme is <span class="math inline">\(t\)</span>?</span></td>
+<td><span class="coef-label">Signif. Level</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span class="math display">\[
+\widehat{y} \approx \class{cb1}{\overset{\beta_0}{\underset{\small \pm 0.595}{0.620}}} +  \class{cb2}{\overset{\beta_1}{\underset{\small \pm 0.020}{0.053}}} \cdot x
+\]</span></p>
+</section>
+<section id="zooming-in-significance" class="slide level2 crunch-title table-75 crunch-details crunch-quarto-figure">
+<h2>Zooming In: Significance</h2>
+<div class="coef-table">
+<table class="caption-top">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 20%">
+<col style="width: 22%">
+<col style="width: 26%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;"></th>
+<th style="text-align: center;">Estimate</th>
+<th>Std. Error</th>
+<th>t value</th>
+<th>Pr(&gt;|t|)</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;"><span class="cb1"><strong>(Intercept)</strong></span></td>
+<td style="text-align: center;"><span class="cb1">0.61969</span></td>
+<td><span class="cb1">0.59526</span></td>
+<td><span class="cb1 bold">1.041</span></td>
+<td><span class="cb1 bold">0.3010</span></td>
+<td></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;"><span class="cb2"><strong>industrial</strong></span></td>
+<td style="text-align: center;"><span class="cb2">0.05253</span></td>
+<td><span class="cb2">0.02019</span></td>
+<td><span class="cb2 bold">2.602</span></td>
+<td><span class="cb2 bold">0.0111</span></td>
+<td><span class="cb2 bold">*</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;"></td>
+<td style="text-align: center;"><span class="coef-label"><span class="math inline">\(\widehat{\beta}\)</span></span></td>
+<td><span class="coef-label">Uncertainty</span></td>
+<td><span class="coef-label">Test stat <span class="math inline">\(t\)</span></span></td>
+<td><span class="coef-label">How extreme is <span class="math inline">\(t\)</span>?</span></td>
+<td><span class="coef-label">Signif. Level</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb18-2"><a></a>int_tstat <span class="ot">&lt;-</span> <span class="fl">1.041</span></span>
+<span id="cb18-3"><a></a>int_tstat_str <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"%.02f"</span>, int_tstat)</span>
+<span id="cb18-4"><a></a>label_df_int <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb18-5"><a></a>    <span class="sc">~</span>x, <span class="sc">~</span>y, <span class="sc">~</span>label,</span>
+<span id="cb18-6"><a></a>    <span class="fl">0.25</span>, <span class="fl">0.05</span>, <span class="fu">paste0</span>(<span class="st">"P(t &gt; "</span>,int_tstat_str,<span class="st">")</span><span class="sc">\n</span><span class="st">= 0.3"</span>)</span>
+<span id="cb18-7"><a></a>)</span>
+<span id="cb18-8"><a></a>label_df_signif_int <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb18-9"><a></a>    <span class="sc">~</span>x, <span class="sc">~</span>y, <span class="sc">~</span>label,</span>
+<span id="cb18-10"><a></a>    <span class="fl">2.7</span>, <span class="fl">0.075</span>, <span class="st">"95% Signif.</span><span class="sc">\n</span><span class="st">Cutoff"</span></span>
+<span id="cb18-11"><a></a>)</span>
+<span id="cb18-12"><a></a>funcShaded <span class="ot">&lt;-</span> <span class="cf">function</span>(x, lower_bound, upper_bound){</span>
+<span id="cb18-13"><a></a>    y <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(x)</span>
+<span id="cb18-14"><a></a>    y[x <span class="sc">&lt;</span> lower_bound <span class="sc">|</span> x <span class="sc">&gt;</span> upper_bound] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb18-15"><a></a>    <span class="fu">return</span>(y)</span>
+<span id="cb18-16"><a></a>}</span>
+<span id="cb18-17"><a></a>funcShadedIntercept <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">funcShaded</span>(x, int_tstat, <span class="cn">Inf</span>)</span>
+<span id="cb18-18"><a></a>funcShadedSignif <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">funcShaded</span>(x, <span class="fl">1.96</span>, <span class="cn">Inf</span>)</span>
+<span id="cb18-19"><a></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>)), <span class="fu">aes</span>(<span class="at">x=</span>x)) <span class="sc">+</span></span>
+<span id="cb18-20"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun=</span>dnorm, <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
+<span id="cb18-21"><a></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept=</span>int_tstat), <span class="at">linewidth=</span>g_linewidth, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb18-22"><a></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept =</span> <span class="fl">1.96</span>), <span class="at">linewidth=</span>g_linewidth, <span class="at">linetype=</span><span class="st">"solid"</span>) <span class="sc">+</span></span>
+<span id="cb18-23"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> funcShadedIntercept, <span class="at">geom =</span> <span class="st">"area"</span>, <span class="at">fill =</span> cbPalette[<span class="dv">1</span>], <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb18-24"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> funcShadedSignif, <span class="at">geom =</span> <span class="st">"area"</span>, <span class="at">fill =</span> <span class="st">"grey"</span>, <span class="at">alpha =</span> <span class="fl">0.333</span>) <span class="sc">+</span></span>
+<span id="cb18-25"><a></a>  <span class="fu">geom_text</span>(label_df_int, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label), <span class="at">size =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb18-26"><a></a>  <span class="fu">geom_text</span>(label_df_signif_int, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label), <span class="at">size =</span> <span class="dv">8</span>) <span class="sc">+</span></span>
+<span id="cb18-27"><a></a>  <span class="co"># Add single additional tick</span></span>
+<span id="cb18-28"><a></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">0</span>, int_tstat, <span class="dv">2</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"-2"</span>,<span class="st">"0"</span>,int_tstat_str,<span class="st">"2"</span>)) <span class="sc">+</span></span>
+<span id="cb18-29"><a></a>  <span class="fu">dsan_theme</span>(<span class="st">"quarter"</span>) <span class="sc">+</span></span>
+<span id="cb18-30"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb18-31"><a></a>    <span class="at">title =</span> <span class="st">"t Value for Intercept"</span>,</span>
+<span id="cb18-32"><a></a>    <span class="at">x =</span> <span class="st">"t"</span>,</span>
+<span id="cb18-33"><a></a>    <span class="at">y =</span> <span class="st">"Density"</span></span>
+<span id="cb18-34"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb18-35"><a></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"black"</span>, cbPalette[<span class="dv">1</span>], <span class="st">"black"</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/t-stat-intercept-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb19-2"><a></a>coef_tstat <span class="ot">&lt;-</span> <span class="fl">2.602</span></span>
+<span id="cb19-3"><a></a>coef_tstat_str <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"%.02f"</span>, coef_tstat)</span>
+<span id="cb19-4"><a></a>label_df_coef <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb19-5"><a></a>    <span class="sc">~</span>x, <span class="sc">~</span>y, <span class="sc">~</span>label,</span>
+<span id="cb19-6"><a></a>    <span class="fl">3.65</span>, <span class="fl">0.06</span>, <span class="fu">paste0</span>(<span class="st">"P(t &gt; "</span>,coef_tstat_str,<span class="st">")</span><span class="sc">\n</span><span class="st">= 0.01"</span>)</span>
+<span id="cb19-7"><a></a>)</span>
+<span id="cb19-8"><a></a>label_df_signif_coef <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb19-9"><a></a>  <span class="sc">~</span>x, <span class="sc">~</span>y, <span class="sc">~</span>label,</span>
+<span id="cb19-10"><a></a>  <span class="fl">1.05</span>, <span class="fl">0.03</span>, <span class="st">"95% Signif.</span><span class="sc">\n</span><span class="st">Cutoff"</span></span>
+<span id="cb19-11"><a></a>)</span>
+<span id="cb19-12"><a></a>funcShadedCoef <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="fu">funcShaded</span>(x, coef_tstat, <span class="cn">Inf</span>)</span>
+<span id="cb19-13"><a></a><span class="fu">ggplot</span>(<span class="at">data=</span><span class="fu">data.frame</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>,<span class="dv">4</span>)), <span class="fu">aes</span>(<span class="at">x=</span>x)) <span class="sc">+</span></span>
+<span id="cb19-14"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun=</span>dnorm, <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
+<span id="cb19-15"><a></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept=</span>coef_tstat), <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
+<span id="cb19-16"><a></a>  <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept=</span><span class="fl">1.96</span>), <span class="at">linetype=</span><span class="st">"solid"</span>, <span class="at">linewidth=</span>g_linewidth) <span class="sc">+</span></span>
+<span id="cb19-17"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> funcShadedCoef, <span class="at">geom =</span> <span class="st">"area"</span>, <span class="at">fill =</span> cbPalette[<span class="dv">2</span>], <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb19-18"><a></a>  <span class="fu">stat_function</span>(<span class="at">fun =</span> funcShadedSignif, <span class="at">geom =</span> <span class="st">"area"</span>, <span class="at">fill =</span> <span class="st">"grey"</span>, <span class="at">alpha =</span> <span class="fl">0.333</span>) <span class="sc">+</span></span>
+<span id="cb19-19"><a></a>  <span class="co"># Label shaded area</span></span>
+<span id="cb19-20"><a></a>  <span class="fu">geom_text</span>(label_df_coef, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label), <span class="at">size =</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb19-21"><a></a>  <span class="co"># Label significance cutoff</span></span>
+<span id="cb19-22"><a></a>  <span class="fu">geom_text</span>(label_df_signif_coef, <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">label =</span> label), <span class="at">size =</span> <span class="dv">8</span>) <span class="sc">+</span></span>
+<span id="cb19-23"><a></a>  <span class="fu">coord_cartesian</span>(<span class="at">clip =</span> <span class="st">"off"</span>) <span class="sc">+</span></span>
+<span id="cb19-24"><a></a>  <span class="co"># Add single additional tick</span></span>
+<span id="cb19-25"><a></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">2</span>, coef_tstat, <span class="dv">4</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"-4"</span>, <span class="st">"-2"</span>,<span class="st">"0"</span>, <span class="st">"2"</span>, coef_tstat_str,<span class="st">"4"</span>)) <span class="sc">+</span></span>
+<span id="cb19-26"><a></a>  <span class="fu">dsan_theme</span>(<span class="st">"quarter"</span>) <span class="sc">+</span></span>
+<span id="cb19-27"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb19-28"><a></a>    <span class="at">title =</span> <span class="st">"t Value for Coefficient"</span>,</span>
+<span id="cb19-29"><a></a>    <span class="at">x =</span> <span class="st">"t"</span>,</span>
+<span id="cb19-30"><a></a>    <span class="at">y =</span> <span class="st">"Density"</span></span>
+<span id="cb19-31"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb19-32"><a></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>, <span class="st">"black"</span>, cbPalette[<span class="dv">2</span>], <span class="st">"black"</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/t-stat-coef-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="the-residual-plot" class="slide level2 crunch-title crunch-images" data-name="Diagnostics">
+<h2>The Residual Plot</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Recall <strong>homoskedasticity</strong> assumption: Given our model</p>
+<p><span class="math display">\[
+  y_i = \beta_0 + \beta_1x_i + \varepsilon_i
+  \]</span></p>
+<p>the errors <span class="math inline">\(\varepsilon_i\)</span> <strong>should not vary systematically with <span class="math inline">\(i\)</span></strong></p>
+<p>Formally: <span class="math inline">\(\forall i \left[ \Var{\varepsilon_i} = \sigma^2 \right]\)</span></p>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a><span class="fu">library</span>(broom)</span>
+<span id="cb20-2"><a></a>gdp_resid_df <span class="ot">&lt;-</span> <span class="fu">augment</span>(gdp_model)</span>
+<span id="cb20-3"><a></a><span class="fu">ggplot</span>(gdp_resid_df, <span class="fu">aes</span>(<span class="at">x =</span> industrial, <span class="at">y =</span> .resid)) <span class="sc">+</span></span>
+<span id="cb20-4"><a></a>    <span class="fu">geom_point</span>(<span class="at">size =</span> g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb20-5"><a></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">0</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb20-6"><a></a>    <span class="fu">dsan_theme</span>(<span class="st">"quarter"</span>) <span class="sc">+</span></span>
+<span id="cb20-7"><a></a>    <span class="fu">labs</span>(</span>
+<span id="cb20-8"><a></a>      <span class="at">title =</span> <span class="st">"Residual Plot for Military ~ Industrial"</span>,</span>
+<span id="cb20-9"><a></a>      <span class="at">x =</span> <span class="st">"Fitted Value"</span>,</span>
+<span id="cb20-10"><a></a>      <span class="at">y =</span> <span class="st">"Residual"</span></span>
+<span id="cb20-11"><a></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/residual-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a>x <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">80</span></span>
+<span id="cb21-2"><a></a>errors <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(x), <span class="dv">0</span>, x<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">1000</span>)</span>
+<span id="cb21-3"><a></a>y <span class="ot">&lt;-</span> x <span class="sc">+</span> errors</span>
+<span id="cb21-4"><a></a>het_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x)</span>
+<span id="cb21-5"><a></a>df_het <span class="ot">&lt;-</span> <span class="fu">augment</span>(het_model)</span>
+<span id="cb21-6"><a></a><span class="fu">ggplot</span>(df_het, <span class="fu">aes</span>(<span class="at">x =</span> .fitted, <span class="at">y =</span> .resid)) <span class="sc">+</span></span>
+<span id="cb21-7"><a></a>    <span class="fu">geom_point</span>(<span class="at">size =</span> g_pointsize <span class="sc">/</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb21-8"><a></a>    <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb21-9"><a></a>    <span class="fu">dsan_theme</span>(<span class="st">"quarter"</span>) <span class="sc">+</span></span>
+<span id="cb21-10"><a></a>    <span class="fu">labs</span>(</span>
+<span id="cb21-11"><a></a>        <span class="at">title =</span> <span class="st">"Residual Plot for Heteroskedastic Data"</span>,</span>
+<span id="cb21-12"><a></a>        <span class="at">x =</span> <span class="st">"Fitted Value"</span>,</span>
+<span id="cb21-13"><a></a>        <span class="at">y =</span> <span class="st">"Residual"</span></span>
+<span id="cb21-14"><a></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/heteroskedastic-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="q-q-plot" class="slide level2">
+<h2>Q-Q Plot</h2>
+<ul>
+<li>If <span class="math inline">\((\widehat{y} - y) \sim \mathcal{N}(0, \sigma^2)\)</span>, points would lie on 45° line:</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="fu">ggplot</span>(df_het, <span class="fu">aes</span>(<span class="at">sample=</span>.resid)) <span class="sc">+</span></span>
+<span id="cb22-2"><a></a>  <span class="fu">stat_qq</span>(<span class="at">size =</span> g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">stat_qq_line</span>(<span class="at">linewidth =</span> g_linewidth) <span class="sc">+</span></span>
+<span id="cb22-3"><a></a>  <span class="fu">dsan_theme</span>(<span class="at">base_size=</span><span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb22-4"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb22-5"><a></a>    <span class="at">title =</span> <span class="st">"Q-Q Plot for Heteroskedastic Data"</span>,</span>
+<span id="cb22-6"><a></a>    <span class="at">x =</span> <span class="st">"Normal Distribution Quantiles"</span>,</span>
+<span id="cb22-7"><a></a>    <span class="at">y =</span> <span class="st">"Observed Data Quantiles"</span></span>
+<span id="cb22-8"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/qq-plot-heteroskedastic-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="fu">ggplot</span>(gdp_resid_df, <span class="fu">aes</span>(<span class="at">sample=</span>.resid)) <span class="sc">+</span></span>
+<span id="cb23-2"><a></a>  <span class="fu">stat_qq</span>(<span class="at">size =</span> g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">stat_qq_line</span>(<span class="at">linewidth =</span> g_linewidth) <span class="sc">+</span></span>
+<span id="cb23-3"><a></a>  <span class="fu">dsan_theme</span>(<span class="at">base_size=</span><span class="dv">30</span>) <span class="sc">+</span></span>
+<span id="cb23-4"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb23-5"><a></a>    <span class="at">title =</span> <span class="st">"Q-Q Plot for Industrial ~ Military Residuals"</span>,</span>
+<span id="cb23-6"><a></a>    <span class="at">x =</span> <span class="st">"Normal Distribution Quantiles"</span>,</span>
+<span id="cb23-7"><a></a>    <span class="at">y =</span> <span class="st">"Observed Data Quantiles"</span></span>
+<span id="cb23-8"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/qq-plot-gdp-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section></section>
+<section>
 <section id="multiple-linear-regression-mlr" class="title-slide slide level1 center" data-stack-name="MLR">
 <h1>Multiple Linear Regression (MLR)</h1>
 
 </section>
-<section id="multiple-linear-regression-mlr-model" class="slide level2">
+<section id="multiple-linear-regression-mlr-model" class="slide level2 title-08 crunch-title">
 <h2>Multiple Linear Regression (MLR) Model</h2>
 <ul>
 <li>Notation: <span class="math inline">\(x_{i,j}\)</span> = value of independent variable <span class="math inline">\(j\)</span> for person/observation <span class="math inline">\(i\)</span></li>
@@ -396,21 +1086,248 @@ Jeff Jacobs
 <li><span class="math inline">\(\beta_j\)</span> interpretation: a one-unit increase in <span class="math inline">\(x_{i,j}\)</span> is associated with a <span class="math inline">\(\beta_j\)</span> unit increase in <span class="math inline">\(y_i\)</span>, <strong>holding all other independent variables constant</strong></li>
 </ul>
 </section>
-<section id="visualizing-multiple-linear-regression" class="slide level2">
-<h2>Visualizing Multiple Linear Regression</h2>
+<section id="holding-things-constant" class="slide level2 smaller crunch-title title-11 crunch-p crunch-quarto-layout-panel crunch-quarto-figure crunch-img crunch-ul">
+<h2>“Holding” Things “Constant”?</h2>
+<ul>
+<li>One of the more confusing ideas in all of statistics…</li>
+<li>“Controlling for” some types of variables (forks, pipes) <strong>removes</strong> spurious correlation, but “controlling for” other types (colliders) <strong>introduces more</strong> spurious correlation</li>
+<li>Opinionated “what you should really do”: <strong>center</strong> independent variables</li>
+<li><span class="math inline">\(Y = \beta_0 + \beta_1 (X - \mu)\)</span> <span class="math inline">\(\Rightarrow\)</span> <em>“When other variables are at their <strong>mean values</strong>, 1 unit increase in <span class="math inline">\(X_i\)</span> associated with <span class="math inline">\(\beta_i\)</span> unit increase in <span class="math inline">\(y\)</span>”</em></li>
+</ul>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="fu">library</span>(extraDistr)</span>
+<span id="cb24-2"><a></a><span class="fu">set.seed</span>(<span class="dv">5650</span>)</span>
+<span id="cb24-3"><a></a>n_c <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb24-4"><a></a>cfork_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb24-5"><a></a>    <span class="at">Z =</span> <span class="fu">rbern</span>(n_c),</span>
+<span id="cb24-6"><a></a>    <span class="at">X =</span> <span class="fu">rnorm</span>(n_c, <span class="dv">2</span> <span class="sc">*</span> Z <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb24-7"><a></a>    <span class="at">Y =</span> <span class="fu">rnorm</span>(n_c, <span class="dv">2</span> <span class="sc">*</span> Z <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb24-8"><a></a>)</span>
+<span id="cb24-9"><a></a><span class="fu">library</span>(latex2exp)</span>
+<span id="cb24-10"><a></a>overall_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cfork_df)</span>
+<span id="cb24-11"><a></a>overall_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(overall_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">3</span>)</span>
+<span id="cb24-12"><a></a>z0_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cfork_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">0</span>))</span>
+<span id="cb24-13"><a></a>z0_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(z0_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb24-14"><a></a>z0_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=0} = "</span>,z0_slope,<span class="st">"$"</span>)</span>
+<span id="cb24-15"><a></a>z0_leg_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(<span class="st">"0 $(m="</span>,z0_slope,<span class="st">")$"</span>))</span>
+<span id="cb24-16"><a></a>z1_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cfork_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">1</span>))</span>
+<span id="cb24-17"><a></a>z1_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(z1_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb24-18"><a></a>z1_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=1} = "</span>,z1_slope,<span class="st">"$"</span>)</span>
+<span id="cb24-19"><a></a>z_texlabel <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(z0_label, <span class="st">" | "</span>, z1_label))</span>
+<span id="cb24-20"><a></a>cfork_xmin <span class="ot">&lt;-</span> <span class="fu">min</span>(cfork_df<span class="sc">$</span>X)</span>
+<span id="cb24-21"><a></a>cfork_xmax <span class="ot">&lt;-</span> <span class="fu">max</span>(cfork_df<span class="sc">$</span>X)</span>
+<span id="cb24-22"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb24-23"><a></a>  <span class="co"># Points</span></span>
+<span id="cb24-24"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb24-25"><a></a>    <span class="at">data=</span>cfork_df,</span>
+<span id="cb24-26"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb24-27"><a></a>    <span class="at">size=</span><span class="fl">0.6</span><span class="sc">*</span>g_pointsize,</span>
+<span id="cb24-28"><a></a>    <span class="at">alpha=</span><span class="fl">0.8</span></span>
+<span id="cb24-29"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-30"><a></a>  <span class="co"># Overall lm</span></span>
+<span id="cb24-31"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb24-32"><a></a>    <span class="at">data=</span>cfork_df, <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y),</span>
+<span id="cb24-33"><a></a>    <span class="at">method =</span> lm, <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb24-34"><a></a>    <span class="at">linewidth =</span> <span class="fl">2.5</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb24-35"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-36"><a></a>  <span class="co"># Stratified lm</span></span>
+<span id="cb24-37"><a></a>  <span class="co"># (slightly larger black lines)</span></span>
+<span id="cb24-38"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb24-39"><a></a>    <span class="at">data=</span>cfork_df,</span>
+<span id="cb24-40"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">group=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb24-41"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb24-42"><a></a>    <span class="at">linewidth=</span><span class="fl">2.75</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb24-43"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-44"><a></a>  <span class="co"># (Colored lines)</span></span>
+<span id="cb24-45"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb24-46"><a></a>    <span class="at">data=</span>cfork_df,</span>
+<span id="cb24-47"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb24-48"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb24-49"><a></a>    <span class="at">linewidth=</span><span class="dv">2</span></span>
+<span id="cb24-50"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-51"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb24-52"><a></a>  <span class="fu">theme</span>(</span>
+<span id="cb24-53"><a></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">24</span>),</span>
+<span id="cb24-54"><a></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">20</span>)</span>
+<span id="cb24-55"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-56"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb24-57"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb24-58"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(</span>
+<span id="cb24-59"><a></a>      <span class="st">"Fork: Slope = "</span>,overall_slope</span>
+<span id="cb24-60"><a></a>    ),</span>
+<span id="cb24-61"><a></a>    <span class="at">subtitle=</span>z_texlabel,</span>
+<span id="cb24-62"><a></a>    <span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="st">"Y"</span>, <span class="at">color =</span> <span class="st">"Z"</span></span>
+<span id="cb24-63"><a></a>  )</span>
+<span id="cb24-64"><a></a><span class="fu">set.seed</span>(<span class="dv">5650</span>)</span>
+<span id="cb24-65"><a></a>cpipe_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb24-66"><a></a>    <span class="at">X =</span> <span class="fu">rnorm</span>(n_c),</span>
+<span id="cb24-67"><a></a>    <span class="at">Z =</span> <span class="fu">rbern</span>(n_c, <span class="fu">plogis</span>(X)),</span>
+<span id="cb24-68"><a></a>    <span class="at">Y =</span> <span class="fu">rnorm</span>(n_c, <span class="dv">2</span> <span class="sc">*</span> Z <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb24-69"><a></a>)</span>
+<span id="cb24-70"><a></a>cpipe_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cpipe_df)</span>
+<span id="cb24-71"><a></a>cpipe_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(cpipe_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">3</span>)</span>
+<span id="cb24-72"><a></a>cpipe_z0_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cpipe_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">0</span>))</span>
+<span id="cb24-73"><a></a>cpipe_z0_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(cpipe_z0_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb24-74"><a></a>cpipe_z0_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=0} = "</span>,cpipe_z0_slope,<span class="st">"$"</span>)</span>
+<span id="cb24-75"><a></a>cpipe_z1_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cpipe_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">1</span>))</span>
+<span id="cb24-76"><a></a>cpipe_z1_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(cpipe_z1_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb24-77"><a></a>cpipe_z1_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=1} = "</span>,cpipe_z1_slope,<span class="st">"$"</span>)</span>
+<span id="cb24-78"><a></a>cpipe_z_texlabel <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(cpipe_z0_label, <span class="st">" | "</span>, cpipe_z1_label))</span>
+<span id="cb24-79"><a></a>cpipe_xmin <span class="ot">&lt;-</span> <span class="fu">min</span>(cpipe_df<span class="sc">$</span>X)</span>
+<span id="cb24-80"><a></a>cpipe_xmax <span class="ot">&lt;-</span> <span class="fu">max</span>(cpipe_df<span class="sc">$</span>X)</span>
+<span id="cb24-81"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb24-82"><a></a>  <span class="co"># Points</span></span>
+<span id="cb24-83"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb24-84"><a></a>    <span class="at">data=</span>cpipe_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Y <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">3</span>),</span>
+<span id="cb24-85"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb24-86"><a></a>    <span class="at">size=</span><span class="fl">0.6</span><span class="sc">*</span>g_pointsize,</span>
+<span id="cb24-87"><a></a>    <span class="at">alpha=</span><span class="fl">0.8</span></span>
+<span id="cb24-88"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-89"><a></a>  <span class="co"># Overall lm</span></span>
+<span id="cb24-90"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb24-91"><a></a>    <span class="at">data=</span>cpipe_df, <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y),</span>
+<span id="cb24-92"><a></a>    <span class="at">method =</span> lm, <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb24-93"><a></a>    <span class="at">linewidth =</span> <span class="fl">2.5</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb24-94"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-95"><a></a>  <span class="co"># Stratified lm</span></span>
+<span id="cb24-96"><a></a>  <span class="co"># (slightly larger black lines)</span></span>
+<span id="cb24-97"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb24-98"><a></a>    <span class="at">data=</span>cpipe_df,</span>
+<span id="cb24-99"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">group=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb24-100"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb24-101"><a></a>    <span class="at">linewidth=</span><span class="fl">2.75</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb24-102"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-103"><a></a>  <span class="co"># (Colored lines)</span></span>
+<span id="cb24-104"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb24-105"><a></a>    <span class="at">data=</span>cpipe_df,</span>
+<span id="cb24-106"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb24-107"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb24-108"><a></a>    <span class="at">linewidth=</span><span class="dv">2</span></span>
+<span id="cb24-109"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-110"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb24-111"><a></a>  <span class="fu">theme</span>(</span>
+<span id="cb24-112"><a></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">24</span>),</span>
+<span id="cb24-113"><a></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">20</span>)</span>
+<span id="cb24-114"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-115"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb24-116"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb24-117"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(</span>
+<span id="cb24-118"><a></a>      <span class="st">"Pipe: Slope = "</span>,cpipe_slope</span>
+<span id="cb24-119"><a></a>    ),</span>
+<span id="cb24-120"><a></a>    <span class="at">subtitle=</span>cpipe_z_texlabel,</span>
+<span id="cb24-121"><a></a>    <span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="st">"Y"</span>, <span class="at">color =</span> <span class="st">"Z"</span></span>
+<span id="cb24-122"><a></a>  )</span>
+<span id="cb24-123"><a></a><span class="fu">set.seed</span>(<span class="dv">5650</span>)</span>
+<span id="cb24-124"><a></a>ccoll_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb24-125"><a></a>    <span class="at">X =</span> <span class="fu">rnorm</span>(n_c),</span>
+<span id="cb24-126"><a></a>    <span class="at">Y =</span> <span class="fu">rnorm</span>(n_c),</span>
+<span id="cb24-127"><a></a>    <span class="at">Z =</span> <span class="fu">rbern</span>(n_c, <span class="fu">plogis</span>(<span class="dv">2</span> <span class="sc">*</span> (X <span class="sc">+</span> Y <span class="sc">-</span> <span class="dv">1</span>)))</span>
+<span id="cb24-128"><a></a>)</span>
+<span id="cb24-129"><a></a>ccoll_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>ccoll_df)</span>
+<span id="cb24-130"><a></a>ccoll_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(ccoll_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">3</span>)</span>
+<span id="cb24-131"><a></a>ccoll_z0_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>ccoll_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">0</span>))</span>
+<span id="cb24-132"><a></a>ccoll_z0_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(ccoll_z0_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb24-133"><a></a>ccoll_z0_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=0} = "</span>,ccoll_z0_slope,<span class="st">"$"</span>)</span>
+<span id="cb24-134"><a></a>ccoll_z1_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>ccoll_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">1</span>))</span>
+<span id="cb24-135"><a></a>ccoll_z1_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(ccoll_z1_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb24-136"><a></a>ccoll_z1_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=1} = "</span>,ccoll_z1_slope,<span class="st">"$"</span>)</span>
+<span id="cb24-137"><a></a>ccoll_z_texlabel <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(ccoll_z0_label, <span class="st">" | "</span>, ccoll_z1_label))</span>
+<span id="cb24-138"><a></a>ccoll_xmin <span class="ot">&lt;-</span> <span class="fu">min</span>(ccoll_df<span class="sc">$</span>X)</span>
+<span id="cb24-139"><a></a>ccoll_xmax <span class="ot">&lt;-</span> <span class="fu">max</span>(ccoll_df<span class="sc">$</span>X)</span>
+<span id="cb24-140"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb24-141"><a></a>  <span class="co"># Points</span></span>
+<span id="cb24-142"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb24-143"><a></a>    <span class="at">data=</span>ccoll_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Y <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">3</span>),</span>
+<span id="cb24-144"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb24-145"><a></a>    <span class="at">size=</span><span class="fl">0.6</span><span class="sc">*</span>g_pointsize,</span>
+<span id="cb24-146"><a></a>    <span class="at">alpha=</span><span class="fl">0.8</span></span>
+<span id="cb24-147"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-148"><a></a>  <span class="co"># Overall lm</span></span>
+<span id="cb24-149"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb24-150"><a></a>    <span class="at">data=</span>ccoll_df, <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y),</span>
+<span id="cb24-151"><a></a>    <span class="at">method =</span> lm, <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb24-152"><a></a>    <span class="at">linewidth =</span> <span class="fl">2.5</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb24-153"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-154"><a></a>  <span class="co"># Stratified lm</span></span>
+<span id="cb24-155"><a></a>  <span class="co"># (slightly larger black lines)</span></span>
+<span id="cb24-156"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb24-157"><a></a>    <span class="at">data=</span>ccoll_df,</span>
+<span id="cb24-158"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">group=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb24-159"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb24-160"><a></a>    <span class="at">linewidth=</span><span class="fl">2.75</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb24-161"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-162"><a></a>  <span class="co"># (Colored lines)</span></span>
+<span id="cb24-163"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb24-164"><a></a>    <span class="at">data=</span>ccoll_df,</span>
+<span id="cb24-165"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb24-166"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb24-167"><a></a>    <span class="at">linewidth=</span><span class="dv">2</span></span>
+<span id="cb24-168"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-169"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb24-170"><a></a>  <span class="fu">theme</span>(</span>
+<span id="cb24-171"><a></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">24</span>),</span>
+<span id="cb24-172"><a></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">20</span>)</span>
+<span id="cb24-173"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb24-174"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb24-175"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb24-176"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(</span>
+<span id="cb24-177"><a></a>      <span class="st">"Collider: Slope = "</span>,ccoll_slope</span>
+<span id="cb24-178"><a></a>    ),</span>
+<span id="cb24-179"><a></a>    <span class="at">subtitle=</span>ccoll_z_texlabel,</span>
+<span id="cb24-180"><a></a>    <span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="st">"Y"</span>, <span class="at">color =</span> <span class="st">"Z"</span></span>
+<span id="cb24-181"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-layout-panel" data-layout="[1,1,1]">
+<div class="quarto-layout-row quarto-layout-valign-center">
+<div class="column quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/fork-plot-1.png" class="quarto-figure quarto-figure-center" width="528"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/pipe-plot-1.png" class="quarto-figure quarto-figure-center" width="528"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/collider-plot-1.png" class="quarto-figure quarto-figure-center" width="528"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</section>
+<section id="visualizing-mlr" class="slide level2">
+<h2>Visualizing MLR</h2>
 
 <img data-src="images/3_5.svg" class="r-stretch quarto-figure-center"><p class="caption">(ISLR, Fig 3.5): <em>A pronounced non-linear relationship. Positive residuals (visible above the surface) tend to lie along the 45-degree line, where budgets are split evenly. Negative residuals (most not visible) tend to be away from this line, where budgets are more lopsided.</em></p></section>
 <section id="interpreting-mlr" class="slide level2 smaller crunch-title crunch-ul output-center">
 <h2>Interpreting MLR</h2>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a></a>mlr_model <span class="op">=</span> smf.ols(</span>
-<span id="cb3-2"><a></a>  formula<span class="op">=</span><span class="st">"sales ~ TV + radio + newspaper"</span>,</span>
-<span id="cb3-3"><a></a>  data<span class="op">=</span>ad_df</span>
-<span id="cb3-4"><a></a>)</span>
-<span id="cb3-5"><a></a>mlr_result <span class="op">=</span> mlr_model.fit()</span>
-<span id="cb3-6"><a></a><span class="bu">print</span>(mlr_result.summary().tables[<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a></a>mlr_model <span class="op">=</span> smf.ols(</span>
+<span id="cb25-2"><a></a>  formula<span class="op">=</span><span class="st">"sales ~ TV + radio + newspaper"</span>,</span>
+<span id="cb25-3"><a></a>  data<span class="op">=</span>ad_df</span>
+<span id="cb25-4"><a></a>)</span>
+<span id="cb25-5"><a></a>mlr_result <span class="op">=</span> mlr_model.fit()</span>
+<span id="cb25-6"><a></a><span class="bu">print</span>(mlr_result.summary().tables[<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>==============================================================================
@@ -446,18 +1363,18 @@ newspaper     -0.0010      0.006     -0.177      0.860      -0.013       0.011
 <h2>But Wait…</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell code-output-scroll">
+<div class="cell code-output-scroll" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python code-overflow-scroll number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a></a><span class="co"># print(mlr_result.summary2(float_format='%.3f'))</span></span>
-<span id="cb5-2"><a></a><span class="bu">print</span>(mlr_result.summary2())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource python code-overflow-scroll number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a></a><span class="co"># print(mlr_result.summary2(float_format='%.3f'))</span></span>
+<span id="cb27-2"><a></a><span class="bu">print</span>(mlr_result.summary2())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                 Results: Ordinary least squares
 =================================================================
 Model:              OLS              Adj. R-squared:     0.896   
 Dependent Variable: sales            AIC:                780.3622
-Date:               2025-03-09 05:23 BIC:                793.5555
+Date:               2026-01-26 18:28 BIC:                793.5555
 No. Observations:   200              Log-Likelihood:     -386.18 
 Df Model:           3                F-statistic:        570.3   
 Df Residuals:       196              Prob (F-statistic): 1.58e-96
@@ -481,22 +1398,22 @@ errors is correctly specified.</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a></a>slr_model <span class="op">=</span> smf.ols(</span>
-<span id="cb7-2"><a></a>  formula<span class="op">=</span><span class="st">"sales ~ newspaper"</span>,</span>
-<span id="cb7-3"><a></a>  data<span class="op">=</span>ad_df</span>
-<span id="cb7-4"><a></a>)</span>
-<span id="cb7-5"><a></a>slr_result <span class="op">=</span> slr_model.fit()</span>
-<span id="cb7-6"><a></a><span class="bu">print</span>(slr_result.summary2())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a></a>slr_model <span class="op">=</span> smf.ols(</span>
+<span id="cb29-2"><a></a>  formula<span class="op">=</span><span class="st">"sales ~ newspaper"</span>,</span>
+<span id="cb29-3"><a></a>  data<span class="op">=</span>ad_df</span>
+<span id="cb29-4"><a></a>)</span>
+<span id="cb29-5"><a></a>slr_result <span class="op">=</span> slr_model.fit()</span>
+<span id="cb29-6"><a></a><span class="bu">print</span>(slr_result.summary2())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                 Results: Ordinary least squares
 ==================================================================
 Model:              OLS              Adj. R-squared:     0.047    
 Dependent Variable: sales            AIC:                1220.6714
-Date:               2025-03-09 05:23 BIC:                1227.2680
+Date:               2026-01-26 18:28 BIC:                1227.2680
 No. Observations:   200              Log-Likelihood:     -608.34  
 Df Model:           1                F-statistic:        10.89    
 Df Residuals:       198              Prob (F-statistic): 0.00115  
@@ -525,10 +1442,11 @@ errors is correctly specified.</code></pre>
 </section>
 <section id="correlations-among-features" class="slide level2 smaller">
 <h2>Correlations Among Features</h2>
-<div class="cell">
+<div id="corr-matrix" style="font-size: 120%;">
+<div class="cell center-output" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a></a>ad_df.drop(columns<span class="op">=</span><span class="st">"id"</span>).corr()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a></a>ad_df.drop(columns<span class="op">=</span><span class="st">"id"</span>).corr()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                 TV     radio  newspaper     sales
@@ -538,16 +1456,17 @@ newspaper  0.056648  0.354104   1.000000  0.228299
 sales      0.782224  0.576223   0.228299  1.000000</code></pre>
 </div>
 </div>
+</div>
 <ul>
-<li>Observe how <span class="math inline">\(\text{cor}(\texttt{radio}, \texttt{newspaper}) \approx 0.35\)</span></li>
+<li>Note how <span class="math inline">\(\text{cor}(\texttt{radio}, \texttt{newspaper}) \approx 0.35\)</span></li>
 <li>In markets where we spend more on <code>radio</code> our sales will tend to be higher…</li>
 <li>Corr matrix <span class="math inline">\(\implies\)</span> we spend more on <code>newspaper</code> in those same markets…</li>
 <li>In SLR which only examines <code>sales</code> vs.&nbsp;<code>newspaper</code>, we (<strong>correctly!</strong>) observe that higher values of <code>newspaper</code> are associated with higher values of <code>sales</code>…</li>
 <li>In essence, <code>newspaper</code> advertising is a surrogate for <code>radio</code> advertising <span class="math inline">\(\implies\)</span> in our SLR, <code>newspaper</code> “gets credit” for the association between <code>radio</code> and <code>sales</code></li>
 </ul>
 </section>
-<section id="another-mlr-superpower-incorporating-categorical-vars" class="slide level2 smaller title-09 math-90">
-<h2>Another MLR Superpower: Incorporating Categorical Vars</h2>
+<section id="mlr-superpower-handling-categorical-vars" class="slide level2 smaller title-11 math-90 crunch-quarto-figure crunch-img crunch-math-15">
+<h2>MLR Superpower: Handling Categorical Vars</h2>
 <div class="columns">
 <div class="column" style="width:48%;">
 <p><span class="math display">\[
@@ -556,25 +1475,28 @@ Y &amp;= \beta_0 + \beta_1 \times \texttt{income} \\
 &amp;\phantom{Y}
 \end{align*}
 \]</span></p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>credit_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/Credit.csv"</span>)</span>
-<span id="cb11-2"><a></a>credit_plot <span class="ot">&lt;-</span> credit_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Income, <span class="at">y=</span>Balance)) <span class="sc">+</span></span>
-<span id="cb11-3"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span><span class="sc">*</span>g_pointsize) <span class="sc">+</span></span>
-<span id="cb11-4"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">"y ~ x"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb11-5"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
-<span id="cb11-6"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb11-7"><a></a>    <span class="at">title=</span><span class="st">"Credit Card Balance vs. Income Level"</span>,</span>
-<span id="cb11-8"><a></a>    <span class="at">x=</span><span class="st">"Income ($1K)"</span>,</span>
-<span id="cb11-9"><a></a>    <span class="at">y=</span><span class="st">"Credit Card Balance ($)"</span></span>
-<span id="cb11-10"><a></a>  )</span>
-<span id="cb11-11"><a></a>credit_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a>credit_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/Credit.csv"</span>)</span>
+<span id="cb33-2"><a></a>credit_plot <span class="ot">&lt;-</span> credit_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Income, <span class="at">y=</span>Balance)) <span class="sc">+</span></span>
+<span id="cb33-3"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span><span class="sc">*</span>g_pointsize) <span class="sc">+</span></span>
+<span id="cb33-4"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb33-5"><a></a>    <span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">"y ~ x"</span>, <span class="at">linewidth=</span><span class="dv">1</span>,</span>
+<span id="cb33-6"><a></a>    <span class="at">fullrange=</span><span class="cn">TRUE</span></span>
+<span id="cb33-7"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb33-8"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
+<span id="cb33-9"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb33-10"><a></a>    <span class="at">title=</span><span class="st">"Credit Card Balance vs. Income Level"</span>,</span>
+<span id="cb33-11"><a></a>    <span class="at">x=</span><span class="st">"Income ($1K)"</span>,</span>
+<span id="cb33-12"><a></a>    <span class="at">y=</span><span class="st">"Credit Card Balance ($)"</span></span>
+<span id="cb33-13"><a></a>  )</span>
+<span id="cb33-14"><a></a>credit_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="index_files/figure-revealjs/credit-plot-slr-1.png" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/credit-plot-slr-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
@@ -586,24 +1508,27 @@ Y = &amp;\beta_0 + \beta_1 \times \texttt{income} + \beta_2 \times \texttt{Stude
 &amp;+ \beta_3 \times (\texttt{Student} \times \texttt{Income})
 \end{align*}
 \]</span></p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a></a>student_plot <span class="ot">&lt;-</span> credit_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Income, <span class="at">y=</span>Balance, <span class="at">color=</span>Student)) <span class="sc">+</span></span>
-<span id="cb12-2"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span><span class="sc">*</span>g_pointsize) <span class="sc">+</span></span>
-<span id="cb12-3"><a></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">"y ~ x"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb12-4"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
-<span id="cb12-5"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb12-6"><a></a>    <span class="at">title=</span><span class="st">"Credit Card Balance vs. Income Level"</span>,</span>
-<span id="cb12-7"><a></a>    <span class="at">x=</span><span class="st">"Income ($1K)"</span>,</span>
-<span id="cb12-8"><a></a>    <span class="at">y=</span><span class="st">"Credit Card Balance ($)"</span></span>
-<span id="cb12-9"><a></a>  )</span>
-<span id="cb12-10"><a></a>student_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a></a>student_plot <span class="ot">&lt;-</span> credit_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>Income, <span class="at">y=</span>Balance, <span class="at">color=</span>Student)) <span class="sc">+</span></span>
+<span id="cb34-2"><a></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span><span class="sc">*</span>g_pointsize) <span class="sc">+</span></span>
+<span id="cb34-3"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb34-4"><a></a>    <span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span><span class="st">"y ~ x"</span>, <span class="at">linewidth=</span><span class="dv">1</span>,</span>
+<span id="cb34-5"><a></a>    <span class="at">fullrange=</span><span class="cn">TRUE</span></span>
+<span id="cb34-6"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb34-7"><a></a>  <span class="fu">theme_dsan</span>() <span class="sc">+</span></span>
+<span id="cb34-8"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb34-9"><a></a>    <span class="at">title=</span><span class="st">"Credit Card Balance vs. Income Level"</span>,</span>
+<span id="cb34-10"><a></a>    <span class="at">x=</span><span class="st">"Income ($1K)"</span>,</span>
+<span id="cb34-11"><a></a>    <span class="at">y=</span><span class="st">"Credit Card Balance ($)"</span></span>
+<span id="cb34-12"><a></a>  )</span>
+<span id="cb34-13"><a></a>student_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="index_files/figure-revealjs/credit-plot-students-1.png" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/credit-plot-students-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
@@ -642,76 +1567,76 @@ Y = &amp;\beta_0 + \beta_1 \times \texttt{income} + \beta_2 \times \texttt{Stude
 </section>
 <section id="credit-default" class="slide level2">
 <h2>Credit Default</h2>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb13-2"><a></a><span class="fu">library</span>(ggExtra)</span>
-<span id="cb13-3"><a></a>default_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/Default.csv"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb13-4"><a></a>  <span class="fu">mutate</span>(<span class="at">default_num =</span> <span class="fu">ifelse</span>(default<span class="sc">==</span><span class="st">"Yes"</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span>
-<span id="cb13-5"><a></a>default_plot <span class="ot">&lt;-</span> default_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>balance, <span class="at">y=</span>income, <span class="at">color=</span>default, <span class="at">shape=</span>default)) <span class="sc">+</span></span>
-<span id="cb13-6"><a></a>  <span class="fu">geom_point</span>(<span class="at">alpha=</span><span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb13-7"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">16</span>) <span class="sc">+</span></span>
-<span id="cb13-8"><a></a>  <span class="fu">labs</span>(</span>
-<span id="cb13-9"><a></a>    <span class="at">title=</span><span class="st">"Credit Defaults by Income and Account Balance"</span>,</span>
-<span id="cb13-10"><a></a>    <span class="at">x =</span> <span class="st">"Account Balance"</span>,</span>
-<span id="cb13-11"><a></a>    <span class="at">y =</span> <span class="st">"Income"</span></span>
-<span id="cb13-12"><a></a>  )</span>
-<span id="cb13-13"><a></a>default_mplot <span class="ot">&lt;-</span> default_plot <span class="sc">|&gt;</span> <span class="fu">ggMarginal</span>(<span class="at">type=</span><span class="st">"boxplot"</span>, <span class="at">groupColour=</span><span class="cn">FALSE</span>, <span class="at">groupFill=</span><span class="cn">TRUE</span>)</span>
-<span id="cb13-14"><a></a>default_mplot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb35-2"><a></a><span class="fu">library</span>(ggExtra)</span>
+<span id="cb35-3"><a></a>default_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/Default.csv"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb35-4"><a></a>  <span class="fu">mutate</span>(<span class="at">default_num =</span> <span class="fu">ifelse</span>(default<span class="sc">==</span><span class="st">"Yes"</span>,<span class="dv">1</span>,<span class="dv">0</span>))</span>
+<span id="cb35-5"><a></a>default_plot <span class="ot">&lt;-</span> default_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>balance, <span class="at">y=</span>income, <span class="at">color=</span>default, <span class="at">shape=</span>default)) <span class="sc">+</span></span>
+<span id="cb35-6"><a></a>  <span class="fu">geom_point</span>(<span class="at">alpha=</span><span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb35-7"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">16</span>) <span class="sc">+</span></span>
+<span id="cb35-8"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb35-9"><a></a>    <span class="at">title=</span><span class="st">"Credit Defaults by Income and Account Balance"</span>,</span>
+<span id="cb35-10"><a></a>    <span class="at">x =</span> <span class="st">"Account Balance"</span>,</span>
+<span id="cb35-11"><a></a>    <span class="at">y =</span> <span class="st">"Income"</span></span>
+<span id="cb35-12"><a></a>  )</span>
+<span id="cb35-13"><a></a>default_mplot <span class="ot">&lt;-</span> default_plot <span class="sc">|&gt;</span> <span class="fu">ggMarginal</span>(<span class="at">type=</span><span class="st">"boxplot"</span>, <span class="at">groupColour=</span><span class="cn">FALSE</span>, <span class="at">groupFill=</span><span class="cn">TRUE</span>)</span>
+<span id="cb35-14"><a></a>default_mplot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 
 </div>
-<img data-src="index_files/figure-revealjs/default-dataset-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/default-dataset-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="lines-vs.-sigmoids" class="slide level2 smaller math-90">
 <h2>Lines vs.&nbsp;Sigmoids(!)</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p>Here’s what lines look like for this dataset:</p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a><span class="co">#lpm_model &lt;- lm(default ~ balance, data=default_df)</span></span>
-<span id="cb14-2"><a></a>default_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(</span>
-<span id="cb14-3"><a></a>    <span class="fu">aes</span>(</span>
-<span id="cb14-4"><a></a>      <span class="at">x=</span>balance, <span class="at">y=</span>default_num</span>
-<span id="cb14-5"><a></a>    )</span>
-<span id="cb14-6"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb14-7"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>default)) <span class="sc">+</span></span>
-<span id="cb14-8"><a></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">"lm"</span>, <span class="at">formula=</span>y<span class="sc">~</span>x, <span class="at">color=</span><span class="st">'black'</span>) <span class="sc">+</span></span>
-<span id="cb14-9"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a></a><span class="co">#lpm_model &lt;- lm(default ~ balance, data=default_df)</span></span>
+<span id="cb36-2"><a></a>default_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(</span>
+<span id="cb36-3"><a></a>    <span class="fu">aes</span>(</span>
+<span id="cb36-4"><a></a>      <span class="at">x=</span>balance, <span class="at">y=</span>default_num</span>
+<span id="cb36-5"><a></a>    )</span>
+<span id="cb36-6"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb36-7"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>default)) <span class="sc">+</span></span>
+<span id="cb36-8"><a></a>  <span class="fu">stat_smooth</span>(<span class="at">method=</span><span class="st">"lm"</span>, <span class="at">formula=</span>y<span class="sc">~</span>x, <span class="at">color=</span><span class="st">'black'</span>) <span class="sc">+</span></span>
+<span id="cb36-9"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="index_files/figure-revealjs/linear-prob-model-1.png" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/linear-prob-model-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div><div class="column" style="width:50%;">
 <p>Here’s what sigmoids look like:</p>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb15-2"><a></a>logistic_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(default_num <span class="sc">~</span> balance, <span class="at">family=</span><span class="fu">binomial</span>(<span class="at">link=</span><span class="st">'logit'</span>),<span class="at">data=</span>default_df)</span>
-<span id="cb15-3"><a></a>default_df<span class="sc">$</span>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(logistic_model, <span class="at">newdata =</span> default_df, <span class="at">type =</span> <span class="st">"response"</span>)</span>
-<span id="cb15-4"><a></a>my_sigmoid <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span><span class="sc">+</span><span class="fu">exp</span>(<span class="sc">-</span>x))</span>
-<span id="cb15-5"><a></a>default_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>balance, <span class="at">y=</span>default_num)) <span class="sc">+</span></span>
-<span id="cb15-6"><a></a>  <span class="co">#stat_function(fun=my_sigmoid) +</span></span>
-<span id="cb15-7"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>default)) <span class="sc">+</span></span>
-<span id="cb15-8"><a></a>  <span class="fu">geom_line</span>(</span>
-<span id="cb15-9"><a></a>    <span class="at">data=</span>default_df,</span>
-<span id="cb15-10"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>balance, <span class="at">y=</span>predictions),</span>
-<span id="cb15-11"><a></a>    <span class="at">linewidth=</span><span class="dv">1</span></span>
-<span id="cb15-12"><a></a>  ) <span class="sc">+</span></span>
-<span id="cb15-13"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb37-2"><a></a>logistic_model <span class="ot">&lt;-</span> <span class="fu">glm</span>(default_num <span class="sc">~</span> balance, <span class="at">family=</span><span class="fu">binomial</span>(<span class="at">link=</span><span class="st">'logit'</span>),<span class="at">data=</span>default_df)</span>
+<span id="cb37-3"><a></a>default_df<span class="sc">$</span>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(logistic_model, <span class="at">newdata =</span> default_df, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb37-4"><a></a>my_sigmoid <span class="ot">&lt;-</span> <span class="cf">function</span>(x) <span class="dv">1</span> <span class="sc">/</span> (<span class="dv">1</span><span class="sc">+</span><span class="fu">exp</span>(<span class="sc">-</span>x))</span>
+<span id="cb37-5"><a></a>default_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>balance, <span class="at">y=</span>default_num)) <span class="sc">+</span></span>
+<span id="cb37-6"><a></a>  <span class="co">#stat_function(fun=my_sigmoid) +</span></span>
+<span id="cb37-7"><a></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>default)) <span class="sc">+</span></span>
+<span id="cb37-8"><a></a>  <span class="fu">geom_line</span>(</span>
+<span id="cb37-9"><a></a>    <span class="at">data=</span>default_df,</span>
+<span id="cb37-10"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>balance, <span class="at">y=</span>predictions),</span>
+<span id="cb37-11"><a></a>    <span class="at">linewidth=</span><span class="dv">1</span></span>
+<span id="cb37-12"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb37-13"><a></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="index_files/figure-revealjs/plot-sigmoids-1.png" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/plot-sigmoids-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
 </div>
 </div>
@@ -754,11 +1679,11 @@ L(\beta_0, \beta_1) = \prod_{\{i \mid y_i = 1\}}\Pr(Y = 1 \mid X) \prod_{\{i \mi
 </section>
 <section id="the-interpretation-problem" class="slide level2 smaller">
 <h2>The Interpretation Problem</h2>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>)</span>
-<span id="cb16-2"><a></a><span class="fu">print</span>(<span class="fu">summary</span>(logistic_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">9</span>)</span>
+<span id="cb38-2"><a></a><span class="fu">print</span>(<span class="fu">summary</span>(logistic_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -767,9 +1692,9 @@ glm(formula = default_num ~ balance, family = binomial(link = "logit"),
     data = default_df)
 
 Coefficients:
-               Estimate  Std. Error z value            Pr(&gt;|z|)    
-(Intercept) -10.6513306   0.3611574  -29.49 &lt;0.0000000000000002 ***
-balance       0.0054989   0.0002204   24.95 &lt;0.0000000000000002 ***
+               Estimate  Std. Error z value Pr(&gt;|z|)    
+(Intercept) -10.6513306   0.3611574  -29.49   &lt;2e-16 ***
+balance       0.0054989   0.0002204   24.95   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -784,14 +1709,29 @@ Number of Fisher Scoring iterations: 8</code></pre>
 </div>
 <ul>
 <li>Slope is no longer the same everywhere! It <strong>varies</strong> across different values of <span class="math inline">\(x\)</span>…</li>
-<li>Let’s brainstorm some possible ways to make our lives easier when interpreting these coefficients!</li>
+<li>What happens to the <strong>probability</strong> <span class="math inline">\(\Pr(Y = 1 \mid X)\)</span> when <span class="math inline">\(X\)</span> increases by <strong>1 unit</strong>? …We need an easier-to-work-with unit</li>
+</ul>
+</section>
+<section id="log-odds" class="slide level2 crunch-title crunch-ul">
+<h2>Log-Odds</h2>
+<ul>
+<li>“Linear Probability Model” <span class="math inline">\(\Pr(Y = 1 \mid X) = \beta_0 + \beta_1X\)</span> fails, <strong>but</strong>, “fixing” it leads to</li>
+</ul>
+<p><span class="math display">\[
+\begin{align*}
+&amp;\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
+\iff &amp;\Pr(Y = 1 \mid X) = \frac{\exp[\beta_0 + \beta_1X]}{1 + \exp[\beta_0 + \beta_1X]} = \frac{1}{1 + \exp\left[ -(\beta_0 + \beta_1X) \right] }
+\end{align*}
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\leadsto\)</span> A 1-unit increase in <span class="math inline">\(X\)</span> is associated with a <span class="math inline">\(\beta_1\)</span> increase in the <strong>log-odds</strong> of <span class="math inline">\(Y\)</span></li>
 </ul>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-gelman_data_2007" class="csl-entry" role="listitem">
-Gelman, Andrew, and Jennifer Hill. 2007. <em>Data <span>Analysis Using Regression</span> and <span>Multilevel</span>/<span>Hierarchical Models</span></em>. Cambridge University Press. <a href="https://www.dropbox.com/scl/fi/asbumi3g0gqa4xl9va7wp/Andrew-Gelman-Jennifer-Hill-Data-Analysis-Using-Regression-and-Multilevel_Hierarchical-Models.pdf?rlkey=zf8icjhm7rswvxrpm7d10m65o&amp;dl=1">https://www.dropbox.com/scl/fi/asbumi3g0gqa4xl9va7wp/Andrew-Gelman-Jennifer-Hill-Data-Analysis-Using-Regression-and-Multilevel_Hierarchical-Models.pdf?rlkey=zf8icjhm7rswvxrpm7d10m65o&amp;dl=1</a>.
+Gelman, Andrew, and Jennifer Hill. 2007. <em><a href="https://www.dropbox.com/scl/fi/asbumi3g0gqa4xl9va7wp/Andrew-Gelman-Jennifer-Hill-Data-Analysis-Using-Regression-and-Multilevel_Hierarchical-Models.pdf?rlkey=zf8icjhm7rswvxrpm7d10m65o&amp;dl=1">Data <span>Analysis Using Regression</span> and <span>Multilevel</span>/<span>Hierarchical Models</span></a></em>. Cambridge University Press.
 </div>
 </div>
 </section>
@@ -799,16 +1739,16 @@ Gelman, Andrew, and Jennifer Hill. 2007. <em>Data <span>Analysis Using Regressio
 <h2>Appendix: MLR in R</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb18-2"><a></a>ad_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/Advertising.csv"</span>) <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">id=</span><span class="st">`</span><span class="at">...1</span><span class="st">`</span>)</span>
-<span id="cb18-3"><a></a>mlr_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
-<span id="cb18-4"><a></a>  sales <span class="sc">~</span> TV <span class="sc">+</span> radio <span class="sc">+</span> newspaper,</span>
-<span id="cb18-5"><a></a>  <span class="at">data=</span>ad_df</span>
-<span id="cb18-6"><a></a>)</span>
-<span id="cb18-7"><a></a><span class="fu">print</span>(<span class="fu">summary</span>(mlr_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb40-2"><a></a>ad_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"assets/Advertising.csv"</span>) <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">id=</span><span class="st">`</span><span class="at">...1</span><span class="st">`</span>)</span>
+<span id="cb40-3"><a></a>mlr_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb40-4"><a></a>  sales <span class="sc">~</span> TV <span class="sc">+</span> radio <span class="sc">+</span> newspaper,</span>
+<span id="cb40-5"><a></a>  <span class="at">data=</span>ad_df</span>
+<span id="cb40-6"><a></a>)</span>
+<span id="cb40-7"><a></a><span class="fu">print</span>(<span class="fu">summary</span>(mlr_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -820,17 +1760,17 @@ Residuals:
 -8.8277 -0.8908  0.2418  1.1893  2.8292 
 
 Coefficients:
-             Estimate Std. Error t value            Pr(&gt;|t|)    
-(Intercept)  2.938889   0.311908   9.422 &lt;0.0000000000000002 ***
-TV           0.045765   0.001395  32.809 &lt;0.0000000000000002 ***
-radio        0.188530   0.008611  21.893 &lt;0.0000000000000002 ***
-newspaper   -0.001037   0.005871  -0.177                0.86    
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  2.938889   0.311908   9.422   &lt;2e-16 ***
+TV           0.045765   0.001395  32.809   &lt;2e-16 ***
+radio        0.188530   0.008611  21.893   &lt;2e-16 ***
+newspaper   -0.001037   0.005871  -0.177     0.86    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Residual standard error: 1.686 on 196 degrees of freedom
 Multiple R-squared:  0.8972,    Adjusted R-squared:  0.8956 
-F-statistic: 570.3 on 3 and 196 DF,  p-value: &lt; 0.00000000000000022</code></pre>
+F-statistic: 570.3 on 3 and 196 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">

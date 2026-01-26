@@ -1,3 +1,55 @@
+2026:
+
+## But Wait... {.smaller .crunch-title .title-11 .crunch-p .crunch-math .math-90}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+<center>
+
+$$
+\texttt{sales} = \overset{*}{\beta_0} + \overset{*}{\beta_1}\texttt{newspaper}
+$$
+
+</center>
+
+```{r}
+#| label: lr-result-side
+library(stats)
+lr_model <- lm(sales ~ newspaper, data=ad_df)
+printCoefmat(coef(summary(lr_model)))
+```
+
+:::
+::: {.column width="50%"}
+
+<center>
+
+$$
+\texttt{sales} = \overset{*}{\beta_0} + \overset{*}{\beta_1}\texttt{TV} + \overset{*}{\beta_2}\texttt{radio} + \overset{(~~)}{\beta_3}\texttt{paper}
+$$
+
+</center>
+
+```{r}
+#| label: mlr-result-side
+# print(summary(mlr_model))
+printCoefmat(coef(summary(mlr_model)))
+```
+
+:::
+::::
+
+::: {#mlr-difference style="font-size: 110%"}
+
+* `newspaper` $\overset{*}{\rightarrow}$ `sales` in SLR, but `newspaper` $\overset{*}{\not\rightarrow}$ `sales` in MLR?
+* **Correlations** $\Rightarrow$ MLR results can be **drastically different** from SLR results
+* This is a good thing! It's how we're able to **control for** confounding vars!
+
+:::
+
+
+---
 
 ```{r}
 #| label: default-boxplot-balance

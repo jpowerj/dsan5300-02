@@ -1,0 +1,43 @@
+
+## Multiple Linear Regression
+
+* Notation: $x_{i,j}$ = value of independent variable $j$ for person/observation $i$
+* $M$ = total number of independent variables
+
+$$
+\widehat{y}_i = \beta_0 + \beta_1x_{i,1} + \beta_2x_{i,2} + \cdots + \beta_M x_{i,M}
+$$
+
+* $\beta_j$ interpretation: a one-unit increase in $x_{i,j}$ is associated with a $\beta_j$ unit increase in $y_i$, **holding all other independent variables constant**
+
+## Visualizing Multiple Linear Regression {.crunch-title .title-09}
+
+![(ISLR Fig 3.5): *A pronounced non-linear relationship. Positive residuals (visible above the surface) tend to lie along the 45° line, where budgets are split evenly. Negative residuals (most not visible) tend to be away from this line, where budgets are more lopsided.*](images/3_5.svg){fig-align="center"}
+
+## Interpreting MLR {.text-75 .crunch-title .crunch-p}
+
+:::: {.columns}
+::: {.column width="55%"}
+
+```{r}
+#| label: mlr-results
+#| code-fold: show
+mlr_model <- lm(sales ~ TV + radio + newspaper, data=ad_df)
+print(summary(mlr_model))
+```
+
+:::
+::: {.column width="45%"}
+
+**Holding `radio` and `newspaper` spending constant**...
+
+* An **increase of $1K** in spending on `TV` ads is associated with...
+* An **increase in sales of 46 units**
+
+**Holding `TV` and `newspaper` spending constant**...
+
+* An **increase of $1K** in spending on `radio` ads is associated with...
+* An **increase in sales of 189 units**
+
+:::
+::::
