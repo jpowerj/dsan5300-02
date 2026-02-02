@@ -1172,11 +1172,11 @@ f \in C([a,b],[a,b])
 <div class="cell" data-layout-align="center">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lin_model)<span class="sc">$</span>r.squared</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.5162165</code></pre>
+<pre><code>[1] 0.5369933</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_rss</span>(lin_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.500059</code></pre>
+<pre><code>[1] 0.5333467</code></pre>
 </div>
 </div>
 <ul>
@@ -1257,11 +1257,11 @@ f \in C([a,b],[a,b])
 <div class="cell" data-layout-align="center">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>lin_r2_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.7832643</code></pre>
+<pre><code>[1] 0.877305</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>lin_rss_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.251206</code></pre>
+<pre><code>[1] 0.1427598</code></pre>
 </div>
 </div>
 <ul>
@@ -1270,11 +1270,11 @@ f \in C([a,b],[a,b])
 <div class="cell" data-layout-align="center">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>poly_r2_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.3655774</code></pre>
+<pre><code>[1] 0.3475058</code></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>poly_rss_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.7353232</code></pre>
+<pre><code>[1] 0.7591992</code></pre>
 </div>
 </div>
 </div>
@@ -1343,15 +1343,15 @@ f \in C([a,b],[a,b])
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 96.8)">
 <title>grid</title>
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-96.8 362,-96.8 362,4 -4,4"></polygon>
-<g id="clust2" class="cluster">
-<title>cluster_02</title>
-<polygon fill="none" stroke="black" points="251,-8 251,-84.8 350,-84.8 350,-8 251,-8"></polygon>
-<text text-anchor="middle" x="300.5" y="-68.2" font-family="Times,serif" font-size="14.00">Test Set (20%)</text>
-</g>
 <g id="clust1" class="cluster">
 <title>cluster_01</title>
 <polygon fill="none" stroke="black" points="8,-8 8,-84.8 243,-84.8 243,-8 8,-8"></polygon>
 <text text-anchor="middle" x="125.5" y="-68.2" font-family="Times,serif" font-size="14.00">Training Set (80%)</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_02</title>
+<polygon fill="none" stroke="black" points="251,-8 251,-84.8 350,-84.8 350,-8 251,-8"></polygon>
+<text text-anchor="middle" x="300.5" y="-68.2" font-family="Times,serif" font-size="14.00">Test Set (20%)</text>
 </g>
 <!-- N1 -->
 <g id="node1" class="node">
@@ -1409,11 +1409,6 @@ f \in C([a,b],[a,b])
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 138)">
 <title>grid</title>
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-138 549,-138 549,4 -4,4"></polygon>
-<g id="clust4" class="cluster">
-<title>cluster_04</title>
-<polygon fill="none" stroke="black" points="446,-16 446,-93 545,-93 545,-16 446,-16"></polygon>
-<text text-anchor="middle" x="495.5" y="-76.4" font-family="Times,serif" font-size="14.00">Test Set (20%)</text>
-</g>
 <g id="clust1" class="cluster">
 <title>cluster_01</title>
 <polygon fill="none" stroke="black" points="8,-8 8,-126 438,-126 438,-8 8,-8"></polygon>
@@ -1428,6 +1423,11 @@ f \in C([a,b],[a,b])
 <title>cluster_02</title>
 <polygon fill="none" stroke="black" points="16,-16 16,-93 272,-93 272,-16 16,-16"></polygon>
 <text text-anchor="middle" x="144" y="-76.4" font-family="Times,serif" font-size="14.00">Training Fold (80%)</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_04</title>
+<polygon fill="none" stroke="black" points="446,-16 446,-93 545,-93 545,-16 446,-16"></polygon>
+<text text-anchor="middle" x="495.5" y="-76.4" font-family="Times,serif" font-size="14.00">Test Set (20%)</text>
 </g>
 <!-- A1 -->
 <g id="node1" class="node">

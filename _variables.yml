@@ -3,33 +3,33 @@ recording_url: "https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/Lis
 canvas_url: "https://georgetown.instructure.com/courses/224125"
 w01:
   weeknum: 1
-  title: "Linear Regression"
-  footer: "Linear Regression"
+  title: "Introduction to the Course"
+  footer: "Course Intro"
   date-md: "Jan 7"
 w02:
   weeknum: 2
-  title: "Logistic Regression"
-  footer: "Logistic Regression"
+  title: "Linear Regression"
+  footer: "Linear Regression"
   date-md: "Jan 12"
 w03:
   weeknum: 3
-  title: "The Scourge of Overfitting"
-  footer: "The Scourge of Overfitting"
+  title: "Getting Fancy with Regression"
+  footer: "Getting Fancy with Regression"
   date-md: "Jan 26"
 w04:
   weeknum: 4
-  title: "Cross-Validation for Model Assessment"
-  footer: "CV for Model Assessment"
+  title: "Discriminative vs. Generative Models"
+  footer: "Discriminative vs. Generative Models"
   date-md: "Feb 2"
 w05:
   weeknum: 5
-  title: "Regularization for Model Selection"
-  footer: "Regularization for Model Selection"
+  title: "Cross-Validation and the Scourge of Overfitting"
+  footer: "Cross-Validation and the Scourge of Overfitting"
   date-md: "Feb 9"
 w06:
   weeknum: 6
-  title: "Basis Functions and Splines"
-  footer: "Basis Functions and Splines"
+  title: "Regularization, Basis Functions, and Splines"
+  footer: "Regularization, Basis Functions, Splines"
   date-md: "Feb 17"
 w07:
   weeknum: 7

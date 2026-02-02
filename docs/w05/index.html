@@ -8,7 +8,7 @@
 
 <meta name="author" content="Jeff Jacobs">
 
-<title>Week 5: Cross-Validation for Model Assessment – DSAN 5300-02</title>
+<title>Week 5: The Scourge of Overfitting / Cross-Validation for Model Assessment – DSAN 5300-02</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -496,7 +496,7 @@ window.Quarto = {
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2026-01-26, 06:28:35 PM</em></p>
+<p><em>Updated 2026-02-02, 04:40:07 AM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -508,16 +508,34 @@ window.Quarto = {
   <li><a href="#schedule" id="toc-schedule" class="nav-link active" data-scroll-target="#schedule">Schedule</a></li>
   <li><a href="#roadmap" id="toc-roadmap" class="nav-link" data-scroll-target="#roadmap">Roadmap</a>
   <ul class="collapse">
-  <li><a href="#reminder-w04-new-goal-generalizability" id="toc-reminder-w04-new-goal-generalizability" class="nav-link" data-scroll-target="#reminder-w04-new-goal-generalizability">[Reminder (W04)] New Goal: <em>Generalizability</em></a></li>
+  <li><a href="#reminder-w01-new-goal-generalizability" id="toc-reminder-w01-new-goal-generalizability" class="nav-link" data-scroll-target="#reminder-w01-new-goal-generalizability">[Reminder (W01)] New Goal: <em>Generalizability</em></a></li>
   </ul></li>
   <li><a href="#a-non-linear-data-generating-process-dgp" id="toc-a-non-linear-data-generating-process-dgp" class="nav-link" data-scroll-target="#a-non-linear-data-generating-process-dgp">A Non-Linear Data-Generating Process (DGP)</a>
   <ul class="collapse">
   <li><a href="#our-working-dgp" id="toc-our-working-dgp" class="nav-link" data-scroll-target="#our-working-dgp">Our Working DGP</a></li>
   <li><a href="#the-true-model" id="toc-the-true-model" class="nav-link" data-scroll-target="#the-true-model">The “True” Model</a></li>
+  <li><a href="#what-we-have-thus-far" id="toc-what-we-have-thus-far" class="nav-link" data-scroll-target="#what-we-have-thus-far">What We Have Thus Far</a></li>
+  </ul></li>
+  <li><a href="#taking-off-the-linearity-training-wheels" id="toc-taking-off-the-linearity-training-wheels" class="nav-link" data-scroll-target="#taking-off-the-linearity-training-wheels">Taking Off the Linearity Training Wheels</a>
+  <ul class="collapse">
+  <li><a href="#how-can-we-attain-hiromis-aura" id="toc-how-can-we-attain-hiromis-aura" class="nav-link" data-scroll-target="#how-can-we-attain-hiromis-aura">How Can We Attain Hiromi’s Aura?</a></li>
+  <li><a href="#where-are-we-going-what-problems-are-we-solving" id="toc-where-are-we-going-what-problems-are-we-solving" class="nav-link" data-scroll-target="#where-are-we-going-what-problems-are-we-solving">Where Are We Going / What Problems Are We Solving?</a></li>
+  <li><a href="#the-level-2-goal-generalizability" id="toc-the-level-2-goal-generalizability" class="nav-link" data-scroll-target="#the-level-2-goal-generalizability">The Level 2 Goal: <em>Generalizability</em></a></li>
+  <li><a href="#can-we-just-like-not" id="toc-can-we-just-like-not" class="nav-link" data-scroll-target="#can-we-just-like-not">…Can We Just, Like, Not?</a></li>
+  <li><a href="#memorizing-data-vs.-learning-the-relationship" id="toc-memorizing-data-vs.-learning-the-relationship" class="nav-link" data-scroll-target="#memorizing-data-vs.-learning-the-relationship">Memorizing Data vs.&nbsp;<em>Learning</em> the Relationship</a></li>
+  <li><a href="#accuracy-leadsto-5300-generalization" id="toc-accuracy-leadsto-5300-generalization" class="nav-link" data-scroll-target="#accuracy-leadsto-5300-generalization">5000: Accuracy <span class="math inline">\(\leadsto\)</span> 5300: Generalization</a></li>
+  <li><a href="#in-other-words" id="toc-in-other-words" class="nav-link" data-scroll-target="#in-other-words">In Other Words…</a></li>
+  </ul></li>
+  <li><a href="#building-an-anti-overfitting-toolkit" id="toc-building-an-anti-overfitting-toolkit" class="nav-link" data-scroll-target="#building-an-anti-overfitting-toolkit">Building an Anti-Overfitting Toolkit</a>
+  <ul class="collapse">
+  <li><a href="#ok-so-how-do-we-avoid-overfitting" id="toc-ok-so-how-do-we-avoid-overfitting" class="nav-link" data-scroll-target="#ok-so-how-do-we-avoid-overfitting">Ok So, How Do We Avoid Overfitting?</a></li>
+  <li><a href="#regularization-measuring-and-penalizing-complexity" id="toc-regularization-measuring-and-penalizing-complexity" class="nav-link" data-scroll-target="#regularization-measuring-and-penalizing-complexity">Regularization: Measuring and Penalizing Complexity</a></li>
+  <li><a href="#lasso-and-elastic-net-regularization" id="toc-lasso-and-elastic-net-regularization" class="nav-link" data-scroll-target="#lasso-and-elastic-net-regularization">LASSO and Elastic Net Regularization</a></li>
+  <li><a href="#training-vs.-test-data" id="toc-training-vs.-test-data" class="nav-link" data-scroll-target="#training-vs.-test-data">Training vs.&nbsp;Test Data</a></li>
   </ul></li>
   <li><a href="#cross-validation-evaluating-non-linear-models" id="toc-cross-validation-evaluating-non-linear-models" class="nav-link" data-scroll-target="#cross-validation-evaluating-non-linear-models">Cross-Validation: Evaluating Non-Linear Models</a>
   <ul class="collapse">
-  <li><a href="#training-vs.-test-data" id="toc-training-vs.-test-data" class="nav-link" data-scroll-target="#training-vs.-test-data">Training vs.&nbsp;Test Data</a></li>
+  <li><a href="#training-vs.-test-data-1" id="toc-training-vs.-test-data-1" class="nav-link" data-scroll-target="#training-vs.-test-data-1">Training vs.&nbsp;Test Data</a></li>
   <li><a href="#the-chilling-truth-behind-test-data" id="toc-the-chilling-truth-behind-test-data" class="nav-link" data-scroll-target="#the-chilling-truth-behind-test-data">The Chilling Truth Behind Test Data 🫣</a></li>
   <li><a href="#the-validation-set-approach" id="toc-the-validation-set-approach" class="nav-link" data-scroll-target="#the-validation-set-approach">The Validation Set Approach</a></li>
   <li><a href="#evaluating-one-model-validation-set-approach" id="toc-evaluating-one-model-validation-set-approach" class="nav-link" data-scroll-target="#evaluating-one-model-validation-set-approach">Evaluating <em>One</em> Model: Validation Set Approach</a></li>
@@ -538,7 +556,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Week 5: Cross-Validation for Model Assessment</h1>
+<h1 class="title">Week 5: The Scourge of Overfitting / Cross-Validation for Model Assessment</h1>
 <p class="subtitle lead"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2026, Georgetown University</span></p>
   <div class="quarto-categories">
     <div class="quarto-category">Class Sessions</div>
@@ -685,7 +703,7 @@ window.Quarto = {
 <section id="roadmap" class="level1 smaller title-10" data-stack-name="Roadmap">
 <h1 class="smaller title-10" data-stack-name="Roadmap">Roadmap</h1>
 <ul>
-<li>[Week 4] Oh no! When we go beyond linear models, we have to worry about <strong>overfitting</strong>!
+<li>[Week 1] Oh no! When we go beyond linear models, we have to worry about <strong>overfitting</strong>!
 <ul>
 <li><span class="math inline">\(\implies\)</span> New goal! Maximize <strong>generalizability</strong> rather than <strong>accuracy</strong></li>
 <li><span class="math inline">\(\implies\)</span> Evaluate models on <strong><em>unseen</em> test data</strong> rather than training data</li>
@@ -699,8 +717,8 @@ window.Quarto = {
 <li>Answer: <strong>Yes!</strong> Regularization methods like LASSO and Elastic Net!</li>
 </ul></li>
 </ul>
-<section id="reminder-w04-new-goal-generalizability" class="level2 smaller crunch-title crunch-callout crunch-ul title-11">
-<h2 class="smaller crunch-title crunch-callout crunch-ul title-11 anchored" data-anchor-id="reminder-w04-new-goal-generalizability">[Reminder (W04)] New Goal: <em>Generalizability</em></h2>
+<section id="reminder-w01-new-goal-generalizability" class="level2 smaller crunch-title crunch-callout crunch-ul title-11">
+<h2 class="smaller crunch-title crunch-callout crunch-ul title-11 anchored" data-anchor-id="reminder-w01-new-goal-generalizability">[Reminder (W01)] New Goal: <em>Generalizability</em></h2>
 <div class="r-fit-text callout callout-style-default callout-tip no-icon callout-titled" title="<i class='bi bi-info-circle'></i> The Goal of Statistical Learning">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -870,6 +888,565 @@ dbl (4): dalys_pc, population, gdp_pc_clean, log_dalys_pc
 </div>
 </div>
 </section>
+<section id="what-we-have-thus-far" class="level2 smaller crunch-title title-10 crunch-ul crunch-img">
+<h2 class="smaller crunch-title title-10 crunch-ul crunch-img anchored" data-anchor-id="what-we-have-thus-far">What We Have Thus Far</h2>
+<ul>
+<li>We have a <strong>core model</strong>, regression, that we can <strong>build up</strong> into p much anything we want!</li>
+</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Class Topic</th>
+<th>This Video</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Linear regression</td>
+<td>Pachelbel’s <em>Canon in D</em> (1m26s-1m46s)</td>
+</tr>
+<tr class="even">
+<td>Logistic regression</td>
+<td>Add swing: <img src="images/swing_image.svg" class="img-fluid" width="100"> (1m46s)</td>
+</tr>
+<tr class="odd">
+<td>Neural networks</td>
+<td>(triads <span class="math inline">\(\mapsto\)</span> 7th/9th chords) (5m24s-5m53s)</td>
+</tr>
+</tbody>
+</table>
+<div class="quarto-video"><iframe data-external="1" src="https://www.youtube.com/embed/lpc1lEJ-SRc" width="100%" height="340" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+</section>
+</section>
+<section id="taking-off-the-linearity-training-wheels" class="level1 smaller" data-stack-name="Motivation">
+<h1 class="smaller" data-stack-name="Motivation">Taking Off the Linearity Training Wheels</h1>
+<style>
+@font-face {
+    font-family: Noodle;
+    src: url('../assets/Kbnoodlemonster.ttf');
+}
+.workbench-jj {
+  font-family: "Workbench", serif;
+  /* font-optical-sizing: auto; */
+  font-weight: 400;
+  font-style: normal;
+  font-size: 96pt !important;
+}
+.noodle-jj {
+    font-family: "Noodle", serif;
+    font-size: 96pt !important;
+}
+</style>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div id="fig-workbench" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-workbench-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<center>
+<p><span class="workbench-jj">Linear Models</span></p>
+</center>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-workbench-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: <a href="https://fonts.google.com/specimen/Workbench">Font Credit</a>
+</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div id="fig-noodle" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-noodle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<center>
+<p><span class="noodle-jj">Linear Models</span></p>
+</center>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-noodle-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: <a href="http://keepinitkoolinkinderland.blogspot.com/p/fonts.html">Font Credit</a>
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="how-can-we-attain-hiromis-aura" class="level2">
+<h2 class="anchored" data-anchor-id="how-can-we-attain-hiromis-aura">How Can We Attain Hiromi’s Aura?</h2>
+<ul>
+<li>Ingredient 1: Lots of <em>examples</em>: find mysteries/questions you care about in the world and think of how regression could help us understand them!</li>
+<li>But, <strong>Ingredient 2</strong> is <strong>Generalized Linear Models</strong> (GLM), which I’ll give an intro to <strong>on the board</strong> 🏃‍♂️‍➡️</li>
+</ul>
+</section>
+<section id="where-are-we-going-what-problems-are-we-solving" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="where-are-we-going-what-problems-are-we-solving">Where Are We Going / What Problems Are We Solving?</h2>
+<ul>
+<li>Another nice property we have: OLS estimator is <strong>BLUE</strong> (<strong>B</strong>est <strong>L</strong>inear <strong>U</strong>nbiased <strong>E</strong>stimator) of conditional mean <span class="math inline">\(\mathbb{E}[Y \mid X]\)</span></li>
+<li>The first problem we’ll tackle is: as we move <strong>from</strong> linear models with these kinds of guarantees <strong>to</strong> fancier models with more uncertainties / “potholes”… how do we ensure they still achieve want we want them to achieve?</li>
+<li>Tldr: we can study <strong>more complex</strong> relationships between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> than linear ones, but we lose guarantees like “If it’s linear, then it is [this]”: in other words, we lose this <strong>automatic generalizability</strong></li>
+<li><em>(With great[er] power comes great[er] responsibility!)</em></li>
+</ul>
+</section>
+<section id="the-level-2-goal-generalizability" class="level2 smaller crunch-title crunch-callout crunch-ul">
+<h2 class="smaller crunch-title crunch-callout crunch-ul anchored" data-anchor-id="the-level-2-goal-generalizability">The Level 2 Goal: <em>Generalizability</em></h2>
+<div class="r-fit-text callout callout-style-default callout-tip no-icon callout-titled" title="<i class='bi bi-info-circle'></i> The Goal of Statistical Learning">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span><i class="bi bi-info-circle"></i> The Goal of Statistical Learning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Find…</p>
+<ul>
+<li>A function <span class="math inline">\(\widehat{y} = f(x)\)</span> ✅</li>
+<li>That best predicts <span class="math inline">\(Y\)</span> for given values of <span class="math inline">\(X\)</span> ✅</li>
+<li>For data that has not yet been observed! 😳❓</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="can-we-just-like-not" class="level2 smaller crunch-title crunch-ul crunch-img">
+<h2 class="smaller crunch-title crunch-ul crunch-img anchored" data-anchor-id="can-we-just-like-not">…Can We Just, Like, Not?</h2>
+<div class="columns">
+<div class="column" style="width:70%;">
+<ul>
+<li>What happens if we “unleash” fancier non-linear models on data the same way we’ve been using linear models?</li>
+<li>The evil scourge of… <strong>OVERFITTING</strong> <em>(⚡️ a single overly-dramatic lightning bolt strikes the whiteboard behind me right at this exact moment what are the odds ⚡️)</em></li>
+</ul>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/yes_man.png" class="img-fluid figure-img" width="185"></p>
+<figcaption>Your computer is <a href="https://www.youtube.com/watch?v=g-QSuiXL6lY">Yes Man</a></figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">30</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="at">min=</span><span class="dv">0</span>, <span class="at">max=</span><span class="dv">1</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>y_vals_raw <span class="ot">&lt;-</span> <span class="dv">3</span> <span class="sc">*</span> x_vals</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>y_noise <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fl">0.5</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>y_vals <span class="ot">&lt;-</span> y_vals_raw <span class="sc">+</span> y_noise</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>data_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x=</span>x_vals, <span class="at">y=</span>y_vals)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>data_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">method=</span><span class="st">"lm"</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">formula=</span><span class="st">"y ~ x"</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">se=</span><span class="cn">FALSE</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth=</span><span class="dv">1</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"Linear Regression, N = "</span>,N)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/linear-fit-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>You: “Fit the data… but you’re only allowed to be linear!” Computer: “You got it boss!”</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>data_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">method=</span><span class="st">"lm"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x, N, <span class="at">raw=</span><span class="cn">TRUE</span>),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">se=</span><span class="cn">FALSE</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth=</span><span class="dv">1</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"Polynomial Regression, N = "</span>,N)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/poly-fit-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>You: “Fit the data…” Computer: “You got it boss!”</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="notes">
+<p>(<a href="http://www.game-art-hq.com/89202/the-yes-man-from-fallout-game-art-overview/">Image Source</a>)</p>
+</div>
+</section>
+<section id="memorizing-data-vs.-learning-the-relationship" class="level2 smaller crunch-title title-11 crunch-quarto-figure crunch-img">
+<h2 class="smaller crunch-title title-11 crunch-quarto-figure crunch-img anchored" data-anchor-id="memorizing-data-vs.-learning-the-relationship">Memorizing Data vs.&nbsp;<em>Learning</em> the Relationship</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="cell" data-layout-align="left">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.1</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(x)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>eps <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.04</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x <span class="sc">+</span> eps</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># But make one big outlier</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>midpoint <span class="ot">&lt;-</span> <span class="fu">ceiling</span>((<span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>)<span class="sc">*</span>n)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>y[midpoint] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>of_data <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Linear model</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>lin_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co"># But now polynomial regression</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>poly_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="at">degree =</span> <span class="dv">10</span>, <span class="at">raw=</span><span class="cn">TRUE</span>))</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(model)</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(of_data, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span>g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Training Data"</span>,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Model"</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="index_files/figure-html/training-data-plot-1.png" class="img-fluid quarto-figure quarto-figure-left figure-img" width="408"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="left">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(of_data, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span>g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept=</span><span class="dv">0</span>, <span class="at">slope=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">"Linear"</span>), <span class="at">linewidth=</span><span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">10</span>, <span class="at">raw=</span><span class="cn">TRUE</span>),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color=</span><span class="st">"Polynomial"</span>)) <span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"A Perfect Model?"</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Model"</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="index_files/figure-html/training-linear-poly-1.png" class="img-fluid quarto-figure quarto-figure-left figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<p>How have we measured “good” fit? High <span class="math inline">\(R^2\)</span>? Low <span class="math inline">\(RSS\)</span>?</p>
+<center>
+Linear Model:
+</center>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lin_model)<span class="sc">$</span>r.squared</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5679903</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_rss</span>(lin_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5638522</code></pre>
+</div>
+</div>
+<center style="margin-top: 20px !important;">
+Polynomial Model:
+</center>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(poly_model)<span class="sc">$</span>r.squared</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_rss</span>(poly_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="accuracy-leadsto-5300-generalization" class="level2 smaller crunch-title title-12">
+<h2 class="smaller crunch-title title-12 anchored" data-anchor-id="accuracy-leadsto-5300-generalization">5000: Accuracy <span class="math inline">\(\leadsto\)</span> 5300: Generalization</h2>
+<ul>
+<li>Training Accuracy: How well does it fit the data we can see?</li>
+<li>Test Accuracy: How well does it <strong>generalize</strong> to future data?</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Data setup</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>x_test <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.1</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>n_test <span class="ot">&lt;-</span> <span class="fu">length</span>(x_test)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>eps_test <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_test, <span class="dv">0</span>, <span class="fl">0.04</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>y_test <span class="ot">&lt;-</span> x_test <span class="sc">+</span> eps_test</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>of_data_test <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">x=</span>x_test, <span class="at">y=</span>y_test)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>lin_y_pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(lin_model, <span class="fu">as.data.frame</span>(x_test))</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co">#lin_y_pred_test</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>lin_resids_test <span class="ot">&lt;-</span> y_test <span class="sc">-</span> lin_y_pred_test</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co">#lin_resids_test</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>lin_rss_test <span class="ot">&lt;-</span> <span class="fu">sum</span>(lin_resids_test<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="co">#lin_rss_test</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Lin R2 = 1 - RSS/TSS</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>tss_test <span class="ot">&lt;-</span> <span class="fu">sum</span>((y_test <span class="sc">-</span> <span class="fu">mean</span>(y_test))<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>lin_r2_test <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> (lin_rss_test <span class="sc">/</span> tss_test)</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="co">#lin_r2_test</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Now the poly model</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>poly_y_pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(poly_model, <span class="fu">as.data.frame</span>(x_test))</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>poly_resids_test <span class="ot">&lt;-</span> y_test <span class="sc">-</span> poly_y_pred_test</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>poly_rss_test <span class="ot">&lt;-</span> <span class="fu">sum</span>(poly_resids_test<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="co">#poly_rss_test</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="co"># RSS</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>poly_r2_test <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> (poly_rss_test <span class="sc">/</span> tss_test)</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a><span class="co">#poly_r2_test</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(of_data, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y)) <span class="sc">+</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>,</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>              <span class="at">formula =</span> y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">10</span>, <span class="at">raw =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>              <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="fu">aes</span>(<span class="at">color=</span><span class="st">"Polynomial"</span>)) <span class="sc">+</span></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>of_data_test, <span class="fu">aes</span>(<span class="at">x=</span>x_test, <span class="at">y=</span>y_test), <span class="at">size=</span>g_pointsize<span class="sc">/</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="fu">aes</span>(<span class="at">intercept=</span><span class="dv">0</span>, <span class="at">slope=</span><span class="dv">1</span>, <span class="at">color=</span><span class="st">"Linear"</span>), <span class="at">linewidth=</span><span class="dv">1</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Evaluation: Unseen Test Data"</span>,</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Model"</span></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">16</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/lin-poly-newdata-1.png" class="img-fluid figure-img" width="528"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<center>
+Linear Model:
+</center>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>lin_r2_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8906269</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>lin_rss_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.139159</code></pre>
+</div>
+</div>
+<center style="margin-top: 10px !important;">
+Polynomial Model:
+</center>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>poly_r2_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5237016</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>poly_rss_test</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6060099</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="in-other-words" class="level2">
+<h2 class="anchored" data-anchor-id="in-other-words">In Other Words…</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/hypothesis.jpg" class="img-fluid figure-img"></p>
+<figcaption>Image source: circulated as secret shitposting among PhD students in seminars</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="building-an-anti-overfitting-toolkit" class="level1" data-stack-name="Anti-Overfitting Toolkit">
+<h1 data-stack-name="Anti-Overfitting Toolkit">Building an Anti-Overfitting Toolkit</h1>
+<ul>
+<li>Penalizing Complexity</li>
+<li>Cross-Validation</li>
+<li>Model Selection (Penalizing Complexity 2.0)</li>
+</ul>
+<section id="ok-so-how-do-we-avoid-overfitting" class="level2 crunch-title crunch-math crunch-ul">
+<h2 class="crunch-title crunch-math crunch-ul anchored" data-anchor-id="ok-so-how-do-we-avoid-overfitting">Ok So, How Do We Avoid Overfitting?</h2>
+<ul>
+<li><p>The gist: penalize model <strong>complexity</strong></p></li>
+<li><p>Original optimization:</p>
+<p><span class="math display">\[
+\theta^* = \underset{\theta}{\operatorname{argmin}} \mathcal{L}(y, \widehat{y})
+\]</span></p></li>
+<li><p>New optimization:</p>
+<p><span class="math display">\[
+\theta^* = \underset{\theta}{\operatorname{argmin}} \left[ \lambda \mathcal{L}(y, \widehat{y}) + (1-\lambda) \mathsf{Complexity}(\theta) \right]
+\]</span></p></li>
+<li><p>But how do we measure, and penalize, “complexity”?</p></li>
+</ul>
+</section>
+<section id="regularization-measuring-and-penalizing-complexity" class="level2 smaller title-11 math-90">
+<h2 class="smaller title-11 math-90 anchored" data-anchor-id="regularization-measuring-and-penalizing-complexity">Regularization: Measuring and Penalizing Complexity</h2>
+<ul>
+<li>In the case of polynomials, fairly simple complexity measure: <em>degree</em> of polynomial</li>
+</ul>
+<p><span class="math display">\[
+\mathsf{Complexity}(\widehat{y} = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3) &gt; \mathsf{Complexity}(\widehat{y} = \beta_0 + \beta_1 x)
+\]</span></p>
+<ul>
+<li>In general machine learning, however, we might not be working with polynomials</li>
+<li>In neural networks, for example, we sometimes toss in millions of features and ask the algorithm to “just figure it out”</li>
+<li>The gist, in the general case, is thus: try to “amplify” the most important features and shrink the rest, so that</li>
+</ul>
+<p><span class="math display">\[
+\mathsf{Complexity} \propto \frac{|\text{AmplifiedFeatures}|}{|\text{ShrunkFeatures}|}
+\]</span></p>
+</section>
+<section id="lasso-and-elastic-net-regularization" class="level2 smaller crunch-title math-90">
+<h2 class="smaller crunch-title math-90 anchored" data-anchor-id="lasso-and-elastic-net-regularization">LASSO and Elastic Net Regularization</h2>
+<ul>
+<li>Many ways to translate this intuition into math!</li>
+<li>In several fields, however (econ, biostatistics), LASSO<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> <span class="citation" data-cites="tibshirani_regression_1996">(<a href="#ref-tibshirani_regression_1996" role="doc-biblioref">Tibshirani 1996</a>)</span> is standard:</li>
+</ul>
+<p><span class="math display">\[
+\beta^*_{LASSO} = {\underset{\beta}{\operatorname{argmin}}}\left\{{\frac {1}{N}}\left\|y-X\beta \right\|_{2}^{2}+\lambda \|\beta \|_{1}\right\}
+\]</span></p>
+<ul>
+<li>Why does this work to penalize complexity? What does the parameter <span class="math inline">\(\lambda\)</span> do?</li>
+<li>Some known issues with LASSO fixed in extension of the same intuitions: <strong>Elastic Net</strong></li>
+</ul>
+<p><span class="math display">\[
+\beta^*_{EN} = {\underset {\beta }{\operatorname {argmin} }}\left\{ \|y-X\beta \|^{2}_2+\lambda _{2}\|\beta \|^{2}+\lambda _{1}\|\beta \|_{1} \right\}
+\]</span></p>
+<ul>
+<li>Ensures a unique global minimum! Note that <span class="math inline">\(\lambda_2 = 0, \lambda_1 = 1 \implies \beta^*_{LASSO} = \beta^*_{EN}\)</span></li>
+</ul>
+</section>
+<section id="training-vs.-test-data" class="level2">
+<h2 class="anchored" data-anchor-id="training-vs.-test-data">Training vs.&nbsp;Test Data</h2>
+<div class="cell" data-fig-size="3" data-layout-align="default">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode dot code-with-copy"><code class="sourceCode dot"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="va">graph</span> <span class="va">grid</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">graph</span><span class="co"> </span><span class="ot">[</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="va">overlap</span><span class="ot">=</span><span class="va">true</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">]</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">nodesep</span><span class="ot">=</span><span class="dv">0.0</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">ranksep</span><span class="ot">=</span><span class="dv">0.0</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">rankdir</span><span class="ot">=</span><span class="st">"TB"</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">style</span><span class="ot">=</span><span class="st">"filled"</span><span class="co">,</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">color</span><span class="ot">=</span><span class="va">black</span><span class="co">,</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightblue</span><span class="co">,</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">shape</span><span class="ot">=</span><span class="va">box</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">]</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="co">    // uncomment to hide the grid</span></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">edge</span><span class="co"> </span><span class="ot">[</span><span class="at">style</span><span class="ot">=</span><span class="va">invis</span><span class="ot">]</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_01</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Set (80%)"</span></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">N1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="ot">]</span><span class="co"> </span><span class="va">N2</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="ot">]</span><span class="co"> </span><span class="va">N3</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="ot">]</span><span class="co"> </span><span class="va">N4</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="ot">]</span></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">}</span></span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_02</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Test Set (20%)"</span></span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">N5</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">orange</span><span class="ot">]</span></span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">}</span></span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a><span class="ot">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="train-vs-test-diagram">
+<div>
+<svg width="672" height="480" viewbox="0.00 0.00 366.00 100.80" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 96.8)">
+<title>grid</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-96.8 362,-96.8 362,4 -4,4"></polygon>
+<g id="clust1" class="cluster">
+<title>cluster_01</title>
+<polygon fill="none" stroke="black" points="8,-8 8,-84.8 243,-84.8 243,-8 8,-8"></polygon>
+<text text-anchor="middle" x="125.5" y="-68.2" font-family="Times,serif" font-size="14.00">Training Set (80%)</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_02</title>
+<polygon fill="none" stroke="black" points="251,-8 251,-84.8 350,-84.8 350,-8 251,-8"></polygon>
+<text text-anchor="middle" x="300.5" y="-68.2" font-family="Times,serif" font-size="14.00">Test Set (20%)</text>
+</g>
+<!-- N1 -->
+<g id="node1" class="node">
+<title>N1</title>
+<polygon fill="lightblue" stroke="black" points="235,-52 181,-52 181,-16 235,-16 235,-52"></polygon>
+<text text-anchor="middle" x="208" y="-29.8" font-family="Times,serif" font-size="14.00">20%</text>
+</g>
+<!-- N2 -->
+<g id="node2" class="node">
+<title>N2</title>
+<polygon fill="lightblue" stroke="black" points="180,-52 126,-52 126,-16 180,-16 180,-52"></polygon>
+<text text-anchor="middle" x="153" y="-29.8" font-family="Times,serif" font-size="14.00">20%</text>
+</g>
+<!-- N3 -->
+<g id="node3" class="node">
+<title>N3</title>
+<polygon fill="lightblue" stroke="black" points="125,-52 71,-52 71,-16 125,-16 125,-52"></polygon>
+<text text-anchor="middle" x="98" y="-29.8" font-family="Times,serif" font-size="14.00">20%</text>
+</g>
+<!-- N4 -->
+<g id="node4" class="node">
+<title>N4</title>
+<polygon fill="lightblue" stroke="black" points="70,-52 16,-52 16,-16 70,-16 70,-52"></polygon>
+<text text-anchor="middle" x="43" y="-29.8" font-family="Times,serif" font-size="14.00">20%</text>
+</g>
+<!-- N5 -->
+<g id="node5" class="node">
+<title>N5</title>
+<polygon fill="orange" stroke="black" points="327,-52 273,-52 273,-16 327,-16 327,-52"></polygon>
+<text text-anchor="middle" x="300" y="-29.8" font-family="Times,serif" font-size="14.00">20%</text>
+</g>
+</g>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</section>
 </section>
 <section id="cross-validation-evaluating-non-linear-models" class="level1 title-09" data-stack-name="Cross-Validation">
 <h1 class="title-09" data-stack-name="Cross-Validation">Cross-Validation: Evaluating Non-Linear Models</h1>
@@ -880,8 +1457,8 @@ dbl (4): dalys_pc, population, gdp_pc_clean, log_dalys_pc
 <li>LOOCV</li>
 <li><span class="math inline">\(K\)</span>-Fold CV</li>
 </ul>
-<section id="training-vs.-test-data" class="level2">
-<h2 class="anchored" data-anchor-id="training-vs.-test-data">Training vs.&nbsp;Test Data</h2>
+<section id="training-vs.-test-data-1" class="level2">
+<h2 class="anchored" data-anchor-id="training-vs.-test-data-1">Training vs.&nbsp;Test Data</h2>
 <ul>
 <li>We introduced this as a first step towards tackling the <strong>scourge of overfitting!</strong></li>
 </ul>
@@ -970,43 +1547,43 @@ dbl (4): dalys_pc, population, gdp_pc_clean, log_dalys_pc
 <div class="cell" data-fig-height="2.5" data-layout-align="default">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode dot code-with-copy"><code class="sourceCode dot"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="va">graph</span> <span class="va">grid</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">graph</span><span class="co"> </span><span class="ot">[</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="va">overlap</span><span class="ot">=</span><span class="va">true</span><span class="co">,</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="va">scale</span><span class="ot">=</span><span class="dv">0.2</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">]</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">nodesep</span><span class="ot">=</span><span class="dv">0.0</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">ranksep</span><span class="ot">=</span><span class="dv">0.0</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">rankdir</span><span class="ot">=</span><span class="st">"LR"</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">scale</span><span class="ot">=</span><span class="dv">0.2</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">style</span><span class="ot">=</span><span class="st">"filled"</span><span class="co">,</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">color</span><span class="ot">=</span><span class="va">black</span><span class="co">,</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightblue</span><span class="co">,</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">shape</span><span class="ot">=</span><span class="va">box</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">]</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">    // uncomment to hide the grid</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">edge</span><span class="co"> </span><span class="ot">[</span><span class="at">style</span><span class="ot">=</span><span class="va">invis</span><span class="ot">]</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_01</span><span class="co"> </span><span class="ot">{</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Set (80%)"</span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_02</span><span class="co"> </span><span class="ot">{</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Fold (80%)"</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="va">A1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A2</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A3</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A4</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="ot">}</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_03</span><span class="co"> </span><span class="ot">{</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="at">label</span><span class="ot">=</span><span class="st">"Validation Fold (20%)"</span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="va">B1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightgreen</span><span class="ot">]</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="ot">}</span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">}</span></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_04</span><span class="co"> </span><span class="ot">{</span></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Test Set (20%)"</span></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">C1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">orange</span><span class="ot">]</span></span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">}</span></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">A1</span><span class="co"> -- </span><span class="va">A2</span><span class="co"> -- </span><span class="va">A3</span><span class="co"> -- </span><span class="va">A4</span><span class="co"> -- </span><span class="va">B1</span><span class="co"> -- </span><span class="va">C1</span><span class="ot">;</span></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="ot">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode dot code-with-copy"><code class="sourceCode dot"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="va">graph</span> <span class="va">grid</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ot">{</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">graph</span><span class="co"> </span><span class="ot">[</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="va">overlap</span><span class="ot">=</span><span class="va">true</span><span class="co">,</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="va">scale</span><span class="ot">=</span><span class="dv">0.2</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">]</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">nodesep</span><span class="ot">=</span><span class="dv">0.0</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">ranksep</span><span class="ot">=</span><span class="dv">0.0</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="at">rankdir</span><span class="ot">=</span><span class="st">"LR"</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">scale</span><span class="ot">=</span><span class="dv">0.2</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">style</span><span class="ot">=</span><span class="st">"filled"</span><span class="co">,</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">color</span><span class="ot">=</span><span class="va">black</span><span class="co">,</span></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightblue</span><span class="co">,</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">shape</span><span class="ot">=</span><span class="va">box</span></span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">]</span></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a><span class="co">    // uncomment to hide the grid</span></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">edge</span><span class="co"> </span><span class="ot">[</span><span class="at">style</span><span class="ot">=</span><span class="va">invis</span><span class="ot">]</span></span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_01</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Set (80%)"</span></span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_02</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="at">label</span><span class="ot">=</span><span class="st">"Training Fold (80%)"</span></span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="va">A1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A2</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A3</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span><span class="co"> </span><span class="va">A4</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="ot">]</span></span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="ot">}</span></span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_03</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="at">label</span><span class="ot">=</span><span class="st">"Validation Fold (20%)"</span></span>
+<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a><span class="co">            </span><span class="va">B1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"16%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">lightgreen</span><span class="ot">]</span></span>
+<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="ot">}</span></span>
+<span id="cb30-31"><a href="#cb30-31" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">}</span></span>
+<span id="cb30-32"><a href="#cb30-32" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="kw">subgraph</span><span class="co"> </span><span class="va">cluster_04</span><span class="co"> </span><span class="ot">{</span></span>
+<span id="cb30-33"><a href="#cb30-33" aria-hidden="true" tabindex="-1"></a><span class="co">        </span><span class="at">label</span><span class="ot">=</span><span class="st">"Test Set (20%)"</span></span>
+<span id="cb30-34"><a href="#cb30-34" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">C1</span><span class="ot">[</span><span class="at">label</span><span class="ot">=</span><span class="st">"20%"</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">orange</span><span class="ot">]</span></span>
+<span id="cb30-35"><a href="#cb30-35" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="ot">}</span></span>
+<span id="cb30-36"><a href="#cb30-36" aria-hidden="true" tabindex="-1"></a><span class="co">    </span><span class="va">A1</span><span class="co"> -- </span><span class="va">A2</span><span class="co"> -- </span><span class="va">A3</span><span class="co"> -- </span><span class="va">A4</span><span class="co"> -- </span><span class="va">B1</span><span class="co"> -- </span><span class="va">C1</span><span class="ot">;</span></span>
+<span id="cb30-37"><a href="#cb30-37" aria-hidden="true" tabindex="-1"></a><span class="ot">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div id="cv-diagram">
@@ -1020,15 +1597,15 @@ dbl (4): dalys_pc, population, gdp_pc_clean, log_dalys_pc
 <polygon fill="none" stroke="black" points="8,-8 8,-126 438,-126 438,-8 8,-8"></polygon>
 <text text-anchor="middle" x="223" y="-109.4" font-family="Times,serif" font-size="14.00">Training Set (80%)</text>
 </g>
-<g id="clust2" class="cluster">
-<title>cluster_02</title>
-<polygon fill="none" stroke="black" points="16,-16 16,-93 272,-93 272,-16 16,-16"></polygon>
-<text text-anchor="middle" x="144" y="-76.4" font-family="Times,serif" font-size="14.00">Training Fold (80%)</text>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_03</title>
 <polygon fill="none" stroke="black" points="288,-16 288,-93 430,-93 430,-16 288,-16"></polygon>
 <text text-anchor="middle" x="359" y="-76.4" font-family="Times,serif" font-size="14.00">Validation Fold (20%)</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_02</title>
+<polygon fill="none" stroke="black" points="16,-16 16,-93 272,-93 272,-16 16,-16"></polygon>
+<text text-anchor="middle" x="144" y="-76.4" font-family="Times,serif" font-size="14.00">Training Fold (80%)</text>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_04</title>
@@ -1105,35 +1682,35 @@ dbl (4): dalys_pc, population, gdp_pc_clean, log_dalys_pc
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(boot)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>sim200_df <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">world_label=</span><span class="st">"N=200"</span>, <span class="at">N=</span><span class="dv">200</span>, <span class="at">x_max=</span><span class="dv">100</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>sim1k_df <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">world_label=</span><span class="st">"N=1000"</span>, <span class="at">N=</span><span class="dv">1000</span>, <span class="at">x_max=</span><span class="dv">100</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>compute_deltas <span class="ot">&lt;-</span> <span class="cf">function</span>(df, <span class="at">min_deg=</span><span class="dv">1</span>, <span class="at">max_deg=</span><span class="dv">12</span>) {</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  cv_deltas <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> min_deg<span class="sc">:</span>max_deg) {</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    cur_poly <span class="ot">&lt;-</span> <span class="fu">glm</span>(ldalys <span class="sc">~</span> <span class="fu">poly</span>(gdpc, i), <span class="at">data=</span>df)</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    cur_poly_cv_result <span class="ot">&lt;-</span> <span class="fu">cv.glm</span>(<span class="at">data=</span>df, <span class="at">glmfit=</span>cur_poly, <span class="at">K=</span><span class="dv">5</span>)</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    cur_cv_adj <span class="ot">&lt;-</span> cur_poly_cv_result<span class="sc">$</span>delta[<span class="dv">1</span>]</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    cv_deltas <span class="ot">&lt;-</span> <span class="fu">c</span>(cv_deltas, cur_cv_adj)</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(cv_deltas)</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>sim200_deltas <span class="ot">&lt;-</span> <span class="fu">compute_deltas</span>(sim200_df)</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>sim200_delta_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">degree=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">delta=</span>sim200_deltas)</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>sim200_delta_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>degree, <span class="at">y=</span>delta)) <span class="sc">+</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="dv">1</span>,<span class="at">to=</span><span class="dv">12</span>,<span class="at">by=</span><span class="dv">1</span>)</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>) <span class="sc">+</span></span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"N = 200"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(boot)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>sim200_df <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">world_label=</span><span class="st">"N=200"</span>, <span class="at">N=</span><span class="dv">200</span>, <span class="at">x_max=</span><span class="dv">100</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>sim1k_df <span class="ot">&lt;-</span> <span class="fu">run_dgp</span>(</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">world_label=</span><span class="st">"N=1000"</span>, <span class="at">N=</span><span class="dv">1000</span>, <span class="at">x_max=</span><span class="dv">100</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>compute_deltas <span class="ot">&lt;-</span> <span class="cf">function</span>(df, <span class="at">min_deg=</span><span class="dv">1</span>, <span class="at">max_deg=</span><span class="dv">12</span>) {</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  cv_deltas <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> min_deg<span class="sc">:</span>max_deg) {</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    cur_poly <span class="ot">&lt;-</span> <span class="fu">glm</span>(ldalys <span class="sc">~</span> <span class="fu">poly</span>(gdpc, i), <span class="at">data=</span>df)</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    cur_poly_cv_result <span class="ot">&lt;-</span> <span class="fu">cv.glm</span>(<span class="at">data=</span>df, <span class="at">glmfit=</span>cur_poly, <span class="at">K=</span><span class="dv">5</span>)</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    cur_cv_adj <span class="ot">&lt;-</span> cur_poly_cv_result<span class="sc">$</span>delta[<span class="dv">1</span>]</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    cv_deltas <span class="ot">&lt;-</span> <span class="fu">c</span>(cv_deltas, cur_cv_adj)</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(cv_deltas)</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>sim200_deltas <span class="ot">&lt;-</span> <span class="fu">compute_deltas</span>(sim200_df)</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>sim200_delta_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">degree=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">delta=</span>sim200_deltas)</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>sim200_delta_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>degree, <span class="at">y=</span>delta)) <span class="sc">+</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="dv">1</span>,<span class="at">to=</span><span class="dv">12</span>,<span class="at">by=</span><span class="dv">1</span>)</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>) <span class="sc">+</span></span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"N = 200"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1151,17 +1728,17 @@ dbl (4): dalys_pc, population, gdp_pc_clean, log_dalys_pc
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>sim1k_deltas <span class="ot">&lt;-</span> <span class="fu">compute_deltas</span>(sim1k_df)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>sim1k_delta_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">degree=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">delta=</span>sim1k_deltas)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>sim1k_delta_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>degree, <span class="at">y=</span>delta)) <span class="sc">+</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="dv">1</span>,<span class="at">to=</span><span class="dv">12</span>,<span class="at">by=</span><span class="dv">1</span>)</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>) <span class="sc">+</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"N = 1000"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>sim1k_deltas <span class="ot">&lt;-</span> <span class="fu">compute_deltas</span>(sim1k_df)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>sim1k_delta_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">degree=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">delta=</span>sim1k_deltas)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>sim1k_delta_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>degree, <span class="at">y=</span>delta)) <span class="sc">+</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="dv">5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="dv">1</span>,<span class="at">to=</span><span class="dv">12</span>,<span class="at">by=</span><span class="dv">1</span>)</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>) <span class="sc">+</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"N = 1000"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1259,13 +1836,22 @@ Hume, David. 1760. <em>An <span>Enquiry Concerning Human Understanding</span></e
 <div id="ref-popper_logic_1934" class="csl-entry" role="listitem">
 Popper, Karl R. 1934. <em>The <span>Logic</span> of <span>Scientific Discovery</span></em>. Psychology Press. <a href="https://www.dropbox.com/scl/fi/7x42jx2h9z4w6ubp6w0eq/Karl_Popper_The_logic_of_scientific_discovery.pdf?rlkey=i3v2sv29ktd7g6ey70qj444gh&amp;dl=1">https://www.dropbox.com/scl/fi/7x42jx2h9z4w6ubp6w0eq/Karl_Popper_The_logic_of_scientific_discovery.pdf?rlkey=i3v2sv29ktd7g6ey70qj444gh&amp;dl=1</a>.
 </div>
+<div id="ref-tibshirani_regression_1996" class="csl-entry" role="listitem">
+Tibshirani, Robert. 1996. <span>“Regression <span>Shrinkage</span> and <span>Selection</span> via the <span>Lasso</span>.”</span> <em>Journal of the Royal Statistical Society. Series B (Methodological)</em> 58 (1): 267–88. <a href="https://www.jstor.org/stable/2346178">https://www.jstor.org/stable/2346178</a>.
+</div>
 </div>
 
 
 </section>
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p><strong>L</strong>east <strong>A</strong>bsolute <strong>S</strong>hrinkage and <strong>S</strong>election <strong>O</strong>perator<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
