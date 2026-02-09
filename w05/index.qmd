@@ -1,5 +1,5 @@
 ---
-title: "Week 5: The Scourge of Overfitting / Cross-Validation for Model Assessment"
+title: "Week 5: Tackling Overfitting with Cross-Validation"
 subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
@@ -24,7 +24,7 @@ format:
     link-external-icon: true
     link-external-newwindow: true
     include-in-header:
-      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'>"
+      text: "<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css'><link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css'><link rel='preconnect' href='https://fonts.googleapis.com'><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Workbench&display=swap' rel='stylesheet'>"
     simplemenu:
       flat: true
       barhtml:
@@ -54,11 +54,12 @@ Today's Planned Schedule:
 
 | | Start | End | Topic |
 |:- |:- |:- |:- |
-| **Lecture** | 6:30pm | 6:50pm | [Roadmap: Week 4 $\leadsto$ Week 6 &rarr;](#roadmap) |
+| **Lecture** | 6:30pm | 6:50pm | [Roadmap: Week 5 $\leadsto$ Week 6 &rarr;](#roadmap) |
 | | 6:50pm | 7:20pm | [Non-Linear Data-Generating Processes &rarr;](#a-non-linear-data-generating-process-(dgp)) |
 | | 7:20pm | 8:00pm | [Validation: Evaluating Non-Linear Models &rarr;](#cross-validation-evaluating-non-linear-models) |
-| **Break!** | 8:00pm | 8:10pm | |
-| | 8:10pm | 9:00pm | [$K$-Fold Cross-Validation: Cooking with Gas &rarr;](#k-fold-cross-validation) |
+| **Break!** | 7:50pm | 8:00pm | |
+| | 8:00pm | 8:30pm | [Quiz Review &rarr;](#quiz-review) |
+| | 8:30pm | 9:00pm | Quiz 5 |
 
 : {tbl-colwidths="[12,12,12,64]"}
 
@@ -76,7 +77,7 @@ set.seed(5300)
 
 # Roadmap {.smaller .title-10 data-stack-name="Roadmap"}
 
-* [Week 1] Oh no! When we go beyond linear models, we have to worry about **overfitting**!
+* [Week 1] Oh no! When we go beyond linearity, we have to worry about **overfitting**!
     * $\implies$ New goal! Maximize **generalizability** rather than **accuracy**
     * $\implies$ Evaluate models on ***unseen* test data** rather than training data
 * [Week 5] **Cross-Validation (CV)** as a tool for **Model Assessment**: For more complex, non-linear models, is there some way we can try to... "foresee" how well a trained model will **generalize?**
@@ -98,7 +99,7 @@ Find...
 
 # A Non-Linear Data-Generating Process (DGP) {data-stack-name="Non-Linear DGP"}
 
-## Our Working DGP {.smaller .crunch-title .math-80 .plotly-340 .crunch-math}
+## Our Working DGP {.smaller .crunch-title .title-11 .math-75 .plotly-340 .crunch-math}
 
 * Each country $i$ has a certain $x_i = \texttt{gdp\_per\_capita}_i$
 * They spend some portion of it on **healthcare** each year, which translates (based on the country's healthcare system) into **health outcomes** $y_i$
@@ -166,7 +167,7 @@ ggplot() +
 :::
 ::::
 
-## The "True" Model {.smaller .crunch-title .crunch-ul .crunch-quarto-figure .crunch-li-6}
+## The "True" Model {.smaller .crunch-title .crunch-ul .crunch-quarto-figure .crunch-li-5}
 
 * From here onwards, we adopt this as our "true" model, for **pedagogical** purposes!
 * Meaning: we use this model to get a sense for how...
@@ -178,6 +179,7 @@ ggplot() +
 ```{r}
 #| label: dgp-realizations
 #| fig-width: 15
+#| fig-align: center
 run_dgp <- function(world_label="Sim", N=60, x_max=90) {
   x_vals <- runif(N, min=0, max=x_max)
   y_raw <- sapply(X=x_vals, FUN=eval_fitted_poly)
@@ -205,17 +207,19 @@ dgp_df |> ggplot(aes(x=gdpc, y=ldalys)) +
 
 ## What We Have Thus Far {.smaller .crunch-title .title-10 .crunch-ul .crunch-img}
 
-* We have a **core model**, regression, that we can **build up** into p much anything we want!
+A **core model**, regression, that we can **build up** into p much anything we want!
 
 | Class Topic | This Video |
 | - | - |
 | Linear regression | Pachelbel's *Canon in D* (1m26s-1m46s) |
 | Logistic regression | Add swing: ![](images/swing_image.svg){width="100"} (1m46s) |
-| Neural networks | (triads $\mapsto$ 7th/9th chords) (5m24s-5m53s) |
 
 {{< video https://www.youtube.com/watch?v=lpc1lEJ-SRc width="100%" height="340" >}}
 
-# Taking Off the Linearity Training Wheels {.smaller data-stack-name="Motivation"}
+## Taking Off the Linearity Training Wheels {.smaller .title-11}
+
+* Part 1: Wow, lots of new notes / rhythms we can use! (lines can **squiggle!**)
+* But, **Part 2**: More chances to play **wrong notes** / **bad-sounding rhythms**
 
 ```{=html}
 <style>
@@ -268,272 +272,9 @@ dgp_df |> ggplot(aes(x=gdpc, y=ldalys)) +
 :::
 ::::
 
-## How Can We Attain Hiromi's Aura?
-
-* Ingredient 1: Lots of *examples*: find mysteries/questions you care about in the world and think of how regression could help us understand them!
-* But, **Ingredient 2** is **Generalized Linear Models** (GLM), which I'll give an intro to **on the board** 🏃‍♂️‍➡️
-
-## Where Are We Going / What Problems Are We Solving? {.smaller}
-
-* Another nice property we have: OLS estimator is **BLUE** (**B**est **L**inear **U**nbiased **E**stimator) of conditional mean $\mathbb{E}[Y \mid X]$
-* The first problem we'll tackle is: as we move **from** linear models with these kinds of guarantees **to** fancier models with more uncertainties / "potholes"... how do we ensure they still achieve want we want them to achieve?
-* Tldr: we can study **more complex** relationships between $X$ and $Y$ than linear ones, but we lose guarantees like "If it's linear, then it is [this]": in other words, we lose this **automatic generalizability**
-* *(With great[er] power comes great[er] responsibility!)*
-
-## The Level 2 Goal: *Generalizability* {.smaller .crunch-title .crunch-callout .crunch-ul}
-
-::: {.callout-tip .r-fit-text title="<i class='bi bi-info-circle'></i> The Goal of Statistical Learning" icon="false"}
-
-Find...
-
-* A function $\widehat{y} = f(x)$ ✅
-* That best predicts $Y$ for given values of $X$ ✅
-* For data that has not yet been observed! 😳❓
-
-:::
-
-## ...Can We Just, Like, Not? {.smaller .crunch-title .crunch-ul .crunch-img}
-
-:::: {.columns}
-::: {.column width="70%"}
-
-* What happens if we "unleash" fancier non-linear models on data the same way we've been using linear models?
-* The evil scourge of... **OVERFITTING** *(⚡️ a single overly-dramatic lightning bolt strikes the whiteboard behind me right at this exact moment what are the odds ⚡️)*
-
-:::
-::: {.column width="30%"}
-
-![Your computer is [Yes Man](https://www.youtube.com/watch?v=g-QSuiXL6lY)](images/yes_man.png){fig-align="center" width="185"}
-
-:::
-::::
-
-:::: {.columns}
-::: {.column width="50%"}
-
-```{r}
-#| label: linear-fit
-#| fig-cap: "You: \"Fit the data... but you're only allowed to be linear!\" Computer: \"You got it boss!\""
-library(tidyverse)
-set.seed(5300)
-N <- 30
-x_vals <- runif(N, min=0, max=1)
-y_vals_raw <- 3 * x_vals
-y_noise <- rnorm(N, mean=0, sd=0.5)
-y_vals <- y_vals_raw + y_noise
-data_df <- tibble(x=x_vals, y=y_vals)
-data_df |> ggplot(aes(x=x, y=y)) +
-  geom_point(size=2) +
-  stat_smooth(
-    method="lm",
-    formula="y ~ x",
-    se=FALSE,
-    linewidth=1
-  ) +
-  labs(
-    title = paste0("Linear Regression, N = ",N)
-  ) +
-  theme_dsan(base_size=28)
-```
-
-:::
-::: {.column width="50%"}
-
-```{r}
-#| label: poly-fit
-#| fig-cap: "You: \"Fit the data...\" Computer: \"You got it boss!\""
-data_df |> ggplot(aes(x=x, y=y)) +
-  geom_point(size=2.5) +
-  stat_smooth(
-    method="lm",
-    formula=y ~ poly(x, N, raw=TRUE),
-    se=FALSE,
-    linewidth=1
-  ) +
-  labs(
-    title = paste0("Polynomial Regression, N = ",N)
-  ) +
-  theme_dsan(base_size=28)
-```
-
-:::
-::::
-
-::: {.notes}
-
-([Image Source](http://www.game-art-hq.com/89202/the-yes-man-from-fallout-game-art-overview/))
-
-:::
-
-## Memorizing Data vs. *Learning* the Relationship {.smaller .crunch-title .title-11 .crunch-quarto-figure .crunch-img}
-
-:::: {.columns}
-::: {.column width="60%"}
-
-```{r}
-#| label: training-data-plot
-#| fig-width: 4.25
-#| fig-height: 2.75
-#| fig-align: left
-x <- seq(from = 0, to = 1, by = 0.1)
-n <- length(x)
-eps <- rnorm(n, 0, 0.04)
-y <- x + eps
-# But make one big outlier
-midpoint <- ceiling((3/4)*n)
-y[midpoint] <- 0
-of_data <- tibble::tibble(x=x, y=y)
-# Linear model
-lin_model <- lm(y ~ x)
-# But now polynomial regression
-poly_model <- lm(y ~ poly(x, degree = 10, raw=TRUE))
-#summary(model)
-ggplot(of_data, aes(x=x, y=y)) +
-  geom_point(size=g_pointsize/2) +
-  labs(
-    title = "Training Data",
-    color = "Model"
-  ) +
-  theme_dsan(base_size=16)
-```
-
-```{r}
-#| label: training-linear-poly
-#| fig-width: 6
-#| fig-height: 2.75
-#| fig-align: left
-ggplot(of_data, aes(x=x, y=y)) +
-  geom_point(size=g_pointsize/2) +
-  geom_abline(aes(intercept=0, slope=1, color="Linear"), linewidth=1, show.legend = FALSE) +
-  stat_smooth(method = "lm",
-              formula = y ~ poly(x, 10, raw=TRUE),
-              se = FALSE, aes(color="Polynomial")) +
-  labs(
-    title = "A Perfect Model?",
-    color = "Model"
-  ) +
-  theme_dsan(base_size=16)
-```
-
-:::
-::: {.column width="40%"}
-
-How have we measured "good" fit? High $R^2$? Low $RSS$?
-
-<center>
-Linear Model:
-</center>
-
-```{r}
-#| label: lin-model-metrics
-#| echo: true
-#| code-fold: show
-summary(lin_model)$r.squared
-get_rss(lin_model)
-```
-
-<center style="margin-top: 20px !important;">
-Polynomial Model:
-</center>
-
-```{r}
-#| label: poly-model-metrics
-#| echo: true
-#| code-fold: show
-summary(poly_model)$r.squared
-get_rss(poly_model)
-```
-
-:::
-::::
-
-## 5000: Accuracy $\leadsto$ 5300: Generalization {.smaller .crunch-title .title-12}
-
-* Training Accuracy: How well does it fit the data we can see?
-* Test Accuracy: How well does it **generalize** to future data?
-
-:::: {.columns}
-::: {.column width="60%"}
-
-```{r}
-#| label: lin-poly-newdata
-#| fig-width: 5.5
-#| fig-height: 4
-# Data setup
-x_test <- seq(from = 0, to = 1, by = 0.1)
-n_test <- length(x_test)
-eps_test <- rnorm(n_test, 0, 0.04)
-y_test <- x_test + eps_test
-of_data_test <- tibble::tibble(x=x_test, y=y_test)
-lin_y_pred_test <- predict(lin_model, as.data.frame(x_test))
-#lin_y_pred_test
-lin_resids_test <- y_test - lin_y_pred_test
-#lin_resids_test
-lin_rss_test <- sum(lin_resids_test^2)
-#lin_rss_test
-# Lin R2 = 1 - RSS/TSS
-tss_test <- sum((y_test - mean(y_test))^2)
-lin_r2_test <- 1 - (lin_rss_test / tss_test)
-#lin_r2_test
-# Now the poly model
-poly_y_pred_test <- predict(poly_model, as.data.frame(x_test))
-poly_resids_test <- y_test - poly_y_pred_test
-poly_rss_test <- sum(poly_resids_test^2)
-#poly_rss_test
-# RSS
-poly_r2_test <- 1 - (poly_rss_test / tss_test)
-#poly_r2_test
-ggplot(of_data, aes(x=x, y=y)) +
-  stat_smooth(method = "lm",
-              formula = y ~ poly(x, 10, raw = TRUE),
-              se = FALSE, aes(color="Polynomial")) +
-  theme_classic() +
-  geom_point(data=of_data_test, aes(x=x_test, y=y_test), size=g_pointsize/2) +
-  geom_abline(aes(intercept=0, slope=1, color="Linear"), linewidth=1, show.legend = FALSE) +
-  labs(
-    title = "Evaluation: Unseen Test Data",
-    color = "Model"
-  ) +
-  theme_dsan(base_size=16)
-```
-:::
-
-::: {.column width="40%"}
-
-<center>
-Linear Model:
-</center>
-
-```{r}
-#| label: lin-newdata-metrics
-#| echo: true
-#| code-fold: show
-lin_r2_test
-lin_rss_test
-```
-
-<center style="margin-top: 10px !important;">
-Polynomial Model:
-</center>
-
-```{r}
-#| label: poly-newdata-metrics
-#| echo: true
-#| code-fold: show
-poly_r2_test
-poly_rss_test
-```
-
-:::
-::::
-
-## In Other Words...
-
-![Image source: circulated as secret shitposting among PhD students in seminars](images/hypothesis.jpg){fig-align="center"}
-
 # Building an Anti-Overfitting Toolkit {data-stack-name="Anti-Overfitting Toolkit"}
 
-* Penalizing Complexity
+* Penalizing Complexity (Overview; More next week!)
 * Cross-Validation
 * Model Selection (Penalizing Complexity 2.0)
 
@@ -570,7 +311,7 @@ $$
 \mathsf{Complexity} \propto \frac{|\text{AmplifiedFeatures}|}{|\text{ShrunkFeatures}|}
 $$
 
-## LASSO and Elastic Net Regularization {.smaller .crunch-title .math-90}
+## LASSO and Elastic Net Regularization {.smaller .crunch-title .title-11 .math-90}
 
 -   Many ways to translate this intuition into math!
 -   In several fields, however (econ, biostatistics), LASSO[^4] [@tibshirani_regression_1996] is standard:
@@ -731,7 +472,7 @@ graph grid
 }
 ```
 
-## Evaluating *One* Model: Validation Set Approach {.crunch-title .title-07 .inline-90}
+## Evaluating *One* Model: Validation Set Approach {.text-90 .crunch-title .title-07 .inline-90}
 
 * <i class='bi bi-1-circle'></i> Randomly pick 20% of $\mathbf{D}_{\text{train}}$ as **sub-training set** $\mathbf{D}_{\text{SubTr}}$
 * <i class='bi bi-2-circle'></i> The other 80% becomes **validation set** $\mathbf{D}_{\text{Val}}$
@@ -840,7 +581,7 @@ $$
 \varepsilon_{(K)} = \frac{1}{K}\sum_{i=1}^{K}\varepsilon^{\text{Val}}_{i}
 $$
 
-## Leave-One-Out Cross-Validation (LOOCV) {.smaller .crunch-title}
+## Leave-One-Out Cross-Validation (LOOCV) {.smaller .crunch-title .title-11}
 
 * $K$-Fold CV with $K := N$
 * Produces the maximum possible number of terms in the summation that leads to $\varepsilon_{(K)}$
@@ -857,6 +598,47 @@ $$
 
 * The terms here are **highly correlated!**
 * Fun math results around how $K = 5$ or $K = 10$ can best **strike a balance** between overly-correlated terms ($K = N$) and not averaging enough models ($K = 2$)!
+
+# Quiz Review {data-stack-name="Quiz"}
+
+## Linear Boundaries: 1D Case 🤷 {.smaller .crunch-title .title-11}
+
+<iframe width="100%" height="591" frameborder="0"
+  src="https://observablehq.com/embed/81c9e7a0fad0f93e@914?cells=viewof+outputVals%2Clda_prediction_cell%2CparamGrid%2Clogistic_plot"></iframe>
+
+## Linear Boundaries: 2D Case 🙂‍↕️ {.smaller .crunch-title .title-11}
+
+<iframe width="100%" height="766" frameborder="0"
+  src="https://observablehq.com/embed/dc2f543e17998c63@1261?cells=viewof+outputVals%2Clda_prediction_cell%2CparamGrid%2Clogistic_plot%2CapplyStyle"></iframe>
+
+## How Would We Figure This Out? {.smaller .crunch-title .crunch-math .title-11 .math-90}
+
+* Remember that the boundary between classes is the **set of all points $(x_1,x_2)$ in the feature space** at which the model predicts $Y = 1$ and $Y = 0$ to be **equally likely**:
+
+$$
+\Pr(Y = 1 \mid X_1 = x_1, X_2 = x_2) = \Pr(Y = 0 \mid X_1 = x_1, X_2 = x_2)
+$$
+
+* Logistic Regression models the relationship between these two as a **log-odds ratio**:
+
+$$
+\ln\left[ \frac{\Pr(Y = 1 \mid X_1 = x_1, X_2 = x_2)}{\Pr(Y = 0 \mid X_1 = x_1, X_2 = x_2)} \right] = \beta_0 + \beta_1 x_1 + \beta_2 x_2
+$$
+
+* So, if the numerator and denominator are **equal**, we get
+
+$$
+\begin{align*}
+&\ln[1] = \beta_0 + \beta_1x_1 + \beta_2x_2 \iff 0 = \beta_0 + \beta_1x_1 + \beta_2x_2 \\
+\iff &\beta_2x_2 = -\beta_0 - \beta_1x_1 \iff x_2 = \boxed{-\frac{\beta_1}{\beta_2}} ~ x_1 - \boxed{\frac{\beta_0}{\beta_2}}
+\end{align*}
+$$
+
+* ...This is the equation for a **line!** If we plot $x_1$ on the $x$-axis and $x_2$ on the $y$-axis, we get $y = mx + b$, where $m = -\frac{\beta_1}{\beta_2}$, $b = -\frac{\beta_0}{\beta_2}$
+
+# Quiz 5
+
+* Yalla!
 
 ## References
 

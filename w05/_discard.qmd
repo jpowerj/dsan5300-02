@@ -29,3 +29,184 @@ prod_df |> ggplot(aes(x=x, y=y)) +
 https://www.opportunityatlas.org/?%7B%22mapping%22%3A%22kfr%22%2C%22dataToggles%22%3A%7B%22parentIncome%22%3A%22p25%22%2C%22childRace%22%3A%22rP%22%2C%22childGender%22%3A%22gP%22%2C%22cohortTimeline%22%3A%22e%22%7D%2C%22compareDataToggles%22%3A%7B%22parentIncome%22%3A%22pall%22%2C%22childRace%22%3A%22rP%22%2C%22childGender%22%3A%22gP%22%2C%22cohortTimeline%22%3A%22e%22%7D%2C%22selectedChapterId%22%3A%22chapter1%22%2C%22compareFeatures%22%3A%22subgroup%22%2C%22selectedFeatureByID%22%3A%22cty11001%22%2C%22filters%22%3A%5B%5D%2C%22mode%22%3A%22standardMode%22%2C%22mapBounds%22%3A%5B%5B-78.90679442941929%2C38.087613189251755%5D%2C%5B-74.96364651649473%2C40.07482897415662%5D%5D%2C%22showStoryMarkers%22%3Atrue%2C%22showHistogram%22%3Afalse%2C%22propertyShownOnMap%22%3A%22kfr_rP_gP_p25_e%22%7D
 
 :::
+
+---
+
+| Neural networks | (triads $\mapsto$ 7th/9th chords) (5m24s-5m53s) |
+
+---
+
+## Where Are We Going / What Problems Are We Solving? {.smaller}
+
+* Another nice property we have: OLS estimator is **BLUE** (**B**est **L**inear **U**nbiased **E**stimator) of conditional mean $\mathbb{E}[Y \mid X]$
+* The first problem we'll tackle is: as we move **from** linear models with these kinds of guarantees **to** fancier models with more uncertainties / "potholes"... how do we ensure they still achieve want we want them to achieve?
+* Tldr: we can study **more complex** relationships between $X$ and $Y$ than linear ones, but we lose guarantees like "If it's linear, then it is [this]": in other words, we lose this **automatic generalizability**
+* *(With great[er] power comes great[er] responsibility!)*
+
+---
+
+## Memorizing Data vs. *Learning* the Relationship {.smaller .crunch-title .title-11 .crunch-quarto-figure .crunch-img}
+
+:::: {.columns}
+::: {.column width="60%"}
+
+```{r}
+#| label: training-data-plot
+#| fig-width: 4.25
+#| fig-height: 2.75
+#| fig-align: left
+x <- seq(from = 0, to = 1, by = 0.1)
+n <- length(x)
+eps <- rnorm(n, 0, 0.04)
+y <- x + eps
+# But make one big outlier
+midpoint <- ceiling((3/4)*n)
+y[midpoint] <- 0
+of_data <- tibble::tibble(x=x, y=y)
+# Linear model
+lin_model <- lm(y ~ x)
+# But now polynomial regression
+poly_model <- lm(y ~ poly(x, degree = 10, raw=TRUE))
+#summary(model)
+ggplot(of_data, aes(x=x, y=y)) +
+  geom_point(size=g_pointsize/2) +
+  labs(
+    title = "Training Data",
+    color = "Model"
+  ) +
+  theme_dsan(base_size=16)
+```
+
+```{r}
+#| label: training-linear-poly
+#| fig-width: 6
+#| fig-height: 2.75
+#| fig-align: left
+ggplot(of_data, aes(x=x, y=y)) +
+  geom_point(size=g_pointsize/2) +
+  geom_abline(aes(intercept=0, slope=1, color="Linear"), linewidth=1, show.legend = FALSE) +
+  stat_smooth(method = "lm",
+              formula = y ~ poly(x, 10, raw=TRUE),
+              se = FALSE, aes(color="Polynomial")) +
+  labs(
+    title = "A Perfect Model?",
+    color = "Model"
+  ) +
+  theme_dsan(base_size=16)
+```
+
+:::
+::: {.column width="40%"}
+
+How have we measured "good" fit? High $R^2$? Low $RSS$?
+
+<center>
+Linear Model:
+</center>
+
+```{r}
+#| label: lin-model-metrics
+#| echo: true
+#| code-fold: show
+summary(lin_model)$r.squared
+get_rss(lin_model)
+```
+
+<center style="margin-top: 20px !important;">
+Polynomial Model:
+</center>
+
+```{r}
+#| label: poly-model-metrics
+#| echo: true
+#| code-fold: show
+summary(poly_model)$r.squared
+get_rss(poly_model)
+```
+
+:::
+::::
+
+## 5000: Accuracy $\leadsto$ 5300: Generalization {.smaller .crunch-title .title-12}
+
+* Training Accuracy: How well does it fit the data we can see?
+* Test Accuracy: How well does it **generalize** to future data?
+
+:::: {.columns}
+::: {.column width="60%"}
+
+```{r}
+#| label: lin-poly-newdata
+#| fig-width: 5.5
+#| fig-height: 4
+# Data setup
+x_test <- seq(from = 0, to = 1, by = 0.1)
+n_test <- length(x_test)
+eps_test <- rnorm(n_test, 0, 0.04)
+y_test <- x_test + eps_test
+of_data_test <- tibble::tibble(x=x_test, y=y_test)
+lin_y_pred_test <- predict(lin_model, as.data.frame(x_test))
+#lin_y_pred_test
+lin_resids_test <- y_test - lin_y_pred_test
+#lin_resids_test
+lin_rss_test <- sum(lin_resids_test^2)
+#lin_rss_test
+# Lin R2 = 1 - RSS/TSS
+tss_test <- sum((y_test - mean(y_test))^2)
+lin_r2_test <- 1 - (lin_rss_test / tss_test)
+#lin_r2_test
+# Now the poly model
+poly_y_pred_test <- predict(poly_model, as.data.frame(x_test))
+poly_resids_test <- y_test - poly_y_pred_test
+poly_rss_test <- sum(poly_resids_test^2)
+#poly_rss_test
+# RSS
+poly_r2_test <- 1 - (poly_rss_test / tss_test)
+#poly_r2_test
+ggplot(of_data, aes(x=x, y=y)) +
+  stat_smooth(method = "lm",
+              formula = y ~ poly(x, 10, raw = TRUE),
+              se = FALSE, aes(color="Polynomial")) +
+  theme_classic() +
+  geom_point(data=of_data_test, aes(x=x_test, y=y_test), size=g_pointsize/2) +
+  geom_abline(aes(intercept=0, slope=1, color="Linear"), linewidth=1, show.legend = FALSE) +
+  labs(
+    title = "Evaluation: Unseen Test Data",
+    color = "Model"
+  ) +
+  theme_dsan(base_size=16)
+```
+:::
+
+::: {.column width="40%"}
+
+<center>
+Linear Model:
+</center>
+
+```{r}
+#| label: lin-newdata-metrics
+#| echo: true
+#| code-fold: show
+lin_r2_test
+lin_rss_test
+```
+
+<center style="margin-top: 10px !important;">
+Polynomial Model:
+</center>
+
+```{r}
+#| label: poly-newdata-metrics
+#| echo: true
+#| code-fold: show
+poly_r2_test
+poly_rss_test
+```
+
+:::
+::::
+
+## In Other Words...
+
+![Image source: circulated as secret shitposting among PhD students in seminars](images/hypothesis.jpg){fig-align="center"}
