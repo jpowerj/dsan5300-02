@@ -407,7 +407,7 @@ $$
 
 *(Does anyone recognize $\lambda$ from **Lagrange multipliers**?)*
 
-## Top Secret Equivalent Forms {.smaller}
+## Top Secret Equivalent Forms {.smaller .crunch-title .title-11 .math-90 .crunch-math}
 
 Ridge Regression:
 
@@ -429,6 +429,12 @@ $$
   \| \boldsymbol\beta \|_{1} \leq s_1
   \end{matrix}
 \right\}
+$$
+
+Best Subset Selection *(Double-Secret; Computationally Infeasible)*
+
+$$
+\boldsymbol\beta^*_{\text{lasso}} = \arg \left\{\min_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right] \; \text{ subject to } \; \| \sum_{j=1}^{p}\mathbb{1}[\beta_j \neq 0] \leq s \right\}
 $$
 
 ## The Key Plot {.smaller .crunch-title .title-11}

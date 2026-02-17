@@ -467,7 +467,7 @@ window.Quarto = {
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2026-02-09, 05:25:20 PM</em></p>
+<p><em>Updated 2026-02-17, 06:25:51 PM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -1125,8 +1125,8 @@ Figure&nbsp;1: Adapted from Fortmann-Roe (2012), <a href="https://scott.fortmann
 \]</span></p>
 <p><em>(Does anyone recognize <span class="math inline">\(\lambda\)</span> from <strong>Lagrange multipliers</strong>?)</em></p>
 </section>
-<section id="top-secret-equivalent-forms" class="level2 smaller">
-<h2 class="smaller anchored" data-anchor-id="top-secret-equivalent-forms">Top Secret Equivalent Forms</h2>
+<section id="top-secret-equivalent-forms" class="level2 smaller crunch-title title-11 math-90 crunch-math">
+<h2 class="smaller crunch-title title-11 math-90 crunch-math anchored" data-anchor-id="top-secret-equivalent-forms">Top Secret Equivalent Forms</h2>
 <p>Ridge Regression:</p>
 <p><span class="math display">\[
 \boldsymbol\beta^*_{\text{ridge}} = \arg \left\{\min_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right] \; \text{ subject to } \; \| \boldsymbol\beta \|_{2}^{2} \leq s \right\}
@@ -1142,6 +1142,10 @@ Figure&nbsp;1: Adapted from Fortmann-Roe (2012), <a href="https://scott.fortmann
   \| \boldsymbol\beta \|_{1} \leq s_1
   \end{matrix}
 \right\}
+\]</span></p>
+<p>Best Subset Selection <em>(Double-Secret; Computationally Infeasible)</em></p>
+<p><span class="math display">\[
+\boldsymbol\beta^*_{\text{lasso}} = \arg \left\{\min_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right] \; \text{ subject to } \; \| \sum_{j=1}^{p}\mathbb{1}[\beta_j \neq 0] \leq s \right\}
 \]</span></p>
 </section>
 <section id="the-key-plot" class="level2 smaller crunch-title title-11">

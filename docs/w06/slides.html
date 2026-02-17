@@ -752,7 +752,7 @@ Figure&nbsp;1: Adapted from Fortmann-Roe (2012), <a href="https://scott.fortmann
 \]</span></p>
 <p><em>(Does anyone recognize <span class="math inline">\(\lambda\)</span> from <strong>Lagrange multipliers</strong>?)</em></p>
 </section>
-<section id="top-secret-equivalent-forms" class="slide level2 smaller">
+<section id="top-secret-equivalent-forms" class="slide level2 smaller crunch-title title-11 math-90 crunch-math">
 <h2>Top Secret Equivalent Forms</h2>
 <p>Ridge Regression:</p>
 <p><span class="math display">\[
@@ -769,6 +769,10 @@ Figure&nbsp;1: Adapted from Fortmann-Roe (2012), <a href="https://scott.fortmann
   \| \boldsymbol\beta \|_{1} \leq s_1
   \end{matrix}
 \right\}
+\]</span></p>
+<p>Best Subset Selection <em>(Double-Secret; Computationally Infeasible)</em></p>
+<p><span class="math display">\[
+\boldsymbol\beta^*_{\text{lasso}} = \arg \left\{\min_{\boldsymbol\beta}\left[ \frac{1}{N}\sum_{i=1}^{N}(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right] \; \text{ subject to } \; \| \sum_{j=1}^{p}\mathbb{1}[\beta_j \neq 0] \leq s \right\}
 \]</span></p>
 </section>
 <section id="the-key-plot" class="slide level2 smaller crunch-title title-11">
