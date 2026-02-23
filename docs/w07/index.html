@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.8.27">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -93,9 +93,9 @@ div.csl-indent {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4d9afe2b8d18ee9fa5d0d57b5ed4214d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-e467bba1a5c5a7452fd81967691b995c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
@@ -486,7 +486,7 @@ window.Quarto = {
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2026-02-17, 06:25:51 PM</em></p>
+<p><em>Updated 2026-02-23, 06:24:49 PM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -512,10 +512,7 @@ window.Quarto = {
   <li><a href="#truncated-power-basis-relu-basis" id="toc-truncated-power-basis-relu-basis" class="nav-link" data-scroll-target="#truncated-power-basis-relu-basis">Truncated Power Basis (ReLU Basis)</a></li>
   <li><a href="#linear-segments-with-continuity-at-knot" id="toc-linear-segments-with-continuity-at-knot" class="nav-link" data-scroll-target="#linear-segments-with-continuity-at-knot">Linear Segments with Continuity at Knot</a></li>
   <li><a href="#continuous-segmented-regression" id="toc-continuous-segmented-regression" class="nav-link" data-scroll-target="#continuous-segmented-regression">Continuous Segmented Regression</a></li>
-  </ul></li>
-  <li><a href="#splines-the-moment-youve-been-waiting-for" id="toc-splines-the-moment-youve-been-waiting-for" class="nav-link" data-scroll-target="#splines-the-moment-youve-been-waiting-for">Splines (The Moment You’ve Been Waiting For!)</a>
-  <ul class="collapse">
-  <li><a href="#constrained-derivatives-quadratic-splines" id="toc-constrained-derivatives-quadratic-splines" class="nav-link" data-scroll-target="#constrained-derivatives-quadratic-splines">Constrained Derivatives: “Quadratic Splines” (⚠️)</a></li>
+  <li><a href="#leadsto-splines-continuity-constraints" id="toc-leadsto-splines-continuity-constraints" class="nav-link" data-scroll-target="#leadsto-splines-continuity-constraints"><span class="math inline">\(\leadsto\)</span> Splines: Continuity Constraints</a></li>
   <li><a href="#cubic-splines-aka-splines" id="toc-cubic-splines-aka-splines" class="nav-link" data-scroll-target="#cubic-splines-aka-splines">Cubic Splines (aka, Splines)</a></li>
   <li><a href="#natural-splines-why-not-stop-there" id="toc-natural-splines-why-not-stop-there" class="nav-link" data-scroll-target="#natural-splines-why-not-stop-there">Natural Splines: Why Not Stop There?</a></li>
   <li><a href="#how-do-we-find-the-magical-knot-points" id="toc-how-do-we-find-the-magical-knot-points" class="nav-link" data-scroll-target="#how-do-we-find-the-magical-knot-points">How Do We Find The Magical Knot Points?</a></li>
@@ -526,6 +523,10 @@ window.Quarto = {
   <li><a href="#penalizing-wiggles" id="toc-penalizing-wiggles" class="nav-link" data-scroll-target="#penalizing-wiggles">Penalizing Wiggles</a></li>
   <li><a href="#three-mind-blowing-math-facts" id="toc-three-mind-blowing-math-facts" class="nav-link" data-scroll-target="#three-mind-blowing-math-facts">Three Mind-Blowing Math Facts</a></li>
   <li><a href="#related-important-local-regression-at-x-x_0" id="toc-related-important-local-regression-at-x-x_0" class="nav-link" data-scroll-target="#related-important-local-regression-at-x-x_0">Related (Important!) Local Regression at <span class="math inline">\(X = x_0\)</span></a></li>
+  </ul></li>
+  <li><a href="#quiz-7-review" id="toc-quiz-7-review" class="nav-link" data-scroll-target="#quiz-7-review">Quiz 7 Review</a>
+  <ul class="collapse">
+  <li><a href="#optimal-vs.-greedy-subset-selection" id="toc-optimal-vs.-greedy-subset-selection" class="nav-link" data-scroll-target="#optimal-vs.-greedy-subset-selection">Optimal vs.&nbsp;Greedy Subset Selection</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul></li>
   </ul>
@@ -625,21 +626,15 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>Break!</strong></td>
+<td style="text-align: left;">7:50pm</td>
 <td style="text-align: left;">8:00pm</td>
-<td style="text-align: left;">8:10pm</td>
 <td style="text-align: left;"></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">8:10pm</td>
-<td style="text-align: left;">8:50pm</td>
-<td style="text-align: left;"><a href="#the-key-plot">Basically Lasso is the Coolest Thing Ever →</a></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">8:50pm</td>
-<td style="text-align: left;">9:00pm</td>
-<td style="text-align: left;"><a href="#week-7-preview-linear.noodle-jj-functions">Scary-Looking But Actually-Fun W07 Preview →</a></td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;">8:30pm</td>
+<td style="text-align: left;"><a href="#quiz-7-review">Quiz 7 Review →</a></td>
 </tr>
 </tbody>
 </table>
@@ -693,8 +688,8 @@ window.Quarto = {
 \]</span></p>
 </div>
 </section>
-<section id="roadmap" class="level1 smaller title-10" data-stack-name="Roadmap">
-<h1 class="smaller title-10" data-stack-name="Roadmap">Roadmap</h1>
+<section id="roadmap" class="level1 smaller title-10">
+<h1 class="smaller title-10">Roadmap</h1>
 <style>
 @font-face {
     font-family: Noodle;
@@ -954,8 +949,8 @@ Y = \beta_0 + \beta_1 b_1(X) + \beta_2 b_2(X) + \cdots + \beta_d b_d(X)
 </ul>
 </section>
 </section>
-<section id="segments-rightarrow-splines" class="level1 smaller crunch-title table-va" data-stack-name="Segmented Regression">
-<h1 class="smaller crunch-title table-va" data-stack-name="Segmented Regression">Segments <span class="math inline">\(\rightarrow\)</span> Splines</h1>
+<section id="segments-rightarrow-splines" class="level1 smaller crunch-title table-va" data-stack-name="Splines">
+<h1 class="smaller crunch-title table-va" data-stack-name="Splines">Segments <span class="math inline">\(\rightarrow\)</span> Splines</h1>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 4%">
@@ -1024,11 +1019,12 @@ Y = \beta_0 + \beta_1 b_1(X) + \beta_2 b_2(X) + \cdots + \beta_d b_d(X)
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># First segment model</span></span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#left_df &lt;- prod_df |&gt; filter(x &lt;= knot_point)</span></span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#left_model &lt;- lm(y ~ poly(x, 2), data=left_df)</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>prod_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">group=</span>segment)) <span class="sc">+</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>discontinuous_plot <span class="ot">&lt;-</span> prod_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y, <span class="at">group=</span>segment)) <span class="sc">+</span></span>
 <span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
 <span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>knot, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
 <span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">'lm'</span>, <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">2</span>), <span class="at">se=</span><span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>discontinuous_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1326,26 +1322,54 @@ Y &amp;= \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 (X - \xi)_+ + \beta_4 (X - 
 <li>There’s still a problem here… can you see what it is? (Hint: things that break calculus)</li>
 </ul>
 </section>
-</section>
-<section id="splines-the-moment-youve-been-waiting-for" class="level1 title-12" data-stack-name="Splines">
-<h1 class="title-12" data-stack-name="Splines">Splines (The Moment You’ve Been Waiting For!)</h1>
-<section id="constrained-derivatives-quadratic-splines" class="level2 smaller crunch-title title-10 crunch-quarto-figure crunch-math">
-<h2 class="smaller crunch-title title-10 crunch-quarto-figure crunch-math anchored" data-anchor-id="constrained-derivatives-quadratic-splines">Constrained Derivatives: “Quadratic Splines” (⚠️)</h2>
-<ul>
-<li>Like “Linear Probability Models”, “Quadratic Splines” are a <strong>red flag</strong></li>
-<li>Why? If we have leftmost plot below, but want it differentiable everywhere… only option is to fit a single quadratic, defeating the whole point of the “chopping”!</li>
-</ul>
-<p><span class="math display">\[
-\frac{\partial Y}{\partial X} = \beta_1 + 2\beta_2 X + \beta_3 + 2\beta_4 X
-\]</span></p>
-<div class="columns">
-<div class="column" style="width:30%;">
-<p>Continuous Segmented:</p>
-<div class="cell">
+<section id="leadsto-splines-continuity-constraints" class="level2 text-65 crunch-title title-11 crunch-quarto-figure crunch-math math-80 crunch-quarto-layout-panel crunch-img crunch-ul crunch-p">
+<h2 class="text-65 crunch-title title-11 crunch-quarto-figure crunch-math math-80 crunch-quarto-layout-panel crunch-img crunch-ul crunch-p anchored" data-anchor-id="leadsto-splines-continuity-constraints"><span class="math inline">\(\leadsto\)</span> Splines: Continuity Constraints</h2>
+<p>We “pay” in units of <strong>degrees of freedom</strong> for each constraint!</p>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>cont_seg_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>discontinuous_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+<div class="quarto-layout-panel" data-layout="[70,30]">
+<div class="quarto-layout-row quarto-layout-valign-center">
+<div id="unconstrained-cubic" class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<p><i class="bi bi-0-circle"></i> Two unconstrained cubics: <span class="math inline">\(\text{df} = 8\)</span></p>
+<p><span class="math display">\[
+f(x_i) = \begin{cases}
+\beta_{00} + \beta_{10}x_i + \beta_{20}x_i^2 + \beta_{30}x_i^3 &amp;\text{if }x_i &lt; c \\
+\beta_{01} + \beta_{11}x_i + \beta_{21}x_i^2 + \beta_{31}x_i^3 &amp;\text{if }x_i \geq c
+\end{cases}
+\]</span></p>
+</div>
+<div id="unconstrained-cubic-plot" class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/quad-naive-spline-again-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cont_seg_plot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-layout-panel" data-layout="[70,30]">
+<div class="quarto-layout-row quarto-layout-valign-center">
+<div id="cont-constraint" class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<p><i class="bi bi-1-circle"></i> Continuity constraint: <span class="math inline">\(f_0(c) = f_1(c)\)</span>, <span class="math inline">\(\text{df} = 7\)</span></p>
+<p><span class="math display">\[
+\begin{align*}
+f_0(c) = f_1(c) \iff &amp;\beta_{00} + \beta_{10}x_i + \beta_{20}x_i^2 + \beta_{30}x_i^3 \\
+&amp;= \beta_{01} + \beta_{11}x_i + \beta_{21}x_i^2 + \beta_{31}x_i^3
+\end{align*}
+\]</span></p>
+</div>
+<div id="cont-constraint-plot" class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1354,39 +1378,9 @@ Y &amp;= \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 (X - \xi)_+ + \beta_4 (X - 
 </div>
 </div>
 </div>
-</div><div class="column" style="width:5%;">
-<p>&nbsp;</p>
-</div><div class="column" style="width:30%;">
-<p>“Quadratic Spline”:</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>prod_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y), <span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span>knot, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>prod_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y),</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">method=</span><span class="st">'lm'</span>,</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">ifelse</span>(x <span class="sc">&gt;</span> knot, (x <span class="sc">-</span> knot)<span class="sc">^</span><span class="dv">2</span>, <span class="dv">0</span>),</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">300</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/deriv-contraints-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
 </div>
 </div>
 </div>
-</div><div class="column" style="width:5%;">
-<p>&nbsp;</p>
-</div><div class="column" style="width:30%;">
-<p><span class="math display">\[
-Y = \beta_0 + \beta_1 X + \beta_2 X^2
-\]</span></p>
-<div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
@@ -1395,24 +1389,32 @@ Y = \beta_0 + \beta_1 X + \beta_2 X^2
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_smooth</span>(</span>
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>prod_df, <span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>y),</span>
 <span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">method=</span><span class="st">'lm'</span>,</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">2</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">formula=</span>y <span class="sc">~</span> <span class="fu">poly</span>(x,<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">ifelse</span>(x <span class="sc">&gt;</span> knot, (x <span class="sc">-</span> knot)<span class="sc">^</span><span class="dv">2</span>, <span class="dv">0</span>),</span>
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">300</span></span>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">22</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+<div class="quarto-layout-panel" data-layout="[70,30]">
+<div class="quarto-layout-row quarto-layout-valign-center">
+<div id="deriv-constraint" class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<p><i class="bi bi-2-circle"></i> Derivative continuity constraint: <span class="math inline">\(f'_0(c) = f'_1(c)\)</span>, <span class="math inline">\(\text{df} = 6\)</span></p>
+<p><span class="math display">\[
+\frac{\partial Y}{\partial X} = \beta_1 + 2\beta_2 X + \beta_3 + 2\beta_4 X
+\]</span></p>
+</div>
+<div id="deriv-constraint-plot" class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
+<div class="cell">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/base-quadratic-reg-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="index_files/figure-html/deriv-contraints-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 </div>
 </div>
-<ul>
-<li><span class="math inline">\(\implies\)</span> Least-complex function that allows smooth “joining” is <strong>cubic function</strong></li>
-</ul>
+</div>
 </section>
 <section id="cubic-splines-aka-splines" class="level2 smaller crunch-title crunch-ul">
 <h2 class="smaller crunch-title crunch-ul anchored" data-anchor-id="cubic-splines-aka-splines">Cubic Splines (aka, Splines)</h2>
@@ -1636,6 +1638,12 @@ g^* = \underset{g, \lambda}{\operatorname{argmin}} \left[ \sum_{i=1}^{N}(g(x_i) 
 \boldsymbol\beta^*_{\text{WLS}} = \underset{\boldsymbol\beta}{\operatorname{argmin}} \left[ \frac{1}{N}\sum_{i=1}^{N}K_i(\widehat{y}_i(\boldsymbol\beta) - y_i)^2 \right]
 \]</span></p>
 <p><i class="bi bi-4-circle"></i> Estimate is ready! <span class="math inline">\(\widehat{f}(x_0) = \beta^{\text{WLS}}_0 + \beta^{\text{WLS}}_1 x_0\)</span>.</p>
+</section>
+</section>
+<section id="quiz-7-review" class="level1" data-stack-name="Quiz 7">
+<h1 data-stack-name="Quiz 7">Quiz 7 Review</h1>
+<section id="optimal-vs.-greedy-subset-selection" class="level2">
+<h2 class="anchored" data-anchor-id="optimal-vs.-greedy-subset-selection">Optimal vs.&nbsp;Greedy Subset Selection</h2>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>

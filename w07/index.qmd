@@ -58,9 +58,8 @@ Today's Planned Schedule:
 | | 7:00pm | 7:20pm | ["Manual" Model Selection: Subsets &rarr;](#model-selection) | 
 | | 7:20pm | 7:40pm | [Key Regularization Building Block: $L^p$ Norm &rarr;](#regularization-for-automatic-model-selection) |
 | | 7:40pm | 8:00pm | [Regularized Regression Intro &rarr;](#regularized-regression-(finally)) |
-| **Break!** | 8:00pm | 8:10pm | |
-| | 8:10pm | 8:50pm | [Basically Lasso is the Coolest Thing Ever &rarr;](#the-key-plot) |
-| | 8:50pm | 9:00pm | [Scary-Looking But Actually-Fun W07 Preview &rarr;](#week-7-preview-linear.noodle-jj-functions) |
+| **Break!** | 7:50pm | 8:00pm | |
+| | 8:00pm | 8:30pm | [Quiz 7 Review &rarr;](#quiz-7-review) |
 
 : {tbl-colwidths="[12,12,12,64]"}
 
@@ -76,7 +75,7 @@ set.seed(5300)
 
 {{< include ../dsan-globals/_globals-tex.qmd >}}
 
-# Roadmap {.smaller .title-10 data-stack-name="Roadmap"}
+# Roadmap {.smaller .title-10}
 
 ```{=html}
 <style>
@@ -319,7 +318,7 @@ base_plot +
   * Piecewise: $b_j(X) = \mathbb{1}[c_{j-1} \leq X < c_j]$
   * Earlier Example: $b_1(X) = \sin(X)$
 
-# Segments $\rightarrow$ Splines {data-stack-name="Segmented Regression" .smaller .crunch-title .table-va}
+# Segments $\rightarrow$ Splines {data-stack-name="Splines" .smaller .crunch-title .table-va}
 
 | | What we want | How we do it | Name for result |
 | - | - | - |:-:|
@@ -355,11 +354,12 @@ prod_df <- prod_df |> mutate(segment = x <= knot)
 # First segment model
 #left_df <- prod_df |> filter(x <= knot_point)
 #left_model <- lm(y ~ poly(x, 2), data=left_df)
-prod_df |> ggplot(aes(x=x, y=y, group=segment)) +
+discontinuous_plot <- prod_df |> ggplot(aes(x=x, y=y, group=segment)) +
   geom_point(size=0.5) +
   geom_vline(xintercept=knot, linetype="dashed") +
   geom_smooth(method='lm', formula=y ~ poly(x, 2), se=TRUE) +
   theme_classic(base_size=22)
+discontinuous_plot
 ```
 
 * What's the issue with this?
@@ -552,21 +552,48 @@ cont_seg_plot
 
 * There's still a problem here... can you see what it is? (Hint: things that break calculus)
 
-# Splines (The Moment You've Been Waiting For!) {data-stack-name="Splines" .title-12}
+## $\leadsto$ Splines: Continuity Constraints {.text-65 .crunch-title .title-11 .crunch-quarto-figure .crunch-math .math-80 .crunch-quarto-layout-panel .crunch-img .crunch-ul .crunch-p}
 
-## Constrained Derivatives: "Quadratic Splines" (⚠️) {.smaller .crunch-title .title-10 .crunch-quarto-figure .crunch-math}
+We "pay" in units of **degrees of freedom** for each constraint!
 
-* Like "Linear Probability Models", "Quadratic Splines" are a **red flag**
-* Why? If we have leftmost plot below, but want it differentiable everywhere... only option is to fit a single quadratic, defeating the whole point of the "chopping"!
+:::: {layout="[70,30]" layout-valign="center"}
+::: {#unconstrained-cubic}
+
+<i class='bi bi-0-circle'></i> Two unconstrained cubics: $\text{df} = 8$
 
 $$
-\frac{\partial Y}{\partial X} = \beta_1 + 2\beta_2 X + \beta_3 + 2\beta_4 X
+f(x_i) = \begin{cases}
+\beta_{00} + \beta_{10}x_i + \beta_{20}x_i^2 + \beta_{30}x_i^3 &\text{if }x_i < c \\
+\beta_{01} + \beta_{11}x_i + \beta_{21}x_i^2 + \beta_{31}x_i^3 &\text{if }x_i \geq c
+\end{cases}
 $$
 
-:::: {.columns}
-::: {.column width="30%"}
+:::
+::: {#unconstrained-cubic-plot}
 
-Continuous Segmented:
+```{r}
+#| label: quad-naive-spline-again
+#| fig-align: center
+discontinuous_plot
+```
+
+:::
+::::
+
+:::: {layout="[70,30]" layout-valign="center"}
+::: {#cont-constraint}
+
+<i class='bi bi-1-circle'></i> Continuity constraint: $f_0(c) = f_1(c)$, $\text{df} = 7$
+
+$$
+\begin{align*}
+f_0(c) = f_1(c) \iff &\beta_{00} + \beta_{10}x_i + \beta_{20}x_i^2 + \beta_{30}x_i^3 \\
+&= \beta_{01} + \beta_{11}x_i + \beta_{21}x_i^2 + \beta_{31}x_i^3
+\end{align*}
+$$
+
+:::
+::: {#cont-constraint-plot}
 
 ```{r}
 #| label: quadratic-seg-plot-again
@@ -574,14 +601,19 @@ cont_seg_plot
 ```
 
 :::
-::: {.column width="5%"}
+::::
 
-&nbsp;
+:::: {layout="[70,30]" layout-valign="center"}
+::: {#deriv-constraint}
+
+<i class='bi bi-2-circle'></i> Derivative continuity constraint: $f'_0(c) = f'_1(c)$, $\text{df} = 6$
+
+$$
+\frac{\partial Y}{\partial X} = \beta_1 + 2\beta_2 X + \beta_3 + 2\beta_4 X
+$$
 
 :::
-::: {.column width="30%"}
-
-"Quadratic Spline":
+::: {#deriv-constraint-plot}
 
 ```{r}
 #| label: deriv-contraints
@@ -598,35 +630,7 @@ ggplot() +
 ```
 
 :::
-::: {.column width="5%"}
-
-&nbsp;
-
-:::
-::: {.column width="30%"}
-
-$$
-Y = \beta_0 + \beta_1 X + \beta_2 X^2
-$$
-
-```{r}
-#| label: base-quadratic-reg
-ggplot() +
-  geom_point(data=prod_df, aes(x=x, y=y), size=0.5) +
-  geom_vline(xintercept=knot, linetype="dashed") +
-  stat_smooth(
-    data=prod_df, aes(x=x, y=y),
-    method='lm',
-    formula=y ~ poly(x,2),
-    n = 300
-  ) +
-  theme_dsan(base_size=22)
-```
-
-:::
 ::::
-
-* $\implies$ Least-complex function that allows smooth "joining" is **cubic function**
 
 ## Cubic Splines (aka, Splines) {.smaller .crunch-title .crunch-ul}
 
@@ -842,6 +846,10 @@ $$
 $$
 
 <i class='bi bi-4-circle'></i> Estimate is ready! $\widehat{f}(x_0) = \beta^{\text{WLS}}_0 + \beta^{\text{WLS}}_1 x_0$.
+
+# Quiz 7 Review {data-stack-name="Quiz 7"}
+
+## Optimal vs. Greedy Subset Selection
 
 ## References
 
