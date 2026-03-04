@@ -98,7 +98,7 @@ If you don't remember how the **Natural** Cubic Splines we discussed near the en
 
 ## The Smoothing Spline Representer Theorem
 
-The "Smoothing Spline Representer Theorem" says that Smoothing Splines will **always "beat"** any other function we might try to use in terms of our loss-minimization objective in @eq-smoothing-opt. This then gives us a step-by-step "algorithm" we could use to find the optimal overfitting-versus-underfitting-balanced spline for a given dataset $mathbf{d} = ((x_1, y_1), \ldots, (x_n, y_n))$:
+The "Smoothing Spline Representer Theorem" says that Smoothing Splines will **always "beat"** any other function we might try to use in terms of our loss-minimization objective in @eq-smoothing-opt. This then gives us a step-by-step "algorithm" we could use to find the optimal overfitting-versus-underfitting-balanced spline for a given dataset $\mathbf{d} = ((x_1, y_1), \ldots, (x_n, y_n))$:
 
 1. Start with (as in, choose from among the set of all possible zero-MSE functions) the **Natural Cubic Spline** with **knots located at each unique $x_i$ value in $\mathbf{d}**. This ensures that you're starting with the **least-wiggly** function out of all possible functions that perfectly fit the data (this is precisely what the **Smoothing Spline Representer Theorem** guarantees us, which is why I take the time to *prove* this theorem in the box below!)
 2. Use **Cross-Validation** to estimate test error for this spline, then
