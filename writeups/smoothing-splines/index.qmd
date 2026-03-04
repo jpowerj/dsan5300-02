@@ -26,24 +26,34 @@ format:
 
 {{< include ../../dsan-globals/_globals-tex.qmd >}}
 
-In the Monday section (on February 23rd), we covered up through **Regression Splines**, the topic of ISLP Section 7.4. Towards the beginning of the lecture, though, I also gave a brief *conceptual* overview of **Smoothing Splines**, as an alternative way to "arrive at" splines:
+In the Monday section (on February 23rd), we covered up through **Regression Splines**, the topic of ISLP Section 7.4. Towards the beginning of the lecture, though, I also gave a brief *conceptual* overview of **Smoothing Splines**, as an alternative way to "arrive at" splines by minimizing MSE but preventing overfitting via a **"wigglyness" penalty $\lambda$**, an overview which I recap in the next section. Then, in the rest of the writeup, I flesh out the details of what exactly a Smoothing Spline **is**, in more depth than I was able to cover in class.
 
-With **Regression Splines** we **start** from the **ex**plicit assumption that we're going to "chop" the domain of some feature $X \in [a,b]$ at $K$ **knot points** $\xi_1 < \xi_2 < \cdots < \xi_{k-1} < \xi_k$, thus splitting $[a,b]$ into $K + 1$ separately-modeled pieces $[a,\xi_1], [\xi_1, \xi_2], \ldots, [\xi_{k-1},\xi_k], [\xi_k, b]$. This means that, when estimating a Regression Spline model, we "jump" immediately to the task of choosing the number of knot points $K$ and their locations.
+## Regression Splines vs. Smoothing Splines
 
-To "arrive at" **Smoothing Splines**, we take an alternative approach. We do **not** jump right into the task of choosing knot points — in fact, we don't assume up front that we'll be "chopping" the domain up at all. Instead, we start with the much more basic assumption that we want to learn a function $\hat{f}(x)$ that does a good job of fitting the data (as measured by MSE, for example, in a regression scenario), but that we also want to somehow **constrain the "wigglyness"** of $\hat{f}(x)$^[We should be concerned about this "wigglyness" because, the more that $\hat{f}(x)$ "swerves" up and down rapidly across the domain of $X$, the more likely it is that we're **overfitting** the data. Recall the "extreme limit" of overfitting from the Quiz 5 study guide: given the objective of minimizing MSE alone, model-estimation software can always derive a degree-$N$ polynomial that "swerves" perfectly to pass through $N$ datapoints, achieving the lowest possible MSE 0.].
+With the **Regression Spline** model that we covered more in-depth in lecture, we **start** from the assumption that we want to "chop" the domain of some feature $X \in \mathbb{R}$ at $K$ **knot points** $\xi_1 < \xi_2 < \cdots < \xi_{k-1} < \xi_k$, thus splitting $\mathbb{R}$ into $K + 1$ separately-modeled pieces $(-\infty,\xi_1], [\xi_1, \xi_2], \ldots, [\xi_{k-1},\xi_k], [\xi_k, \infty)$. This means that, when estimating a Regression Spline model, we have to jump immediately to the task of:
 
-How might we **quantify** the degree of "wigglyness" exhibited by a function $\widehat{f}$ over $[a,b]$, the domain of $X$? At this level of abstraction there may be an aesthetic aspect here, where one person's intuition may not exactly match with another person's, but if we more concretely focus on the *kinds* of "wigglyness" that tend to indicate **overfitting**, we can think of a degree-$N$ polynomial fit to $N$ datapoints as the canonical example:
+1. Choosing the *number* of knot points $K$, and then
+2. Choosing their *locations* $\xi_1, \xi_2, \ldots, \xi_k$
+
+If your immediate thought is, *"but how do I choose $K$ and then choose the locations?"*, Smoothing Splines may be for you!^[For both Regression and Smoothing Splines, the answer to *"how do I choose the parameter values?"* will be, **Cross Validation!** But, a huge advantage of Smoothing Splines, as you'll see, is that you'll only need to optimize exactly **one** parameter, $\lambda$, as opposed to the huge range of possible $K$ and $\{\xi_1, \ldots, \xi_k\}$ values you have to optimize for Regression Spline models.]
+
+A key advantage of these **Smoothing Splines** over Regression Splines is that they completely *eliminate* the need to choose knot points! To "arrive at" a Smoothing Spline model, we do **not** jump right into the task of choosing knot points — in fact, we don't assume up front that we'll be "chopping" the domain up at all. Instead, we start with the much more basic assumption that we want to learn a function $g(x)$ that does a good job of fitting the data (as measured by MSE, for example, in a regression scenario), but that we also want to somehow **constrain the "wigglyness"** of $g(x)$^[We should be concerned about this "wigglyness" because, the more that $g(x)$ "swerves" up and down rapidly across the domain of $X$, the more likely it is that we're **overfitting** the data. Recall the "extreme limit" of overfitting from the Quiz 5 study guide: given the objective of minimizing MSE alone, model-estimation software can always derive a degree-$N$ polynomial that "swerves" perfectly to pass through $N$ datapoints, achieving the lowest possible MSE 0.].
+
+## Measuring and Constraining Wigglyness
+
+How might we **quantify** the degree of "wigglyness" exhibited by a function $g(x)$ in the interval $[a,b]$, the domain of $X$? At this level of abstraction there may be an aesthetic aspect here, where one person's intuition may not exactly match with another person's, but if we more concretely focus on the *kinds* of "wigglyness" that tend to indicate **overfitting**, we can think of a degree-$N$ polynomial fit to $N$ datapoints as the canonical example:
 
 ```{python}
 #| label: polyfit-perfect
 #| warning: false
+#| fig-align: center
 import pandas as pd
 import numpy as np
 rng = np.random.default_rng(seed=5300)
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
+# from sklearn.linear_model import LinearRegression
+# from sklearn.preprocessing import PolynomialFeatures
 
 X = np.arange(1, 11, 1)
 y = rng.uniform(0, 100, size=len(X))
@@ -51,24 +61,29 @@ data_df = pd.DataFrame({
   'x': X, 'y': y
 })
 
+# If you want to use numpy directly instead of through
+# the seaborn interface:
 # coefs = np.polyfit(X.flatten(), y.flatten(), len(X))
 # print(coefs)
 # est_poly = np.poly1d(coefs)
 # print(est_poly)
-
 # y_pred_np = est_poly(X.flatten())
 # print(y_pred_np)
 
-sns.regplot(
+plt.figure(figsize=(4.5, 4))
+interp_plot = sns.regplot(
   data_df,
   x='x', y='y',
   order=len(X),
   ci=None,
+  scatter_kws=dict(color='black'),
+  line_kws=dict(color='black'),
 );
+plt.title(f"N = {len(X)}, Degree-{len(X)} Polynomial");
 plt.show()
 ```
 
-The massive "swerve" between $x = 1$ and $x = 2$ — where although all the true $y$ values are positive, $\hat{f}$ predicts values down near -400 as it moves from 0 to 1 — is what we'd like to penalize, and (for the reasons discussed in lecture) we can achieve this by applying a penalty $\lambda$ to the [continuous] **"sum" of squared second derivatives**, giving us the following "Error + Complexity Penalty" optimization task, much like Lasso's:
+The massive "swerves" in $[0,1]$ and $[9,10]$ — where although all the *true* $y$ values are between 0 and 100, $g(x)$ predicts values down near -400 or up above 600 — are the type of behavior we'd like to penalize, and (for the reasons discussed in lecture) we can achieve this by applying a penalty $\lambda$ to the [continuous] **"sum" of squared second derivatives**, giving us the following "Error + Complexity Penalty" optimization task, similar in form to regularization methods like Lasso:
 
   $$
   \hat{f}^* = \argmin_{\hat{f}}\left[ 
@@ -77,13 +92,21 @@ The massive "swerve" between $x = 1$ and $x = 2$ — where although all the true
   \right].
   $$ {#eq-smoothing-opt}
 
-What makes this approach relevant to our current topic is that, in fact, even though we didn't **start out** assuming that we wanted to use a spline approach^[That is, nothing in our set of assumptions in this case implied *a priori* that we would need to "chop" the input space up into pieces and model each piece separately], the fitted model that will achieve this optimal wigglyness-penalized objective is in fact a type of spline called a **Smoothing Spline 🤯**, which is similar but not identical to a Regression Spline. So, in this writeup I want to flesh out the details of what exactly a Smoothing Spline **is**, in more depth than I was able to cover in class.
+What makes this approach relevant to our current topic is that, in fact, even though we didn't **start out** assuming that we wanted to use a spline approach^[That is, nothing in our set of assumptions in this case implied *a priori* that we would need to "chop" the input space up into pieces and model each piece separately], the fitted line $\hat{f}^*$ that will achieve this optimal wigglyness-penalized objective is in fact **the Smoothing Spline 🤯**: a "$\lambda$-shrunken" **Natural Cubic Spline** with **knot points at each datapoint** ($\xi_1 = x_1$, $\xi_2 = x_2$, and so on).
 
-## The "Smoothing Spline Theorem"
+If you don't remember how the **Natural** Cubic Splines we discussed near the end of class work: whereas a Cubic Spline in general estimates separate Cubic Polynomial Regressions for **every** "piece" of the domain of $X$ listed above, a **Natural** Cubic Spline is one which reduces the "roughness" of $g(x)$ outside of the observed range of $x$ values by enforcing that a simpler **linear** (rather than cubic) fit should be estimated for the **first piece** $(-\infty,\xi_1]$ and the **last piece** $[\xi_k, \infty)$ of the spline.
 
-The unique function $\hat{f}$ which is capable of jointly satisfying these constraints (minimizing loss **subject to** a given "wigglyness" penalty $\lambda$) is in fact a special kind of spline that we covered in class: a **Natural Cubic Spline**. Whereas a Cubic Spline in general estimates separate Cubic Polynomial Regressions for each "piece" of the domain of $X$ listed above, a **Natural** Cubic Spline is one which reduces the "roughness" of $\hat{f}$ at the two extreme ends of $X$'s domain (the points close to $a$ and the points close to $b$) by enforcing that a simpler **linear** (rather than cubic) fit should be estimated for the **first piece** $[a,\xi_1]$ and the **last piece** $[\xi_k, b]$ of $X$'s domain.
+## The Smoothing Spline Representer Theorem
 
-The "Smoothing Spline Theorem"^[Note that this is *not* an "official" name — in fact, I don't think I've ever heard someone call it this — but since I want to introduce you to the notion of how you might **prove** this property of Smoothing Splines (see the optional proof box), I'm stating it here explicitly as a Theorem rather than something you need to just take on faith!] says that if we construct a **Natural Spline** with **knots located at each unique $x$ value in a given dataset**, this Natural Spline is **guaranteed** to minimize our original criterion in @eq-smoothing-opt!
+The "Smoothing Spline Representer Theorem" says that Smoothing Splines will **always "beat"** any other function we might try to use in terms of our loss-minimization objective in @eq-smoothing-opt. This then gives us a step-by-step "algorithm" we could use to find the optimal overfitting-versus-underfitting-balanced spline for a given dataset $mathbf{d} = ((x_1, y_1), \ldots, (x_n, y_n))$:
+
+1. Start with (as in, choose from among the set of all possible zero-MSE functions) the **Natural Cubic Spline** with **knots located at each unique $x_i$ value in $\mathbf{d}**. This ensures that you're starting with the **least-wiggly** function out of all possible functions that perfectly fit the data (this is precisely what the **Smoothing Spline Representer Theorem** guarantees us, which is why I take the time to *prove* this theorem in the box below!)
+2. Use **Cross-Validation** to estimate test error for this spline, then
+3. Increase the **wigglyness penalty value** $\lambda* more and more, using Cross-Validation to estimate the new test error after each increase, until this estimated test error stops going down.
+
+Though the choice of the particular amount by which to **increase** $\lambda$ at each step may still seem daunting, in fact libraries like `scipy` can figure this out for you, and automatically derive the optimal $\lambda$ value (meaning, in other words, that you shouldn't carry out the above 3-step algorithm yourself — just ask `scipy` to do it!)
+
+If you want to jump right to that `scipy`-based estimation of the optimal wigglyness-minimizing spline, you can skip the proof here, though I recommend at least **trying** to work through this proof, since (as discussed more below) it's a type of proof that comes up over and over again in proving "optimality" for lots of different statistical learning models we've used in this class!
 
 ::: {.callout-tip title="The (Optional) *Proof*" collapse="false"}
 
@@ -93,19 +116,278 @@ In this case though, if you're feeling courageous about using the extra time you
 
 In this case, we'd like to prove that **Smoothing Splines** are **the** optimal solution to the minimization problem in @eq-smoothing-opt. To accomplish this, we'll carry out a **proof by contradiction**:
 
-* We'll start by assuming that we are **wrong**, and that there **is** some other function $\tilde{f}$ that achieves an even better loss-wigglyness balance,
+* We'll start by assuming that we are **wrong**, and that there **is** some other function $f(x)$ that achieves an even better loss-wigglyness balance than the Smoothing Spline $g(x)$,
 * But then we will derive a **logical contradiction** from this assumption,
-* Which will thus indicate that our original assumption must have been **incorrect**, and that there is in fact **no** other function $\tilde{f}$ that achieves a better balance than $\hat{f}$
+* Which will thus indicate that our original assumption must have been **incorrect**, and that there is in fact **no** other function that achieves a better balance than $g(x)$.
 
-So, let's start with the assumption, that there **is** another function $\tilde{f}$ that achieves a lower penalized loss value than the Smoothing Spline $\hat{f}$. Then, since the MSE term can always be minimized to zero by **perfectly fitting** the $N$ datapoints, the "advantage" of $\tilde{f}$ over $\hat{f}$ must come from the second "wigglyness" term. Define $h(x) = \hat{f}(x) - \tilde{f}(x)$. Then, our assumption that $\tilde{f}(x)$ has a lower wigglyness than $\hat{f}(x)$ means
+So, let's start with the assumption, that there **is** another function $f(x)$ that achieves a lower penalized loss value than the Smoothing Spline $g(x)$. Then, since the MSE term can always be minimized to zero by **perfectly fitting** the $N$ datapoints, the assumed "advantage" of $f(x)$ over $g(x)$ (in terms of the **lower** overall loss value) must come from the second "wigglyness" term:
+
+$$
+\int_{a}^{b}\left[f''(x)\right]^2dx < \int_{a}^{b}\left[g''(x)\right]^2dx
+$$ {#eq-more-wiggly}
+
+So, define $h(x) \equiv f(x) - g(x)$. Analyzing this $h(x)$ will thus let us "capture" whatever differences between $f(x)$ and $g(x)$ are allowing $g(x)$ to have a lower wigglyness. Note that we can rewrite this to obtain^[The $\Rightarrow$s are inferences we're able to make because of the **linearity** of the derivative operator: the derivative of $(f + g)$ is the derivative of $f$ plus the derivative of $g$]
+
+$$
+f(x) = g(x) + h(x) \Rightarrow f'(x) = g'(x) + h(x) \Rightarrow f''(x) = g''(x) + h''(x)
+$$
+
+Let's use this last equality to rewrite the left side of @eq-more-wiggly:
 
 $$
 \begin{aligned}
-&\int_{a}^{b} \hat{f}''(x)^2 dx = \int_{a}^{b}\left(\tilde{f}''(x) + h''(x)\right)^2 dx \\
-&= \int_{a}^{b}\tilde{f}''(x)^2 + \int_{a}^{b}h''(x)^2 + 2\int_{a}^{b}\tilde{f}''(x)h''(x)dx
+&\int_{a}^{b} \left[ f''(x) \right]^2 dx = \int_{a}^{b}\left[ g''(x) + h''(x)\right]^2 dx \\
+&= \int_{a}^{b}\left[ g''(x) \right]^2 + \int_{a}^{b}\left[ h''(x) \right]^2 + 2\int_{a}^{b}g''(x)h''(x)dx
+\end{aligned}
+$$ {#eq-expanded-f}
+
+That last term, with the 2 in front of it, is interestingly different from what we've seen up to now, since it matches the formula for [**integration by parts**](https://en.wikipedia.org/wiki/Integration_by_parts) that you may have learned in a calculus class! I remember this method for solving integrals in my head as just $\int_{a}^{b} udv = \left[ uv \right]_{a}^{b} - \int_{a}^{b} vdu$, but the approach in full detail is:
+
+$$
+\int_{a}^{b}u(x)v'(x)dx = u(b)v(b) - u(a)v(a) - \int_{a}^{b}u'(x)v(x)dx
+$$
+
+If we "match up" the variables here with the variables in the final in @eq-expanded-f, we can see the equivalence in form, with $u(x) \leftrightarrow g''(x)$ and $v(x) \leftrightarrow h'(x)$. Thus we get an "integration by parts" rewriting of this term (dropping the 2 in front, since it won't affect the result, as you'll see below) as:
+
+$$
+\int_{a}^{b}g''(x)h''(x)dx = g''(b)h'(b) - g''(a)h'(a) - \int_{a}^{b}g'''(x)h'(x)dx
+$$
+
+But, because $g(x)$ is a **natural** spline, it is **linear** at the endpoints of the domain $a$ and $b$, meaning that its **second derivative** $g''(x)$ at these two points is zero (the second derivative of any line $mx + b$ is zero), so this simplifies to
+
+$$
+\int_{a}^{b}g''(x)h''(x)dx = -\int_{a}^{b}g'''(x)h'(x)dx
+$$
+
+Now let's look at the integral on the right side (without the minus sign, since it won't affect the result, as you'll see below), and consider **chopping it into pieces** based exactly on our **knot points**:
+
+$$
+\begin{aligned}
+&\int_{a}^{b}g'''(x)h'(x)dx \\
+&= \int_{a}^{\xi_1}g'''(x)h'(x)dx + \sum_{i=1}^{n-1}\int_{\xi_i}^{\xi_{i+1}}g'''(x)h'(x)dx + \int_{\xi_n}^{b}g'''(x)h'(x)dx
 \end{aligned}
 $$
 
-That last term, with the 2 in front of it, is what we care about here
+Once again, because $g(x)$ is a **natural** spline, it is linear at the two end pieces, so that the first and last terms here are both zero (since the third derivative of any line $mx + b$ is zero):
+
+$$
+\int_{a}^{b}g'''(x)h'(x)dx = \sum_{i=1}^{n-1}\int_{\xi_i}^{\xi_{i+1}}g'''(x)h'(x)dx
+$$
+
+Then, since we defined $g(x)$ as a natural **cubic** spline, within each piece of the domain $[\xi_i, \xi_{i+1}]$ the $g'''(x)$ term in the integral is some **constant**, which we'll label using $c_i$: $c_1$ will be the constant third derivative of $g$ between $\xi_1$ and $\xi_2$, $c_2$ will be the constant third derivative of $g$ between $\xi_2$ and $\xi_3$, and so on:
+
+$$
+\int_{a}^{b}g'''(x)h'(x)dx = \sum_{i=1}^{n-1}c_i\int_{\xi_i}^{\xi_{i+1}}h'(x)dx
+$$
+
+Rewriting it like this means that we've simplified the integral down to just the definite integral of a **derivative** $h'(x)$, which we know from calculus is defined to be just the difference between the values of the **antiderivative**, $h(x)$, at the two endpoints of the integral:
+
+$$
+\int_{a}^{b}g'''(x)h'(x)dx = \sum_{i=1}^{n-1}c_i\left[h(\xi_{i+1}) - h(\xi_i))\right]
+$$
+
+But now we've hit a "finish line", finally, since both $h(\xi_{i+1})$ and $h(\xi_i)$ are **zero!** Since $g(x)$ and $f(x)$ both **perfectly interpolate** the points $(x_1,y_1)$ through $(x_n,y_n)$, the difference $h(x)$ between $f(x)$ and $g(x)$ at these points will be exactly zero: $\int_{a}^{b}g'''(x)h'(x)dx = 0$
+
+Since we've now shown that the term with the 2 in front of it in @eq-expanded-f is exactly 0, this equation simplifies to just
+
+$$
+\int_{a}^{b}\left[ f''(x) \right]^2dx = \int_{a}^{b}\left[ g''(x) \right]^2dx + \int_{a}^{b}\left[ h''(x) \right]^2dx
+$$
+
+But, if we plug the right hand side of this expression back in for $\int_{a}^{b}\left[ f''(x) \right]^2dx$ in the inequality @eq-more-wiggly that "encoded" our original assumption, we get
+
+$$
+\int_{a}^{b}\left[ g''(x) \right]^2dx + \int_{a}^{b}\left[ h''(x) \right]^2dx < \int_{a}^{b}\left[ g''(x) \right]^2dx,
+$$
+
+which can be true only if the term $\int_{a}^{b}\left[ h''(x) \right]^2dx$ is negative... but this term *can't* be negative, since it's just the sum of a bunch of squared values! Hence,
+
+* We have **arrived at a contradiction**, which means that
+* Our original assumption that there is some $f(x)$ less "wiggly" than the Smoothing Spline $g(x)$, and thus
+* It must be the case that **no such $f(x)$ exists**, as we wanted to show.
 
 :::
+
+## Smoothing Splines in Practice with `scipy`
+
+If you made it through the proof, you saw that at two key points we invoked **special properties** of the Smoothing Spline $g(x)$ to make it "work". If you didn't look at the proof, no worries! You can just understand these as, the two "core" properties of Smoothing Splines which ensure that they are the uniquely-optimal loss-versus-wigglyness-balancing functions (i.e., they are the functions which will always minimize @eq-smoothing-opt):
+
+1. The "end pieces" of $g(x)$ — the form that it takes on for $x \in [a,\xi_0]$ and $x \in [\xi_n,b]$ — are **lines**, thus preventing the function from rapidly "shooting off" into infinity or negative-infinity for values only slightly outside of the range of our datapoints
+2. The **middle** pieces of the function — the form that it takes on for $x \in [\xi_0,\xi_1]$, $x \in [\xi_1, \xi_2]$, and so on up to $x \in [\xi_{n-1},\xi_n]$ — are **cubic polynomials** which **cannot be made less wiggly** unless we **abandon the requirement that they perfectly pass through each point**, which is exactly what we use the $\lambda$ penalty parameter to accomplish!
+
+As mentioned above, rather than "manually" choosing different values for $\lambda$ and then carrying out Cross-Validation to try and find which value is best, `scipy` has an implementation of Smoothing Spline estimation that uses an even fancier adaptive method called "Generalized Cross-Validation" to achieve this goal for you!
+
+To see it in action, consider the following code, adapted from the [`scipy` User Guide](https://docs.scipy.org/doc/scipy/tutorial/interpolate/smoothing_splines.html), which carries out the following steps:
+
+1. It constructs a dataset (`X`,`y`) as "noisy" $\sin(\cdot)$ values $y_i = \sin(x_i) + \varepsilon_i$, where the $\varepsilon$ values are Normally-distributed with mean `0` and standard deviation `0.5`. The *non*-noisy $y = \sin(x)$ function (the true DGP) is plotted in grey.
+2. It then constructs the (non-penalized, i.e., $\lambda = 0$) **Natural Cubic Spline** with knots at each datapoint, by calling `scipy`'s `make_smoothing_spline()` function with `lam=0`, producing the blue line which perfectly fits each point (and thus **overfits** the data relative to the true DGP in grey)
+3. Next it constructs **penalized** splines, one with a small $\lambda$ value of `0.01` and another with a higher $\lambda$ value of `50`, producing the orange and green lines respectively. We can see that the orange line is pulled *slightly* away from the non-penalized blue line, and closer to the true DGP line, but the green line has been pulled **too far**: a spline with such a harsh wigglyness penalty is no longer flexible enough to learn the underlying $y = \sin(x)$ pattern!
+4. Finally, it asks `scipy` to use **[Generalized] Cross-Validation** to figure out the **optimal** $\lambda$ value
+
+```{python}
+# This code block is just *copied* from scipy's source
+# code, since I had to *modify* `make_smoothing_spline()`
+# to force it to return the GCV-optimized lambda value...
+# Skip this one and look at the next code cell!
+from scipy.interpolate import BSpline
+from scipy.linalg import solve_banded
+from scipy.interpolate._bsplines import _compute_optimal_gcv_parameter
+
+def custom_normalize_axis_index(axis, ndim):
+    # Check if `axis` is in the correct range and normalize it
+    if axis < -ndim or axis >= ndim:
+        msg = f"axis {axis} is out of bounds for array of dimension {ndim}"
+        raise AxisError(msg)
+
+    if axis < 0:
+        axis = axis + ndim
+    return axis
+
+
+def _coeff_of_divided_diff(x):
+    n = x.shape[0]
+    res = np.zeros(n)
+    for i in range(n):
+        pp = 1.
+        for k in range(n):
+            if k != i:
+                pp *= (x[i] - x[k])
+        res[i] = 1. / pp
+    return res
+
+def custom_make_smoothing_spline(x, y, w=None, lam=None, *, axis=0):
+    x = np.ascontiguousarray(x, dtype=float)
+    y = np.ascontiguousarray(y, dtype=float)
+
+
+    if any(x[1:] - x[:-1] <= 0):
+        raise ValueError('``x`` should be an ascending array')
+
+
+    if x.ndim != 1 or x.shape[0] != y.shape[axis]:
+        raise ValueError(f'``x`` should be 1D and {x.shape = } == {y.shape = }')
+
+
+    if w is None:
+        w = np.ones(len(x))
+    else:
+        w = np.ascontiguousarray(w)
+        if any(w <= 0):
+            raise ValueError('Invalid vector of weights')
+
+    t = np.r_[[x[0]] * 3, x, [x[-1]] * 3]
+    n = x.shape[0]
+
+    if n <= 4:
+        raise ValueError('``x`` and ``y`` length must be at least 5')
+
+    # Internals assume that the data axis is the zero-th axis
+    axis = custom_normalize_axis_index(axis, y.ndim)
+    y = np.moveaxis(y, axis, 0)
+
+    # flatten the trailing axes of y to simplify further manipulations
+    y_shape1 = y.shape[1:]
+    if y_shape1 != ():
+        y = y.reshape((n, -1))
+
+    # It is known that the solution to the stated minimization problem exists
+    # and is a natural cubic spline with vector of knots equal to the unique
+    # elements of ``x`` [3], so we will solve the problem in the basis of
+    # natural splines.
+
+    # create design matrix in the B-spline basis
+    X_bspl = BSpline.design_matrix(x, t, 3)
+    # move from B-spline basis to the basis of natural splines using equations
+    # (2.1.7) [4]
+    # central elements
+    X = np.zeros((5, n))
+    for i in range(1, 4):
+        X[i, 2: -2] = X_bspl[i: i - 4, 3: -3][np.diag_indices(n - 4)]
+
+    # first elements
+    X[1, 1] = X_bspl[0, 0]
+    X[2, :2] = ((x[2] + x[1] - 2 * x[0]) * X_bspl[0, 0],
+                X_bspl[1, 1] + X_bspl[1, 2])
+    X[3, :2] = ((x[2] - x[0]) * X_bspl[1, 1], X_bspl[2, 2])
+
+    # last elements
+    X[1, -2:] = (X_bspl[-3, -3], (x[-1] - x[-3]) * X_bspl[-2, -2])
+    X[2, -2:] = (X_bspl[-2, -3] + X_bspl[-2, -2],
+                 (2 * x[-1] - x[-2] - x[-3]) * X_bspl[-1, -1])
+    X[3, -2] = X_bspl[-1, -1]
+
+    # create penalty matrix and divide it by vector of weights: W^{-1} E
+    wE = np.zeros((5, n))
+    wE[2:, 0] = _coeff_of_divided_diff(x[:3]) / w[:3]
+    wE[1:, 1] = _coeff_of_divided_diff(x[:4]) / w[:4]
+    for j in range(2, n - 2):
+        wE[:, j] = (x[j+2] - x[j-2]) * _coeff_of_divided_diff(x[j-2:j+3])\
+                   / w[j-2: j+3]
+
+    wE[:-1, -2] = -_coeff_of_divided_diff(x[-4:]) / w[-4:]
+    wE[:-2, -1] = _coeff_of_divided_diff(x[-3:]) / w[-3:]
+    wE *= 6
+
+    if lam is None:
+        lam = _compute_optimal_gcv_parameter(X, wE, y, w)
+    elif lam < 0.:
+        raise ValueError('Regularization parameter should be non-negative')
+
+    # solve the initial problem in the basis of natural splines
+    if np.ndim(lam) == 0:
+        c = solve_banded((2, 2), X + lam * wE, y)
+    elif np.ndim(lam) == 1:
+        # XXX: solve_banded does not suppport batched `ab` matrices; loop manually
+        c = np.empty((n, lam.shape[0]))
+        for i in range(lam.shape[0]):
+            c[:, i] = solve_banded((2, 2), X + lam[i] * wE, y[:, i])
+    else:
+        # this should not happen, ever
+        raise RuntimeError("Internal error, please report it to SciPy developers.")
+    c = c.reshape((c.shape[0], *y_shape1))
+
+    # hack: these are c[0], c[1] etc, shape-compatible with np.r_ below
+    c0, c1 = c[0:1, ...], c[1:2, ...]     # c[0], c[1]
+    cm0, cm1 = c[-1:-2:-1, ...], c[-2:-3:-1, ...]    # c[-1], c[-2]
+
+    # move back to B-spline basis using equations (2.2.10) [4]
+    c_ = np.r_[c0 * (t[5] + t[4] - 2 * t[3]) + c1,
+               c0 * (t[5] - t[3]) + c1,
+               c[1: -1, ...],
+               cm0 * (t[-4] - t[-6]) + cm1,
+               cm0 * (2 * t[-4] - t[-5] - t[-6]) + cm1]
+
+    return BSpline.construct_fast(t, c_, 3, axis=axis), lam
+```
+
+```{python}
+#| label: smoothing-splines
+#| fig-align: center
+import numpy as np
+rng = np.random.default_rng(seed=5300)
+import matplotlib.pyplot as plt
+from scipy.interpolate import make_smoothing_spline
+X_domain = np.arange(0, 9/4, 1/50) * np.pi
+X = np.arange(0, 2*np.pi+np.pi/4, 2*np.pi/16)
+y_raw = np.sin(X)
+y = y_raw + rng.normal(loc=0, scale=0.5, size=len(X))
+
+# Plotting:
+plt.figure(figsize=(6,5));
+# Plot the "true" data-generating process, sin(x)
+plt.plot(X_domain, np.sin(X_domain), '-', label=fr'$\sin(x)$', color='black', alpha=0.4)
+# Plot smoothing splines with progressively-greater
+# roughness penalties, plus the smoothing spline obtained
+# via the *optimal* Cross-Validated lambda value
+for lam in [0, 0.005, 40, None]:
+    spl, opt_lam = custom_make_smoothing_spline(X, y, lam=lam)
+    lam_label = f"{lam}" if lam is not None else f"{opt_lam:.2f}"
+    if lam is None:
+      print(f"Optimal λ value: {lam_label}")
+    plt.plot(X_domain, spl(X_domain), '-.', label=fr'$\lambda=${lam_label}')
+plt.plot(X, y, 'o', color='black', alpha=0.75)
+plt.legend()
+plt.show()
+```
+
+And we see that, the **Cross-Validation** procedure gives `0.27` as the **optimal** $\lambda$ value, and the resulting line (in red) comes closest among all of the lines to the **true** Data-Generating Process of $y = \sin(x)$!

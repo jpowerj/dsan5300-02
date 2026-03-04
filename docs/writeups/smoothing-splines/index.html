@@ -490,7 +490,7 @@ window.Quarto = {
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2026-03-03, 03:53:33 AM</em></p>
+<p><em>Updated 2026-03-04, 07:48:28 AM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -499,7 +499,10 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#the-smoothing-spline-theorem" id="toc-the-smoothing-spline-theorem" class="nav-link active" data-scroll-target="#the-smoothing-spline-theorem">The “Smoothing Spline Theorem”</a></li>
+  <li><a href="#regression-splines-vs.-smoothing-splines" id="toc-regression-splines-vs.-smoothing-splines" class="nav-link active" data-scroll-target="#regression-splines-vs.-smoothing-splines">Regression Splines vs.&nbsp;Smoothing Splines</a></li>
+  <li><a href="#measuring-and-constraining-wigglyness" id="toc-measuring-and-constraining-wigglyness" class="nav-link" data-scroll-target="#measuring-and-constraining-wigglyness">Measuring and Constraining Wigglyness</a></li>
+  <li><a href="#the-smoothing-spline-representer-theorem" id="toc-the-smoothing-spline-representer-theorem" class="nav-link" data-scroll-target="#the-smoothing-spline-representer-theorem">The Smoothing Spline Representer Theorem</a></li>
+  <li><a href="#smoothing-splines-in-practice-with-scipy" id="toc-smoothing-splines-in-practice-with-scipy" class="nav-link" data-scroll-target="#smoothing-splines-in-practice-with-scipy">Smoothing Splines in Practice with <code>scipy</code></a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/jpowerj/dsan5300-02/blob/main/writeups/smoothing-splines/index.qmd" target="_blank" class="toc-action"><i class="bi bi-github"></i>View source</a></li></ul></div></nav>
     </div>
@@ -582,10 +585,20 @@ window.Quarto = {
 \newcommand{\bigVar}[1]{\text{Var}\mkern-4mu \left[ #1 \right]}
 \]</span></p>
 </div>
-<p>In the Monday section (on February 23rd), we covered up through <strong>Regression Splines</strong>, the topic of ISLP Section 7.4. Towards the beginning of the lecture, though, I also gave a brief <em>conceptual</em> overview of <strong>Smoothing Splines</strong>, as an alternative way to “arrive at” splines:</p>
-<p>With <strong>Regression Splines</strong> we <strong>start</strong> from the <strong>ex</strong>plicit assumption that we’re going to “chop” the domain of some feature <span class="math inline">\(X \in [a,b]\)</span> at <span class="math inline">\(K\)</span> <strong>knot points</strong> <span class="math inline">\(\xi_1 &lt; \xi_2 &lt; \cdots &lt; \xi_{k-1} &lt; \xi_k\)</span>, thus splitting <span class="math inline">\([a,b]\)</span> into <span class="math inline">\(K + 1\)</span> separately-modeled pieces <span class="math inline">\([a,\xi_1], [\xi_1, \xi_2], \ldots, [\xi_{k-1},\xi_k], [\xi_k, b]\)</span>. This means that, when estimating a Regression Spline model, we “jump” immediately to the task of choosing the number of knot points <span class="math inline">\(K\)</span> and their locations.</p>
-<p>To “arrive at” <strong>Smoothing Splines</strong>, we take an alternative approach. We do <strong>not</strong> jump right into the task of choosing knot points — in fact, we don’t assume up front that we’ll be “chopping” the domain up at all. Instead, we start with the much more basic assumption that we want to learn a function <span class="math inline">\(\hat{f}(x)\)</span> that does a good job of fitting the data (as measured by MSE, for example, in a regression scenario), but that we also want to somehow <strong>constrain the “wigglyness”</strong> of <span class="math inline">\(\hat{f}(x)\)</span><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
-<p>How might we <strong>quantify</strong> the degree of “wigglyness” exhibited by a function <span class="math inline">\(\widehat{f}\)</span> over <span class="math inline">\([a,b]\)</span>, the domain of <span class="math inline">\(X\)</span>? At this level of abstraction there may be an aesthetic aspect here, where one person’s intuition may not exactly match with another person’s, but if we more concretely focus on the <em>kinds</em> of “wigglyness” that tend to indicate <strong>overfitting</strong>, we can think of a degree-<span class="math inline">\(N\)</span> polynomial fit to <span class="math inline">\(N\)</span> datapoints as the canonical example:</p>
+<p>In the Monday section (on February 23rd), we covered up through <strong>Regression Splines</strong>, the topic of ISLP Section 7.4. Towards the beginning of the lecture, though, I also gave a brief <em>conceptual</em> overview of <strong>Smoothing Splines</strong>, as an alternative way to “arrive at” splines by minimizing MSE but preventing overfitting via a <strong>“wigglyness” penalty <span class="math inline">\(\lambda\)</span></strong>, an overview which I recap in the next section. Then, in the rest of the writeup, I flesh out the details of what exactly a Smoothing Spline <strong>is</strong>, in more depth than I was able to cover in class.</p>
+<section id="regression-splines-vs.-smoothing-splines" class="level2">
+<h2 class="anchored" data-anchor-id="regression-splines-vs.-smoothing-splines">Regression Splines vs.&nbsp;Smoothing Splines</h2>
+<p>With the <strong>Regression Spline</strong> model that we covered more in-depth in lecture, we <strong>start</strong> from the assumption that we want to “chop” the domain of some feature <span class="math inline">\(X \in \mathbb{R}\)</span> at <span class="math inline">\(K\)</span> <strong>knot points</strong> <span class="math inline">\(\xi_1 &lt; \xi_2 &lt; \cdots &lt; \xi_{k-1} &lt; \xi_k\)</span>, thus splitting <span class="math inline">\(\mathbb{R}\)</span> into <span class="math inline">\(K + 1\)</span> separately-modeled pieces <span class="math inline">\((-\infty,\xi_1], [\xi_1, \xi_2], \ldots, [\xi_{k-1},\xi_k], [\xi_k, \infty)\)</span>. This means that, when estimating a Regression Spline model, we have to jump immediately to the task of:</p>
+<ol type="1">
+<li>Choosing the <em>number</em> of knot points <span class="math inline">\(K\)</span>, and then</li>
+<li>Choosing their <em>locations</em> <span class="math inline">\(\xi_1, \xi_2, \ldots, \xi_k\)</span></li>
+</ol>
+<p>If your immediate thought is, <em>“but how do I choose <span class="math inline">\(K\)</span> and then choose the locations?”</em>, Smoothing Splines may be for you!<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>A key advantage of these <strong>Smoothing Splines</strong> over Regression Splines is that they completely <em>eliminate</em> the need to choose knot points! To “arrive at” a Smoothing Spline model, we do <strong>not</strong> jump right into the task of choosing knot points — in fact, we don’t assume up front that we’ll be “chopping” the domain up at all. Instead, we start with the much more basic assumption that we want to learn a function <span class="math inline">\(g(x)\)</span> that does a good job of fitting the data (as measured by MSE, for example, in a regression scenario), but that we also want to somehow <strong>constrain the “wigglyness”</strong> of <span class="math inline">\(g(x)\)</span><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+</section>
+<section id="measuring-and-constraining-wigglyness" class="level2">
+<h2 class="anchored" data-anchor-id="measuring-and-constraining-wigglyness">Measuring and Constraining Wigglyness</h2>
+<p>How might we <strong>quantify</strong> the degree of “wigglyness” exhibited by a function <span class="math inline">\(g(x)\)</span> in the interval <span class="math inline">\([a,b]\)</span>, the domain of <span class="math inline">\(X\)</span>? At this level of abstraction there may be an aesthetic aspect here, where one person’s intuition may not exactly match with another person’s, but if we more concretely focus on the <em>kinds</em> of “wigglyness” that tend to indicate <strong>overfitting</strong>, we can think of a degree-<span class="math inline">\(N\)</span> polynomial fit to <span class="math inline">\(N\)</span> datapoints as the canonical example:</p>
 <div id="cell-polyfit-perfect" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
@@ -594,8 +607,8 @@ window.Quarto = {
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(seed<span class="op">=</span><span class="dv">5300</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> PolynomialFeatures</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># from sklearn.linear_model import LinearRegression</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># from sklearn.preprocessing import PolynomialFeatures</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.arange(<span class="dv">1</span>, <span class="dv">11</span>, <span class="dv">1</span>)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> rng.uniform(<span class="dv">0</span>, <span class="dv">100</span>, size<span class="op">=</span><span class="bu">len</span>(X))</span>
@@ -603,42 +616,55 @@ window.Quarto = {
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">'x'</span>: X, <span class="st">'y'</span>: y</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># coefs = np.polyfit(X.flatten(), y.flatten(), len(X))</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># print(coefs)</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># est_poly = np.poly1d(coefs)</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># print(est_poly)</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># y_pred_np = est_poly(X.flatten())</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># print(y_pred_np)</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>sns.regplot(</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  data_df,</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>,</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  order<span class="op">=</span><span class="bu">len</span>(X),</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  ci<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># If you want to use numpy directly instead of through</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># the seaborn interface:</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># coefs = np.polyfit(X.flatten(), y.flatten(), len(X))</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># print(coefs)</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># est_poly = np.poly1d(coefs)</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># print(est_poly)</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># y_pred_np = est_poly(X.flatten())</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># print(y_pred_np)</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="fl">4.5</span>, <span class="dv">4</span>))</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>interp_plot <span class="op">=</span> sns.regplot(</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  data_df,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  x<span class="op">=</span><span class="st">'x'</span>, y<span class="op">=</span><span class="st">'y'</span>,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  order<span class="op">=</span><span class="bu">len</span>(X),</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  ci<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  scatter_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'black'</span>),</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  line_kws<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'black'</span>),</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="ss">f"N = </span><span class="sc">{</span><span class="bu">len</span>(X)<span class="sc">}</span><span class="ss">, Degree-</span><span class="sc">{</span><span class="bu">len</span>(X)<span class="sc">}</span><span class="ss"> Polynomial"</span>)<span class="op">;</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="index_files/figure-html/polyfit-perfect-output-1.png" id="polyfit-perfect" width="604" height="429" class="figure-img"></p>
+<p><img src="index_files/figure-html/polyfit-perfect-output-1.png" id="polyfit-perfect" class="quarto-figure quarto-figure-center anchored figure-img" width="418" height="376"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The massive “swerve” between <span class="math inline">\(x = 1\)</span> and <span class="math inline">\(x = 2\)</span> — where although all the true <span class="math inline">\(y\)</span> values are positive, <span class="math inline">\(\hat{f}\)</span> predicts values down near -400 as it moves from 0 to 1 — is what we’d like to penalize, and (for the reasons discussed in lecture) we can achieve this by applying a penalty <span class="math inline">\(\lambda\)</span> to the [continuous] <strong>“sum” of squared second derivatives</strong>, giving us the following “Error + Complexity Penalty” optimization task, much like Lasso’s:</p>
+<p>The massive “swerves” in <span class="math inline">\([0,1]\)</span> and <span class="math inline">\([9,10]\)</span> — where although all the <em>true</em> <span class="math inline">\(y\)</span> values are between 0 and 100, <span class="math inline">\(g(x)\)</span> predicts values down near -400 or up above 600 — are the type of behavior we’d like to penalize, and (for the reasons discussed in lecture) we can achieve this by applying a penalty <span class="math inline">\(\lambda\)</span> to the [continuous] <strong>“sum” of squared second derivatives</strong>, giving us the following “Error + Complexity Penalty” optimization task, similar in form to regularization methods like Lasso:</p>
 <p><span id="eq-smoothing-opt"><span class="math display">\[
   \hat{f}^* = \argmin_{\hat{f}}\left[
     ~\underbrace{\sum_{i=1}^{n}(y_i - \hat{f}(x_i))^2}_{\mathclap{\small\text{Mean Squared Error (MSE)}}}
     + \overbrace{\lambda}^{\mathclap{\text{Penalty}}} \underbrace{\int_{a}^{b} \left[\hat{f}''(x)\right]^2dx}_{\text{Total Wigglyness}}
   \right].
    \tag{1}\]</span></span></p>
-<p>What makes this approach relevant to our current topic is that, in fact, even though we didn’t <strong>start out</strong> assuming that we wanted to use a spline approach<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>, the fitted model that will achieve this optimal wigglyness-penalized objective is in fact a type of spline called a <strong>Smoothing Spline 🤯</strong>, which is similar but not identical to a Regression Spline. So, in this writeup I want to flesh out the details of what exactly a Smoothing Spline <strong>is</strong>, in more depth than I was able to cover in class.</p>
-<section id="the-smoothing-spline-theorem" class="level2">
-<h2 class="anchored" data-anchor-id="the-smoothing-spline-theorem">The “Smoothing Spline Theorem”</h2>
-<p>The unique function <span class="math inline">\(\hat{f}\)</span> which is capable of jointly satisfying these constraints (minimizing loss <strong>subject to</strong> a given “wigglyness” penalty <span class="math inline">\(\lambda\)</span>) is in fact a special kind of spline that we covered in class: a <strong>Natural Cubic Spline</strong>. Whereas a Cubic Spline in general estimates separate Cubic Polynomial Regressions for each “piece” of the domain of <span class="math inline">\(X\)</span> listed above, a <strong>Natural</strong> Cubic Spline is one which reduces the “roughness” of <span class="math inline">\(\hat{f}\)</span> at the two extreme ends of <span class="math inline">\(X\)</span>’s domain (the points close to <span class="math inline">\(a\)</span> and the points close to <span class="math inline">\(b\)</span>) by enforcing that a simpler <strong>linear</strong> (rather than cubic) fit should be estimated for the <strong>first piece</strong> <span class="math inline">\([a,\xi_1]\)</span> and the <strong>last piece</strong> <span class="math inline">\([\xi_k, b]\)</span> of <span class="math inline">\(X\)</span>’s domain.</p>
-<p>The “Smoothing Spline Theorem”<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> says that if we construct a <strong>Natural Spline</strong> with <strong>knots located at each unique <span class="math inline">\(x\)</span> value in a given dataset</strong>, this Natural Spline is <strong>guaranteed</strong> to minimize our original criterion in <a href="#eq-smoothing-opt" class="quarto-xref">Equation&nbsp;1</a>!</p>
+<p>What makes this approach relevant to our current topic is that, in fact, even though we didn’t <strong>start out</strong> assuming that we wanted to use a spline approach<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>, the fitted line <span class="math inline">\(\hat{f}^*\)</span> that will achieve this optimal wigglyness-penalized objective is in fact <strong>the Smoothing Spline 🤯</strong>: a “<span class="math inline">\(\lambda\)</span>-shrunken” <strong>Natural Cubic Spline</strong> with <strong>knot points at each datapoint</strong> (<span class="math inline">\(\xi_1 = x_1\)</span>, <span class="math inline">\(\xi_2 = x_2\)</span>, and so on).</p>
+<p>If you don’t remember how the <strong>Natural</strong> Cubic Splines we discussed near the end of class work: whereas a Cubic Spline in general estimates separate Cubic Polynomial Regressions for <strong>every</strong> “piece” of the domain of <span class="math inline">\(X\)</span> listed above, a <strong>Natural</strong> Cubic Spline is one which reduces the “roughness” of <span class="math inline">\(g(x)\)</span> outside of the observed range of <span class="math inline">\(x\)</span> values by enforcing that a simpler <strong>linear</strong> (rather than cubic) fit should be estimated for the <strong>first piece</strong> <span class="math inline">\((-\infty,\xi_1]\)</span> and the <strong>last piece</strong> <span class="math inline">\([\xi_k, \infty)\)</span> of the spline.</p>
+</section>
+<section id="the-smoothing-spline-representer-theorem" class="level2">
+<h2 class="anchored" data-anchor-id="the-smoothing-spline-representer-theorem">The Smoothing Spline Representer Theorem</h2>
+<p>The “Smoothing Spline Representer Theorem” says that Smoothing Splines will <strong>always “beat”</strong> any other function we might try to use in terms of our loss-minimization objective in <a href="#eq-smoothing-opt" class="quarto-xref">Equation&nbsp;1</a>. This then gives us a step-by-step “algorithm” we could use to find the optimal overfitting-versus-underfitting-balanced spline for a given dataset <span class="math inline">\(mathbf{d} = ((x_1, y_1), \ldots, (x_n, y_n))\)</span>:</p>
+<ol type="1">
+<li>Start with (as in, choose from among the set of all possible zero-MSE functions) the <strong>Natural Cubic Spline</strong> with <strong>knots located at each unique <span class="math inline">\(x_i\)</span> value in $</strong>. This ensures that you’re starting with the <strong>least-wiggly</strong> function out of all possible functions that perfectly fit the data (this is precisely what the <strong>Smoothing Spline Representer Theorem</strong> guarantees us, which is why I take the time to <em>prove</em> this theorem in the box below!)</li>
+<li>Use <strong>Cross-Validation</strong> to estimate test error for this spline, then</li>
+<li>Increase the <strong>wigglyness penalty value</strong> $more and more, using Cross-Validation to estimate the new test error after each increase, until this estimated test error stops going down.</li>
+</ol>
+<p>Though the choice of the particular amount by which to <strong>increase</strong> <span class="math inline">\(\lambda\)</span> at each step may still seem daunting, in fact libraries like <code>scipy</code> can figure this out for you, and automatically derive the optimal <span class="math inline">\(\lambda\)</span> value (meaning, in other words, that you shouldn’t carry out the above 3-step algorithm yourself — just ask <code>scipy</code> to do it!)</p>
+<p>If you want to jump right to that <code>scipy</code>-based estimation of the optimal wigglyness-minimizing spline, you can skip the proof here, though I recommend at least <strong>trying</strong> to work through this proof, since (as discussed more below) it’s a type of proof that comes up over and over again in proving “optimality” for lots of different statistical learning models we’ve used in this class!</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="The (Optional) *Proof*">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -655,21 +681,269 @@ window.Quarto = {
 <p>In this case though, if you’re feeling courageous about using the extra time you might have during Spring Break to “deep dive” ISLP content, this may be a perfect <strong>first proof</strong> for you!<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> It has a structure that is used over and over again in statistics, since it’s how we justify calling something <strong>“the” optimal solution</strong> to some given problem.</p>
 <p>In this case, we’d like to prove that <strong>Smoothing Splines</strong> are <strong>the</strong> optimal solution to the minimization problem in <a href="#eq-smoothing-opt" class="quarto-xref">Equation&nbsp;1</a>. To accomplish this, we’ll carry out a <strong>proof by contradiction</strong>:</p>
 <ul>
-<li>We’ll start by assuming that we are <strong>wrong</strong>, and that there <strong>is</strong> some other function <span class="math inline">\(\tilde{f}\)</span> that achieves an even better loss-wigglyness balance,</li>
+<li>We’ll start by assuming that we are <strong>wrong</strong>, and that there <strong>is</strong> some other function <span class="math inline">\(f(x)\)</span> that achieves an even better loss-wigglyness balance than the Smoothing Spline <span class="math inline">\(g(x)\)</span>,</li>
 <li>But then we will derive a <strong>logical contradiction</strong> from this assumption,</li>
-<li>Which will thus indicate that our original assumption must have been <strong>incorrect</strong>, and that there is in fact <strong>no</strong> other function <span class="math inline">\(\tilde{f}\)</span> that achieves a better balance than <span class="math inline">\(\hat{f}\)</span></li>
+<li>Which will thus indicate that our original assumption must have been <strong>incorrect</strong>, and that there is in fact <strong>no</strong> other function that achieves a better balance than <span class="math inline">\(g(x)\)</span>.</li>
 </ul>
-<p>So, let’s start with the assumption, that there <strong>is</strong> another function <span class="math inline">\(\tilde{f}\)</span> that achieves a lower penalized loss value than the Smoothing Spline <span class="math inline">\(\hat{f}\)</span>. Then, since the MSE term can always be minimized to zero by <strong>perfectly fitting</strong> the <span class="math inline">\(N\)</span> datapoints, the “advantage” of <span class="math inline">\(\tilde{f}\)</span> over <span class="math inline">\(\hat{f}\)</span> must come from the second “wigglyness” term. Define <span class="math inline">\(h(x) = \hat{f}(x) - \tilde{f}(x)\)</span>. Then, our assumption that <span class="math inline">\(\tilde{f}(x)\)</span> has a lower wigglyness than <span class="math inline">\(\hat{f}(x)\)</span> means</p>
+<p>So, let’s start with the assumption, that there <strong>is</strong> another function <span class="math inline">\(f(x)\)</span> that achieves a lower penalized loss value than the Smoothing Spline <span class="math inline">\(g(x)\)</span>. Then, since the MSE term can always be minimized to zero by <strong>perfectly fitting</strong> the <span class="math inline">\(N\)</span> datapoints, the assumed “advantage” of <span class="math inline">\(f(x)\)</span> over <span class="math inline">\(g(x)\)</span> (in terms of the <strong>lower</strong> overall loss value) must come from the second “wigglyness” term:</p>
+<p><span id="eq-more-wiggly"><span class="math display">\[
+\int_{a}^{b}\left[f''(x)\right]^2dx &lt; \int_{a}^{b}\left[g''(x)\right]^2dx
+\tag{2}\]</span></span></p>
+<p>So, define <span class="math inline">\(h(x) \equiv f(x) - g(x)\)</span>. Analyzing this <span class="math inline">\(h(x)\)</span> will thus let us “capture” whatever differences between <span class="math inline">\(f(x)\)</span> and <span class="math inline">\(g(x)\)</span> are allowing <span class="math inline">\(g(x)\)</span> to have a lower wigglyness. Note that we can rewrite this to obtain<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></p>
+<p><span class="math display">\[
+f(x) = g(x) + h(x) \Rightarrow f'(x) = g'(x) + h(x) \Rightarrow f''(x) = g''(x) + h''(x)
+\]</span></p>
+<p>Let’s use this last equality to rewrite the left side of <a href="#eq-more-wiggly" class="quarto-xref">Equation&nbsp;2</a>:</p>
+<p><span id="eq-expanded-f"><span class="math display">\[
+\begin{aligned}
+&amp;\int_{a}^{b} \left[ f''(x) \right]^2 dx = \int_{a}^{b}\left[ g''(x) + h''(x)\right]^2 dx \\
+&amp;= \int_{a}^{b}\left[ g''(x) \right]^2 + \int_{a}^{b}\left[ h''(x) \right]^2 + 2\int_{a}^{b}g''(x)h''(x)dx
+\end{aligned}
+\tag{3}\]</span></span></p>
+<p>That last term, with the 2 in front of it, is interestingly different from what we’ve seen up to now, since it matches the formula for <a href="https://en.wikipedia.org/wiki/Integration_by_parts"><strong>integration by parts</strong></a> that you may have learned in a calculus class! I remember this method for solving integrals in my head as just <span class="math inline">\(\int_{a}^{b} udv = \left[ uv \right]_{a}^{b} - \int_{a}^{b} vdu\)</span>, but the approach in full detail is:</p>
+<p><span class="math display">\[
+\int_{a}^{b}u(x)v'(x)dx = u(b)v(b) - u(a)v(a) - \int_{a}^{b}u'(x)v(x)dx
+\]</span></p>
+<p>If we “match up” the variables here with the variables in the final in <a href="#eq-expanded-f" class="quarto-xref">Equation&nbsp;3</a>, we can see the equivalence in form, with <span class="math inline">\(u(x) \leftrightarrow g''(x)\)</span> and <span class="math inline">\(v(x) \leftrightarrow h'(x)\)</span>. Thus we get an “integration by parts” rewriting of this term (dropping the 2 in front, since it won’t affect the result, as you’ll see below) as:</p>
+<p><span class="math display">\[
+\int_{a}^{b}g''(x)h''(x)dx = g''(b)h'(b) - g''(a)h'(a) - \int_{a}^{b}g'''(x)h'(x)dx
+\]</span></p>
+<p>But, because <span class="math inline">\(g(x)\)</span> is a <strong>natural</strong> spline, it is <strong>linear</strong> at the endpoints of the domain <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>, meaning that its <strong>second derivative</strong> <span class="math inline">\(g''(x)\)</span> at these two points is zero (the second derivative of any line <span class="math inline">\(mx + b\)</span> is zero), so this simplifies to</p>
+<p><span class="math display">\[
+\int_{a}^{b}g''(x)h''(x)dx = -\int_{a}^{b}g'''(x)h'(x)dx
+\]</span></p>
+<p>Now let’s look at the integral on the right side (without the minus sign, since it won’t affect the result, as you’ll see below), and consider <strong>chopping it into pieces</strong> based exactly on our <strong>knot points</strong>:</p>
 <p><span class="math display">\[
 \begin{aligned}
-&amp;\int_{a}^{b} \hat{f}''(x)^2 dx = \int_{a}^{b}\left(\tilde{f}''(x) + h''(x)\right)^2 dx \\
-&amp;= \int_{a}^{b}\tilde{f}''(x)^2 + \int_{a}^{b}h''(x)^2 + 2\int_{a}^{b}\tilde{f}''(x)h''(x)dx
+&amp;\int_{a}^{b}g'''(x)h'(x)dx \\
+&amp;= \int_{a}^{\xi_1}g'''(x)h'(x)dx + \sum_{i=1}^{n-1}\int_{\xi_i}^{\xi_{i+1}}g'''(x)h'(x)dx + \int_{\xi_n}^{b}g'''(x)h'(x)dx
 \end{aligned}
 \]</span></p>
-<p>That last term, with the 2 in front of it, is what we care about here</p>
+<p>Once again, because <span class="math inline">\(g(x)\)</span> is a <strong>natural</strong> spline, it is linear at the two end pieces, so that the first and last terms here are both zero (since the third derivative of any line <span class="math inline">\(mx + b\)</span> is zero):</p>
+<p><span class="math display">\[
+\int_{a}^{b}g'''(x)h'(x)dx = \sum_{i=1}^{n-1}\int_{\xi_i}^{\xi_{i+1}}g'''(x)h'(x)dx
+\]</span></p>
+<p>Then, since we defined <span class="math inline">\(g(x)\)</span> as a natural <strong>cubic</strong> spline, within each piece of the domain <span class="math inline">\([\xi_i, \xi_{i+1}]\)</span> the <span class="math inline">\(g'''(x)\)</span> term in the integral is some <strong>constant</strong>, which we’ll label using <span class="math inline">\(c_i\)</span>: <span class="math inline">\(c_1\)</span> will be the constant third derivative of <span class="math inline">\(g\)</span> between <span class="math inline">\(\xi_1\)</span> and <span class="math inline">\(\xi_2\)</span>, <span class="math inline">\(c_2\)</span> will be the constant third derivative of <span class="math inline">\(g\)</span> between <span class="math inline">\(\xi_2\)</span> and <span class="math inline">\(\xi_3\)</span>, and so on:</p>
+<p><span class="math display">\[
+\int_{a}^{b}g'''(x)h'(x)dx = \sum_{i=1}^{n-1}c_i\int_{\xi_i}^{\xi_{i+1}}h'(x)dx
+\]</span></p>
+<p>Rewriting it like this means that we’ve simplified the integral down to just the definite integral of a <strong>derivative</strong> <span class="math inline">\(h'(x)\)</span>, which we know from calculus is defined to be just the difference between the values of the <strong>antiderivative</strong>, <span class="math inline">\(h(x)\)</span>, at the two endpoints of the integral:</p>
+<p><span class="math display">\[
+\int_{a}^{b}g'''(x)h'(x)dx = \sum_{i=1}^{n-1}c_i\left[h(\xi_{i+1}) - h(\xi_i))\right]
+\]</span></p>
+<p>But now we’ve hit a “finish line”, finally, since both <span class="math inline">\(h(\xi_{i+1})\)</span> and <span class="math inline">\(h(\xi_i)\)</span> are <strong>zero!</strong> Since <span class="math inline">\(g(x)\)</span> and <span class="math inline">\(f(x)\)</span> both <strong>perfectly interpolate</strong> the points <span class="math inline">\((x_1,y_1)\)</span> through <span class="math inline">\((x_n,y_n)\)</span>, the difference <span class="math inline">\(h(x)\)</span> between <span class="math inline">\(f(x)\)</span> and <span class="math inline">\(g(x)\)</span> at these points will be exactly zero: <span class="math inline">\(\int_{a}^{b}g'''(x)h'(x)dx = 0\)</span></p>
+<p>Since we’ve now shown that the term with the 2 in front of it in <a href="#eq-expanded-f" class="quarto-xref">Equation&nbsp;3</a> is exactly 0, this equation simplifies to just</p>
+<p><span class="math display">\[
+\int_{a}^{b}\left[ f''(x) \right]^2dx = \int_{a}^{b}\left[ g''(x) \right]^2dx + \int_{a}^{b}\left[ h''(x) \right]^2dx
+\]</span></p>
+<p>But, if we plug the right hand side of this expression back in for <span class="math inline">\(\int_{a}^{b}\left[ f''(x) \right]^2dx\)</span> in the inequality <a href="#eq-more-wiggly" class="quarto-xref">Equation&nbsp;2</a> that “encoded” our original assumption, we get</p>
+<p><span class="math display">\[
+\int_{a}^{b}\left[ g''(x) \right]^2dx + \int_{a}^{b}\left[ h''(x) \right]^2dx &lt; \int_{a}^{b}\left[ g''(x) \right]^2dx,
+\]</span></p>
+<p>which can be true only if the term <span class="math inline">\(\int_{a}^{b}\left[ h''(x) \right]^2dx\)</span> is negative… but this term <em>can’t</em> be negative, since it’s just the sum of a bunch of squared values! Hence,</p>
+<ul>
+<li>We have <strong>arrived at a contradiction</strong>, which means that</li>
+<li>Our original assumption that there is some <span class="math inline">\(f(x)\)</span> less “wiggly” than the Smoothing Spline <span class="math inline">\(g(x)\)</span>, and thus</li>
+<li>It must be the case that <strong>no such <span class="math inline">\(f(x)\)</span> exists</strong>, as we wanted to show.</li>
+</ul>
 </div>
 </div>
 </div>
+</section>
+<section id="smoothing-splines-in-practice-with-scipy" class="level2">
+<h2 class="anchored" data-anchor-id="smoothing-splines-in-practice-with-scipy">Smoothing Splines in Practice with <code>scipy</code></h2>
+<p>If you made it through the proof, you saw that at two key points we invoked <strong>special properties</strong> of the Smoothing Spline <span class="math inline">\(g(x)\)</span> to make it “work”. If you didn’t look at the proof, no worries! You can just understand these as, the two “core” properties of Smoothing Splines which ensure that they are the uniquely-optimal loss-versus-wigglyness-balancing functions (i.e., they are the functions which will always minimize <a href="#eq-smoothing-opt" class="quarto-xref">Equation&nbsp;1</a>):</p>
+<ol type="1">
+<li>The “end pieces” of <span class="math inline">\(g(x)\)</span> — the form that it takes on for <span class="math inline">\(x \in [a,\xi_0]\)</span> and <span class="math inline">\(x \in [\xi_n,b]\)</span> — are <strong>lines</strong>, thus preventing the function from rapidly “shooting off” into infinity or negative-infinity for values only slightly outside of the range of our datapoints</li>
+<li>The <strong>middle</strong> pieces of the function — the form that it takes on for <span class="math inline">\(x \in [\xi_0,\xi_1]\)</span>, <span class="math inline">\(x \in [\xi_1, \xi_2]\)</span>, and so on up to <span class="math inline">\(x \in [\xi_{n-1},\xi_n]\)</span> — are <strong>cubic polynomials</strong> which <strong>cannot be made less wiggly</strong> unless we <strong>abandon the requirement that they perfectly pass through each point</strong>, which is exactly what we use the <span class="math inline">\(\lambda\)</span> penalty parameter to accomplish!</li>
+</ol>
+<p>As mentioned above, rather than “manually” choosing different values for <span class="math inline">\(\lambda\)</span> and then carrying out Cross-Validation to try and find which value is best, <code>scipy</code> has an implementation of Smoothing Spline estimation that uses an even fancier adaptive method called “Generalized Cross-Validation” to achieve this goal for you!</p>
+<p>To see it in action, consider the following code, adapted from the <a href="https://docs.scipy.org/doc/scipy/tutorial/interpolate/smoothing_splines.html"><code>scipy</code> User Guide</a>, which carries out the following steps:</p>
+<ol type="1">
+<li>It constructs a dataset (<code>X</code>,<code>y</code>) as “noisy” <span class="math inline">\(\sin(\cdot)\)</span> values <span class="math inline">\(y_i = \sin(x_i) + \varepsilon_i\)</span>, where the <span class="math inline">\(\varepsilon\)</span> values are Normally-distributed with mean <code>0</code> and standard deviation <code>0.5</code>. The <em>non</em>-noisy <span class="math inline">\(y = \sin(x)\)</span> function (the true DGP) is plotted in grey.</li>
+<li>It then constructs the (non-penalized, i.e., <span class="math inline">\(\lambda = 0\)</span>) <strong>Natural Cubic Spline</strong> with knots at each datapoint, by calling <code>scipy</code>’s <code>make_smoothing_spline()</code> function with <code>lam=0</code>, producing the blue line which perfectly fits each point (and thus <strong>overfits</strong> the data relative to the true DGP in grey)</li>
+<li>Next it constructs <strong>penalized</strong> splines, one with a small <span class="math inline">\(\lambda\)</span> value of <code>0.01</code> and another with a higher <span class="math inline">\(\lambda\)</span> value of <code>50</code>, producing the orange and green lines respectively. We can see that the orange line is pulled <em>slightly</em> away from the non-penalized blue line, and closer to the true DGP line, but the green line has been pulled <strong>too far</strong>: a spline with such a harsh wigglyness penalty is no longer flexible enough to learn the underlying <span class="math inline">\(y = \sin(x)\)</span> pattern!</li>
+<li>Finally, it asks <code>scipy</code> to use <strong>[Generalized] Cross-Validation</strong> to figure out the <strong>optimal</strong> <span class="math inline">\(\lambda\)</span> value</li>
+</ol>
+<div id="7cca42b4" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This code block is just *copied* from scipy's source</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># code, since I had to *modify* `make_smoothing_spline()`</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># to force it to return the GCV-optimized lambda value...</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Skip this one and look at the next code cell!</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.interpolate <span class="im">import</span> BSpline</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.linalg <span class="im">import</span> solve_banded</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.interpolate._bsplines <span class="im">import</span> _compute_optimal_gcv_parameter</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> custom_normalize_axis_index(axis, ndim):</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check if `axis` is in the correct range and normalize it</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> axis <span class="op">&lt;</span> <span class="op">-</span>ndim <span class="kw">or</span> axis <span class="op">&gt;=</span> ndim:</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        msg <span class="op">=</span> <span class="ss">f"axis </span><span class="sc">{</span>axis<span class="sc">}</span><span class="ss"> is out of bounds for array of dimension </span><span class="sc">{</span>ndim<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> AxisError(msg)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> axis <span class="op">&lt;</span> <span class="dv">0</span>:</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        axis <span class="op">=</span> axis <span class="op">+</span> ndim</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> axis</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _coeff_of_divided_diff(x):</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> x.shape[<span class="dv">0</span>]</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> np.zeros(n)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        pp <span class="op">=</span> <span class="fl">1.</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> k <span class="op">!=</span> i:</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>                pp <span class="op">*=</span> (x[i] <span class="op">-</span> x[k])</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        res[i] <span class="op">=</span> <span class="fl">1.</span> <span class="op">/</span> pp</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> res</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> custom_make_smoothing_spline(x, y, w<span class="op">=</span><span class="va">None</span>, lam<span class="op">=</span><span class="va">None</span>, <span class="op">*</span>, axis<span class="op">=</span><span class="dv">0</span>):</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.ascontiguousarray(x, dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.ascontiguousarray(y, dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">any</span>(x[<span class="dv">1</span>:] <span class="op">-</span> x[:<span class="op">-</span><span class="dv">1</span>] <span class="op">&lt;=</span> <span class="dv">0</span>):</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">'``x`` should be an ascending array'</span>)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> x.ndim <span class="op">!=</span> <span class="dv">1</span> <span class="kw">or</span> x.shape[<span class="dv">0</span>] <span class="op">!=</span> y.shape[axis]:</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="ss">f'``x`` should be 1D and </span><span class="sc">{</span>x<span class="sc">.</span>shape <span class="op">=</span> <span class="sc">}</span><span class="ss"> == </span><span class="sc">{</span>y<span class="sc">.</span>shape <span class="op">=</span> <span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> w <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>        w <span class="op">=</span> np.ones(<span class="bu">len</span>(x))</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>        w <span class="op">=</span> np.ascontiguousarray(w)</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">any</span>(w <span class="op">&lt;=</span> <span class="dv">0</span>):</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">'Invalid vector of weights'</span>)</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> np.r_[[x[<span class="dv">0</span>]] <span class="op">*</span> <span class="dv">3</span>, x, [x[<span class="op">-</span><span class="dv">1</span>]] <span class="op">*</span> <span class="dv">3</span>]</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> x.shape[<span class="dv">0</span>]</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n <span class="op">&lt;=</span> <span class="dv">4</span>:</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">'``x`` and ``y`` length must be at least 5'</span>)</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Internals assume that the data axis is the zero-th axis</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    axis <span class="op">=</span> custom_normalize_axis_index(axis, y.ndim)</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.moveaxis(y, axis, <span class="dv">0</span>)</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    <span class="co"># flatten the trailing axes of y to simplify further manipulations</span></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    y_shape1 <span class="op">=</span> y.shape[<span class="dv">1</span>:]</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> y_shape1 <span class="op">!=</span> ():</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> y.reshape((n, <span class="op">-</span><span class="dv">1</span>))</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>    <span class="co"># It is known that the solution to the stated minimization problem exists</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>    <span class="co"># and is a natural cubic spline with vector of knots equal to the unique</span></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    <span class="co"># elements of ``x`` [3], so we will solve the problem in the basis of</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    <span class="co"># natural splines.</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    <span class="co"># create design matrix in the B-spline basis</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    X_bspl <span class="op">=</span> BSpline.design_matrix(x, t, <span class="dv">3</span>)</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    <span class="co"># move from B-spline basis to the basis of natural splines using equations</span></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>    <span class="co"># (2.1.7) [4]</span></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>    <span class="co"># central elements</span></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> np.zeros((<span class="dv">5</span>, n))</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">4</span>):</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>        X[i, <span class="dv">2</span>: <span class="op">-</span><span class="dv">2</span>] <span class="op">=</span> X_bspl[i: i <span class="op">-</span> <span class="dv">4</span>, <span class="dv">3</span>: <span class="op">-</span><span class="dv">3</span>][np.diag_indices(n <span class="op">-</span> <span class="dv">4</span>)]</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>    <span class="co"># first elements</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>    X[<span class="dv">1</span>, <span class="dv">1</span>] <span class="op">=</span> X_bspl[<span class="dv">0</span>, <span class="dv">0</span>]</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>    X[<span class="dv">2</span>, :<span class="dv">2</span>] <span class="op">=</span> ((x[<span class="dv">2</span>] <span class="op">+</span> x[<span class="dv">1</span>] <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> x[<span class="dv">0</span>]) <span class="op">*</span> X_bspl[<span class="dv">0</span>, <span class="dv">0</span>],</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>                X_bspl[<span class="dv">1</span>, <span class="dv">1</span>] <span class="op">+</span> X_bspl[<span class="dv">1</span>, <span class="dv">2</span>])</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>    X[<span class="dv">3</span>, :<span class="dv">2</span>] <span class="op">=</span> ((x[<span class="dv">2</span>] <span class="op">-</span> x[<span class="dv">0</span>]) <span class="op">*</span> X_bspl[<span class="dv">1</span>, <span class="dv">1</span>], X_bspl[<span class="dv">2</span>, <span class="dv">2</span>])</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>    <span class="co"># last elements</span></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>    X[<span class="dv">1</span>, <span class="op">-</span><span class="dv">2</span>:] <span class="op">=</span> (X_bspl[<span class="op">-</span><span class="dv">3</span>, <span class="op">-</span><span class="dv">3</span>], (x[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span> x[<span class="op">-</span><span class="dv">3</span>]) <span class="op">*</span> X_bspl[<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">2</span>])</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>    X[<span class="dv">2</span>, <span class="op">-</span><span class="dv">2</span>:] <span class="op">=</span> (X_bspl[<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">3</span>] <span class="op">+</span> X_bspl[<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">2</span>],</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>                 (<span class="dv">2</span> <span class="op">*</span> x[<span class="op">-</span><span class="dv">1</span>] <span class="op">-</span> x[<span class="op">-</span><span class="dv">2</span>] <span class="op">-</span> x[<span class="op">-</span><span class="dv">3</span>]) <span class="op">*</span> X_bspl[<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>    X[<span class="dv">3</span>, <span class="op">-</span><span class="dv">2</span>] <span class="op">=</span> X_bspl[<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>    <span class="co"># create penalty matrix and divide it by vector of weights: W^{-1} E</span></span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>    wE <span class="op">=</span> np.zeros((<span class="dv">5</span>, n))</span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>    wE[<span class="dv">2</span>:, <span class="dv">0</span>] <span class="op">=</span> _coeff_of_divided_diff(x[:<span class="dv">3</span>]) <span class="op">/</span> w[:<span class="dv">3</span>]</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>    wE[<span class="dv">1</span>:, <span class="dv">1</span>] <span class="op">=</span> _coeff_of_divided_diff(x[:<span class="dv">4</span>]) <span class="op">/</span> w[:<span class="dv">4</span>]</span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">2</span>, n <span class="op">-</span> <span class="dv">2</span>):</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>        wE[:, j] <span class="op">=</span> (x[j<span class="op">+</span><span class="dv">2</span>] <span class="op">-</span> x[j<span class="op">-</span><span class="dv">2</span>]) <span class="op">*</span> _coeff_of_divided_diff(x[j<span class="op">-</span><span class="dv">2</span>:j<span class="op">+</span><span class="dv">3</span>])<span class="op">\</span></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>                   <span class="op">/</span> w[j<span class="op">-</span><span class="dv">2</span>: j<span class="op">+</span><span class="dv">3</span>]</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>    wE[:<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">2</span>] <span class="op">=</span> <span class="op">-</span>_coeff_of_divided_diff(x[<span class="op">-</span><span class="dv">4</span>:]) <span class="op">/</span> w[<span class="op">-</span><span class="dv">4</span>:]</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>    wE[:<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>] <span class="op">=</span> _coeff_of_divided_diff(x[<span class="op">-</span><span class="dv">3</span>:]) <span class="op">/</span> w[<span class="op">-</span><span class="dv">3</span>:]</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>    wE <span class="op">*=</span> <span class="dv">6</span></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> lam <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>        lam <span class="op">=</span> _compute_optimal_gcv_parameter(X, wE, y, w)</span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> lam <span class="op">&lt;</span> <span class="fl">0.</span>:</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">'Regularization parameter should be non-negative'</span>)</span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>    <span class="co"># solve the initial problem in the basis of natural splines</span></span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> np.ndim(lam) <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>        c <span class="op">=</span> solve_banded((<span class="dv">2</span>, <span class="dv">2</span>), X <span class="op">+</span> lam <span class="op">*</span> wE, y)</span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> np.ndim(lam) <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>        <span class="co"># XXX: solve_banded does not suppport batched `ab` matrices; loop manually</span></span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>        c <span class="op">=</span> np.empty((n, lam.shape[<span class="dv">0</span>]))</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(lam.shape[<span class="dv">0</span>]):</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>            c[:, i] <span class="op">=</span> solve_banded((<span class="dv">2</span>, <span class="dv">2</span>), X <span class="op">+</span> lam[i] <span class="op">*</span> wE, y[:, i])</span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>        <span class="co"># this should not happen, ever</span></span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(<span class="st">"Internal error, please report it to SciPy developers."</span>)</span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> c.reshape((c.shape[<span class="dv">0</span>], <span class="op">*</span>y_shape1))</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>    <span class="co"># hack: these are c[0], c[1] etc, shape-compatible with np.r_ below</span></span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>    c0, c1 <span class="op">=</span> c[<span class="dv">0</span>:<span class="dv">1</span>, ...], c[<span class="dv">1</span>:<span class="dv">2</span>, ...]     <span class="co"># c[0], c[1]</span></span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>    cm0, cm1 <span class="op">=</span> c[<span class="op">-</span><span class="dv">1</span>:<span class="op">-</span><span class="dv">2</span>:<span class="op">-</span><span class="dv">1</span>, ...], c[<span class="op">-</span><span class="dv">2</span>:<span class="op">-</span><span class="dv">3</span>:<span class="op">-</span><span class="dv">1</span>, ...]    <span class="co"># c[-1], c[-2]</span></span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>    <span class="co"># move back to B-spline basis using equations (2.2.10) [4]</span></span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>    c_ <span class="op">=</span> np.r_[c0 <span class="op">*</span> (t[<span class="dv">5</span>] <span class="op">+</span> t[<span class="dv">4</span>] <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> t[<span class="dv">3</span>]) <span class="op">+</span> c1,</span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a>               c0 <span class="op">*</span> (t[<span class="dv">5</span>] <span class="op">-</span> t[<span class="dv">3</span>]) <span class="op">+</span> c1,</span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>               c[<span class="dv">1</span>: <span class="op">-</span><span class="dv">1</span>, ...],</span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>               cm0 <span class="op">*</span> (t[<span class="op">-</span><span class="dv">4</span>] <span class="op">-</span> t[<span class="op">-</span><span class="dv">6</span>]) <span class="op">+</span> cm1,</span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a>               cm0 <span class="op">*</span> (<span class="dv">2</span> <span class="op">*</span> t[<span class="op">-</span><span class="dv">4</span>] <span class="op">-</span> t[<span class="op">-</span><span class="dv">5</span>] <span class="op">-</span> t[<span class="op">-</span><span class="dv">6</span>]) <span class="op">+</span> cm1]</span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> BSpline.construct_fast(t, c_, <span class="dv">3</span>, axis<span class="op">=</span>axis), lam</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="cell-smoothing-splines" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(seed<span class="op">=</span><span class="dv">5300</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.interpolate <span class="im">import</span> make_smoothing_spline</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>X_domain <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">9</span><span class="op">/</span><span class="dv">4</span>, <span class="dv">1</span><span class="op">/</span><span class="dv">50</span>) <span class="op">*</span> np.pi</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">2</span><span class="op">*</span>np.pi<span class="op">+</span>np.pi<span class="op">/</span><span class="dv">4</span>, <span class="dv">2</span><span class="op">*</span>np.pi<span class="op">/</span><span class="dv">16</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>y_raw <span class="op">=</span> np.sin(X)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> y_raw <span class="op">+</span> rng.normal(loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span><span class="fl">0.5</span>, size<span class="op">=</span><span class="bu">len</span>(X))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting:</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">5</span>))<span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the "true" data-generating process, sin(x)</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>plt.plot(X_domain, np.sin(X_domain), <span class="st">'-'</span>, label<span class="op">=</span><span class="vs">fr'</span><span class="dv">$\s</span><span class="vs">in</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="dv">$</span><span class="vs">'</span>, color<span class="op">=</span><span class="st">'black'</span>, alpha<span class="op">=</span><span class="fl">0.4</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot smoothing splines with progressively-greater</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># roughness penalties, plus the smoothing spline obtained</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># via the *optimal* Cross-Validated lambda value</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> lam <span class="kw">in</span> [<span class="dv">0</span>, <span class="fl">0.005</span>, <span class="dv">40</span>, <span class="va">None</span>]:</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    spl, opt_lam <span class="op">=</span> custom_make_smoothing_spline(X, y, lam<span class="op">=</span>lam)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    lam_label <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>lam<span class="sc">}</span><span class="ss">"</span> <span class="cf">if</span> lam <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="cf">else</span> <span class="ss">f"</span><span class="sc">{</span>opt_lam<span class="sc">:.2f}</span><span class="ss">"</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> lam <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>      <span class="bu">print</span>(<span class="ss">f"Optimal λ value: </span><span class="sc">{</span>lam_label<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    plt.plot(X_domain, spl(X_domain), <span class="st">'-.'</span>, label<span class="op">=</span><span class="vs">fr'</span><span class="dv">$</span><span class="er">\</span><span class="vs">lambda=</span><span class="dv">$</span><span class="sc">{</span>lam_label<span class="sc">}</span><span class="vs">'</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>plt.plot(X, y, <span class="st">'o'</span>, color<span class="op">=</span><span class="st">'black'</span>, alpha<span class="op">=</span><span class="fl">0.75</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimal λ value: 0.27</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/smoothing-splines-output-2.png" id="smoothing-splines" class="quarto-figure quarto-figure-center anchored figure-img" width="507" height="411"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>And we see that, the <strong>Cross-Validation</strong> procedure gives <code>0.27</code> as the <strong>optimal</strong> <span class="math inline">\(\lambda\)</span> value, and the resulting line (in red) comes closest among all of the lines to the <strong>true</strong> Data-Generating Process of <span class="math inline">\(y = \sin(x)\)</span>!</p>
 
 
 
@@ -683,11 +957,12 @@ Wood, Simon N. 2017. <em><a href="https://www.dropbox.com/scl/fi/9fmsz7izuz8pobi
 </div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>We should be concerned about this “wigglyness” because, the more that <span class="math inline">\(\hat{f}(x)\)</span> “swerves” up and down rapidly across the domain of <span class="math inline">\(X\)</span>, the more likely it is that we’re <strong>overfitting</strong> the data. Recall the “extreme limit” of overfitting from the Quiz 5 study guide: given the objective of minimizing MSE alone, model-estimation software can always derive a degree-<span class="math inline">\(N\)</span> polynomial that “swerves” perfectly to pass through <span class="math inline">\(N\)</span> datapoints, achieving the lowest possible MSE 0.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>That is, nothing in our set of assumptions in this case implied <em>a priori</em> that we would need to “chop” the input space up into pieces and model each piece separately<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Note that this is <em>not</em> an “official” name — in fact, I don’t think I’ve ever heard someone call it this — but since I want to introduce you to the notion of how you might <strong>prove</strong> this property of Smoothing Splines (see the optional proof box), I’m stating it here explicitly as a Theorem rather than something you need to just take on faith!<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>For both Regression and Smoothing Splines, the answer to <em>“how do I choose the parameter values?”</em> will be, <strong>Cross Validation!</strong> But, a huge advantage of Smoothing Splines, as you’ll see, is that you’ll only need to optimize exactly <strong>one</strong> parameter, <span class="math inline">\(\lambda\)</span>, as opposed to the huge range of possible <span class="math inline">\(K\)</span> and <span class="math inline">\(\{\xi_1, \ldots, \xi_k\}\)</span> values you have to optimize for Regression Spline models.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>We should be concerned about this “wigglyness” because, the more that <span class="math inline">\(g(x)\)</span> “swerves” up and down rapidly across the domain of <span class="math inline">\(X\)</span>, the more likely it is that we’re <strong>overfitting</strong> the data. Recall the “extreme limit” of overfitting from the Quiz 5 study guide: given the objective of minimizing MSE alone, model-estimation software can always derive a degree-<span class="math inline">\(N\)</span> polynomial that “swerves” perfectly to pass through <span class="math inline">\(N\)</span> datapoints, achieving the lowest possible MSE 0.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>That is, nothing in our set of assumptions in this case implied <em>a priori</em> that we would need to “chop” the input space up into pieces and model each piece separately<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn4"><p>This is kind of the central difference between our textbook, ISLP, and its more intense older sibling <a href="https://hastie.su.domains/ElemStatLearn/"><em>Elements of Statistical Learning</em></a>, which contains proofs for all of the different equations and formulas we use in this course!<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn5"><p>This specific version is based on the proof given on page 197 of <span class="citation" data-cites="wood_generalized_2017">Wood (<a href="#ref-wood_generalized_2017" role="doc-biblioref">2017</a>)</span><a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>The <span class="math inline">\(\Rightarrow\)</span>s are inferences we’re able to make because of the <strong>linearity</strong> of the derivative operator: the derivative of <span class="math inline">\((f + g)\)</span> is the derivative of <span class="math inline">\(f\)</span> plus the derivative of <span class="math inline">\(g\)</span><a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
