@@ -1,0 +1,12 @@
+featurizer = PolynomialFeatures(degree=len(x_vals), include_bias=False)
+X_poly = featurizer.fit_transform(x_vals.reshape(-1,1))
+
+lm_poly = LinearRegression()
+lm_poly_result = lm_poly.fit(X_poly, y_vals)
+
+---
+
+And, to develop basic intuition for why constraining the **second** derivative $\hat{f}''(x)$ of $\hat{f}$ is the appropriate option, you can think through what constraints on "just" $\hat{f}$ or $\hat{f}'$ would entail: 
+
+* If we penalize high/low values of $\hat{f}(x)$ itself, we just force the function to predict values $\hat{y}$ closer to 0, which is not what we want (for example, if our goal was to predict the GDP $y_i$ of a country from its population $x_i$, we would penalize $\hat{y}$ more and more as it predicted values further from 0... but that's exactly what we want it to do, if we want it to predict e.g. the United States' value of $30 trillion!)
+* If we penalize high/low values of $\hat{f}'(x)$, the **first derivative** of $\hat{f}$, we penalize the function to the extent that it estimates high or low "slopes" as $x$ increases. This is closer to what we want, but has the effect of "pushing" the estimation to favor **flat lines**, when often we **want** 

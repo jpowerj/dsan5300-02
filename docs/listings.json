@@ -2,6 +2,7 @@
   {
     "listing": "/writeups/index.html",
     "items": [
+      "/writeups/smoothing-splines/index.html",
       "/writeups/hw1-guide/index.html",
       "/writeups/quiz-3-appendix/index.html",
       "/writeups/3d-plots/index.html",

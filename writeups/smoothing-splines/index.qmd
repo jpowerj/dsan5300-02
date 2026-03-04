@@ -1,0 +1,111 @@
+---
+title: "Week 7 Missing Piece: Smoothing Splines"
+subtitle: "DSAN 5300: Statistical Learning"
+author: "Jeff Jacobs"
+affiliation: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
+date: 2026-03-02
+bibliography: "../../_DSAN5300.bib"
+csl: "../../chicago-17-no-url.csl"
+sidebar: mainnav
+weeknum: 7
+assignment: "Quiz 8"
+cache: false
+term: current
+categories:
+  - "Extra Writeups"
+format:
+  html:
+    echo: true
+    code-fold: true
+    html-math-method: mathjax
+    df-print: kable
+    toc: true
+    link-external-icon: true
+    link-external-newwindow: true
+---
+
+{{< include ../../dsan-globals/_globals-tex.qmd >}}
+
+In the Monday section (on February 23rd), we covered up through **Regression Splines**, the topic of ISLP Section 7.4. Towards the beginning of the lecture, though, I also gave a brief *conceptual* overview of **Smoothing Splines**, as an alternative way to "arrive at" splines:
+
+With **Regression Splines** we **start** from the **ex**plicit assumption that we're going to "chop" the domain of some feature $X \in [a,b]$ at $K$ **knot points** $\xi_1 < \xi_2 < \cdots < \xi_{k-1} < \xi_k$, thus splitting $[a,b]$ into $K + 1$ separately-modeled pieces $[a,\xi_1], [\xi_1, \xi_2], \ldots, [\xi_{k-1},\xi_k], [\xi_k, b]$. This means that, when estimating a Regression Spline model, we "jump" immediately to the task of choosing the number of knot points $K$ and their locations.
+
+To "arrive at" **Smoothing Splines**, we take an alternative approach. We do **not** jump right into the task of choosing knot points — in fact, we don't assume up front that we'll be "chopping" the domain up at all. Instead, we start with the much more basic assumption that we want to learn a function $\hat{f}(x)$ that does a good job of fitting the data (as measured by MSE, for example, in a regression scenario), but that we also want to somehow **constrain the "wigglyness"** of $\hat{f}(x)$^[We should be concerned about this "wigglyness" because, the more that $\hat{f}(x)$ "swerves" up and down rapidly across the domain of $X$, the more likely it is that we're **overfitting** the data. Recall the "extreme limit" of overfitting from the Quiz 5 study guide: given the objective of minimizing MSE alone, model-estimation software can always derive a degree-$N$ polynomial that "swerves" perfectly to pass through $N$ datapoints, achieving the lowest possible MSE 0.].
+
+How might we **quantify** the degree of "wigglyness" exhibited by a function $\widehat{f}$ over $[a,b]$, the domain of $X$? At this level of abstraction there may be an aesthetic aspect here, where one person's intuition may not exactly match with another person's, but if we more concretely focus on the *kinds* of "wigglyness" that tend to indicate **overfitting**, we can think of a degree-$N$ polynomial fit to $N$ datapoints as the canonical example:
+
+```{python}
+#| label: polyfit-perfect
+#| warning: false
+import pandas as pd
+import numpy as np
+rng = np.random.default_rng(seed=5300)
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+
+X = np.arange(1, 11, 1)
+y = rng.uniform(0, 100, size=len(X))
+data_df = pd.DataFrame({
+  'x': X, 'y': y
+})
+
+# coefs = np.polyfit(X.flatten(), y.flatten(), len(X))
+# print(coefs)
+# est_poly = np.poly1d(coefs)
+# print(est_poly)
+
+# y_pred_np = est_poly(X.flatten())
+# print(y_pred_np)
+
+sns.regplot(
+  data_df,
+  x='x', y='y',
+  order=len(X),
+  ci=None,
+);
+plt.show()
+```
+
+The massive "swerve" between $x = 1$ and $x = 2$ — where although all the true $y$ values are positive, $\hat{f}$ predicts values down near -400 as it moves from 0 to 1 — is what we'd like to penalize, and (for the reasons discussed in lecture) we can achieve this by applying a penalty $\lambda$ to the [continuous] **"sum" of squared second derivatives**, giving us the following "Error + Complexity Penalty" optimization task, much like Lasso's:
+
+  $$
+  \hat{f}^* = \argmin_{\hat{f}}\left[ 
+    ~\underbrace{\sum_{i=1}^{n}(y_i - \hat{f}(x_i))^2}_{\mathclap{\small\text{Mean Squared Error (MSE)}}} 
+    + \overbrace{\lambda}^{\mathclap{\text{Penalty}}} \underbrace{\int_{a}^{b} \left[\hat{f}''(x)\right]^2dx}_{\text{Total Wigglyness}}
+  \right].
+  $$ {#eq-smoothing-opt}
+
+What makes this approach relevant to our current topic is that, in fact, even though we didn't **start out** assuming that we wanted to use a spline approach^[That is, nothing in our set of assumptions in this case implied *a priori* that we would need to "chop" the input space up into pieces and model each piece separately], the fitted model that will achieve this optimal wigglyness-penalized objective is in fact a type of spline called a **Smoothing Spline 🤯**, which is similar but not identical to a Regression Spline. So, in this writeup I want to flesh out the details of what exactly a Smoothing Spline **is**, in more depth than I was able to cover in class.
+
+## The "Smoothing Spline Theorem"
+
+The unique function $\hat{f}$ which is capable of jointly satisfying these constraints (minimizing loss **subject to** a given "wigglyness" penalty $\lambda$) is in fact a special kind of spline that we covered in class: a **Natural Cubic Spline**. Whereas a Cubic Spline in general estimates separate Cubic Polynomial Regressions for each "piece" of the domain of $X$ listed above, a **Natural** Cubic Spline is one which reduces the "roughness" of $\hat{f}$ at the two extreme ends of $X$'s domain (the points close to $a$ and the points close to $b$) by enforcing that a simpler **linear** (rather than cubic) fit should be estimated for the **first piece** $[a,\xi_1]$ and the **last piece** $[\xi_k, b]$ of $X$'s domain.
+
+The "Smoothing Spline Theorem"^[Note that this is *not* an "official" name — in fact, I don't think I've ever heard someone call it this — but since I want to introduce you to the notion of how you might **prove** this property of Smoothing Splines (see the optional proof box), I'm stating it here explicitly as a Theorem rather than something you need to just take on faith!] says that if we construct a **Natural Spline** with **knots located at each unique $x$ value in a given dataset**, this Natural Spline is **guaranteed** to minimize our original criterion in @eq-smoothing-opt!
+
+::: {.callout-tip title="The (Optional) *Proof*" collapse="false"}
+
+You may have noticed that I usually try **not** to include proofs in my slides^[This is kind of the central difference between our textbook, ISLP, and its more intense older sibling [*Elements of Statistical Learning*](https://hastie.su.domains/ElemStatLearn/), which contains proofs for all of the different equations and formulas we use in this course!], since they can be scary and 99.9% of the time they don't add enough to the learning to make that scariness worth it. 
+
+In this case though, if you're feeling courageous about using the extra time you might have during Spring Break to "deep dive" ISLP content, this may be a perfect **first proof** for you!^[This specific version is based on the proof given on page 197 of @wood_generalized_2017] It has a structure that is used over and over again in statistics, since it's how we justify calling something **"the" optimal solution** to some given problem.
+
+In this case, we'd like to prove that **Smoothing Splines** are **the** optimal solution to the minimization problem in @eq-smoothing-opt. To accomplish this, we'll carry out a **proof by contradiction**:
+
+* We'll start by assuming that we are **wrong**, and that there **is** some other function $\tilde{f}$ that achieves an even better loss-wigglyness balance,
+* But then we will derive a **logical contradiction** from this assumption,
+* Which will thus indicate that our original assumption must have been **incorrect**, and that there is in fact **no** other function $\tilde{f}$ that achieves a better balance than $\hat{f}$
+
+So, let's start with the assumption, that there **is** another function $\tilde{f}$ that achieves a lower penalized loss value than the Smoothing Spline $\hat{f}$. Then, since the MSE term can always be minimized to zero by **perfectly fitting** the $N$ datapoints, the "advantage" of $\tilde{f}$ over $\hat{f}$ must come from the second "wigglyness" term. Define $h(x) = \hat{f}(x) - \tilde{f}(x)$. Then, our assumption that $\tilde{f}(x)$ has a lower wigglyness than $\hat{f}(x)$ means
+
+$$
+\begin{aligned}
+&\int_{a}^{b} \hat{f}''(x)^2 dx = \int_{a}^{b}\left(\tilde{f}''(x) + h''(x)\right)^2 dx \\
+&= \int_{a}^{b}\tilde{f}''(x)^2 + \int_{a}^{b}h''(x)^2 + 2\int_{a}^{b}\tilde{f}''(x)h''(x)dx
+\end{aligned}
+$$
+
+That last term, with the 2 in front of it, is what we care about here
+
+:::
