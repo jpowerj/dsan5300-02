@@ -85,7 +85,7 @@ set.seed(5300)
 
 * Most important **building block** for SVMs...
 * But should **not** be used on its own! For reasons we'll see shortly
-  * (Like "Linear Probability Models" or "Quadratic Splines", MMCs highlight problem that [usable method] solves!)
+  * (Like "Linear Probability Models", MMCs highlight problem that [usable method] solves!)
 * MMC $\leadsto$ Support Vector Classifiers (can be used)
 * MMC $\leadsto$ Support Vector Machines (can be used)
 
@@ -216,7 +216,7 @@ base_plot +
 
 ## Separating Hyperplanes {.crunch-title .title-09 .crunch-quarto-figure .crunch-ul}
 
-* Any line which **perfectly separates** positive from negative cases is a **separating hyperplane**
+* Any line which **perfectly separates** positive from negative cases is a **separating hyperplane** \[[Demo](https://observablehq.com/@jpowerj/separating-hyperplanes)\]
 
 ```{r}
 #| label: sep-lines-plot
@@ -529,7 +529,7 @@ nonsep_plot +
 
 ## Perfect vs. Good
 
-* In fact, "sub-optimal" may be better than optimal, in terms of overfitting!
+* In fact, "sub-optimal" may be **better than optimal**, in terms of overfitting!
 
 ![ISLR Figure 9.5: Notice how the dashed line on the right side may be better in terms of **generalization**, even though the solid line is the **optimal** Max-Margin Hyperplane!](images/9_5.svg){fig-align="center"}
 
@@ -947,7 +947,7 @@ $$
 * Rather than one parameter $\beta_j$ per *feature*, we have one parameter $\alpha_i$ per *observation*
 * At first this seems worse, since usually $n > p$... But we're saved by **support vectors!**
 * Since the margin itself is only a function of the support vectors (not *every* vector---remember that margin $\neq$ average distance!), $\alpha_i > 0$ only when $\mathbf{x}_i$ a support vector! 
-* Thus the equation becomes $f(\mathbf{x}) = \beta_0 + \sum_{i \in \mathcal{SV}} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle$, and there's one step left...
+* So the equation becomes $f(\mathbf{x}) = \beta_0 + \sum_{i \in \mathcal{SV}} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle$, just one step left...
 * **Kernel** $K$ = **similarity function** (generalization of inner product!)
 
 $$

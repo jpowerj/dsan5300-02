@@ -487,7 +487,7 @@ window.Quarto = {
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2026-03-04, 08:12:05 AM</em></p>
+<p><em>Updated 2026-03-09, 05:46:12 PM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -700,7 +700,7 @@ window.Quarto = {
 <li>Most important <strong>building block</strong> for SVMs…</li>
 <li>But should <strong>not</strong> be used on its own! For reasons we’ll see shortly
 <ul>
-<li>(Like “Linear Probability Models” or “Quadratic Splines”, MMCs highlight problem that [usable method] solves!)</li>
+<li>(Like “Linear Probability Models”, MMCs highlight problem that [usable method] solves!)</li>
 </ul></li>
 <li>MMC <span class="math inline">\(\leadsto\)</span> Support Vector Classifiers (can be used)</li>
 <li>MMC <span class="math inline">\(\leadsto\)</span> Support Vector Machines (can be used)</li>
@@ -840,7 +840,7 @@ window.Quarto = {
 <section id="separating-hyperplanes" class="level2 crunch-title title-09 crunch-quarto-figure crunch-ul">
 <h2 class="crunch-title title-09 crunch-quarto-figure crunch-ul anchored" data-anchor-id="separating-hyperplanes">Separating Hyperplanes</h2>
 <ul>
-<li>Any line which <strong>perfectly separates</strong> positive from negative cases is a <strong>separating hyperplane</strong></li>
+<li>Any line which <strong>perfectly separates</strong> positive from negative cases is a <strong>separating hyperplane</strong> [<a href="https://observablehq.com/@jpowerj/separating-hyperplanes">Demo</a>]</li>
 </ul>
 <div class="cell" data-layout-align="center" data-crop="false">
 <details class="code-fold">
@@ -1198,7 +1198,7 @@ Adding another scale for shape, which will replace the existing scale.</code></p
 <section id="perfect-vs.-good" class="level2">
 <h2 class="anchored" data-anchor-id="perfect-vs.-good">Perfect vs.&nbsp;Good</h2>
 <ul>
-<li>In fact, “sub-optimal” may be better than optimal, in terms of overfitting!</li>
+<li>In fact, “sub-optimal” may be <strong>better than optimal</strong>, in terms of overfitting!</li>
 </ul>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1672,7 +1672,7 @@ f(\mathbf{x}) = \beta_0 + \sum_{i=1}^{n} \alpha_i \langle \mathbf{x}, \mathbf{x}
 <li>Rather than one parameter <span class="math inline">\(\beta_j\)</span> per <em>feature</em>, we have one parameter <span class="math inline">\(\alpha_i\)</span> per <em>observation</em></li>
 <li>At first this seems worse, since usually <span class="math inline">\(n &gt; p\)</span>… But we’re saved by <strong>support vectors!</strong></li>
 <li>Since the margin itself is only a function of the support vectors (not <em>every</em> vector—remember that margin <span class="math inline">\(\neq\)</span> average distance!), <span class="math inline">\(\alpha_i &gt; 0\)</span> only when <span class="math inline">\(\mathbf{x}_i\)</span> a support vector!</li>
-<li>Thus the equation becomes <span class="math inline">\(f(\mathbf{x}) = \beta_0 + \sum_{i \in \mathcal{SV}} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle\)</span>, and there’s one step left…</li>
+<li>So the equation becomes <span class="math inline">\(f(\mathbf{x}) = \beta_0 + \sum_{i \in \mathcal{SV}} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle\)</span>, just one step left…</li>
 <li><strong>Kernel</strong> <span class="math inline">\(K\)</span> = <strong>similarity function</strong> (generalization of inner product!)</li>
 </ul>
 <p><span class="math display">\[
