@@ -2919,7 +2919,7 @@
     "href": "w03/index.html#but-wait",
     "title": "Week 3: Getting Fancy with Regression",
     "section": "But Wait…",
-    "text": "But Wait…\n\n\n\n\nCode\n# print(mlr_result.summary2(float_format='%.3f'))\nprint(mlr_result.summary2())\n\n\n                 Results: Ordinary least squares\n=================================================================\nModel:              OLS              Adj. R-squared:     0.896   \nDependent Variable: sales            AIC:                780.3622\nDate:               2026-03-09 17:46 BIC:                793.5555\nNo. Observations:   200              Log-Likelihood:     -386.18 \nDf Model:           3                F-statistic:        570.3   \nDf Residuals:       196              Prob (F-statistic): 1.58e-96\nR-squared:          0.897            Scale:              2.8409  \n------------------------------------------------------------------\n                Coef.   Std.Err.     t     P&gt;|t|    [0.025  0.975]\n------------------------------------------------------------------\nIntercept       2.9389    0.3119   9.4223  0.0000   2.3238  3.5540\nTV              0.0458    0.0014  32.8086  0.0000   0.0430  0.0485\nradio           0.1885    0.0086  21.8935  0.0000   0.1715  0.2055\nnewspaper      -0.0010    0.0059  -0.1767  0.8599  -0.0126  0.0105\n-----------------------------------------------------------------\nOmnibus:             60.414       Durbin-Watson:          2.084  \nProb(Omnibus):       0.000        Jarque-Bera (JB):       151.241\nSkew:                -1.327       Prob(JB):               0.000  \nKurtosis:            6.332        Condition No.:          454    \n=================================================================\nNotes:\n[1] Standard Errors assume that the covariance matrix of the\nerrors is correctly specified.\n\n\n\n\n\nCode\nslr_model = smf.ols(\n  formula=\"sales ~ newspaper\",\n  data=ad_df\n)\nslr_result = slr_model.fit()\nprint(slr_result.summary2())\n\n\n                 Results: Ordinary least squares\n==================================================================\nModel:              OLS              Adj. R-squared:     0.047    \nDependent Variable: sales            AIC:                1220.6714\nDate:               2026-03-09 17:46 BIC:                1227.2680\nNo. Observations:   200              Log-Likelihood:     -608.34  \nDf Model:           1                F-statistic:        10.89    \nDf Residuals:       198              Prob (F-statistic): 0.00115  \nR-squared:          0.052            Scale:              25.933   \n-------------------------------------------------------------------\n                Coef.   Std.Err.     t     P&gt;|t|    [0.025   0.975]\n-------------------------------------------------------------------\nIntercept      12.3514    0.6214  19.8761  0.0000  11.1260  13.5769\nnewspaper       0.0547    0.0166   3.2996  0.0011   0.0220   0.0874\n------------------------------------------------------------------\nOmnibus:               6.231        Durbin-Watson:           1.983\nProb(Omnibus):         0.044        Jarque-Bera (JB):        5.483\nSkew:                  0.330        Prob(JB):                0.064\nKurtosis:              2.527        Condition No.:           65   \n==================================================================\nNotes:\n[1] Standard Errors assume that the covariance matrix of the\nerrors is correctly specified.\n\n\n\n\n\nMLR results can be drastically different from SLR results, because of correlations (next slide)\nThis is a good thing! It’s how we’re able to control for confounding variables!",
+    "text": "But Wait…\n\n\n\n\nCode\n# print(mlr_result.summary2(float_format='%.3f'))\nprint(mlr_result.summary2())\n\n\n                 Results: Ordinary least squares\n=================================================================\nModel:              OLS              Adj. R-squared:     0.896   \nDependent Variable: sales            AIC:                780.3622\nDate:               2026-03-16 16:10 BIC:                793.5555\nNo. Observations:   200              Log-Likelihood:     -386.18 \nDf Model:           3                F-statistic:        570.3   \nDf Residuals:       196              Prob (F-statistic): 1.58e-96\nR-squared:          0.897            Scale:              2.8409  \n------------------------------------------------------------------\n                Coef.   Std.Err.     t     P&gt;|t|    [0.025  0.975]\n------------------------------------------------------------------\nIntercept       2.9389    0.3119   9.4223  0.0000   2.3238  3.5540\nTV              0.0458    0.0014  32.8086  0.0000   0.0430  0.0485\nradio           0.1885    0.0086  21.8935  0.0000   0.1715  0.2055\nnewspaper      -0.0010    0.0059  -0.1767  0.8599  -0.0126  0.0105\n-----------------------------------------------------------------\nOmnibus:             60.414       Durbin-Watson:          2.084  \nProb(Omnibus):       0.000        Jarque-Bera (JB):       151.241\nSkew:                -1.327       Prob(JB):               0.000  \nKurtosis:            6.332        Condition No.:          454    \n=================================================================\nNotes:\n[1] Standard Errors assume that the covariance matrix of the\nerrors is correctly specified.\n\n\n\n\n\nCode\nslr_model = smf.ols(\n  formula=\"sales ~ newspaper\",\n  data=ad_df\n)\nslr_result = slr_model.fit()\nprint(slr_result.summary2())\n\n\n                 Results: Ordinary least squares\n==================================================================\nModel:              OLS              Adj. R-squared:     0.047    \nDependent Variable: sales            AIC:                1220.6714\nDate:               2026-03-16 16:10 BIC:                1227.2680\nNo. Observations:   200              Log-Likelihood:     -608.34  \nDf Model:           1                F-statistic:        10.89    \nDf Residuals:       198              Prob (F-statistic): 0.00115  \nR-squared:          0.052            Scale:              25.933   \n-------------------------------------------------------------------\n                Coef.   Std.Err.     t     P&gt;|t|    [0.025   0.975]\n-------------------------------------------------------------------\nIntercept      12.3514    0.6214  19.8761  0.0000  11.1260  13.5769\nnewspaper       0.0547    0.0166   3.2996  0.0011   0.0220   0.0874\n------------------------------------------------------------------\nOmnibus:               6.231        Durbin-Watson:           1.983\nProb(Omnibus):         0.044        Jarque-Bera (JB):        5.483\nSkew:                  0.330        Prob(JB):                0.064\nKurtosis:              2.527        Condition No.:           65   \n==================================================================\nNotes:\n[1] Standard Errors assume that the covariance matrix of the\nerrors is correctly specified.\n\n\n\n\n\nMLR results can be drastically different from SLR results, because of correlations (next slide)\nThis is a good thing! It’s how we’re able to control for confounding variables!",
     "crumbs": [
       "Week 3: {{< var w03.date-md >}}"
     ]
@@ -3144,7 +3144,7 @@
     "href": "w03/slides.html#but-wait",
     "title": "Week 3: Getting Fancy with Regression",
     "section": "But Wait…",
-    "text": "But Wait…\n\n\n\n\nCode\n# print(mlr_result.summary2(float_format='%.3f'))\nprint(mlr_result.summary2())\n\n\n                 Results: Ordinary least squares\n=================================================================\nModel:              OLS              Adj. R-squared:     0.896   \nDependent Variable: sales            AIC:                780.3622\nDate:               2026-03-09 17:46 BIC:                793.5555\nNo. Observations:   200              Log-Likelihood:     -386.18 \nDf Model:           3                F-statistic:        570.3   \nDf Residuals:       196              Prob (F-statistic): 1.58e-96\nR-squared:          0.897            Scale:              2.8409  \n------------------------------------------------------------------\n                Coef.   Std.Err.     t     P&gt;|t|    [0.025  0.975]\n------------------------------------------------------------------\nIntercept       2.9389    0.3119   9.4223  0.0000   2.3238  3.5540\nTV              0.0458    0.0014  32.8086  0.0000   0.0430  0.0485\nradio           0.1885    0.0086  21.8935  0.0000   0.1715  0.2055\nnewspaper      -0.0010    0.0059  -0.1767  0.8599  -0.0126  0.0105\n-----------------------------------------------------------------\nOmnibus:             60.414       Durbin-Watson:          2.084  \nProb(Omnibus):       0.000        Jarque-Bera (JB):       151.241\nSkew:                -1.327       Prob(JB):               0.000  \nKurtosis:            6.332        Condition No.:          454    \n=================================================================\nNotes:\n[1] Standard Errors assume that the covariance matrix of the\nerrors is correctly specified.\n\n\n\n\n\nCode\nslr_model = smf.ols(\n  formula=\"sales ~ newspaper\",\n  data=ad_df\n)\nslr_result = slr_model.fit()\nprint(slr_result.summary2())\n\n\n                 Results: Ordinary least squares\n==================================================================\nModel:              OLS              Adj. R-squared:     0.047    \nDependent Variable: sales            AIC:                1220.6714\nDate:               2026-03-09 17:46 BIC:                1227.2680\nNo. Observations:   200              Log-Likelihood:     -608.34  \nDf Model:           1                F-statistic:        10.89    \nDf Residuals:       198              Prob (F-statistic): 0.00115  \nR-squared:          0.052            Scale:              25.933   \n-------------------------------------------------------------------\n                Coef.   Std.Err.     t     P&gt;|t|    [0.025   0.975]\n-------------------------------------------------------------------\nIntercept      12.3514    0.6214  19.8761  0.0000  11.1260  13.5769\nnewspaper       0.0547    0.0166   3.2996  0.0011   0.0220   0.0874\n------------------------------------------------------------------\nOmnibus:               6.231        Durbin-Watson:           1.983\nProb(Omnibus):         0.044        Jarque-Bera (JB):        5.483\nSkew:                  0.330        Prob(JB):                0.064\nKurtosis:              2.527        Condition No.:           65   \n==================================================================\nNotes:\n[1] Standard Errors assume that the covariance matrix of the\nerrors is correctly specified.\n\n\n\n\nMLR results can be drastically different from SLR results, because of correlations (next slide)\nThis is a good thing! It’s how we’re able to control for confounding variables!"
+    "text": "But Wait…\n\n\n\n\nCode\n# print(mlr_result.summary2(float_format='%.3f'))\nprint(mlr_result.summary2())\n\n\n                 Results: Ordinary least squares\n=================================================================\nModel:              OLS              Adj. R-squared:     0.896   \nDependent Variable: sales            AIC:                780.3622\nDate:               2026-03-16 16:10 BIC:                793.5555\nNo. Observations:   200              Log-Likelihood:     -386.18 \nDf Model:           3                F-statistic:        570.3   \nDf Residuals:       196              Prob (F-statistic): 1.58e-96\nR-squared:          0.897            Scale:              2.8409  \n------------------------------------------------------------------\n                Coef.   Std.Err.     t     P&gt;|t|    [0.025  0.975]\n------------------------------------------------------------------\nIntercept       2.9389    0.3119   9.4223  0.0000   2.3238  3.5540\nTV              0.0458    0.0014  32.8086  0.0000   0.0430  0.0485\nradio           0.1885    0.0086  21.8935  0.0000   0.1715  0.2055\nnewspaper      -0.0010    0.0059  -0.1767  0.8599  -0.0126  0.0105\n-----------------------------------------------------------------\nOmnibus:             60.414       Durbin-Watson:          2.084  \nProb(Omnibus):       0.000        Jarque-Bera (JB):       151.241\nSkew:                -1.327       Prob(JB):               0.000  \nKurtosis:            6.332        Condition No.:          454    \n=================================================================\nNotes:\n[1] Standard Errors assume that the covariance matrix of the\nerrors is correctly specified.\n\n\n\n\n\nCode\nslr_model = smf.ols(\n  formula=\"sales ~ newspaper\",\n  data=ad_df\n)\nslr_result = slr_model.fit()\nprint(slr_result.summary2())\n\n\n                 Results: Ordinary least squares\n==================================================================\nModel:              OLS              Adj. R-squared:     0.047    \nDependent Variable: sales            AIC:                1220.6714\nDate:               2026-03-16 16:10 BIC:                1227.2680\nNo. Observations:   200              Log-Likelihood:     -608.34  \nDf Model:           1                F-statistic:        10.89    \nDf Residuals:       198              Prob (F-statistic): 0.00115  \nR-squared:          0.052            Scale:              25.933   \n-------------------------------------------------------------------\n                Coef.   Std.Err.     t     P&gt;|t|    [0.025   0.975]\n-------------------------------------------------------------------\nIntercept      12.3514    0.6214  19.8761  0.0000  11.1260  13.5769\nnewspaper       0.0547    0.0166   3.2996  0.0011   0.0220   0.0874\n------------------------------------------------------------------\nOmnibus:               6.231        Durbin-Watson:           1.983\nProb(Omnibus):         0.044        Jarque-Bera (JB):        5.483\nSkew:                  0.330        Prob(JB):                0.064\nKurtosis:              2.527        Condition No.:           65   \n==================================================================\nNotes:\n[1] Standard Errors assume that the covariance matrix of the\nerrors is correctly specified.\n\n\n\n\nMLR results can be drastically different from SLR results, because of correlations (next slide)\nThis is a good thing! It’s how we’re able to control for confounding variables!"
   },
   {
     "objectID": "w03/slides.html#correlations-among-features",
@@ -3963,14 +3963,14 @@
     "href": "writeups/machine-learning/index.html#so-whats-the-issue",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "So What’s the Issue?",
-    "text": "So What’s the Issue?\n\n\n\nx &lt;- seq(from = 0, to = 1, by = 0.1)\nn &lt;- length(x)\neps &lt;- rnorm(n, 0, 0.04)\ny &lt;- x + eps\n# But make one big outlier\nmidpoint &lt;- ceiling((3/4)*n)\ny[midpoint] &lt;- 0\nof_data &lt;- tibble::tibble(x=x, y=y)\n# Linear model\nlin_model &lt;- lm(y ~ x)\n# But now polynomial regression\npoly_model &lt;- lm(y ~ poly(x, degree = 10, raw=TRUE))\n#summary(model)\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  labs(\n    title = \"Training Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw=TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  labs(\n    title = \"A Perfect Model?\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\nsummary(lin_model)$r.squared\n\n[1] 0.5502639\n\nget_rss(lin_model)\n\n[1] 0.5720423\n\n\n\nPolynomial Model:\n\n\nsummary(poly_model)$r.squared\n\n[1] 1\n\nget_rss(poly_model)\n\n[1] 0"
+    "text": "So What’s the Issue?\n\n\n\nx &lt;- seq(from = 0, to = 1, by = 0.1)\nn &lt;- length(x)\neps &lt;- rnorm(n, 0, 0.04)\ny &lt;- x + eps\n# But make one big outlier\nmidpoint &lt;- ceiling((3/4)*n)\ny[midpoint] &lt;- 0\nof_data &lt;- tibble::tibble(x=x, y=y)\n# Linear model\nlin_model &lt;- lm(y ~ x)\n# But now polynomial regression\npoly_model &lt;- lm(y ~ poly(x, degree = 10, raw=TRUE))\n#summary(model)\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  labs(\n    title = \"Training Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  geom_point(size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw=TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  labs(\n    title = \"A Perfect Model?\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\nsummary(lin_model)$r.squared\n\n[1] 0.5736862\n\nget_rss(lin_model)\n\n[1] 0.5181328\n\n\n\nPolynomial Model:\n\n\nsummary(poly_model)$r.squared\n\n[1] 1\n\nget_rss(poly_model)\n\n[1] 0"
   },
   {
     "objectID": "writeups/machine-learning/index.html#generalization",
     "href": "writeups/machine-learning/index.html#generalization",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "Generalization",
-    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n# Data setup\nx_test &lt;- seq(from = 0, to = 1, by = 0.1)\nn_test &lt;- length(x_test)\neps_test &lt;- rnorm(n_test, 0, 0.04)\ny_test &lt;- x_test + eps_test\nof_data_test &lt;- tibble::tibble(x=x_test, y=y_test)\nlin_y_pred_test &lt;- predict(lin_model, as.data.frame(x_test))\n#lin_y_pred_test\nlin_resids_test &lt;- y_test - lin_y_pred_test\n#lin_resids_test\nlin_rss_test &lt;- sum(lin_resids_test^2)\n#lin_rss_test\n# Lin R2 = 1 - RSS/TSS\ntss_test &lt;- sum((y_test - mean(y_test))^2)\nlin_r2_test &lt;- 1 - (lin_rss_test / tss_test)\n#lin_r2_test\n# Now the poly model\npoly_y_pred_test &lt;- predict(poly_model, as.data.frame(x_test))\npoly_resids_test &lt;- y_test - poly_y_pred_test\npoly_rss_test &lt;- sum(poly_resids_test^2)\n#poly_rss_test\n# RSS\npoly_r2_test &lt;- 1 - (poly_rss_test / tss_test)\n#poly_r2_test\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw = TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  dsan_theme() +\n  geom_point(data=of_data_test, aes(x=x_test, y=y_test), size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  labs(\n    title = \"Performance on Unseen Test Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\nlin_r2_test\n\n[1] 0.8683767\n\nlin_rss_test\n\n[1] 0.1705526\n\n\n\nPolynomial Model:\n\n\npoly_r2_test\n\n[1] 0.4870233\n\npoly_rss_test\n\n[1] 0.6646961"
+    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n# Data setup\nx_test &lt;- seq(from = 0, to = 1, by = 0.1)\nn_test &lt;- length(x_test)\neps_test &lt;- rnorm(n_test, 0, 0.04)\ny_test &lt;- x_test + eps_test\nof_data_test &lt;- tibble::tibble(x=x_test, y=y_test)\nlin_y_pred_test &lt;- predict(lin_model, as.data.frame(x_test))\n#lin_y_pred_test\nlin_resids_test &lt;- y_test - lin_y_pred_test\n#lin_resids_test\nlin_rss_test &lt;- sum(lin_resids_test^2)\n#lin_rss_test\n# Lin R2 = 1 - RSS/TSS\ntss_test &lt;- sum((y_test - mean(y_test))^2)\nlin_r2_test &lt;- 1 - (lin_rss_test / tss_test)\n#lin_r2_test\n# Now the poly model\npoly_y_pred_test &lt;- predict(poly_model, as.data.frame(x_test))\npoly_resids_test &lt;- y_test - poly_y_pred_test\npoly_rss_test &lt;- sum(poly_resids_test^2)\n#poly_rss_test\n# RSS\npoly_r2_test &lt;- 1 - (poly_rss_test / tss_test)\n#poly_r2_test\n\n\nggplot(of_data, aes(x=x, y=y)) +\n  stat_smooth(method = \"lm\",\n              formula = y ~ poly(x, 10, raw = TRUE),\n              se = FALSE, aes(color=\"Polynomial\")) +\n  dsan_theme() +\n  geom_point(data=of_data_test, aes(x=x_test, y=y_test), size=g_pointsize/2) +\n  geom_abline(aes(intercept=0, slope=1, color=\"Linear\"), linewidth=1, show.legend = FALSE) +\n  labs(\n    title = \"Performance on Unseen Test Data\",\n    color = \"Model\"\n  ) +\n  dsan_theme()\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\nlin_r2_test\n\n[1] 0.8366497\n\nlin_rss_test\n\n[1] 0.1931336\n\n\n\nPolynomial Model:\n\n\npoly_r2_test\n\n[1] 0.3667691\n\npoly_rss_test\n\n[1] 0.7486867"
   },
   {
     "objectID": "writeups/machine-learning/index.html#how-to-avoid-overfitting",
@@ -4145,14 +4145,14 @@
     "href": "writeups/machine-learning/slides.html#so-whats-the-issue",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "So What’s the Issue?",
-    "text": "So What’s the Issue?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\n\nCode\nsummary(lin_model)$r.squared\n\n\n[1] 0.5525067\n\n\nCode\nget_rss(lin_model)\n\n\n[1] 0.5110222\n\n\n\nPolynomial Model:\n\n\n\nCode\nsummary(poly_model)$r.squared\n\n\n[1] 1\n\n\nCode\nget_rss(poly_model)\n\n\n[1] 0"
+    "text": "So What’s the Issue?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHigher \\(R^2\\) = Better Model? Lower \\(RSS\\)?\nLinear Model:\n\n\n\nCode\nsummary(lin_model)$r.squared\n\n\n[1] 0.5453222\n\n\nCode\nget_rss(lin_model)\n\n\n[1] 0.5184096\n\n\n\nPolynomial Model:\n\n\n\nCode\nsummary(poly_model)$r.squared\n\n\n[1] 1\n\n\nCode\nget_rss(poly_model)\n\n\n[1] 0"
   },
   {
     "objectID": "writeups/machine-learning/slides.html#generalization",
     "href": "writeups/machine-learning/slides.html#generalization",
     "title": "Extra Slides: A Slightly Deeper Dive Into Machine Learning",
     "section": "Generalization",
-    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\n\nCode\nlin_r2_test\n\n\n[1] 0.8153423\n\n\nCode\nlin_rss_test\n\n\n[1] 0.2384733\n\n\n\nPolynomial Model:\n\n\n\nCode\npoly_r2_test\n\n\n[1] 0.3225553\n\n\nCode\npoly_rss_test\n\n\n[1] 0.8748751"
+    "text": "Generalization\n\nTraining Accuracy: How well does it fit the data we can see?\nTest Accuracy: How well does it generalize to future data?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLinear Model:\n\n\n\nCode\nlin_r2_test\n\n\n[1] 0.872278\n\n\nCode\nlin_rss_test\n\n\n[1] 0.1374999\n\n\n\nPolynomial Model:\n\n\n\nCode\npoly_r2_test\n\n\n[1] 0.2746275\n\n\nCode\npoly_rss_test\n\n\n[1] 0.7809042"
   },
   {
     "objectID": "writeups/machine-learning/slides.html#how-to-avoid-overfitting",
@@ -4462,121 +4462,221 @@
     ]
   },
   {
-    "objectID": "w09/index.html#quick-roadmap",
-    "href": "w09/index.html#quick-roadmap",
+    "objectID": "w09/index.html#linear-rightarrow-linear",
+    "href": "w09/index.html#linear-rightarrow-linear",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Quick Roadmap",
-    "text": "Quick Roadmap\n\nWeeks 8-9: Shift from focus on regression to focus on classification (Though we use lessons from regression!)\nLast Week (W08): SVMs as new method with this focus\n\nEmphasis on boundary between classes \\(\\leadsto\\) 2.5hrs on separating hyperplanes: in original feature space (Max-Margin, SVCs) or derived feature spaces (SVMs)\n\nNow: Wait, didn’t we discuss a classification method before, though its name confusingly had “regression” in it? 🤔\n\nTake logistic regression but use Bayes rule to “flip” from regression[+thresholding] task to class-separation task (think of SVM’s max-width-of-“slab” objective!)",
+    "section": "Linear \\(\\rightarrow\\) Linear",
+    "text": "Linear \\(\\rightarrow\\) Linear\n\n\n\nOld feature space: \\(\\mathcal{S} = \\{X_1, \\ldots, X_J\\}\\)\nNew feature space: \\(\\mathcal{S}^2 = \\{X_1, X_1^2, \\ldots, X_J, X_J^2\\}\\)\nLinear boundary in \\(\\mathcal{S}^2\\) \\(\\implies\\) Quadratic boundary in \\(\\mathcal{S}\\)\nHelpful example: Non-linearly separable in 1D \\(\\leadsto\\) Linearly separable in 2D\n\n\n1D Hyperplane = point! But no separating point here 😰\n\n\nCode\nlibrary(tidyverse) |&gt; suppressPackageStartupMessages()\nlibrary(latex2exp) |&gt; suppressPackageStartupMessages()\nx_vals &lt;- runif(50, min=-9, max=9)\ndata_df &lt;- tibble(x=x_vals) |&gt; mutate(\n  label = factor(ifelse(abs(x) &gt;= 6, 1, -1)),\n  x2 = x^2\n)\ndata_df |&gt; ggplot(aes(x=x, y=0, color=label)) +\n  geom_point(\n    aes(color=label, shape=label), size=g_pointsize,\n    stroke=6\n  ) +\n  geom_point(\n    aes(fill=label), color='black', shape=21, size=6, stroke=0.75, alpha=0.333\n  ) +\n  # xlim(6,25) + ylim(2,22) +\n  # coord_equal() +\n  # 45 is minus sign, 95 is em-dash\n  scale_shape_manual(values=c(95, 43)) +\n  theme_dsan(base_size=28) +\n  theme(\n    axis.line.y = element_blank(),\n    axis.text.y = element_blank(),\n    axis.ticks.y = element_blank(),\n    axis.title.y = element_blank()\n  ) +\n  xlim(-10, 10) +\n  ylim(-0.1, 0.1) +\n  labs(title=\"Non-Linearly-Separable Data\") +\n  theme(\n    plot.margin = unit(c(0,0,0,20), \"mm\")\n  )\n\n\n\n\n\n\n\n\n\n\n\nCode\ndata_df |&gt; ggplot(aes(x=x, y=x2, color=label)) +\n  geom_point(\n    aes(color=label, shape=label), size=g_pointsize,\n    stroke=6\n  ) +\n  geom_point(\n    aes(fill=label), color='black', shape=21, size=6, stroke=0.75, alpha=0.333\n  ) +\n  geom_hline(yintercept=36, linetype=\"dashed\") +\n  # xlim(6,25) + ylim(2,22) +\n  # coord_equal() +\n  # 45 is minus sign, 95 is em-dash\n  scale_shape_manual(values=c(95, 43)) +\n  theme_dsan(base_size=28) +\n  xlim(-10, 10) +\n  labs(\n    title = TeX(\"...Linearly Separable in $R^2$!\"),\n    y = TeX(\"$x^2$\")\n  )",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#logistic-regression-refresher",
-    "href": "w09/index.html#logistic-regression-refresher",
+    "objectID": "w09/index.html#and-in-3d",
+    "href": "w09/index.html#and-in-3d",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Logistic Regression Refresher",
-    "text": "Logistic Regression Refresher\n\nWe don’t have time for full refresher, but just remember how it involves learning \\(\\beta_j\\) values to minimize loss w.r.t.\n\n\\[\n\\begin{align*}\n&\\log\\left[ \\frac{\\Pr(Y = 1 \\mid X)}{1 - \\Pr(Y = 1 \\mid X)} \\right] = \\beta_0 + \\beta_1 X \\\\\n&\\iff \\Pr(Y = 1 \\mid X = x_i) = \\frac{e^{\\beta_0 + \\beta_1 X}}{1 + e^{\\beta_0 + \\beta_1 X}}\n\\end{align*}\n\\]\n\nAnd then, if we want to classify \\(x\\) rather than just predict \\(\\Pr(Y = 1 \\mid X = x)\\), we apply a threshold \\(t \\in [0,1]\\):\n\n\\[\n\\widehat{y} = \\begin{cases}\n1 &\\text{if }\\Pr(Y = 1 \\mid X = x) = \\frac{e^{\\beta_0 + \\beta_1 x}}{1 + e^{\\beta_0 + \\beta_1 x}} &gt; t \\\\\n0 &\\text{otherwise}\n\\end{cases}\n\\]",
+    "section": "And in 3D…",
+    "text": "And in 3D…\n \n\n\n\nImage Source",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#intuition",
-    "href": "w09/index.html#intuition",
+    "objectID": "w09/index.html#taking-this-idea-and-running-with-it",
+    "href": "w09/index.html#taking-this-idea-and-running-with-it",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Intuition",
-    "text": "Intuition\n\nLogistic regression is called a discriminative model, since we are learning parameters \\(\\beta_j\\) that best produce a predicted class \\(\\widehat{y_i}\\) from features \\(\\mathbf{x}_i\\)…\nWe’re modeling \\(\\Pr(Y = k \\mid X)\\) (for two classes, \\(k = 0\\) and \\(k = 1\\)), hence the LHS of the Logistic Regression formula\nBut there are cases where we can do better1 by instead modeling (learning parameters for) \\(\\Pr(X \\mid Y = k)\\), for each \\(k\\), then using Bayes rule to “flip” back to \\(\\Pr(Y = k \\mid X)\\)!\\(\\leadsto\\) LDA, QDA, and Naïve Bayes classifiers",
+    "section": "Taking This Idea and Running With It",
+    "text": "Taking This Idea and Running With It\n\nThe goal: find a transformation of the original space that the (non-linearly-separable) data lives in, such that data is linearly separable in new space\nIn theory, could just compute tons and tons of new features \\(\\{X_1, X_1^2, X_1^3, \\ldots, X_1X_2, X_1X_3, \\ldots, X_1^2X_2, X_1^2X_3, \\ldots\\}\\)\nIn practice this “blows up” the dimensionality of the feature space, making SVM slower and slower\nWeird trick (literally): turns out we only need inner products \\(\\langle x_i, x_j \\rangle\\) between datapoints… “Kernel Trick”",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#bayes-rule",
-    "href": "w09/index.html#bayes-rule",
+    "objectID": "w09/index.html#the-magic-of-kernels",
+    "href": "w09/index.html#the-magic-of-kernels",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Bayes’ Rule",
-    "text": "Bayes’ Rule\n\nFirst things first, we generalize from \\(Y \\in \\{0, 1\\}\\) to \\(K\\) possible classes (labels), since the notation for \\(K\\) classes here is not much more complex than 2 classes!\nWe label the pieces using ISLR’s notation to make our lives easier:\n\n\\[\n\\underbrace{\\Pr(Y = k \\mid X = x)}_{p_k(x)} = \\frac{\n  \\overbrace{\\Pr(X = x \\mid Y = k)}^{f_k(x)} \\overbrace{\\Pr(Y = k)}^{\\pi_k}\n}{\n  \\sum_{\\ell = 1}^{K} \\underbrace{\\Pr(X = x \\mid Y = \\ell)}_{f_{\\ell}(x)} \\underbrace{\\Pr(Y = \\ell)}_{\\pi_{\\ell}}\n} = \\frac{f_k(x) \\overbrace{\\pi_k}^{\\mathclap{\\text{Prior}(k)}}}{\\sum_{\\ell = 1}^{K}f_{\\ell}(x) \\underbrace{\\pi_\\ell}_{\\mathclap{\\text{Prior}(\\ell)}}}\n\\]\n\nSo if we do have only two classes, \\(K = 2\\) and \\(p_1(x) = \\frac{f_1(x)\\pi_1}{f_1(x)\\pi_1 + f_0(x)\\pi_0}\\)\nPriors can be estimated as \\(n_k / n\\). The hard work is in modeling \\(f_k(x)\\)! With estimates of these two “pieces” for each \\(k\\), we can derive a classifier \\(\\widehat{y}(x) = \\argmax_k p_k(x)\\)",
+    "section": "The Magic of Kernels",
+    "text": "The Magic of Kernels\nRadial Basis Function (RBF) Kernel:\n\\[\nK(x_i, x_{i'}) = \\exp\\left[ -\\gamma \\sum_{j=1}^{J} (x_{ij} - x_{i'j})^2 \\right]\n\\]\n\n\n\n\nCode\nlibrary(kernlab) |&gt; suppressPackageStartupMessages()\nlibrary(mlbench) |&gt; suppressPackageStartupMessages()\nif (!file.exists(\"assets/linspike_df.rds\")) {\n  set.seed(5300)\n  N &lt;- 120\n  x1_vals &lt;- runif(N, min=-5, max=5)\n  x2_raw &lt;- x1_vals\n  x2_noise &lt;- rnorm(N, mean=0, sd=1.25)\n  x2_vals &lt;- x2_raw + x2_noise\n  linspike_df &lt;- tibble(x1=x1_vals, x2=x2_vals) |&gt;\n    mutate(\n      label = factor(ifelse(x1^2 + x2^2 &lt;= 2.75, 1, -1))\n    )\n  linspike_svm &lt;- ksvm(\n    label ~ x1 + x2,\n    data = linspike_df,\n    kernel = \"rbfdot\",\n    C = 500,\n    prob.model = TRUE\n  )\n  # Grid over which to evaluate decision boundaries\n  npts &lt;- 500\n  lsgrid &lt;- expand.grid(\n    x1 = seq(from = -5, 5, length = npts),\n    x2 = seq(from = -5, 5, length = npts)\n  )\n  # Predicted probabilities (as a two-column matrix)\n  prob_svm &lt;- predict(\n    linspike_svm,\n    newdata = lsgrid,\n    type = \"probabilities\"\n  )\n  # Add predicted class probabilities\n  lsgrid2 &lt;- lsgrid |&gt;\n    cbind(\"SVM\" = prob_svm[, 1L]) |&gt;\n    tidyr::gather(Model, Prob, -x1, -x2)\n\n  # Serialize for quicker rendering\n  saveRDS(linspike_df, \"assets/linspike_df.rds\")\n  saveRDS(lsgrid2, \"assets/lsgrid2.rds\")\n} else {\n  linspike_df &lt;- readRDS(\"assets/linspike_df.rds\")\n  lsgrid2 &lt;- readRDS(\"assets/lsgrid2.rds\")\n}\nlinspike_df &lt;- linspike_df |&gt; mutate(\n  Label = label\n)\nlinspike_df |&gt; ggplot(aes(x = x1, y = x2)) +\n  # geom_point(aes(shape = label, color = label), size = 3, alpha = 0.75) +\n  geom_point(aes(shape = Label, color = Label), size = 3, stroke=4) +\n  geom_point(aes(fill=Label), color='black', shape=21, size=4, stroke=0.75, alpha=0.4) +\n  xlab(expression(X[1])) +\n  ylab(expression(X[2])) +\n  coord_fixed() +\n  theme(legend.position = \"none\") +\n  theme_dsan(base_size=28) +\n  xlim(-5, 5) + ylim(-5, 5) +\n  stat_contour(\n    data = lsgrid2,\n    aes(x = x1, y = x2, z = Prob),\n    breaks = 0.5,\n    color = \"black\"\n  ) +\n  scale_shape_manual(values=c(95, 43))\n\n\nWarning: Removed 15 rows containing missing values or values outside the scale range\n(`geom_point()`).\nRemoved 15 rows containing missing values or values outside the scale range\n(`geom_point()`).\n\n\n\n\n\n\n\n\n\n\n\n\nCode\nif (!file.exists(\"assets/spiral_df.rds\")) {\n  spiral_df &lt;- as.data.frame(\n    mlbench.spirals(300, cycles = 2, sd = 0.09)\n  )\n  names(spiral_df) &lt;- c(\"x1\", \"x2\", \"label\")\n\n  # Fit SVM using a RBF kernel\n  spirals_svm &lt;- ksvm(\n    label ~ x1 + x2,\n    data = spiral_df,\n    kernel = \"rbfdot\",\n    C = 500,\n    prob.model = TRUE\n  )\n\n  # Grid over which to evaluate decision boundaries\n  npts &lt;- 500\n  xgrid &lt;- expand.grid(\n    x1 = seq(from = -2, 2, length = npts),\n    x2 = seq(from = -2, 2, length = npts)\n  )\n\n  # Predicted probabilities (as a two-column matrix)\n  prob_svm &lt;- predict(\n    spirals_svm,\n    newdata = xgrid,\n    type = \"probabilities\"\n  )\n\n  # Add predicted class probabilities\n  xgrid2 &lt;- xgrid |&gt;\n    cbind(\"SVM\" = prob_svm[, 1L]) |&gt;\n    tidyr::gather(Model, Prob, -x1, -x2)\n\n  # Serialize for quicker rendering\n  saveRDS(spiral_df, \"assets/spiral_df.rds\")\n  saveRDS(xgrid2, \"assets/xgrid2.rds\")\n} else {\n  spiral_df &lt;- readRDS(\"assets/spiral_df.rds\")\n  xgrid2 &lt;- readRDS(\"assets/xgrid2.rds\")\n}\n# And plot\nspiral_df &lt;- spiral_df |&gt; mutate(\n  Label = factor(ifelse(label == 2, 1, -1))\n)\nspiral_df |&gt; ggplot(aes(x = x1, y = x2)) +\n  geom_point(aes(shape = Label, color = Label), size = 3, stroke=4) +\n  geom_point(aes(fill=Label), color='black', shape=21, size=4, stroke=0.75, alpha=0.4) +\n  xlab(expression(X[1])) +\n  ylab(expression(X[2])) +\n  xlim(-2, 2) +\n  ylim(-2, 2) +\n  coord_fixed() +\n  theme(legend.position = \"none\") +\n  theme_dsan(base_size=28) +\n  stat_contour(\n    data = xgrid2,\n    aes(x = x1, y = x2, z = Prob),\n    breaks = 0.5,\n    color = \"black\"\n  ) +\n  scale_shape_manual(\"Label\", values=c(95, 43))\n\n\n\n\n\nBased on code from Boehmke and Greenwell (2019), Ch 14",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#the-lda-assumption-one-feature-x",
-    "href": "w09/index.html#the-lda-assumption-one-feature-x",
+    "objectID": "w09/index.html#how-is-this-possible",
+    "href": "w09/index.html#how-is-this-possible",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "The LDA Assumption (One Feature \\(x\\))",
-    "text": "The LDA Assumption (One Feature \\(x\\))\n\nWithin each class \\(k\\), values of \\(x\\) are normally distributed:\n\n\\[\n(X \\mid Y = k) \\sim \\mathcal{N}(\\param{\\mu_k}, \\param{\\sigma^2}) \\iff f_k(x) = \\frac{1}{\\sqrt{2 \\pi}\\sigma}\\exp\\left[-\\frac{1}{2}\\left( \\frac{x - \\mu_k}{\\sigma} \\right)^2\\right]\n\\]\n\nPlugging back into (notationally-simplified) classifier, we get\n\n\\[\n\\widehat{y}(x) = \\argmax_{k}\\left[ \\frac{\n  \\pi_k \\frac{1}{\\sqrt{2 \\pi}\\sigma}\\exp\\left[-\\frac{1}{2}\\left( \\frac{x - \\mu_k}{\\sigma} \\right)^2\\right]\n}{\n  \\sum_{\\ell = 1}^{K}\\pi_{\\ell} \\frac{1}{\\sqrt{2 \\pi}\\sigma}\\exp\\left[-\\frac{1}{2}\\left( \\frac{x - \\mu_\\ell}{\\sigma} \\right)^2\\right]\n}\\right],\n\\]\n\nGross, BUT \\(\\argmax_k p_k(x) = \\argmax_k \\log(p_k(x)) \\leadsto\\) “linear” discriminant \\(\\delta_k(x)\\):\n\n\\[\n\\widehat{y}(x) = \\argmax_k[\\delta_k(x)] = \\argmax_{k}\\left[ \\overbrace{\\frac{\\mu_k}{\\sigma^2}}^{\\smash{m}} x ~ \\overbrace{- \\frac{\\mu_k^2}{2\\sigma^2} + \\log(\\pi_k)}^{\\smash{b}} \\right]\n\\]",
+    "section": "How Is This Possible?",
+    "text": "How Is This Possible?\n\nSVM prediction for an observation \\(\\mathbf{x}\\) can be rewritten as\n\n\\[\nf(\\mathbf{x}) = \\beta_0 + \\sum_{i=1}^{n} \\alpha_i \\langle \\mathbf{x}, \\mathbf{x}_i \\rangle\n\\]\n\nRather than one parameter \\(\\beta_j\\) per feature, we have one parameter \\(\\alpha_i\\) per observation\nAt first this seems worse, since usually \\(n &gt; p\\)… But we’re saved by support vectors!\nSince the margin itself is only a function of the support vectors (not every vector—remember that margin \\(\\neq\\) average distance!), \\(\\alpha_i &gt; 0\\) only when \\(\\mathbf{x}_i\\) a support vector!\nSo the equation becomes \\(f(\\mathbf{x}) = \\beta_0 + \\sum_{i \\in \\mathcal{SV}} \\alpha_i \\langle \\mathbf{x}, \\mathbf{x}_i \\rangle\\), just one step left…\nKernel \\(K\\) = similarity function (generalization of inner product!)\n\n\\[\nf(\\mathbf{x}) = \\beta_0 + \\sum_{i \\in \\mathcal{SV}} \\alpha_i K(\\mathbf{x}, \\mathbf{x}_i)\n\\]",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#decision-boundaries",
-    "href": "w09/index.html#decision-boundaries",
+    "objectID": "w09/index.html#inner-products-are-already-similarities",
+    "href": "w09/index.html#inner-products-are-already-similarities",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Decision Boundaries",
-    "text": "Decision Boundaries\n\nThe boundary between two classes \\(k\\) and \\(k'\\) will be the point at which \\(\\delta_k(x) = \\delta_{k'}(x)\\)\nFor two classes, can solve \\(\\delta_0(x) = \\delta_1(x)\\) for \\(x\\) to obtain \\(x = \\frac{\\mu_0 + \\mu_1}{2}\\)\nTo derive a boundary from data: \\(x = \\frac{\\widehat{\\mu}_0 + \\widehat{\\mu}_1}{2}\\) \\(\\Rightarrow\\) Predict \\(1\\) if \\(x &gt; \\frac{\\widehat{\\mu}_0 + \\widehat{\\mu}_1}{2}\\), \\(0\\) otherwise\n\n\n\n\nISLR Figure 4.4: Estimating the Decision Boundary from data. The dashed line is the “true” boundary \\(x = \\frac{\\mu_0 + \\mu_1}{2}\\), while the solid line in the right panel is the boundary estimated from data as \\(x = \\frac{\\widehat{\\mu}_0 + \\widehat{\\mu}_1}{2}\\).",
+    "section": "Inner Products are Already Similarities!",
+    "text": "Inner Products are Already Similarities!\n\nWhen linearly separable, this is exactly the property we use (by computing inner product of new vector \\(\\mathbf{x}\\) with support vectors \\(\\mathbf{x}_i\\)) to classify!\n\n\n\n\nInteractive demo\n\n\n\nWhy restrict ourselves to this similarity function? Choosing \\(K\\) converts the problem:\n\nFrom finding transformation of features allowing linear separability\nTo finding similarity function for observations allowing linear separability",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#number-of-parameters",
-    "href": "w09/index.html#number-of-parameters",
+    "objectID": "w09/index.html#kernel-trick-as-two-sided-swiss-army-knife",
+    "href": "w09/index.html#kernel-trick-as-two-sided-swiss-army-knife",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Number of Parameters",
-    "text": "Number of Parameters\n\n\\(K = 2\\) is special case, since lots of things cancel out, but in general need to estimate:\n\n\n\n\n\n\n\n\n\n\nEnglish\nNotation\nHow Many\nFormula\n\n\n\n\nPrior for class \\(k\\)\n\\(\\widehat{\\pi}_k\\)\n\\(K - 1\\)\n\\(\\widehat{\\pi}_k = n_k / n\\)\n\n\nEstimated mean for class \\(k\\)\n\\(\\widehat{\\mu}_k\\)\n\\(K\\)\n\\(\\widehat{\\mu}_k = \\displaystyle \\frac{1}{n_k}\\sum_{\\{i \\mid y_i = k\\}}x_i\\)\n\n\nEstimated (shared) variance\n\\(\\widehat{\\sigma}^2\\)\n1\n\\(\\widehat{\\sigma}^2 = \\displaystyle \\frac{1}{n - K}\\sum_{k = 1}^{K}\\sum_{i:y_i = k}(x_i - \\widehat{\\mu}_k)^2\\)\n\n\n\nTotal:\n\\(2K\\)\n\n\n\n\n\n(Keep in mind for fancier methods! This may blow up to be much larger than \\(n\\))",
+    "section": "Kernel Trick as Two-Sided Swiss Army Knife",
+    "text": "Kernel Trick as Two-Sided Swiss Army Knife\n\n If we have a linearly-separating transformation (like \\(f(x) = x^2\\)), can “encode” as kernel, saving computation\nExample: Transformation of features \\(f(x) = x^2\\) equivalent to quadratic kernel:\n\\[\nK(x_i, x_{i'}) = (1 + \\sum_{j = 1}^{p}x_{ij}x_{i'j})^2\n\\]\n If we don’t have a transformation (and having trouble figuring it out), can change the problem into one of finding a “good” similarity function\nExample: Look again at RBF Kernel:\n\\[\nK(x_i, x_{i'}) = \\exp\\left[ -\\gamma \\sum_{j=1}^{J} (x_{ij} - x_{i'j})^2 \\right]\n\\]\nIt turns out: no finite collection of transformed features is equivalent to this kernel! (Roughly: can keep adding transformed features to asymptotically approach it—space of SVMs w/kernel thus \\(&gt;\\) space of SVMs w/transformed features)",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#lda-with-multiple-features-here-p-2",
-    "href": "w09/index.html#lda-with-multiple-features-here-p-2",
+    "objectID": "w09/index.html#diagram-leftrightarrow-math",
+    "href": "w09/index.html#diagram-leftrightarrow-math",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "LDA with Multiple Features (Here \\(p = 2\\))",
-    "text": "LDA with Multiple Features (Here \\(p = 2\\))\n\nWithin each class \\(k\\), values of \\(\\mathbf{x}\\) are (multivariate) normally distributed:\n\n\\[\n\\left( \\begin{bmatrix}X_1 \\\\ X_2\\end{bmatrix} \\middle| ~ Y = k \\right) \\sim \\mathbf{\\mathcal{N}}_2(\\param{\\boldsymbol\\mu_k}, \\param{\\mathbf{\\Sigma}})\n\\]\n\nIncreasing \\(p\\) to 2 and \\(K\\) to 3 means more parameters, but still linear boundaries. It turns out: shared variance (\\(\\sigma^2\\) or \\(\\mathbf{\\Sigma}\\)) will always produce linear boundaries 🤔\n\n\n\n\nISLR Figure 4.6: Like before, dashed lines are “true” boundaries while solid lines are boundaries estimated from data",
+    "section": "Diagram \\(\\leftrightarrow\\) Math",
+    "text": "Diagram \\(\\leftrightarrow\\) Math\n\n\n\n\\(p = 4\\) features in Input Layer\n\\(K = 5\\) Hidden Units\nOutput Layer: Regression on activations \\(a_k\\) (Hidden Unit outputs)\n\n\\[\n\\begin{align*}\n{\\color{#976464} y} &= { \\color{#976464} \\beta_0 } + {\\color{#666693} \\sum_{k=1}^{5} } {\\color{#976464} \\beta_k } { \\color{#666693} \\overbrace{\\boxed{a_k} }^{\\mathclap{k^\\text{th}\\text{ activation}}} } \\\\\n{\\color{#976464} y} &= { \\color{#976464} \\beta_0 } + {\\color{#666693} \\sum_{k=1}^{5} } {\\color{#976464} \\beta_k } { \\color{#666693} \\underbrace{ g \\mkern-4mu \\left( w_{k0} + {\\color{#679d67} \\sum_{j=1}^{4} } w_{kj} {\\color{#679d67} x_j} \\right) }_{k^\\text{th}\\text{ activation}}}\n\\end{align*}\n\\]",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#quadratic-class-boundaries",
-    "href": "w09/index.html#quadratic-class-boundaries",
+    "objectID": "w09/index.html#matrix-form-only-if-sanity-helping",
+    "href": "w09/index.html#matrix-form-only-if-sanity-helping",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Quadratic Class Boundaries",
-    "text": "Quadratic Class Boundaries\n\nTo achieve non-linear boundaries, estimate covariance matrix \\(\\mathbf{\\Sigma}_k\\) for each class \\(k\\):\n\n\\[\n\\left( \\begin{bmatrix}X_1 \\\\ X_2\\end{bmatrix} \\middle| ~ Y = k \\right) \\sim \\mathbf{\\mathcal{N}}_2(\\param{\\boldsymbol\\mu_k}, \\param{\\mathbf{\\Sigma}_k})\n\\]\n\nPros: Non-linear class boundaries! Cons: More parameters to estimate, does worse than LDA if data linearly-separable (or nearly linearly-separable).\nDeciding factor: do you think DGP produces normal classes with same variance?\n\n\n\n\nISLR Figure 4.9: Dashed purple line is “true” boundary (Bayes decision boundary), dotted black line is LDA boundary, solid green line is QDA boundary",
+    "section": "Matrix Form (Only if Sanity-Helping)",
+    "text": "Matrix Form (Only if Sanity-Helping)",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#key-advantage-of-generative-model",
-    "href": "w09/index.html#key-advantage-of-generative-model",
+    "objectID": "w09/index.html#example",
+    "href": "w09/index.html#example",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Key Advantage of Generative Model",
-    "text": "Key Advantage of Generative Model\n\nYou get an actual “picture” of what the data looks like!\n\n\n\n\n\n\n\n\n\n\n\n\\(\\widehat{f}_k(X_1)\\)\n\\(\\widehat{f}_k(X_2)\\)\n\\(\\widehat{f}_k(X_3)\\)\n\n\n\\(k = 1\\)\n\n\n\n\n\n\\(k = 2\\)",
+    "section": "Example",
+    "text": "Example\n\nRather than pondering over what that diagram can/can’t do, consider two “true” DGPs:\n\n\\[\n\\begin{align*}\nY &= {\\color{#e69f00} X_1 X_2 } \\\\\nY &= {\\color{#56b4e9} X_1^2 + X_2^2 } \\\\\nY &= {\\color{#009E73} X_1 \\underset{\\mathclap{\\small \\text{XOR}}}{\\oplus} X_2}\n\\end{align*}\n\\]\n\nHow exactly is a neural net able to learn these relationships?",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#classifying-new-points",
-    "href": "w09/index.html#classifying-new-points",
+    "objectID": "w09/index.html#sum-of-squares",
+    "href": "w09/index.html#sum-of-squares",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Classifying New Points",
-    "text": "Classifying New Points\n\nFor new feature values \\(x_{ij}\\), compare how likely this value is under \\(k = 1\\) vs. \\(k = 2\\)\nExample: \\(\\mathbf{x} = (0.4, 1.5, 1)^{\\top}\\)\n\n\n\n\n\n\n\n\n\n\n\n\\(\\widehat{f}_k(X_1)\\)\n\\(\\widehat{f}_k(X_2)\\)\n\\(\\widehat{f}_k(X_3)\\)\n\n\n\\(k = 1\\)\n\n\n\n\n\n\n\\(f_1(0.4) = 0.368\\)\n\\(f_1(1.5) = 0.484\\)\n\\(f_1(1) = 0.226\\)\n\n\n\\(k = 2\\)\n\n\n\n\n\n\n\\(f_2(0.4) = 0.030\\)\n\\(f_2(1.5) = 0.130\\)\n\\(f_2(1) = 0.616\\)",
+    "section": "Sum of Squares",
+    "text": "Sum of Squares\n\n\n\nCan we learn \\(y = {\\color{#56b4e9} x_1^2 + x_2^2 }\\)?\nLet’s use \\(g(x) = x^2\\).\nLet \\(\\mathbf{w}_1 = (0, 1, 0)\\), \\(\\mathbf{w}_2 = (0, 0, 1)\\).\nOur two activations are:\n\n\n\n\n\n\n\n\n\n\\[\n\\begin{align*}\n{\\color{#666693} a_1 } &= g(0 + (1)(x_1) + (0)(x_2)) = x_1^2 \\\\\n{\\color{#666693} a_2 } &= g(0 + (0)(x_1) + (1)(x_2)) = x_2^2\n\\end{align*}\n\\]\n\nSo, if \\(\\boldsymbol\\beta = (0, 1, 1)\\), then\n\n\\[\n{\\color{#976464} y } = 0 + (1)(x_1^2) + (1)(x_2^2) = {\\color{#56b4e9} x_1^2 + x_2^2} \\; ✅\n\\]",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#appendix-fuller-logistic-derivation",
-    "href": "w09/index.html#appendix-fuller-logistic-derivation",
+    "objectID": "w09/index.html#interaction-term",
+    "href": "w09/index.html#interaction-term",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Appendix: Fuller Logistic Derivation",
-    "text": "Appendix: Fuller Logistic Derivation\n\\[\n\\begin{align*}\n&\\log\\left[ \\frac{\\Pr(Y = 1 \\mid X)}{1 - \\Pr(Y = 1 \\mid X)} \\right] = \\beta_0 + \\beta_1 X \\\\\n&\\iff \\frac{\\Pr(Y = 1 \\mid X = x_i)}{1 - \\Pr(Y = 1\\ \\mid X = x_i)} = e^{\\beta_0 + \\beta_1 X} \\\\\n&\\iff \\Pr(Y = 1 \\mid X) = e^{\\beta_0 + \\beta_1 X}(1 - \\Pr(Y = 1 \\mid X)) \\\\\n&\\iff \\Pr(Y = 1 \\mid X) = e^{\\beta_0 + \\beta_1 X} - e^{\\beta_0 + \\beta_1 X}\\Pr(Y = 1 \\mid X) \\\\\n&\\iff \\Pr(Y = 1 \\mid X) + e^{\\beta_0 + \\beta_1 X}\\Pr(Y = 1 \\mid X) = e^{\\beta_0 + \\beta_1 X} \\\\\n&\\iff \\Pr(Y = 1 \\mid X)(1 + e^{\\beta_0 + \\beta_1 X}) = e^{\\beta_0 + \\beta_1 X} \\\\\n&\\iff \\Pr(Y = 1 \\mid X) = \\frac{e^{\\beta_0 + \\beta_1 X}}{1 + e^{\\beta_0 + \\beta_1 X}}\n\\end{align*}\n\\]",
+    "section": "Interaction Term",
+    "text": "Interaction Term\n\n\n\nCan we learn \\(Y = {\\color{#e69f00} x_1x_2}\\)?\nLet’s use \\(g(x) = x^2\\) again.\nLet \\(\\mathbf{w}_1 = (0, 1, 1)\\), \\(\\mathbf{w}_2 = (0, 1, -1)\\).\nOur two activations are:\n\n\n\n\n\n\n\n\n\n\\[\n\\begin{align*}\n{\\color{#666693} a_1 } &= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\\\\n{\\color{#666693} a_2 } &= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2\n\\end{align*}\n\\]\n\nSo, if we let \\(\\boldsymbol\\beta = \\left( 0, \\frac{1}{4}, -\\frac{1}{4} \\right)\\), then\n\n\\[\n{\\color{#976464} y } = 0 + \\left(\\frac{1}{4}\\right)(x_1^2 + x_2^2 + 2x_1x_2) + \\left(-\\frac{1}{4}\\right)(x_1^2 + x_2^2 - 2x_1x_2) = {\\color{#e69f00} x_1x_2} \\; ✅\n\\]",
+    "crumbs": [
+      "Week 9: {{< var w09.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w09/index.html#the-xor-problem",
+    "href": "w09/index.html#the-xor-problem",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "The XOR Problem",
+    "text": "The XOR Problem\n\n\n\nCan we learn \\(Y = {\\color{#009E73} x_1 \\underset{\\mathclap{\\small \\text{XOR}}}{\\oplus} x_2}\\)?\nLet’s use \\(g(x) = x^2\\) once more.\nLet \\(\\mathbf{w}_1 = (0, 1, 1)\\), \\(\\mathbf{w}_2 = (0, 1, -1)\\).\nOur two activations are:\n\n\n\n\n\n\n\n\n\n\\[\n\\begin{align*}\n{\\color{#666693} a_1 } &= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\\\\n{\\color{#666693} a_2 } &= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2\n\\end{align*}\n\\]\n\nSo, if we let \\(\\boldsymbol\\beta = (0, 0, 1)\\), then\n\n\\[\n\\begin{align*}\n{\\color{#976464} y }(0,0) &= 0 + (0)(0^2 + 0^2 + 2(0)(0)) + (1)(0^2 + 0^2 - 2(0)(0)) = {\\color{#009e73} 0} \\; ✅ \\\\\n{\\color{#976464} y }(0,1) &= 0 + (0)(0^2 + 1^2 + 2(0)(1)) + (1)(0^2 + 1^2 - 2(0)(1)) = {\\color{#009e73} 1} \\; ✅ \\\\\n{\\color{#976464} y }(1,0) &= 0 + (0)(1^2 + 0^2 + 2(1)(0)) + (1)(1^2 + 0^2 - 2(1)(0)) = {\\color{#009e73} 1} \\; ✅ \\\\\n{\\color{#976464} y }(1,1) &= 0 + (0)(1^2 + 1^2 + 2(1)(1)) + (1)(1^2 + 1^2 - 2(1)(1)) = {\\color{#009e73} 0} \\; ✅\n\\end{align*}\n\\]",
+    "crumbs": [
+      "Week 9: {{< var w09.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w09/index.html#but-how",
+    "href": "w09/index.html#but-how",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "But How?",
+    "text": "But How?\n\nOutput Layer is just linear regression on activations (Hidden Layer outputs)\nWe saw in Week 7 how good basis function allows regression to learn any function\nNeural Networks: GOAT non-linear basis function learners!\n\n\n\n\n\nCode\nlibrary(tidyverse) |&gt; suppressPackageStartupMessages()\nlibrary(latex2exp) |&gt; suppressPackageStartupMessages()\nxor_df &lt;- tribble(\n    ~x1, ~x2, ~label,\n    0, 0, 0,\n    0, 1, 1,\n    1, 0, 1,\n    1, 1, 0\n) |&gt;\nmutate(\n    h1 = (x1 - x2)^2,\n    label = factor(label)\n)\nxor_df |&gt; ggplot(aes(x=x1, y=x2, label=label)) +\n  geom_point(\n    aes(color=label, shape=label),\n    size=g_pointsize * 2,\n    stroke=6\n  ) +\n  geom_point(aes(fill=label), color='black', shape=21, size=g_pointsize * 2.5, stroke=0.75, alpha=0.4) +\n  scale_x_continuous(breaks=c(0, 1)) +\n  scale_y_continuous(breaks=c(0, 1)) +\n  expand_limits(y=c(-0.1,1.1)) +\n  # 45 is minus sign, 95 is em-dash\n  scale_shape_manual(values=c(95, 43)) +\n  theme_dsan(base_size=32) +\n  remove_legend_title() +\n  labs(\n    x=TeX(\"$x_1$\"),\n    y=TeX(\"$x_2$\"),\n    title=\"XOR Problem: Original Features\"\n  )\n\n\n\n\n\n\n\n\nFigure 1: The DGP \\(Y = x_1 \\oplus x_2\\) produces points in \\([0,1]^2\\) which are not linearly separable\n\n\n\n\n\n\n\n\nCode\nlibrary(tidyverse)\nxor_df &lt;- tribble(\n    ~x1, ~x2, ~label,\n    0, 0, 0,\n    0, 1, 1,\n    1, 0, 1,\n    1, 1, 0\n) |&gt;\nmutate(\n    h1 = (x1 - x2)^2,\n    h2 = (x1 + x2)^2,\n    h2 = ifelse(h1 &gt; 0.5 & x2==0, h2 + 0.5, h2),\n    label = factor(label)\n)\nxor_df |&gt; ggplot(aes(x=h1, y=h2, label=label)) +\n  geom_vline(xintercept=0.5, linetype=\"dashed\", linewidth=1) +\n  # Negative space\n  geom_rect(xmin=-Inf, xmax=0.5, ymin=-Inf, ymax=Inf, fill=cb_palette[1], alpha=0.15) +\n  # Positive space\n  geom_rect(xmin=0.5, xmax=Inf, ymin=-Inf, ymax=Inf, fill=cb_palette[2], alpha=0.15) +\n  geom_point(\n    aes(color=label, shape=label),\n    size=g_pointsize * 2,\n    stroke=6\n  ) +\n  geom_point(aes(fill=label), color='black', shape=21, size=g_pointsize*2.5, stroke=0.75, alpha=0.4) +\n  expand_limits(y=c(-0.2,4.2)) +\n  # 45 is minus sign, 95 is em-dash\n  scale_shape_manual(values=c(95, 43)) +\n  theme_dsan(base_size=32) +\n  remove_legend_title() +\n  labs(\n    title=\"NN-Learned Feature Space\",\n    x=TeX(\"$h_1(x_1, x_2)$\"),\n    y=TeX(\"$h_2(x_1, x_2)$\")\n  )\n\n\n\n\n\n\n\n\nFigure 2: Learned bases \\(h_1 = (x_1 - x_2)^2\\) and \\(h_2 = (x_1 + x_2)^2\\) enable separating hyperplane \\(h_1 = 0.5\\)\n\n\n\n\n\n\n\n\nCode\nlibrary(tidyverse)\nx1_vals &lt;- seq(from=0, to=1, by=0.0075)\nx2_vals &lt;- seq(from=0, to=1, by=0.0075)\ngrid_df &lt;- expand.grid(x1=x1_vals, x2=x2_vals) |&gt;\n  as_tibble() |&gt;\n  mutate(\n    label=factor(as.numeric((x1-x2)^2 &gt; 0.5))\n  )\nggplot() +\n  geom_point(\n    data=grid_df,\n    aes(x=x1, y=x2, color=label),\n    alpha=0.4\n  ) +\n  geom_point(\n    data=xor_df,\n    aes(x=x1, y=x2, color=label, shape=label),\n    size=g_pointsize * 2,\n    stroke=6\n  ) +\n  geom_point(\n    data=xor_df,\n    aes(x=x1, y=x2, fill=label),\n    color='black', shape=21, size=g_pointsize*2.5, stroke=0.75, alpha=0.4\n  ) +\n  geom_abline(slope=1, intercept=0.7, linetype=\"dashed\", linewidth=1) +\n  geom_abline(slope=1, intercept=-0.7, linetype=\"dashed\", linewidth=1) +\n  scale_shape_manual(values=c(95, 43)) +\n  theme_dsan(base_size=32) +\n  remove_legend_title() +\n  labs(\n    title=\"XOR Problem: Inverted NN Features\",\n    x=TeX(\"$X_1$\"), y=TeX(\"$X_2$\")\n  )\n\n\n\n\n\n\n\n\nFigure 3: Here, the blue area represents points where \\(h_1 = (x_1 - x_2)^2 &gt; 0.5\\)",
+    "crumbs": [
+      "Week 9: {{< var w09.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w09/index.html#input-representation",
+    "href": "w09/index.html#input-representation",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "Input Representation",
+    "text": "Input Representation\n\n\n\n\n\nFrom But what is a neural network?, 3Blue1Brown",
+    "crumbs": [
+      "Week 9: {{< var w09.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w09/index.html#but-wait-ten-outputs",
+    "href": "w09/index.html#but-wait-ten-outputs",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "But Wait… Ten Outputs?",
+    "text": "But Wait… Ten Outputs?\n\n\n\n\n\n\n\n\n\nThe (magical) softmax function!\n\n\\[\nz_d = \\Pr(Y = d \\mid X) = \\frac{e^{y_d}}{\\sum_{i=0}^{9}e^{y_i}}\n\\]\n\nEnsures that each \\(Z_d\\) is a probability!\n\n\\[\n\\begin{align}\n0 \\leq z_d &\\leq 1 \\; \\; \\forall ~ d \\in \\{0,\\ldots,9\\} \\\\\n\\sum_{d=0}^{9}z_d &= 1\n\\end{align}\n\\]",
+    "crumbs": [
+      "Week 9: {{< var w09.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w09/index.html#visualizing-softmax-results",
+    "href": "w09/index.html#visualizing-softmax-results",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "Visualizing Softmax Results",
+    "text": "Visualizing Softmax Results\n\n\n\nInteractive Visualization: Handwritten-Digit Space",
+    "crumbs": [
+      "Week 9: {{< var w09.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w09/index.html#cnns",
+    "href": "w09/index.html#cnns",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "CNNs",
+    "text": "CNNs\n\nKey point: Convolutional layers are not fully connected!\nEach layer “pools” info from two units in previous layer",
+    "crumbs": [
+      "Week 9: {{< var w09.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w09/index.html#decoding-the-thought-vector",
+    "href": "w09/index.html#decoding-the-thought-vector",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "Decoding the Thought Vector",
+    "text": "Decoding the Thought Vector\n\nHidden layers closer to input layer detect low-level “fine-grained” features\nHidden layers closer to output layer detect high-level “coarse-grained” features\n\n\n\n\n\n\n\n\n\n\n\n\nDecoding the Thought Vector",
+    "crumbs": [
+      "Week 9: {{< var w09.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w09/index.html#variational-autoencoders",
+    "href": "w09/index.html#variational-autoencoders",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "Variational Autoencoders",
+    "text": "Variational Autoencoders",
+    "crumbs": [
+      "Week 9: {{< var w09.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w09/index.html#rnns",
+    "href": "w09/index.html#rnns",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "RNNs",
+    "text": "RNNs\n…More next week, tbh\n\n\n\nISLR Figure 10.12",
+    "crumbs": [
+      "Week 9: {{< var w09.date-md >}}"
+    ]
+  },
+  {
+    "objectID": "w09/index.html#ok-but-how-do-we-learn-the-weights",
+    "href": "w09/index.html#ok-but-how-do-we-learn-the-weights",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "Ok But How Do We Learn The Weights?",
+    "text": "Ok But How Do We Learn The Weights?\n\n\n\nBackpropagation! (3Blue1Brown Again!)\n\n\n(Full NN playlist here)",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
@@ -4586,111 +4686,171 @@
     "href": "w09/index.html#references",
     "title": "Week 9: Generative vs. Discriminative Models",
     "section": "References",
-    "text": "References",
+    "text": "References\n\n\nBoehmke, Brad, and Brandon M. Greenwell. 2019. Hands-On Machine Learning with R. CRC Press. https://books.google.com?id=aXC9DwAAQBAJ.",
     "crumbs": [
       "Week 9: {{< var w09.date-md >}}"
     ]
   },
   {
-    "objectID": "w09/index.html#footnotes",
-    "href": "w09/index.html#footnotes",
+    "objectID": "w09/slides.html#linear-rightarrow-linear",
+    "href": "w09/slides.html#linear-rightarrow-linear",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Footnotes",
-    "text": "Footnotes\n\n\n(More normally-distributed \\(X\\) \\(\\implies\\) more likely to “beat” Logistic Regression)↩︎",
-    "crumbs": [
-      "Week 9: {{< var w09.date-md >}}"
-    ]
+    "section": "Linear \\(\\rightarrow\\) Linear",
+    "text": "Linear \\(\\rightarrow\\) Linear\n\n\n\nOld feature space: \\(\\mathcal{S} = \\{X_1, \\ldots, X_J\\}\\)\nNew feature space: \\(\\mathcal{S}^2 = \\{X_1, X_1^2, \\ldots, X_J, X_J^2\\}\\)\nLinear boundary in \\(\\mathcal{S}^2\\) \\(\\implies\\) Quadratic boundary in \\(\\mathcal{S}\\)\nHelpful example: Non-linearly separable in 1D \\(\\leadsto\\) Linearly separable in 2D\n\n\n1D Hyperplane = point! But no separating point here 😰\n\n\nCode\nlibrary(tidyverse) |&gt; suppressPackageStartupMessages()\nlibrary(latex2exp) |&gt; suppressPackageStartupMessages()\nx_vals &lt;- runif(50, min=-9, max=9)\ndata_df &lt;- tibble(x=x_vals) |&gt; mutate(\n  label = factor(ifelse(abs(x) &gt;= 6, 1, -1)),\n  x2 = x^2\n)\ndata_df |&gt; ggplot(aes(x=x, y=0, color=label)) +\n  geom_point(\n    aes(color=label, shape=label), size=g_pointsize,\n    stroke=6\n  ) +\n  geom_point(\n    aes(fill=label), color='black', shape=21, size=6, stroke=0.75, alpha=0.333\n  ) +\n  # xlim(6,25) + ylim(2,22) +\n  # coord_equal() +\n  # 45 is minus sign, 95 is em-dash\n  scale_shape_manual(values=c(95, 43)) +\n  theme_dsan(base_size=28) +\n  theme(\n    axis.line.y = element_blank(),\n    axis.text.y = element_blank(),\n    axis.ticks.y = element_blank(),\n    axis.title.y = element_blank()\n  ) +\n  xlim(-10, 10) +\n  ylim(-0.1, 0.1) +\n  labs(title=\"Non-Linearly-Separable Data\") +\n  theme(\n    plot.margin = unit(c(0,0,0,20), \"mm\")\n  )\n\n\n\n\n\n\n\n\n\n\n\nCode\ndata_df |&gt; ggplot(aes(x=x, y=x2, color=label)) +\n  geom_point(\n    aes(color=label, shape=label), size=g_pointsize,\n    stroke=6\n  ) +\n  geom_point(\n    aes(fill=label), color='black', shape=21, size=6, stroke=0.75, alpha=0.333\n  ) +\n  geom_hline(yintercept=36, linetype=\"dashed\") +\n  # xlim(6,25) + ylim(2,22) +\n  # coord_equal() +\n  # 45 is minus sign, 95 is em-dash\n  scale_shape_manual(values=c(95, 43)) +\n  theme_dsan(base_size=28) +\n  xlim(-10, 10) +\n  labs(\n    title = TeX(\"...Linearly Separable in $R^2$!\"),\n    y = TeX(\"$x^2$\")\n  )"
   },
   {
-    "objectID": "w09/slides.html#quick-roadmap",
-    "href": "w09/slides.html#quick-roadmap",
+    "objectID": "w09/slides.html#and-in-3d",
+    "href": "w09/slides.html#and-in-3d",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Quick Roadmap",
-    "text": "Quick Roadmap\n\nWeeks 8-9: Shift from focus on regression to focus on classification (Though we use lessons from regression!)\nLast Week (W08): SVMs as new method with this focus\n\nEmphasis on boundary between classes \\(\\leadsto\\) 2.5hrs on separating hyperplanes: in original feature space (Max-Margin, SVCs) or derived feature spaces (SVMs)\n\nNow: Wait, didn’t we discuss a classification method before, though its name confusingly had “regression” in it? 🤔\n\nTake logistic regression but use Bayes rule to “flip” from regression[+thresholding] task to class-separation task (think of SVM’s max-width-of-“slab” objective!)"
+    "section": "And in 3D…",
+    "text": "And in 3D…\n \n\nImage Source"
   },
   {
-    "objectID": "w09/slides.html#logistic-regression-refresher",
-    "href": "w09/slides.html#logistic-regression-refresher",
+    "objectID": "w09/slides.html#taking-this-idea-and-running-with-it",
+    "href": "w09/slides.html#taking-this-idea-and-running-with-it",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Logistic Regression Refresher",
-    "text": "Logistic Regression Refresher\n\nWe don’t have time for full refresher, but just remember how it involves learning \\(\\beta_j\\) values to minimize loss w.r.t.\n\n\\[\n\\begin{align*}\n&\\log\\left[ \\frac{\\Pr(Y = 1 \\mid X)}{1 - \\Pr(Y = 1 \\mid X)} \\right] = \\beta_0 + \\beta_1 X \\\\\n&\\iff \\Pr(Y = 1 \\mid X = x_i) = \\frac{e^{\\beta_0 + \\beta_1 X}}{1 + e^{\\beta_0 + \\beta_1 X}}\n\\end{align*}\n\\]\n\nAnd then, if we want to classify \\(x\\) rather than just predict \\(\\Pr(Y = 1 \\mid X = x)\\), we apply a threshold \\(t \\in [0,1]\\):\n\n\\[\n\\widehat{y} = \\begin{cases}\n1 &\\text{if }\\Pr(Y = 1 \\mid X = x) = \\frac{e^{\\beta_0 + \\beta_1 x}}{1 + e^{\\beta_0 + \\beta_1 x}} &gt; t \\\\\n0 &\\text{otherwise}\n\\end{cases}\n\\]"
+    "section": "Taking This Idea and Running With It",
+    "text": "Taking This Idea and Running With It\n\nThe goal: find a transformation of the original space that the (non-linearly-separable) data lives in, such that data is linearly separable in new space\nIn theory, could just compute tons and tons of new features \\(\\{X_1, X_1^2, X_1^3, \\ldots, X_1X_2, X_1X_3, \\ldots, X_1^2X_2, X_1^2X_3, \\ldots\\}\\)\nIn practice this “blows up” the dimensionality of the feature space, making SVM slower and slower\nWeird trick (literally): turns out we only need inner products \\(\\langle x_i, x_j \\rangle\\) between datapoints… “Kernel Trick”"
   },
   {
-    "objectID": "w09/slides.html#intuition",
-    "href": "w09/slides.html#intuition",
+    "objectID": "w09/slides.html#the-magic-of-kernels",
+    "href": "w09/slides.html#the-magic-of-kernels",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Intuition",
-    "text": "Intuition\n\nLogistic regression is called a discriminative model, since we are learning parameters \\(\\beta_j\\) that best produce a predicted class \\(\\widehat{y_i}\\) from features \\(\\mathbf{x}_i\\)…\nWe’re modeling \\(\\Pr(Y = k \\mid X)\\) (for two classes, \\(k = 0\\) and \\(k = 1\\)), hence the LHS of the Logistic Regression formula\nBut there are cases where we can do better1 by instead modeling (learning parameters for) \\(\\Pr(X \\mid Y = k)\\), for each \\(k\\), then using Bayes rule to “flip” back to \\(\\Pr(Y = k \\mid X)\\)!\\(\\leadsto\\) LDA, QDA, and Naïve Bayes classifiers\n\n(More normally-distributed \\(X\\) \\(\\implies\\) more likely to “beat” Logistic Regression)"
+    "section": "The Magic of Kernels",
+    "text": "The Magic of Kernels\nRadial Basis Function (RBF) Kernel:\n\\[\nK(x_i, x_{i'}) = \\exp\\left[ -\\gamma \\sum_{j=1}^{J} (x_{ij} - x_{i'j})^2 \\right]\n\\]\n\n\n\n\nCode\nlibrary(kernlab) |&gt; suppressPackageStartupMessages()\nlibrary(mlbench) |&gt; suppressPackageStartupMessages()\nif (!file.exists(\"assets/linspike_df.rds\")) {\n  set.seed(5300)\n  N &lt;- 120\n  x1_vals &lt;- runif(N, min=-5, max=5)\n  x2_raw &lt;- x1_vals\n  x2_noise &lt;- rnorm(N, mean=0, sd=1.25)\n  x2_vals &lt;- x2_raw + x2_noise\n  linspike_df &lt;- tibble(x1=x1_vals, x2=x2_vals) |&gt;\n    mutate(\n      label = factor(ifelse(x1^2 + x2^2 &lt;= 2.75, 1, -1))\n    )\n  linspike_svm &lt;- ksvm(\n    label ~ x1 + x2,\n    data = linspike_df,\n    kernel = \"rbfdot\",\n    C = 500,\n    prob.model = TRUE\n  )\n  # Grid over which to evaluate decision boundaries\n  npts &lt;- 500\n  lsgrid &lt;- expand.grid(\n    x1 = seq(from = -5, 5, length = npts),\n    x2 = seq(from = -5, 5, length = npts)\n  )\n  # Predicted probabilities (as a two-column matrix)\n  prob_svm &lt;- predict(\n    linspike_svm,\n    newdata = lsgrid,\n    type = \"probabilities\"\n  )\n  # Add predicted class probabilities\n  lsgrid2 &lt;- lsgrid |&gt;\n    cbind(\"SVM\" = prob_svm[, 1L]) |&gt;\n    tidyr::gather(Model, Prob, -x1, -x2)\n\n  # Serialize for quicker rendering\n  saveRDS(linspike_df, \"assets/linspike_df.rds\")\n  saveRDS(lsgrid2, \"assets/lsgrid2.rds\")\n} else {\n  linspike_df &lt;- readRDS(\"assets/linspike_df.rds\")\n  lsgrid2 &lt;- readRDS(\"assets/lsgrid2.rds\")\n}\nlinspike_df &lt;- linspike_df |&gt; mutate(\n  Label = label\n)\nlinspike_df |&gt; ggplot(aes(x = x1, y = x2)) +\n  # geom_point(aes(shape = label, color = label), size = 3, alpha = 0.75) +\n  geom_point(aes(shape = Label, color = Label), size = 3, stroke=4) +\n  geom_point(aes(fill=Label), color='black', shape=21, size=4, stroke=0.75, alpha=0.4) +\n  xlab(expression(X[1])) +\n  ylab(expression(X[2])) +\n  coord_fixed() +\n  theme(legend.position = \"none\") +\n  theme_dsan(base_size=28) +\n  xlim(-5, 5) + ylim(-5, 5) +\n  stat_contour(\n    data = lsgrid2,\n    aes(x = x1, y = x2, z = Prob),\n    breaks = 0.5,\n    color = \"black\"\n  ) +\n  scale_shape_manual(values=c(95, 43))\n\n\n\n\n\n\n\n\n\n\n\n\nCode\nif (!file.exists(\"assets/spiral_df.rds\")) {\n  spiral_df &lt;- as.data.frame(\n    mlbench.spirals(300, cycles = 2, sd = 0.09)\n  )\n  names(spiral_df) &lt;- c(\"x1\", \"x2\", \"label\")\n\n  # Fit SVM using a RBF kernel\n  spirals_svm &lt;- ksvm(\n    label ~ x1 + x2,\n    data = spiral_df,\n    kernel = \"rbfdot\",\n    C = 500,\n    prob.model = TRUE\n  )\n\n  # Grid over which to evaluate decision boundaries\n  npts &lt;- 500\n  xgrid &lt;- expand.grid(\n    x1 = seq(from = -2, 2, length = npts),\n    x2 = seq(from = -2, 2, length = npts)\n  )\n\n  # Predicted probabilities (as a two-column matrix)\n  prob_svm &lt;- predict(\n    spirals_svm,\n    newdata = xgrid,\n    type = \"probabilities\"\n  )\n\n  # Add predicted class probabilities\n  xgrid2 &lt;- xgrid |&gt;\n    cbind(\"SVM\" = prob_svm[, 1L]) |&gt;\n    tidyr::gather(Model, Prob, -x1, -x2)\n\n  # Serialize for quicker rendering\n  saveRDS(spiral_df, \"assets/spiral_df.rds\")\n  saveRDS(xgrid2, \"assets/xgrid2.rds\")\n} else {\n  spiral_df &lt;- readRDS(\"assets/spiral_df.rds\")\n  xgrid2 &lt;- readRDS(\"assets/xgrid2.rds\")\n}\n# And plot\nspiral_df &lt;- spiral_df |&gt; mutate(\n  Label = factor(ifelse(label == 2, 1, -1))\n)\nspiral_df |&gt; ggplot(aes(x = x1, y = x2)) +\n  geom_point(aes(shape = Label, color = Label), size = 3, stroke=4) +\n  geom_point(aes(fill=Label), color='black', shape=21, size=4, stroke=0.75, alpha=0.4) +\n  xlab(expression(X[1])) +\n  ylab(expression(X[2])) +\n  xlim(-2, 2) +\n  ylim(-2, 2) +\n  coord_fixed() +\n  theme(legend.position = \"none\") +\n  theme_dsan(base_size=28) +\n  stat_contour(\n    data = xgrid2,\n    aes(x = x1, y = x2, z = Prob),\n    breaks = 0.5,\n    color = \"black\"\n  ) +\n  scale_shape_manual(\"Label\", values=c(95, 43))\n\n\n\n\n\nBased on code from Boehmke and Greenwell (2019), Ch 14"
   },
   {
-    "objectID": "w09/slides.html#bayes-rule",
-    "href": "w09/slides.html#bayes-rule",
+    "objectID": "w09/slides.html#how-is-this-possible",
+    "href": "w09/slides.html#how-is-this-possible",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Bayes’ Rule",
-    "text": "Bayes’ Rule\n\nFirst things first, we generalize from \\(Y \\in \\{0, 1\\}\\) to \\(K\\) possible classes (labels), since the notation for \\(K\\) classes here is not much more complex than 2 classes!\nWe label the pieces using ISLR’s notation to make our lives easier:\n\n\\[\n\\underbrace{\\Pr(Y = k \\mid X = x)}_{p_k(x)} = \\frac{\n  \\overbrace{\\Pr(X = x \\mid Y = k)}^{f_k(x)} \\overbrace{\\Pr(Y = k)}^{\\pi_k}\n}{\n  \\sum_{\\ell = 1}^{K} \\underbrace{\\Pr(X = x \\mid Y = \\ell)}_{f_{\\ell}(x)} \\underbrace{\\Pr(Y = \\ell)}_{\\pi_{\\ell}}\n} = \\frac{f_k(x) \\overbrace{\\pi_k}^{\\mathclap{\\text{Prior}(k)}}}{\\sum_{\\ell = 1}^{K}f_{\\ell}(x) \\underbrace{\\pi_\\ell}_{\\mathclap{\\text{Prior}(\\ell)}}}\n\\]\n\nSo if we do have only two classes, \\(K = 2\\) and \\(p_1(x) = \\frac{f_1(x)\\pi_1}{f_1(x)\\pi_1 + f_0(x)\\pi_0}\\)\nPriors can be estimated as \\(n_k / n\\). The hard work is in modeling \\(f_k(x)\\)! With estimates of these two “pieces” for each \\(k\\), we can derive a classifier \\(\\widehat{y}(x) = \\argmax_k p_k(x)\\)"
+    "section": "How Is This Possible?",
+    "text": "How Is This Possible?\n\nSVM prediction for an observation \\(\\mathbf{x}\\) can be rewritten as\n\n\\[\nf(\\mathbf{x}) = \\beta_0 + \\sum_{i=1}^{n} \\alpha_i \\langle \\mathbf{x}, \\mathbf{x}_i \\rangle\n\\]\n\nRather than one parameter \\(\\beta_j\\) per feature, we have one parameter \\(\\alpha_i\\) per observation\nAt first this seems worse, since usually \\(n &gt; p\\)… But we’re saved by support vectors!\nSince the margin itself is only a function of the support vectors (not every vector—remember that margin \\(\\neq\\) average distance!), \\(\\alpha_i &gt; 0\\) only when \\(\\mathbf{x}_i\\) a support vector!\nSo the equation becomes \\(f(\\mathbf{x}) = \\beta_0 + \\sum_{i \\in \\mathcal{SV}} \\alpha_i \\langle \\mathbf{x}, \\mathbf{x}_i \\rangle\\), just one step left…\nKernel \\(K\\) = similarity function (generalization of inner product!)\n\n\\[\nf(\\mathbf{x}) = \\beta_0 + \\sum_{i \\in \\mathcal{SV}} \\alpha_i K(\\mathbf{x}, \\mathbf{x}_i)\n\\]"
   },
   {
-    "objectID": "w09/slides.html#the-lda-assumption-one-feature-x",
-    "href": "w09/slides.html#the-lda-assumption-one-feature-x",
+    "objectID": "w09/slides.html#inner-products-are-already-similarities",
+    "href": "w09/slides.html#inner-products-are-already-similarities",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "The LDA Assumption (One Feature \\(x\\))",
-    "text": "The LDA Assumption (One Feature \\(x\\))\n\nWithin each class \\(k\\), values of \\(x\\) are normally distributed:\n\n\\[\n(X \\mid Y = k) \\sim \\mathcal{N}(\\param{\\mu_k}, \\param{\\sigma^2}) \\iff f_k(x) = \\frac{1}{\\sqrt{2 \\pi}\\sigma}\\exp\\left[-\\frac{1}{2}\\left( \\frac{x - \\mu_k}{\\sigma} \\right)^2\\right]\n\\]\n\nPlugging back into (notationally-simplified) classifier, we get\n\n\\[\n\\widehat{y}(x) = \\argmax_{k}\\left[ \\frac{\n  \\pi_k \\frac{1}{\\sqrt{2 \\pi}\\sigma}\\exp\\left[-\\frac{1}{2}\\left( \\frac{x - \\mu_k}{\\sigma} \\right)^2\\right]\n}{\n  \\sum_{\\ell = 1}^{K}\\pi_{\\ell} \\frac{1}{\\sqrt{2 \\pi}\\sigma}\\exp\\left[-\\frac{1}{2}\\left( \\frac{x - \\mu_\\ell}{\\sigma} \\right)^2\\right]\n}\\right],\n\\]\n\nGross, BUT \\(\\argmax_k p_k(x) = \\argmax_k \\log(p_k(x)) \\leadsto\\) “linear” discriminant \\(\\delta_k(x)\\):\n\n\\[\n\\widehat{y}(x) = \\argmax_k[\\delta_k(x)] = \\argmax_{k}\\left[ \\overbrace{\\frac{\\mu_k}{\\sigma^2}}^{\\smash{m}} x ~ \\overbrace{- \\frac{\\mu_k^2}{2\\sigma^2} + \\log(\\pi_k)}^{\\smash{b}} \\right]\n\\]"
+    "section": "Inner Products are Already Similarities!",
+    "text": "Inner Products are Already Similarities!\n\nWhen linearly separable, this is exactly the property we use (by computing inner product of new vector \\(\\mathbf{x}\\) with support vectors \\(\\mathbf{x}_i\\)) to classify!\n\n\nInteractive demo\nWhy restrict ourselves to this similarity function? Choosing \\(K\\) converts the problem:\n\nFrom finding transformation of features allowing linear separability\nTo finding similarity function for observations allowing linear separability"
   },
   {
-    "objectID": "w09/slides.html#decision-boundaries",
-    "href": "w09/slides.html#decision-boundaries",
+    "objectID": "w09/slides.html#kernel-trick-as-two-sided-swiss-army-knife",
+    "href": "w09/slides.html#kernel-trick-as-two-sided-swiss-army-knife",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Decision Boundaries",
-    "text": "Decision Boundaries\n\nThe boundary between two classes \\(k\\) and \\(k'\\) will be the point at which \\(\\delta_k(x) = \\delta_{k'}(x)\\)\nFor two classes, can solve \\(\\delta_0(x) = \\delta_1(x)\\) for \\(x\\) to obtain \\(x = \\frac{\\mu_0 + \\mu_1}{2}\\)\nTo derive a boundary from data: \\(x = \\frac{\\widehat{\\mu}_0 + \\widehat{\\mu}_1}{2}\\) \\(\\Rightarrow\\) Predict \\(1\\) if \\(x &gt; \\frac{\\widehat{\\mu}_0 + \\widehat{\\mu}_1}{2}\\), \\(0\\) otherwise\n\n\nISLR Figure 4.4: Estimating the Decision Boundary from data. The dashed line is the “true” boundary \\(x = \\frac{\\mu_0 + \\mu_1}{2}\\), while the solid line in the right panel is the boundary estimated from data as \\(x = \\frac{\\widehat{\\mu}_0 + \\widehat{\\mu}_1}{2}\\)."
+    "section": "Kernel Trick as Two-Sided Swiss Army Knife",
+    "text": "Kernel Trick as Two-Sided Swiss Army Knife\n\n If we have a linearly-separating transformation (like \\(f(x) = x^2\\)), can “encode” as kernel, saving computation\nExample: Transformation of features \\(f(x) = x^2\\) equivalent to quadratic kernel:\n\\[\nK(x_i, x_{i'}) = (1 + \\sum_{j = 1}^{p}x_{ij}x_{i'j})^2\n\\]\n If we don’t have a transformation (and having trouble figuring it out), can change the problem into one of finding a “good” similarity function\nExample: Look again at RBF Kernel:\n\\[\nK(x_i, x_{i'}) = \\exp\\left[ -\\gamma \\sum_{j=1}^{J} (x_{ij} - x_{i'j})^2 \\right]\n\\]\nIt turns out: no finite collection of transformed features is equivalent to this kernel! (Roughly: can keep adding transformed features to asymptotically approach it—space of SVMs w/kernel thus \\(&gt;\\) space of SVMs w/transformed features)"
   },
   {
-    "objectID": "w09/slides.html#number-of-parameters",
-    "href": "w09/slides.html#number-of-parameters",
+    "objectID": "w09/slides.html#diagram-leftrightarrow-math",
+    "href": "w09/slides.html#diagram-leftrightarrow-math",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Number of Parameters",
-    "text": "Number of Parameters\n\n\\(K = 2\\) is special case, since lots of things cancel out, but in general need to estimate:\n\n\n\n\n\n\n\n\n\n\nEnglish\nNotation\nHow Many\nFormula\n\n\n\n\nPrior for class \\(k\\)\n\\(\\widehat{\\pi}_k\\)\n\\(K - 1\\)\n\\(\\widehat{\\pi}_k = n_k / n\\)\n\n\nEstimated mean for class \\(k\\)\n\\(\\widehat{\\mu}_k\\)\n\\(K\\)\n\\(\\widehat{\\mu}_k = \\displaystyle \\frac{1}{n_k}\\sum_{\\{i \\mid y_i = k\\}}x_i\\)\n\n\nEstimated (shared) variance\n\\(\\widehat{\\sigma}^2\\)\n1\n\\(\\widehat{\\sigma}^2 = \\displaystyle \\frac{1}{n - K}\\sum_{k = 1}^{K}\\sum_{i:y_i = k}(x_i - \\widehat{\\mu}_k)^2\\)\n\n\n\nTotal:\n\\(2K\\)\n\n\n\n\n\n(Keep in mind for fancier methods! This may blow up to be much larger than \\(n\\))"
+    "section": "Diagram \\(\\leftrightarrow\\) Math",
+    "text": "Diagram \\(\\leftrightarrow\\) Math\n\n\n\n\\(p = 4\\) features in Input Layer\n\\(K = 5\\) Hidden Units\nOutput Layer: Regression on activations \\(a_k\\) (Hidden Unit outputs)\n\n\\[\n\\begin{align*}\n{\\color{#976464} y} &= { \\color{#976464} \\beta_0 } + {\\color{#666693} \\sum_{k=1}^{5} } {\\color{#976464} \\beta_k } { \\color{#666693} \\overbrace{\\boxed{a_k} }^{\\mathclap{k^\\text{th}\\text{ activation}}} } \\\\\n{\\color{#976464} y} &= { \\color{#976464} \\beta_0 } + {\\color{#666693} \\sum_{k=1}^{5} } {\\color{#976464} \\beta_k } { \\color{#666693} \\underbrace{ g \\mkern-4mu \\left( w_{k0} + {\\color{#679d67} \\sum_{j=1}^{4} } w_{kj} {\\color{#679d67} x_j} \\right) }_{k^\\text{th}\\text{ activation}}}\n\\end{align*}\n\\]"
   },
   {
-    "objectID": "w09/slides.html#lda-with-multiple-features-here-p-2",
-    "href": "w09/slides.html#lda-with-multiple-features-here-p-2",
+    "objectID": "w09/slides.html#matrix-form-only-if-sanity-helping",
+    "href": "w09/slides.html#matrix-form-only-if-sanity-helping",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "LDA with Multiple Features (Here \\(p = 2\\))",
-    "text": "LDA with Multiple Features (Here \\(p = 2\\))\n\nWithin each class \\(k\\), values of \\(\\mathbf{x}\\) are (multivariate) normally distributed:\n\n\\[\n\\left( \\begin{bmatrix}X_1 \\\\ X_2\\end{bmatrix} \\middle| ~ Y = k \\right) \\sim \\mathbf{\\mathcal{N}}_2(\\param{\\boldsymbol\\mu_k}, \\param{\\mathbf{\\Sigma}})\n\\]\n\nIncreasing \\(p\\) to 2 and \\(K\\) to 3 means more parameters, but still linear boundaries. It turns out: shared variance (\\(\\sigma^2\\) or \\(\\mathbf{\\Sigma}\\)) will always produce linear boundaries 🤔\n\n\nISLR Figure 4.6: Like before, dashed lines are “true” boundaries while solid lines are boundaries estimated from data"
+    "section": "Matrix Form (Only if Sanity-Helping)",
+    "text": "Matrix Form (Only if Sanity-Helping)"
   },
   {
-    "objectID": "w09/slides.html#quadratic-class-boundaries",
-    "href": "w09/slides.html#quadratic-class-boundaries",
+    "objectID": "w09/slides.html#example",
+    "href": "w09/slides.html#example",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Quadratic Class Boundaries",
-    "text": "Quadratic Class Boundaries\n\nTo achieve non-linear boundaries, estimate covariance matrix \\(\\mathbf{\\Sigma}_k\\) for each class \\(k\\):\n\n\\[\n\\left( \\begin{bmatrix}X_1 \\\\ X_2\\end{bmatrix} \\middle| ~ Y = k \\right) \\sim \\mathbf{\\mathcal{N}}_2(\\param{\\boldsymbol\\mu_k}, \\param{\\mathbf{\\Sigma}_k})\n\\]\n\nPros: Non-linear class boundaries! Cons: More parameters to estimate, does worse than LDA if data linearly-separable (or nearly linearly-separable).\nDeciding factor: do you think DGP produces normal classes with same variance?\n\n\nISLR Figure 4.9: Dashed purple line is “true” boundary (Bayes decision boundary), dotted black line is LDA boundary, solid green line is QDA boundary"
+    "section": "Example",
+    "text": "Example\n\nRather than pondering over what that diagram can/can’t do, consider two “true” DGPs:\n\n\\[\n\\begin{align*}\nY &= {\\color{#e69f00} X_1 X_2 } \\\\\nY &= {\\color{#56b4e9} X_1^2 + X_2^2 } \\\\\nY &= {\\color{#009E73} X_1 \\underset{\\mathclap{\\small \\text{XOR}}}{\\oplus} X_2}\n\\end{align*}\n\\]\n\nHow exactly is a neural net able to learn these relationships?"
   },
   {
-    "objectID": "w09/slides.html#key-advantage-of-generative-model",
-    "href": "w09/slides.html#key-advantage-of-generative-model",
+    "objectID": "w09/slides.html#sum-of-squares",
+    "href": "w09/slides.html#sum-of-squares",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Key Advantage of Generative Model",
-    "text": "Key Advantage of Generative Model\n\nYou get an actual “picture” of what the data looks like!\n\n\n\n\n\n\n\n\n\n\n\n\\(\\widehat{f}_k(X_1)\\)\n\\(\\widehat{f}_k(X_2)\\)\n\\(\\widehat{f}_k(X_3)\\)\n\n\n\\(k = 1\\)\n\n\n\n\n\n\\(k = 2\\)"
+    "section": "Sum of Squares",
+    "text": "Sum of Squares\n\n\n\nCan we learn \\(y = {\\color{#56b4e9} x_1^2 + x_2^2 }\\)?\nLet’s use \\(g(x) = x^2\\).\nLet \\(\\mathbf{w}_1 = (0, 1, 0)\\), \\(\\mathbf{w}_2 = (0, 0, 1)\\).\nOur two activations are:\n\n\n\n\n\n\n\n\n\\[\n\\begin{align*}\n{\\color{#666693} a_1 } &= g(0 + (1)(x_1) + (0)(x_2)) = x_1^2 \\\\\n{\\color{#666693} a_2 } &= g(0 + (0)(x_1) + (1)(x_2)) = x_2^2\n\\end{align*}\n\\]\n\nSo, if \\(\\boldsymbol\\beta = (0, 1, 1)\\), then\n\n\\[\n{\\color{#976464} y } = 0 + (1)(x_1^2) + (1)(x_2^2) = {\\color{#56b4e9} x_1^2 + x_2^2} \\; ✅\n\\]"
   },
   {
-    "objectID": "w09/slides.html#classifying-new-points",
-    "href": "w09/slides.html#classifying-new-points",
+    "objectID": "w09/slides.html#interaction-term",
+    "href": "w09/slides.html#interaction-term",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Classifying New Points",
-    "text": "Classifying New Points\n\nFor new feature values \\(x_{ij}\\), compare how likely this value is under \\(k = 1\\) vs. \\(k = 2\\)\nExample: \\(\\mathbf{x} = (0.4, 1.5, 1)^{\\top}\\)\n\n\n\n\n\n\n\n\n\n\n\n\\(\\widehat{f}_k(X_1)\\)\n\\(\\widehat{f}_k(X_2)\\)\n\\(\\widehat{f}_k(X_3)\\)\n\n\n\\(k = 1\\)\n\n\n\n\n\n\n\\(f_1(0.4) = 0.368\\)\n\\(f_1(1.5) = 0.484\\)\n\\(f_1(1) = 0.226\\)\n\n\n\\(k = 2\\)\n\n\n\n\n\n\n\\(f_2(0.4) = 0.030\\)\n\\(f_2(1.5) = 0.130\\)\n\\(f_2(1) = 0.616\\)"
+    "section": "Interaction Term",
+    "text": "Interaction Term\n\n\n\nCan we learn \\(Y = {\\color{#e69f00} x_1x_2}\\)?\nLet’s use \\(g(x) = x^2\\) again.\nLet \\(\\mathbf{w}_1 = (0, 1, 1)\\), \\(\\mathbf{w}_2 = (0, 1, -1)\\).\nOur two activations are:\n\n\n\n\n\n\n\n\n\\[\n\\begin{align*}\n{\\color{#666693} a_1 } &= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\\\\n{\\color{#666693} a_2 } &= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2\n\\end{align*}\n\\]\n\nSo, if we let \\(\\boldsymbol\\beta = \\left( 0, \\frac{1}{4}, -\\frac{1}{4} \\right)\\), then\n\n\\[\n{\\color{#976464} y } = 0 + \\left(\\frac{1}{4}\\right)(x_1^2 + x_2^2 + 2x_1x_2) + \\left(-\\frac{1}{4}\\right)(x_1^2 + x_2^2 - 2x_1x_2) = {\\color{#e69f00} x_1x_2} \\; ✅\n\\]"
   },
   {
-    "objectID": "w09/slides.html#appendix-fuller-logistic-derivation",
-    "href": "w09/slides.html#appendix-fuller-logistic-derivation",
+    "objectID": "w09/slides.html#the-xor-problem",
+    "href": "w09/slides.html#the-xor-problem",
     "title": "Week 9: Generative vs. Discriminative Models",
-    "section": "Appendix: Fuller Logistic Derivation",
-    "text": "Appendix: Fuller Logistic Derivation\n\\[\n\\begin{align*}\n&\\log\\left[ \\frac{\\Pr(Y = 1 \\mid X)}{1 - \\Pr(Y = 1 \\mid X)} \\right] = \\beta_0 + \\beta_1 X \\\\\n&\\iff \\frac{\\Pr(Y = 1 \\mid X = x_i)}{1 - \\Pr(Y = 1\\ \\mid X = x_i)} = e^{\\beta_0 + \\beta_1 X} \\\\\n&\\iff \\Pr(Y = 1 \\mid X) = e^{\\beta_0 + \\beta_1 X}(1 - \\Pr(Y = 1 \\mid X)) \\\\\n&\\iff \\Pr(Y = 1 \\mid X) = e^{\\beta_0 + \\beta_1 X} - e^{\\beta_0 + \\beta_1 X}\\Pr(Y = 1 \\mid X) \\\\\n&\\iff \\Pr(Y = 1 \\mid X) + e^{\\beta_0 + \\beta_1 X}\\Pr(Y = 1 \\mid X) = e^{\\beta_0 + \\beta_1 X} \\\\\n&\\iff \\Pr(Y = 1 \\mid X)(1 + e^{\\beta_0 + \\beta_1 X}) = e^{\\beta_0 + \\beta_1 X} \\\\\n&\\iff \\Pr(Y = 1 \\mid X) = \\frac{e^{\\beta_0 + \\beta_1 X}}{1 + e^{\\beta_0 + \\beta_1 X}}\n\\end{align*}\n\\]"
+    "section": "The XOR Problem",
+    "text": "The XOR Problem\n\n\n\nCan we learn \\(Y = {\\color{#009E73} x_1 \\underset{\\mathclap{\\small \\text{XOR}}}{\\oplus} x_2}\\)?\nLet’s use \\(g(x) = x^2\\) once more.\nLet \\(\\mathbf{w}_1 = (0, 1, 1)\\), \\(\\mathbf{w}_2 = (0, 1, -1)\\).\nOur two activations are:\n\n\n\n\n\n\n\n\n\\[\n\\begin{align*}\n{\\color{#666693} a_1 } &= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\\\\n{\\color{#666693} a_2 } &= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2\n\\end{align*}\n\\]\n\nSo, if we let \\(\\boldsymbol\\beta = (0, 0, 1)\\), then\n\n\\[\n\\begin{align*}\n{\\color{#976464} y }(0,0) &= 0 + (0)(0^2 + 0^2 + 2(0)(0)) + (1)(0^2 + 0^2 - 2(0)(0)) = {\\color{#009e73} 0} \\; ✅ \\\\\n{\\color{#976464} y }(0,1) &= 0 + (0)(0^2 + 1^2 + 2(0)(1)) + (1)(0^2 + 1^2 - 2(0)(1)) = {\\color{#009e73} 1} \\; ✅ \\\\\n{\\color{#976464} y }(1,0) &= 0 + (0)(1^2 + 0^2 + 2(1)(0)) + (1)(1^2 + 0^2 - 2(1)(0)) = {\\color{#009e73} 1} \\; ✅ \\\\\n{\\color{#976464} y }(1,1) &= 0 + (0)(1^2 + 1^2 + 2(1)(1)) + (1)(1^2 + 1^2 - 2(1)(1)) = {\\color{#009e73} 0} \\; ✅\n\\end{align*}\n\\]"
+  },
+  {
+    "objectID": "w09/slides.html#but-how",
+    "href": "w09/slides.html#but-how",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "But How?",
+    "text": "But How?\n\nOutput Layer is just linear regression on activations (Hidden Layer outputs)\nWe saw in Week 7 how good basis function allows regression to learn any function\nNeural Networks: GOAT non-linear basis function learners!\n\n\n\n\n\nCode\nlibrary(tidyverse) |&gt; suppressPackageStartupMessages()\nlibrary(latex2exp) |&gt; suppressPackageStartupMessages()\nxor_df &lt;- tribble(\n    ~x1, ~x2, ~label,\n    0, 0, 0,\n    0, 1, 1,\n    1, 0, 1,\n    1, 1, 0\n) |&gt;\nmutate(\n    h1 = (x1 - x2)^2,\n    label = factor(label)\n)\nxor_df |&gt; ggplot(aes(x=x1, y=x2, label=label)) +\n  geom_point(\n    aes(color=label, shape=label),\n    size=g_pointsize * 2,\n    stroke=6\n  ) +\n  geom_point(aes(fill=label), color='black', shape=21, size=g_pointsize * 2.5, stroke=0.75, alpha=0.4) +\n  scale_x_continuous(breaks=c(0, 1)) +\n  scale_y_continuous(breaks=c(0, 1)) +\n  expand_limits(y=c(-0.1,1.1)) +\n  # 45 is minus sign, 95 is em-dash\n  scale_shape_manual(values=c(95, 43)) +\n  theme_dsan(base_size=32) +\n  remove_legend_title() +\n  labs(\n    x=TeX(\"$x_1$\"),\n    y=TeX(\"$x_2$\"),\n    title=\"XOR Problem: Original Features\"\n  )\n\n\n\n\n\n\n\n\nFigure 1: The DGP \\(Y = x_1 \\oplus x_2\\) produces points in \\([0,1]^2\\) which are not linearly separable\n\n\n\n\n\n\n\n\nCode\nlibrary(tidyverse)\nxor_df &lt;- tribble(\n    ~x1, ~x2, ~label,\n    0, 0, 0,\n    0, 1, 1,\n    1, 0, 1,\n    1, 1, 0\n) |&gt;\nmutate(\n    h1 = (x1 - x2)^2,\n    h2 = (x1 + x2)^2,\n    h2 = ifelse(h1 &gt; 0.5 & x2==0, h2 + 0.5, h2),\n    label = factor(label)\n)\nxor_df |&gt; ggplot(aes(x=h1, y=h2, label=label)) +\n  geom_vline(xintercept=0.5, linetype=\"dashed\", linewidth=1) +\n  # Negative space\n  geom_rect(xmin=-Inf, xmax=0.5, ymin=-Inf, ymax=Inf, fill=cb_palette[1], alpha=0.15) +\n  # Positive space\n  geom_rect(xmin=0.5, xmax=Inf, ymin=-Inf, ymax=Inf, fill=cb_palette[2], alpha=0.15) +\n  geom_point(\n    aes(color=label, shape=label),\n    size=g_pointsize * 2,\n    stroke=6\n  ) +\n  geom_point(aes(fill=label), color='black', shape=21, size=g_pointsize*2.5, stroke=0.75, alpha=0.4) +\n  expand_limits(y=c(-0.2,4.2)) +\n  # 45 is minus sign, 95 is em-dash\n  scale_shape_manual(values=c(95, 43)) +\n  theme_dsan(base_size=32) +\n  remove_legend_title() +\n  labs(\n    title=\"NN-Learned Feature Space\",\n    x=TeX(\"$h_1(x_1, x_2)$\"),\n    y=TeX(\"$h_2(x_1, x_2)$\")\n  )\n\n\n\n\n\n\n\n\nFigure 2: Learned bases \\(h_1 = (x_1 - x_2)^2\\) and \\(h_2 = (x_1 + x_2)^2\\) enable separating hyperplane \\(h_1 = 0.5\\)\n\n\n\n\n\n\n\n\nCode\nlibrary(tidyverse)\nx1_vals &lt;- seq(from=0, to=1, by=0.0075)\nx2_vals &lt;- seq(from=0, to=1, by=0.0075)\ngrid_df &lt;- expand.grid(x1=x1_vals, x2=x2_vals) |&gt;\n  as_tibble() |&gt;\n  mutate(\n    label=factor(as.numeric((x1-x2)^2 &gt; 0.5))\n  )\nggplot() +\n  geom_point(\n    data=grid_df,\n    aes(x=x1, y=x2, color=label),\n    alpha=0.4\n  ) +\n  geom_point(\n    data=xor_df,\n    aes(x=x1, y=x2, color=label, shape=label),\n    size=g_pointsize * 2,\n    stroke=6\n  ) +\n  geom_point(\n    data=xor_df,\n    aes(x=x1, y=x2, fill=label),\n    color='black', shape=21, size=g_pointsize*2.5, stroke=0.75, alpha=0.4\n  ) +\n  geom_abline(slope=1, intercept=0.7, linetype=\"dashed\", linewidth=1) +\n  geom_abline(slope=1, intercept=-0.7, linetype=\"dashed\", linewidth=1) +\n  scale_shape_manual(values=c(95, 43)) +\n  theme_dsan(base_size=32) +\n  remove_legend_title() +\n  labs(\n    title=\"XOR Problem: Inverted NN Features\",\n    x=TeX(\"$X_1$\"), y=TeX(\"$X_2$\")\n  )\n\n\n\n\n\n\n\n\nFigure 3: Here, the blue area represents points where \\(h_1 = (x_1 - x_2)^2 &gt; 0.5\\)"
+  },
+  {
+    "objectID": "w09/slides.html#input-representation",
+    "href": "w09/slides.html#input-representation",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "Input Representation",
+    "text": "Input Representation\n\n\n\n\n\nFrom But what is a neural network?, 3Blue1Brown"
+  },
+  {
+    "objectID": "w09/slides.html#but-wait-ten-outputs",
+    "href": "w09/slides.html#but-wait-ten-outputs",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "But Wait… Ten Outputs?",
+    "text": "But Wait… Ten Outputs?\n\n\n\n\n\n\n\n\n\nThe (magical) softmax function!\n\n\\[\nz_d = \\Pr(Y = d \\mid X) = \\frac{e^{y_d}}{\\sum_{i=0}^{9}e^{y_i}}\n\\]\n\nEnsures that each \\(Z_d\\) is a probability!\n\n\\[\n\\begin{align}\n0 \\leq z_d &\\leq 1 \\; \\; \\forall ~ d \\in \\{0,\\ldots,9\\} \\\\\n\\sum_{d=0}^{9}z_d &= 1\n\\end{align}\n\\]"
+  },
+  {
+    "objectID": "w09/slides.html#visualizing-softmax-results",
+    "href": "w09/slides.html#visualizing-softmax-results",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "Visualizing Softmax Results",
+    "text": "Visualizing Softmax Results\n\nInteractive Visualization: Handwritten-Digit Space"
+  },
+  {
+    "objectID": "w09/slides.html#cnns",
+    "href": "w09/slides.html#cnns",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "CNNs",
+    "text": "CNNs\n\nKey point: Convolutional layers are not fully connected!\nEach layer “pools” info from two units in previous layer"
+  },
+  {
+    "objectID": "w09/slides.html#decoding-the-thought-vector",
+    "href": "w09/slides.html#decoding-the-thought-vector",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "Decoding the Thought Vector",
+    "text": "Decoding the Thought Vector\n\nHidden layers closer to input layer detect low-level “fine-grained” features\nHidden layers closer to output layer detect high-level “coarse-grained” features\n\n\n\n\n\n\n\n\n\n\n\n\nDecoding the Thought Vector"
+  },
+  {
+    "objectID": "w09/slides.html#variational-autoencoders",
+    "href": "w09/slides.html#variational-autoencoders",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "Variational Autoencoders",
+    "text": "Variational Autoencoders"
+  },
+  {
+    "objectID": "w09/slides.html#rnns",
+    "href": "w09/slides.html#rnns",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "RNNs",
+    "text": "RNNs\n…More next week, tbh\n\nISLR Figure 10.12"
+  },
+  {
+    "objectID": "w09/slides.html#ok-but-how-do-we-learn-the-weights",
+    "href": "w09/slides.html#ok-but-how-do-we-learn-the-weights",
+    "title": "Week 9: Generative vs. Discriminative Models",
+    "section": "Ok But How Do We Learn The Weights?",
+    "text": "Ok But How Do We Learn The Weights?\n\nBackpropagation! (3Blue1Brown Again!)(Full NN playlist here)"
   },
   {
     "objectID": "w09/slides.html#references",
     "href": "w09/slides.html#references",
     "title": "Week 9: Generative vs. Discriminative Models",
     "section": "References",
-    "text": "References"
+    "text": "References\n\n\nBoehmke, Brad, and Brandon M. Greenwell. 2019. Hands-On Machine Learning with R. CRC Press. https://books.google.com?id=aXC9DwAAQBAJ."
   },
   {
     "objectID": "w01/index.html",

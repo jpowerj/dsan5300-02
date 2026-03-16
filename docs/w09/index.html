@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.27">
+<meta name="generator" content="quarto-1.9.35">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>Week 9: Generative vs.&nbsp;Discriminative Models – DSAN 5300-02</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -88,19 +91,18 @@ div.csl-indent {
 <link href="../favicon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4d9afe2b8d18ee9fa5d0d57b5ed4214d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-22b4aaf4c2978829df3684e8f2c068db.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e467bba1a5c5a7452fd81967691b995c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-dd9ecad98bf5d7ff33fac5d8036eb7f9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-e467bba1a5c5a7452fd81967691b995c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-d78adef7f6610a2c2f822fa3ee3facb8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-639c5b0c21b7ba118e193946d627b9d3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-d78adef7f6610a2c2f822fa3ee3facb8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -131,7 +133,7 @@ div.csl-indent {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/dreampulse/computer-modern-web-font@master/fonts.css"><script src="../sidebar.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -486,7 +488,7 @@ window.Quarto = {
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2026-03-09, 05:46:12 PM</em></p>
+<p><em>Updated 2026-03-16, 04:10:03 PM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -497,24 +499,37 @@ window.Quarto = {
   <ul>
   <li><a href="#schedule" id="toc-schedule" class="nav-link active" data-scroll-target="#schedule">Schedule</a>
   <ul class="collapse">
-  <li><a href="#quick-roadmap" id="toc-quick-roadmap" class="nav-link" data-scroll-target="#quick-roadmap">Quick Roadmap</a></li>
-  <li><a href="#logistic-regression-refresher" id="toc-logistic-regression-refresher" class="nav-link" data-scroll-target="#logistic-regression-refresher">Logistic Regression Refresher</a></li>
-  <li><a href="#intuition" id="toc-intuition" class="nav-link" data-scroll-target="#intuition">Intuition</a></li>
+  <li><a href="#linear-rightarrow-linear" id="toc-linear-rightarrow-linear" class="nav-link" data-scroll-target="#linear-rightarrow-linear">Linear <span class="math inline">\(\rightarrow\)</span> <span class="noodle-jj-smaller">Linear</span></a></li>
+  <li><a href="#and-in-3d" id="toc-and-in-3d" class="nav-link" data-scroll-target="#and-in-3d">And in 3D…</a></li>
+  <li><a href="#taking-this-idea-and-running-with-it" id="toc-taking-this-idea-and-running-with-it" class="nav-link" data-scroll-target="#taking-this-idea-and-running-with-it">Taking This Idea and Running With It</a></li>
+  <li><a href="#the-magic-of-kernels" id="toc-the-magic-of-kernels" class="nav-link" data-scroll-target="#the-magic-of-kernels">The Magic of Kernels</a></li>
+  <li><a href="#how-is-this-possible" id="toc-how-is-this-possible" class="nav-link" data-scroll-target="#how-is-this-possible">How Is This Possible?</a></li>
+  <li><a href="#inner-products-are-already-similarities" id="toc-inner-products-are-already-similarities" class="nav-link" data-scroll-target="#inner-products-are-already-similarities">Inner Products are Already Similarities!</a></li>
+  <li><a href="#kernel-trick-as-two-sided-swiss-army-knife" id="toc-kernel-trick-as-two-sided-swiss-army-knife" class="nav-link" data-scroll-target="#kernel-trick-as-two-sided-swiss-army-knife">Kernel Trick as Two-Sided Swiss Army Knife</a></li>
   </ul></li>
-  <li><a href="#linear-discriminant-analysis-lda" id="toc-linear-discriminant-analysis-lda" class="nav-link" data-scroll-target="#linear-discriminant-analysis-lda">Linear Discriminant Analysis (LDA)</a>
+  <li><a href="#single-layer-neural-networks" id="toc-single-layer-neural-networks" class="nav-link" data-scroll-target="#single-layer-neural-networks">Single-Layer Neural Networks</a>
   <ul class="collapse">
-  <li><a href="#bayes-rule" id="toc-bayes-rule" class="nav-link" data-scroll-target="#bayes-rule">Bayes’ Rule</a></li>
-  <li><a href="#the-lda-assumption-one-feature-x" id="toc-the-lda-assumption-one-feature-x" class="nav-link" data-scroll-target="#the-lda-assumption-one-feature-x">The LDA Assumption (One Feature <span class="math inline">\(x\)</span>)</a></li>
-  <li><a href="#decision-boundaries" id="toc-decision-boundaries" class="nav-link" data-scroll-target="#decision-boundaries">Decision Boundaries</a></li>
-  <li><a href="#number-of-parameters" id="toc-number-of-parameters" class="nav-link" data-scroll-target="#number-of-parameters">Number of Parameters</a></li>
-  <li><a href="#lda-with-multiple-features-here-p-2" id="toc-lda-with-multiple-features-here-p-2" class="nav-link" data-scroll-target="#lda-with-multiple-features-here-p-2">LDA with Multiple Features (Here <span class="math inline">\(p = 2\)</span>)</a></li>
-  <li><a href="#quadratic-class-boundaries" id="toc-quadratic-class-boundaries" class="nav-link" data-scroll-target="#quadratic-class-boundaries">Quadratic Class Boundaries</a></li>
-  <li><a href="#key-advantage-of-generative-model" id="toc-key-advantage-of-generative-model" class="nav-link" data-scroll-target="#key-advantage-of-generative-model">Key Advantage of Generative Model</a></li>
-  <li><a href="#classifying-new-points" id="toc-classifying-new-points" class="nav-link" data-scroll-target="#classifying-new-points">Classifying New Points</a></li>
+  <li><a href="#diagram-leftrightarrow-math" id="toc-diagram-leftrightarrow-math" class="nav-link" data-scroll-target="#diagram-leftrightarrow-math">Diagram <span class="math inline">\(\leftrightarrow\)</span> Math</a></li>
+  <li><a href="#matrix-form-only-if-sanity-helping" id="toc-matrix-form-only-if-sanity-helping" class="nav-link" data-scroll-target="#matrix-form-only-if-sanity-helping">Matrix Form (Only if Sanity-Helping)</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
+  <li><a href="#sum-of-squares" id="toc-sum-of-squares" class="nav-link" data-scroll-target="#sum-of-squares">Sum of Squares</a></li>
+  <li><a href="#interaction-term" id="toc-interaction-term" class="nav-link" data-scroll-target="#interaction-term">Interaction Term</a></li>
+  <li><a href="#the-xor-problem" id="toc-the-xor-problem" class="nav-link" data-scroll-target="#the-xor-problem">The XOR Problem</a></li>
+  <li><a href="#but-how" id="toc-but-how" class="nav-link" data-scroll-target="#but-how">But How?</a></li>
   </ul></li>
-  <li><a href="#quiz-time" id="toc-quiz-time" class="nav-link" data-scroll-target="#quiz-time">Quiz Time!</a>
+  <li><a href="#multilayer-neural-networks" id="toc-multilayer-neural-networks" class="nav-link" data-scroll-target="#multilayer-neural-networks">Multilayer Neural Networks</a>
   <ul class="collapse">
-  <li><a href="#appendix-fuller-logistic-derivation" id="toc-appendix-fuller-logistic-derivation" class="nav-link" data-scroll-target="#appendix-fuller-logistic-derivation">Appendix: Fuller Logistic Derivation</a></li>
+  <li><a href="#input-representation" id="toc-input-representation" class="nav-link" data-scroll-target="#input-representation">Input Representation</a></li>
+  <li><a href="#but-wait-ten-outputs" id="toc-but-wait-ten-outputs" class="nav-link" data-scroll-target="#but-wait-ten-outputs">But Wait… Ten Outputs?</a></li>
+  <li><a href="#visualizing-softmax-results" id="toc-visualizing-softmax-results" class="nav-link" data-scroll-target="#visualizing-softmax-results">Visualizing Softmax Results</a></li>
+  </ul></li>
+  <li><a href="#fancier-neural-networks" id="toc-fancier-neural-networks" class="nav-link" data-scroll-target="#fancier-neural-networks">Fancier Neural Networks</a>
+  <ul class="collapse">
+  <li><a href="#cnns" id="toc-cnns" class="nav-link" data-scroll-target="#cnns">CNNs</a></li>
+  <li><a href="#decoding-the-thought-vector" id="toc-decoding-the-thought-vector" class="nav-link" data-scroll-target="#decoding-the-thought-vector">Decoding the Thought Vector</a></li>
+  <li><a href="#variational-autoencoders" id="toc-variational-autoencoders" class="nav-link" data-scroll-target="#variational-autoencoders">Variational Autoencoders</a></li>
+  <li><a href="#rnns" id="toc-rnns" class="nav-link" data-scroll-target="#rnns">RNNs</a></li>
+  <li><a href="#ok-but-how-do-we-learn-the-weights" id="toc-ok-but-how-do-we-learn-the-weights" class="nav-link" data-scroll-target="#ok-but-how-do-we-learn-the-weights">Ok But How Do We <em>Learn</em> The Weights?</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul></li>
   </ul>
@@ -592,31 +607,31 @@ window.Quarto = {
 <td style="text-align: left;"><strong>Lecture</strong></td>
 <td style="text-align: left;">6:30pm</td>
 <td style="text-align: left;">7:00pm</td>
-<td style="text-align: left;"><a href="#learning-decision-boundaries">Separating Hyperplanes →</a></td>
+<td style="text-align: left;"><a href="#kern">SMVs and the Kernel Trick →</a></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"></td>
+<td style="text-align: left;"><strong>Lecture</strong></td>
 <td style="text-align: left;">7:00pm</td>
-<td style="text-align: left;">7:20pm</td>
-<td style="text-align: left;"><a href="#max-margin-classifiers">Max-Margin Classifiers →</a></td>
+<td style="text-align: left;">7:30pm</td>
+<td style="text-align: left;"><a href="#learning-decision-boundaries">Single Layer Neural Networks →</a></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">7:20pm</td>
-<td style="text-align: left;">8:00pm</td>
-<td style="text-align: left;"><a href="#support-vector-classifiers">Support Vector <em>Classifiers</em> →</a></td>
+<td style="text-align: left;">7:30pm</td>
+<td style="text-align: left;">7:50pm</td>
+<td style="text-align: left;"><a href="#multilayer-neural-networks">Multilayer Neural Networks →</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Break!</strong></td>
+<td style="text-align: left;">7:50pm</td>
 <td style="text-align: left;">8:00pm</td>
-<td style="text-align: left;">8:10pm</td>
 <td style="text-align: left;"></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">8:10pm</td>
+<td style="text-align: left;">8:00pm</td>
 <td style="text-align: left;">9:00pm</td>
-<td style="text-align: left;"><a href="#quiz-time">Quiz 2 →</a></td>
+<td style="text-align: left;"><a href="#fancier-neural-networks">Fancier Neural Networks →</a></td>
 </tr>
 </tbody>
 </table>
@@ -627,7 +642,6 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-</div>
 </div>
 <div class="hidden">
 <p><span class="math display">\[
@@ -669,319 +683,821 @@ window.Quarto = {
 \newcommand{\bigVar}[1]{\text{Var}\mkern-4mu \left[ #1 \right]}
 \]</span></p>
 </div>
-<section id="quick-roadmap" class="level2 crunch-title crunch-ul text-90 crunch-li-first">
-<h2 class="crunch-title crunch-ul text-90 crunch-li-first anchored" data-anchor-id="quick-roadmap">Quick Roadmap</h2>
+</div>
+<style>
+@font-face {
+    font-family: Noodle;
+    src: url('../assets/Kbnoodlemonster.ttf');
+}
+.noodle-jj {
+    font-family: "Noodle", serif;
+    font-size: 96pt !important;
+}
+.noodle-jj-smaller {
+    font-family: "Noodle", serif;
+    font-size: 54pt !important;
+}
+</style>
+<section id="linear-rightarrow-linear" class="level2 crunch-title inline-90 crunch-ul crunch-quarto-figure">
+<h2 class="crunch-title inline-90 crunch-ul crunch-quarto-figure anchored" data-anchor-id="linear-rightarrow-linear">Linear <span class="math inline">\(\rightarrow\)</span> <span class="noodle-jj-smaller">Linear</span></h2>
+<div class="columns">
+<div class="column" style="width:50%;">
 <ul>
-<li>Weeks 8-9: Shift from focus on <strong>regression</strong> to focus on <strong>classification</strong> (Though we use lessons from regression!)</li>
-<li>Last Week (W08): SVMs as <em>new method</em> with this focus
+<li>Old feature space: <span class="math inline">\(\mathcal{S} = \{X_1, \ldots, X_J\}\)</span></li>
+<li>New feature space: <span class="math inline">\(\mathcal{S}^2 = \{X_1, X_1^2, \ldots, X_J, X_J^2\}\)</span></li>
+<li><strong>Linear</strong> boundary in <span class="math inline">\(\mathcal{S}^2\)</span> <span class="math inline">\(\implies\)</span> <strong>Quadratic</strong> boundary in <span class="math inline">\(\mathcal{S}\)</span></li>
+<li>Helpful example: Non-linearly separable in 1D <span class="math inline">\(\leadsto\)</span> Linearly separable in 2D</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<p>1D Hyperplane = <strong>point!</strong> But no separating point here 😰</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>x_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">50</span>, <span class="at">min=</span><span class="sc">-</span><span class="dv">9</span>, <span class="at">max=</span><span class="dv">9</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>data_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x=</span>x_vals) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(<span class="fu">abs</span>(x) <span class="sc">&gt;=</span> <span class="dv">6</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>)),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">x2 =</span> x<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>data_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span><span class="dv">0</span>, <span class="at">color=</span>label)) <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">color=</span>label, <span class="at">shape=</span>label), <span class="at">size=</span>g_pointsize,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">fill=</span>label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">6</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># xlim(6,25) + ylim(2,22) +</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># coord_equal() +</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 45 is minus sign, 95 is em-dash</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.line.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Non-Linearly-Separable Data"</span>) <span class="sc">+</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.margin =</span> <span class="fu">unit</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">20</span>), <span class="st">"mm"</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/plot-1d-nonsep-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>x2, <span class="at">color=</span>label)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">color=</span>label, <span class="at">shape=</span>label), <span class="at">size=</span>g_pointsize,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">fill=</span>label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">6</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.333</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept=</span><span class="dv">36</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># xlim(6,25) + ylim(2,22) +</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># coord_equal() +</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 45 is minus sign, 95 is em-dash</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">TeX</span>(<span class="st">"...Linearly Separable in $R^2$!"</span>),</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">TeX</span>(<span class="st">"$x^2$"</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/lift-1d-to-2d-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="and-in-3d" class="level2">
+<h2 class="anchored" data-anchor-id="and-in-3d">And in 3D…</h2>
+<p>&nbsp;<br></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/kernel_trick.jpg" class="img-fluid figure-img"></p>
+<figcaption><a href="https://medium.com/@mehmetalitor/support-vector-machine-and-kernel-trick-45b122edc773">Image Source</a></figcaption>
+</figure>
+</div>
+</section>
+<section id="taking-this-idea-and-running-with-it" class="level2 crunch-title title-09">
+<h2 class="crunch-title title-09 anchored" data-anchor-id="taking-this-idea-and-running-with-it">Taking This Idea and Running With It</h2>
 <ul>
-<li>Emphasis on <strong>boundary between classes</strong> <span class="math inline">\(\leadsto\)</span> 2.5hrs on <strong>separating hyperplanes</strong>: in original feature space (Max-Margin, SVCs) or derived feature spaces (SVMs)</li>
-</ul></li>
-<li>Now: Wait, didn’t we discuss a classification method before, though its name confusingly had “regression” in it? 🤔
+<li>The goal: find a <strong>transformation of the original space</strong> that the (non-linearly-separable) data lives in, such that data <strong><em>is</em> linearly separable</strong> in new space</li>
+<li>In theory, could just compute tons and tons of new features <span class="math inline">\(\{X_1, X_1^2, X_1^3, \ldots, X_1X_2, X_1X_3, \ldots, X_1^2X_2, X_1^2X_3, \ldots\}\)</span></li>
+<li>In practice this “blows up” the dimensionality of the feature space, making SVM slower and slower</li>
+<li>Weird trick (literally): turns out we only need <strong>inner products</strong> <span class="math inline">\(\langle x_i, x_j \rangle\)</span> between datapoints… <strong>“Kernel Trick”</strong></li>
+</ul>
+</section>
+<section id="the-magic-of-kernels" class="level2 smaller crunch-title title-12 math-90">
+<h2 class="smaller crunch-title title-12 math-90 anchored" data-anchor-id="the-magic-of-kernels">The Magic of Kernels</h2>
+<p>Radial Basis Function (RBF) Kernel:</p>
+<p><span class="math display">\[
+K(x_i, x_{i'}) = \exp\left[ -\gamma \sum_{j=1}^{J} (x_{ij} - x_{i'j})^2 \right]
+\]</span></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kernlab) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlbench) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(<span class="st">"assets/linspike_df.rds"</span>)) {</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">5300</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">&lt;-</span> <span class="dv">120</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  x1_vals <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="at">min=</span><span class="sc">-</span><span class="dv">5</span>, <span class="at">max=</span><span class="dv">5</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  x2_raw <span class="ot">&lt;-</span> x1_vals</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  x2_noise <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(N, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fl">1.25</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  x2_vals <span class="ot">&lt;-</span> x2_raw <span class="sc">+</span> x2_noise</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  linspike_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x1=</span>x1_vals, <span class="at">x2=</span>x2_vals) <span class="sc">|&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(x1<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> x2<span class="sc">^</span><span class="dv">2</span> <span class="sc">&lt;=</span> <span class="fl">2.75</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  linspike_svm <span class="ot">&lt;-</span> <span class="fu">ksvm</span>(</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    label <span class="sc">~</span> x1 <span class="sc">+</span> x2,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> linspike_df,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">kernel =</span> <span class="st">"rbfdot"</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">C =</span> <span class="dv">500</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">prob.model =</span> <span class="cn">TRUE</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Grid over which to evaluate decision boundaries</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  npts <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  lsgrid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">x1 =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="at">length =</span> npts),</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">x2 =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="at">length =</span> npts)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Predicted probabilities (as a two-column matrix)</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  prob_svm <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    linspike_svm,</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">newdata =</span> lsgrid,</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"probabilities"</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add predicted class probabilities</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>  lsgrid2 <span class="ot">&lt;-</span> lsgrid <span class="sc">|&gt;</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cbind</span>(<span class="st">"SVM"</span> <span class="ot">=</span> prob_svm[, <span class="dv">1</span>L]) <span class="sc">|&gt;</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">gather</span>(Model, Prob, <span class="sc">-</span>x1, <span class="sc">-</span>x2)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Serialize for quicker rendering</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(linspike_df, <span class="st">"assets/linspike_df.rds"</span>)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(lsgrid2, <span class="st">"assets/lsgrid2.rds"</span>)</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>  linspike_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"assets/linspike_df.rds"</span>)</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>  lsgrid2 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"assets/lsgrid2.rds"</span>)</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>linspike_df <span class="ot">&lt;-</span> linspike_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">Label =</span> label</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>linspike_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> x2)) <span class="sc">+</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>  <span class="co"># geom_point(aes(shape = label, color = label), size = 3, alpha = 0.75) +</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">shape =</span> Label, <span class="at">color =</span> Label), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">stroke=</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>Label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">4</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="fu">expression</span>(X[<span class="dv">1</span>])) <span class="sc">+</span></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="fu">expression</span>(X[<span class="dv">2</span>])) <span class="sc">+</span></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>) <span class="sc">+</span> <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_contour</span>(</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> lsgrid2,</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> x2, <span class="at">z =</span> Prob),</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fl">0.5</span>,</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 15 rows containing missing values or values outside the scale range
+(`geom_point()`).
+Removed 15 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/linspike-svm-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">file.exists</span>(<span class="st">"assets/spiral_df.rds"</span>)) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  spiral_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mlbench.spirals</span>(<span class="dv">300</span>, <span class="at">cycles =</span> <span class="dv">2</span>, <span class="at">sd =</span> <span class="fl">0.09</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(spiral_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x1"</span>, <span class="st">"x2"</span>, <span class="st">"label"</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Fit SVM using a RBF kernel</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  spirals_svm <span class="ot">&lt;-</span> <span class="fu">ksvm</span>(</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    label <span class="sc">~</span> x1 <span class="sc">+</span> x2,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> spiral_df,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">kernel =</span> <span class="st">"rbfdot"</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">C =</span> <span class="dv">500</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">prob.model =</span> <span class="cn">TRUE</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Grid over which to evaluate decision boundaries</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  npts <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  xgrid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">x1 =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>, <span class="at">length =</span> npts),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x2 =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>, <span class="at">length =</span> npts)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Predicted probabilities (as a two-column matrix)</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  prob_svm <span class="ot">&lt;-</span> <span class="fu">predict</span>(</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    spirals_svm,</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">newdata =</span> xgrid,</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"probabilities"</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add predicted class probabilities</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  xgrid2 <span class="ot">&lt;-</span> xgrid <span class="sc">|&gt;</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cbind</span>(<span class="st">"SVM"</span> <span class="ot">=</span> prob_svm[, <span class="dv">1</span>L]) <span class="sc">|&gt;</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    tidyr<span class="sc">::</span><span class="fu">gather</span>(Model, Prob, <span class="sc">-</span>x1, <span class="sc">-</span>x2)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Serialize for quicker rendering</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(spiral_df, <span class="st">"assets/spiral_df.rds"</span>)</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">saveRDS</span>(xgrid2, <span class="st">"assets/xgrid2.rds"</span>)</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>  spiral_df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"assets/spiral_df.rds"</span>)</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>  xgrid2 <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"assets/xgrid2.rds"</span>)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="co"># And plot</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>spiral_df <span class="ot">&lt;-</span> spiral_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">Label =</span> <span class="fu">factor</span>(<span class="fu">ifelse</span>(label <span class="sc">==</span> <span class="dv">2</span>, <span class="dv">1</span>, <span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>spiral_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> x2)) <span class="sc">+</span></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">shape =</span> Label, <span class="at">color =</span> Label), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">stroke=</span><span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>Label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span><span class="dv">4</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="fu">expression</span>(X[<span class="dv">1</span>])) <span class="sc">+</span></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="fu">expression</span>(X[<span class="dv">2</span>])) <span class="sc">+</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">2</span>, <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_contour</span>(</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> xgrid2,</span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> x1, <span class="at">y =</span> x2, <span class="at">z =</span> Prob),</span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fl">0.5</span>,</span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="st">"Label"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="index_files/figure-html/spiral-svm-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Based on code from <span class="citation" data-cites="boehmke2019handson">Boehmke and Greenwell (<a href="#ref-boehmke2019handson" role="doc-biblioref">2019</a>)</span>, Ch 14</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="how-is-this-possible" class="level2 smaller crunch-math crunch-title title-12">
+<h2 class="smaller crunch-math crunch-title title-12 anchored" data-anchor-id="how-is-this-possible">How Is This Possible?</h2>
 <ul>
-<li>Take <strong>logistic regression</strong> but use Bayes rule to “flip” from <strong>regression[+thresholding]</strong> task to <strong>class-separation</strong> task (think of SVM’s max-width-of-“slab” objective!)</li>
+<li>SVM prediction for an observation <span class="math inline">\(\mathbf{x}\)</span> can be rewritten as</li>
+</ul>
+<p><span class="math display">\[
+f(\mathbf{x}) = \beta_0 + \sum_{i=1}^{n} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle
+\]</span></p>
+<ul>
+<li>Rather than one parameter <span class="math inline">\(\beta_j\)</span> per <em>feature</em>, we have one parameter <span class="math inline">\(\alpha_i\)</span> per <em>observation</em></li>
+<li>At first this seems worse, since usually <span class="math inline">\(n &gt; p\)</span>… But we’re saved by <strong>support vectors!</strong></li>
+<li>Since the margin itself is only a function of the support vectors (not <em>every</em> vector—remember that margin <span class="math inline">\(\neq\)</span> average distance!), <span class="math inline">\(\alpha_i &gt; 0\)</span> only when <span class="math inline">\(\mathbf{x}_i\)</span> a support vector!</li>
+<li>So the equation becomes <span class="math inline">\(f(\mathbf{x}) = \beta_0 + \sum_{i \in \mathcal{SV}} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle\)</span>, just one step left…</li>
+<li><strong>Kernel</strong> <span class="math inline">\(K\)</span> = <strong>similarity function</strong> (generalization of inner product!)</li>
+</ul>
+<p><span class="math display">\[
+f(\mathbf{x}) = \beta_0 + \sum_{i \in \mathcal{SV}} \alpha_i K(\mathbf{x}, \mathbf{x}_i)
+\]</span></p>
+</section>
+<section id="inner-products-are-already-similarities" class="level2 smaller crunch-title title-11">
+<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="inner-products-are-already-similarities">Inner Products are Already Similarities!</h2>
+<ul>
+<li>When linearly separable, this is exactly the property we use (by computing inner product of new vector <span class="math inline">\(\mathbf{x}\)</span> with support vectors <span class="math inline">\(\mathbf{x}_i\)</span>) to classify!</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/dot_product_crop.svg" class="img-fluid figure-img"></p>
+<figcaption><a href="https://mathinsight.org/dot_product">Interactive demo</a></figcaption>
+</figure>
+</div>
+<ul>
+<li>Why restrict ourselves to <em>this</em> similarity function? Choosing <span class="math inline">\(K\)</span> <strong>converts the problem</strong>:
+<ul>
+<li>From finding <strong>transformation of <em>features</em></strong> allowing linear separability</li>
+<li>To finding <strong>similarity function for <em>observations</em></strong> allowing linear separability</li>
 </ul></li>
 </ul>
-<!-- * Best way I can summarize: logistic regression is great if we **care about $\beta_j$ values** (effect of $\uparrow X$ on $\Pr(Y = 1)$)... 
-  * Otherwise, if we care about best **separating** $Y = 0$ from $Y = 1$ (think of SVM's max-width-of-"slab" objective), we can optimize **separation boundary**, point where $\Pr(Y = 1) = \Pr(Y = 0)$ directly
--->
 </section>
-<section id="logistic-regression-refresher" class="level2 crunch-title math-90 crunch-math crunch-li title-09 crunch-ul">
-<h2 class="crunch-title math-90 crunch-math crunch-li title-09 crunch-ul anchored" data-anchor-id="logistic-regression-refresher">Logistic Regression Refresher</h2>
+<section id="kernel-trick-as-two-sided-swiss-army-knife" class="level2 smaller title-11 crunch-title crunch-math">
+<h2 class="smaller title-11 crunch-title crunch-math anchored" data-anchor-id="kernel-trick-as-two-sided-swiss-army-knife">Kernel Trick as Two-Sided Swiss Army Knife</h2>
 <ul>
-<li>We don’t have time for full refresher, but just remember how it involves learning <span class="math inline">\(\beta_j\)</span> values to minimize <strong>loss</strong> w.r.t.</li>
+<li><p><i class="bi bi-1-circle"></i> If we <em>have</em> a linearly-separating transformation (like <span class="math inline">\(f(x) = x^2\)</span>), can “encode” as kernel, saving computation</p></li>
+<li><p>Example: Transformation of features <span class="math inline">\(f(x) = x^2\)</span> equivalent to <strong>quadratic kernel:</strong></p>
+<p><span class="math display">\[
+K(x_i, x_{i'}) = (1 + \sum_{j = 1}^{p}x_{ij}x_{i'j})^2
+\]</span></p></li>
+<li><p><i class="bi bi-2-circle"></i> If we <em>don’t</em> have a transformation (and having trouble figuring it out), can <strong>change the problem</strong> into one of finding a “good” <strong>similarity function</strong></p></li>
+<li><p>Example: Look again at RBF Kernel:</p>
+<p><span class="math display">\[
+K(x_i, x_{i'}) = \exp\left[ -\gamma \sum_{j=1}^{J} (x_{ij} - x_{i'j})^2 \right]
+\]</span></p></li>
+<li><p>It turns out: <strong>no</strong> finite collection of transformed features is equivalent to this kernel! (Roughly: can keep adding transformed features to asymptotically approach it—space of SVMs w/kernel thus <span class="math inline">\(&gt;\)</span> space of SVMs w/transformed features)</p></li>
+</ul>
+</section>
+</section>
+<section id="single-layer-neural-networks" class="level1 smaller title-12" data-stack-name="Single-Layer NNs">
+<h1 class="smaller title-12" data-stack-name="Single-Layer NNs">Single-Layer Neural Networks</h1>
+<p><em>(We made it! <span style="text-decoration: line-through;">Statistical</span> <strong>Neural</strong> learning</em></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nn_single_layer.svg" class="img-fluid figure-img"></p>
+<figcaption>Single-Layer NN, Adapted from ISLR Fig 10.1</figcaption>
+</figure>
+</div>
+<section id="diagram-leftrightarrow-math" class="level2 crunch-title cols-va crunch-math crunch-quarto-figure math-90 inline-90 crunch-ul crunch-li-8 title-09">
+<h2 class="crunch-title cols-va crunch-math crunch-quarto-figure math-90 inline-90 crunch-ul crunch-li-8 title-09 anchored" data-anchor-id="diagram-leftrightarrow-math">Diagram <span class="math inline">\(\leftrightarrow\)</span> Math</h2>
+<div class="columns">
+<div class="column" style="width:66%;">
+<ul>
+<li><span class="math inline">\(p = 4\)</span> features in <span class="cb-in"><strong>Input Layer</strong></span></li>
+<li><span class="math inline">\(K = 5\)</span> <span class="cb-hidden"><strong>Hidden Units</strong></span></li>
+<li><span class="cb-out"><strong>Output Layer</strong></span>: Regression on <strong>activations</strong> <span class="math inline">\(a_k\)</span> (<span class="cb-hidden">Hidden Unit</span> outputs)</li>
 </ul>
 <p><span class="math display">\[
 \begin{align*}
-&amp;\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
-&amp;\iff \Pr(Y = 1 \mid X = x_i) = \frac{e^{\beta_0 + \beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}}
+{\color{#976464} y} &amp;= { \color{#976464} \beta_0 } + {\color{#666693} \sum_{k=1}^{5} } {\color{#976464} \beta_k } { \color{#666693} \overbrace{\boxed{a_k} }^{\mathclap{k^\text{th}\text{ activation}}} } \\
+{\color{#976464} y} &amp;= { \color{#976464} \beta_0 } + {\color{#666693} \sum_{k=1}^{5} } {\color{#976464} \beta_k } { \color{#666693} \underbrace{ g \mkern-4mu \left( w_{k0} + {\color{#679d67} \sum_{j=1}^{4} } w_{kj} {\color{#679d67} x_j} \right) }_{k^\text{th}\text{ activation}}}
 \end{align*}
 \]</span></p>
-<ul>
-<li>And then, if we want to <strong>classify <span class="math inline">\(x\)</span></strong> rather than just <strong>predict</strong> <span class="math inline">\(\Pr(Y = 1 \mid X = x)\)</span>, we apply a threshold <span class="math inline">\(t \in [0,1]\)</span>:</li>
-</ul>
-<p><span class="math display">\[
-\widehat{y} = \begin{cases}
-1 &amp;\text{if }\Pr(Y = 1 \mid X = x) = \frac{e^{\beta_0 + \beta_1 x}}{1 + e^{\beta_0 + \beta_1 x}} &gt; t \\
-0 &amp;\text{otherwise}
-\end{cases}
-\]</span></p>
-</section>
-<section id="intuition" class="level2 crunch-title crunch-ul title-09 inline-90">
-<h2 class="crunch-title crunch-ul title-09 inline-90 anchored" data-anchor-id="intuition">Intuition</h2>
-<ul>
-<li>Logistic regression is called a <strong>discriminative model</strong>, since we are learning parameters <span class="math inline">\(\beta_j\)</span> that best produce a predicted <strong>class</strong> <span class="math inline">\(\widehat{y_i}\)</span> from <strong>features</strong> <span class="math inline">\(\mathbf{x}_i\)</span>…</li>
-<li>We’re modeling <span class="math inline">\(\Pr(Y = k \mid X)\)</span> (for two classes, <span class="math inline">\(k = 0\)</span> and <span class="math inline">\(k = 1\)</span>), hence the LHS of the Logistic Regression formula</li>
-<li>But there are cases where we can <strong>do better</strong><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> by instead modeling (learning parameters for) <span class="math inline">\(\Pr(X \mid Y = k)\)</span>, for each <span class="math inline">\(k\)</span>, then using Bayes rule to “flip” back to <span class="math inline">\(\Pr(Y = k \mid X)\)</span>!<br><span class="math inline">\(\leadsto\)</span> <strong>LDA</strong>, <strong>QDA</strong>, and <strong>Naïve Bayes</strong> classifiers</li>
-</ul>
-</section>
-</section>
-<section id="linear-discriminant-analysis-lda" class="level1" data-stack-name="LDA">
-<h1 data-stack-name="LDA">Linear Discriminant Analysis (LDA)</h1>
-<ul>
-<li><em>Not to be confused with the NLP model called “LDA”!</em></li>
-<li><em>In that case LDA = “Latent Dirichlet Allocation”</em></li>
-</ul>
-<section id="bayes-rule" class="level2 smaller math-90 crunch-ul">
-<h2 class="smaller math-90 crunch-ul anchored" data-anchor-id="bayes-rule">Bayes’ Rule</h2>
-<ul>
-<li>First things first, we generalize from <span class="math inline">\(Y \in \{0, 1\}\)</span> to <span class="math inline">\(K\)</span> possible classes (labels), since the notation for <span class="math inline">\(K\)</span> classes here is not much more complex than 2 classes!</li>
-<li>We label the pieces using ISLR’s notation to make our lives easier:</li>
-</ul>
-<p><span class="math display">\[
-\underbrace{\Pr(Y = k \mid X = x)}_{p_k(x)} = \frac{
-  \overbrace{\Pr(X = x \mid Y = k)}^{f_k(x)} \overbrace{\Pr(Y = k)}^{\pi_k}
-}{
-  \sum_{\ell = 1}^{K} \underbrace{\Pr(X = x \mid Y = \ell)}_{f_{\ell}(x)} \underbrace{\Pr(Y = \ell)}_{\pi_{\ell}}
-} = \frac{f_k(x) \overbrace{\pi_k}^{\mathclap{\text{Prior}(k)}}}{\sum_{\ell = 1}^{K}f_{\ell}(x) \underbrace{\pi_\ell}_{\mathclap{\text{Prior}(\ell)}}}
-\]</span></p>
-<ul>
-<li><p>So if we do have only two classes, <span class="math inline">\(K = 2\)</span> and <span class="math inline">\(p_1(x) = \frac{f_1(x)\pi_1}{f_1(x)\pi_1 + f_0(x)\pi_0}\)</span></p></li>
-<li><p>Priors can be estimated as <span class="math inline">\(n_k / n\)</span>. The hard work is in modeling <span class="math inline">\(f_k(x)\)</span>! With estimates of these two “pieces” for each <span class="math inline">\(k\)</span>, we can derive a classifier <span class="math inline">\(\widehat{y}(x) = \argmax_k p_k(x)\)</span></p></li>
-</ul>
-</section>
-<section id="the-lda-assumption-one-feature-x" class="level2 smaller crunch-title title-11 math-90 crunch-ul crunch-li-5">
-<h2 class="smaller crunch-title title-11 math-90 crunch-ul crunch-li-5 anchored" data-anchor-id="the-lda-assumption-one-feature-x">The LDA Assumption (One Feature <span class="math inline">\(x\)</span>)</h2>
-<ul>
-<li>Within each class <span class="math inline">\(k\)</span>, values of <span class="math inline">\(x\)</span> are <strong>normally distributed</strong>:</li>
-</ul>
-<p><span class="math display">\[
-(X \mid Y = k) \sim \mathcal{N}(\param{\mu_k}, \param{\sigma^2}) \iff f_k(x) = \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_k}{\sigma} \right)^2\right]
-\]</span></p>
-<ul>
-<li>Plugging back into (notationally-simplified) classifier, we get</li>
-</ul>
-<p><span class="math display">\[
-\widehat{y}(x) = \argmax_{k}\left[ \frac{
-  \pi_k \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_k}{\sigma} \right)^2\right]
-}{
-  \sum_{\ell = 1}^{K}\pi_{\ell} \frac{1}{\sqrt{2 \pi}\sigma}\exp\left[-\frac{1}{2}\left( \frac{x - \mu_\ell}{\sigma} \right)^2\right]
-}\right],
-\]</span></p>
-<ul>
-<li>Gross, BUT <span class="math inline">\(\argmax_k p_k(x) = \argmax_k \log(p_k(x)) \leadsto\)</span> “linear” discriminant <span class="math inline">\(\delta_k(x)\)</span>:</li>
-</ul>
-<p><span class="math display">\[
-\widehat{y}(x) = \argmax_k[\delta_k(x)] = \argmax_{k}\left[ \overbrace{\frac{\mu_k}{\sigma^2}}^{\smash{m}} x ~ \overbrace{- \frac{\mu_k^2}{2\sigma^2} + \log(\pi_k)}^{\smash{b}} \right]
-\]</span></p>
-</section>
-<section id="decision-boundaries" class="level2 smaller crunch-title crunch-ul crunch-math math-90">
-<h2 class="smaller crunch-title crunch-ul crunch-math math-90 anchored" data-anchor-id="decision-boundaries">Decision Boundaries</h2>
-<ul>
-<li><p>The <strong>boundary</strong> between two classes <span class="math inline">\(k\)</span> and <span class="math inline">\(k'\)</span> will be the point at which <span class="math inline">\(\delta_k(x) = \delta_{k'}(x)\)</span></p></li>
-<li><p>For two classes, can solve <span class="math inline">\(\delta_0(x) = \delta_1(x)\)</span> for <span class="math inline">\(x\)</span> to obtain <span class="math inline">\(x = \frac{\mu_0 + \mu_1}{2}\)</span></p></li>
-<li><p>To derive a boundary from <strong>data</strong>: <span class="math inline">\(x = \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}\)</span> <span class="math inline">\(\Rightarrow\)</span> Predict <span class="math inline">\(1\)</span> if <span class="math inline">\(x &gt; \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}\)</span>, <span class="math inline">\(0\)</span> otherwise</p></li>
-</ul>
+</div><div class="column" style="width:34%;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/4_4.svg" class="img-fluid figure-img"></p>
-<figcaption>ISLR Figure 4.4: Estimating the Decision Boundary from data. The dashed line is the “true” boundary <span class="math inline">\(x = \frac{\mu_0 + \mu_1}{2}\)</span>, while the solid line in the right panel is the boundary <strong>estimated from data</strong> as <span class="math inline">\(x = \frac{\widehat{\mu}_0 + \widehat{\mu}_1}{2}\)</span>.</figcaption>
+<p><img src="images/nn_single_layer.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="matrix-form-only-if-sanity-helping" class="level2 smaller crunch-title title-12">
+<h2 class="smaller crunch-title title-12 anchored" data-anchor-id="matrix-form-only-if-sanity-helping">Matrix Form (Only if Sanity-Helping)</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nn_activation.svg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
 </figure>
 </div>
 </section>
-<section id="number-of-parameters" class="level2 smaller crunch-title">
-<h2 class="smaller crunch-title anchored" data-anchor-id="number-of-parameters">Number of Parameters</h2>
+<section id="example" class="level2">
+<h2 class="anchored" data-anchor-id="example">Example</h2>
 <ul>
-<li><span class="math inline">\(K = 2\)</span> is special case, since lots of things cancel out, but in general need to estimate:</li>
+<li>Rather than pondering over what that diagram can/can’t do, consider two “true” DGPs:</li>
 </ul>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>English</th>
-<th>Notation</th>
-<th>How Many</th>
-<th>Formula</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Prior for class <span class="math inline">\(k\)</span></td>
-<td><span class="math inline">\(\widehat{\pi}_k\)</span></td>
-<td><span class="math inline">\(K - 1\)</span></td>
-<td><span class="math inline">\(\widehat{\pi}_k = n_k / n\)</span></td>
-</tr>
-<tr class="even">
-<td>Estimated mean for class <span class="math inline">\(k\)</span></td>
-<td><span class="math inline">\(\widehat{\mu}_k\)</span></td>
-<td><span class="math inline">\(K\)</span></td>
-<td><span class="math inline">\(\widehat{\mu}_k = \displaystyle \frac{1}{n_k}\sum_{\{i \mid y_i = k\}}x_i\)</span></td>
-</tr>
-<tr class="odd">
-<td>Estimated (shared) variance</td>
-<td><span class="math inline">\(\widehat{\sigma}^2\)</span></td>
-<td>1</td>
-<td><span class="math inline">\(\widehat{\sigma}^2 = \displaystyle \frac{1}{n - K}\sum_{k = 1}^{K}\sum_{i:y_i = k}(x_i - \widehat{\mu}_k)^2\)</span></td>
-</tr>
-<tr class="even">
-<td></td>
-<td><strong>Total:</strong></td>
-<td><span class="math inline">\(2K\)</span></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><em>(Keep in mind for fancier methods! This may blow up to be much larger than <span class="math inline">\(n\)</span>)</em></li>
-</ul>
-</section>
-<section id="lda-with-multiple-features-here-p-2" class="level2 smaller crunch-title title-11 crunch-ul">
-<h2 class="smaller crunch-title title-11 crunch-ul anchored" data-anchor-id="lda-with-multiple-features-here-p-2">LDA with Multiple Features (Here <span class="math inline">\(p = 2\)</span>)</h2>
-<ul>
-<li>Within each class <span class="math inline">\(k\)</span>, values of <span class="math inline">\(\mathbf{x}\)</span> are <strong>(multivariate) normally distributed</strong>:</li>
-</ul>
-<p><span class="math display">\[
-\left( \begin{bmatrix}X_1 \\ X_2\end{bmatrix} \middle| ~ Y = k \right) \sim \mathbf{\mathcal{N}}_2(\param{\boldsymbol\mu_k}, \param{\mathbf{\Sigma}})
-\]</span></p>
-<ul>
-<li>Increasing <span class="math inline">\(p\)</span> to 2 and <span class="math inline">\(K\)</span> to 3 means more parameters, but still <strong>linear boundaries</strong>. It turns out: shared variance (<span class="math inline">\(\sigma^2\)</span> or <span class="math inline">\(\mathbf{\Sigma}\)</span>) will <strong>always</strong> produce linear boundaries 🤔</li>
-</ul>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/4_6.svg" class="img-fluid figure-img"></p>
-<figcaption>ISLR Figure 4.6: Like before, dashed lines are “true” boundaries while solid lines are boundaries <strong>estimated from data</strong></figcaption>
-</figure>
-</div>
-</section>
-<section id="quadratic-class-boundaries" class="level2 smaller crunch-title title-12 crunch-ul math-90 crunch-math">
-<h2 class="smaller crunch-title title-12 crunch-ul math-90 crunch-math anchored" data-anchor-id="quadratic-class-boundaries">Quadratic Class Boundaries</h2>
-<ul>
-<li>To achieve <strong>non-linear</strong> boundaries, estimate covariance matrix <span class="math inline">\(\mathbf{\Sigma}_k\)</span> for each class <span class="math inline">\(k\)</span>:</li>
-</ul>
-<p><span class="math display">\[
-\left( \begin{bmatrix}X_1 \\ X_2\end{bmatrix} \middle| ~ Y = k \right) \sim \mathbf{\mathcal{N}}_2(\param{\boldsymbol\mu_k}, \param{\mathbf{\Sigma}_k})
-\]</span></p>
-<ul>
-<li>Pros: Non-linear class boundaries! Cons: More parameters to estimate, does worse than LDA if data linearly-separable (or nearly linearly-separable).</li>
-<li>Deciding factor: do you think DGP produces normal classes with same variance?</li>
-</ul>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/4_9.svg" class="img-fluid figure-img"></p>
-<figcaption>ISLR Figure 4.9: Dashed <span style="color: #b97dc3"><strong>purple</strong></span> line is “true” boundary (Bayes decision boundary), dotted <strong>black</strong> line is LDA boundary, solid <span style="color: #009f86"><strong>green</strong></span> line is QDA boundary</figcaption>
-</figure>
-</div>
-</section>
-<section id="key-advantage-of-generative-model" class="level2 smaller crunch-title crunch-ul table-va title-11 inline-90 crunch-quarto-figure crunch-td">
-<h2 class="smaller crunch-title crunch-ul table-va title-11 inline-90 crunch-quarto-figure crunch-td anchored" data-anchor-id="key-advantage-of-generative-model">Key Advantage of Generative Model</h2>
-<ul>
-<li>You get an actual “picture” of <strong>what the data looks like!</strong></li>
-</ul>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 10%">
-<col style="width: 30%">
-<col style="width: 30%">
-<col style="width: 30%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_1)\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_2)\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_3)\)</span></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><span class="math inline">\(k = 1\)</span></td>
-<td style="text-align: center;"><img src="images/4_10a1.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:70.0%"></td>
-<td style="text-align: center;"><img src="images/4_10a2.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:70.0%"></td>
-<td style="text-align: center;"><img src="images/4_10a3.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:70.0%"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><span class="math inline">\(k = 2\)</span></td>
-<td style="text-align: center;"><img src="images/4_10b1.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:70.0%"></td>
-<td style="text-align: center;"><img src="images/4_10b2.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:70.0%"></td>
-<td style="text-align: center;"><img src="images/4_10b3.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:70.0%"></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="classifying-new-points" class="level2 smaller crunch-title crunch-ul table-va title-11 inline-90 crunch-quarto-figure crunch-td">
-<h2 class="smaller crunch-title crunch-ul table-va title-11 inline-90 crunch-quarto-figure crunch-td anchored" data-anchor-id="classifying-new-points">Classifying New Points</h2>
-<ul>
-<li>For new feature values <span class="math inline">\(x_{ij}\)</span>, compare <strong>how likely</strong> this value is under <span class="math inline">\(k = 1\)</span> vs.&nbsp;<span class="math inline">\(k = 2\)</span></li>
-<li>Example: <span class="math inline">\(\mathbf{x} = (0.4, 1.5, 1)^{\top}\)</span></li>
-</ul>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 10%">
-<col style="width: 30%">
-<col style="width: 30%">
-<col style="width: 30%">
-</colgroup>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_1)\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_2)\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(\widehat{f}_k(X_3)\)</span></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><span class="math inline">\(k = 1\)</span></td>
-<td style="text-align: center;"><img src="images/4_10a1.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:50.0%"></td>
-<td style="text-align: center;"><img src="images/4_10a2.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:50.0%"></td>
-<td style="text-align: center;"><img src="images/4_10a3.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:50.0%"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"><span class="math inline">\(f_1(0.4) = 0.368\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(f_1(1.5) = 0.484\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(f_1(1) = 0.226\)</span></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><span class="math inline">\(k = 2\)</span></td>
-<td style="text-align: center;"><img src="images/4_10b1.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:50.0%"></td>
-<td style="text-align: center;"><img src="images/4_10b2.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:50.0%"></td>
-<td style="text-align: center;"><img src="images/4_10b3.svg" class="img-fluid quarto-figure quarto-figure-center" style="width:50.0%"></td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-<td style="text-align: center;"><span class="math inline">\(f_2(0.4) = 0.030\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(f_2(1.5) = 0.130\)</span></td>
-<td style="text-align: center;"><span class="math inline">\(f_2(1) = 0.616\)</span></td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="quiz-time" class="level1" data-stack-name="Quiz">
-<h1 data-stack-name="Quiz">Quiz Time!</h1>
-<section id="appendix-fuller-logistic-derivation" class="level2 smaller crunch-title title-09">
-<h2 class="smaller crunch-title title-09 anchored" data-anchor-id="appendix-fuller-logistic-derivation">Appendix: Fuller Logistic Derivation</h2>
 <p><span class="math display">\[
 \begin{align*}
-&amp;\log\left[ \frac{\Pr(Y = 1 \mid X)}{1 - \Pr(Y = 1 \mid X)} \right] = \beta_0 + \beta_1 X \\
-&amp;\iff \frac{\Pr(Y = 1 \mid X = x_i)}{1 - \Pr(Y = 1\ \mid X = x_i)} = e^{\beta_0 + \beta_1 X} \\
-&amp;\iff \Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X}(1 - \Pr(Y = 1 \mid X)) \\
-&amp;\iff \Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X} - e^{\beta_0 + \beta_1 X}\Pr(Y = 1 \mid X) \\
-&amp;\iff \Pr(Y = 1 \mid X) + e^{\beta_0 + \beta_1 X}\Pr(Y = 1 \mid X) = e^{\beta_0 + \beta_1 X} \\
-&amp;\iff \Pr(Y = 1 \mid X)(1 + e^{\beta_0 + \beta_1 X}) = e^{\beta_0 + \beta_1 X} \\
-&amp;\iff \Pr(Y = 1 \mid X) = \frac{e^{\beta_0 + \beta_1 X}}{1 + e^{\beta_0 + \beta_1 X}}
+Y &amp;= {\color{#e69f00} X_1 X_2 } \\
+Y &amp;= {\color{#56b4e9} X_1^2 + X_2^2 } \\
+Y &amp;= {\color{#009E73} X_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} X_2}
 \end{align*}
 \]</span></p>
+<ul>
+<li>How exactly is a neural net able to learn these relationships?</li>
+</ul>
+</section>
+<section id="sum-of-squares" class="level2 smaller crunch-title crunch-math cols-va crunch-quarto-figure crunch-ul">
+<h2 class="smaller crunch-title crunch-math cols-va crunch-quarto-figure crunch-ul anchored" data-anchor-id="sum-of-squares">Sum of Squares</h2>
+<div class="columns">
+<div class="column" style="width:45%;">
+<ul>
+<li>Can we learn <span class="math inline">\(y = {\color{#56b4e9} x_1^2 + x_2^2 }\)</span>?</li>
+<li>Let’s use <span class="math inline">\(g(x) = x^2\)</span>.</li>
+<li>Let <span class="math inline">\(\mathbf{w}_1 = (0, 1, 0)\)</span>, <span class="math inline">\(\mathbf{w}_2 = (0, 0, 1)\)</span>.</li>
+<li>Our two activations are:</li>
+</ul>
+</div><div class="column" style="width:55%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nn_2_2.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:66.6%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="math display">\[
+\begin{align*}
+{\color{#666693} a_1 } &amp;= g(0 + (1)(x_1) + (0)(x_2)) = x_1^2 \\
+{\color{#666693} a_2 } &amp;= g(0 + (0)(x_1) + (1)(x_2)) = x_2^2
+\end{align*}
+\]</span></p>
+<ul>
+<li>So, if <span class="math inline">\(\boldsymbol\beta = (0, 1, 1)\)</span>, then</li>
+</ul>
+<p><span class="math display">\[
+{\color{#976464} y } = 0 + (1)(x_1^2) + (1)(x_2^2) = {\color{#56b4e9} x_1^2 + x_2^2} \; ✅
+\]</span></p>
+</section>
+<section id="interaction-term" class="level2 smaller crunch-title crunch-math cols-va crunch-quarto-figure crunch-ul">
+<h2 class="smaller crunch-title crunch-math cols-va crunch-quarto-figure crunch-ul anchored" data-anchor-id="interaction-term">Interaction Term</h2>
+<div class="columns">
+<div class="column" style="width:45%;">
+<ul>
+<li>Can we learn <span class="math inline">\(Y = {\color{#e69f00} x_1x_2}\)</span>?</li>
+<li>Let’s use <span class="math inline">\(g(x) = x^2\)</span> again.</li>
+<li>Let <span class="math inline">\(\mathbf{w}_1 = (0, 1, 1)\)</span>, <span class="math inline">\(\mathbf{w}_2 = (0, 1, -1)\)</span>.</li>
+<li>Our two activations are:</li>
+</ul>
+</div><div class="column" style="width:55%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nn_2_2.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:66.6%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="math display">\[
+\begin{align*}
+{\color{#666693} a_1 } &amp;= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\
+{\color{#666693} a_2 } &amp;= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2
+\end{align*}
+\]</span></p>
+<ul>
+<li>So, if we let <span class="math inline">\(\boldsymbol\beta = \left( 0, \frac{1}{4}, -\frac{1}{4} \right)\)</span>, then</li>
+</ul>
+<p><span class="math display">\[
+{\color{#976464} y } = 0 + \left(\frac{1}{4}\right)(x_1^2 + x_2^2 + 2x_1x_2) + \left(-\frac{1}{4}\right)(x_1^2 + x_2^2 - 2x_1x_2) = {\color{#e69f00} x_1x_2} \; ✅
+\]</span></p>
+</section>
+<section id="the-xor-problem" class="level2 smaller crunch-title crunch-math cols-va crunch-quarto-figure crunch-ul">
+<h2 class="smaller crunch-title crunch-math cols-va crunch-quarto-figure crunch-ul anchored" data-anchor-id="the-xor-problem">The XOR Problem</h2>
+<div class="columns">
+<div class="column" style="width:45%;">
+<ul>
+<li>Can we learn <span class="math inline">\(Y = {\color{#009E73} x_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} x_2}\)</span>?</li>
+<li>Let’s use <span class="math inline">\(g(x) = x^2\)</span> once more.</li>
+<li>Let <span class="math inline">\(\mathbf{w}_1 = (0, 1, 1)\)</span>, <span class="math inline">\(\mathbf{w}_2 = (0, 1, -1)\)</span>.</li>
+<li>Our two activations are:</li>
+</ul>
+</div><div class="column" style="width:55%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nn_2_2.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:66.6%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="math display">\[
+\begin{align*}
+{\color{#666693} a_1 } &amp;= g(0 + (1)(x_1) + (1)(x_2)) = (x_1 + x_2)^2 = x_1^2 + x_2^2 +2x_1x_2 \\
+{\color{#666693} a_2 } &amp;= g(0 + (1)(x_1) + (-1)(x_2)) = (x_1 - x_2)^2 = x_1^2 + x_2^2 - 2x_1x_2
+\end{align*}
+\]</span></p>
+<ul>
+<li>So, if we let <span class="math inline">\(\boldsymbol\beta = (0, 0, 1)\)</span>, then</li>
+</ul>
+<p><span class="math display">\[
+\begin{align*}
+{\color{#976464} y }(0,0) &amp;= 0 + (0)(0^2 + 0^2 + 2(0)(0)) + (1)(0^2 + 0^2 - 2(0)(0)) = {\color{#009e73} 0} \; ✅ \\
+{\color{#976464} y }(0,1) &amp;= 0 + (0)(0^2 + 1^2 + 2(0)(1)) + (1)(0^2 + 1^2 - 2(0)(1)) = {\color{#009e73} 1} \; ✅ \\
+{\color{#976464} y }(1,0) &amp;= 0 + (0)(1^2 + 0^2 + 2(1)(0)) + (1)(1^2 + 0^2 - 2(1)(0)) = {\color{#009e73} 1} \; ✅ \\
+{\color{#976464} y }(1,1) &amp;= 0 + (0)(1^2 + 1^2 + 2(1)(1)) + (1)(1^2 + 1^2 - 2(1)(1)) = {\color{#009e73} 0} \; ✅
+\end{align*}
+\]</span></p>
+</section>
+<section id="but-how" class="level2 smaller crunch-title crunch-quarto-figure crunch-img">
+<h2 class="smaller crunch-title crunch-quarto-figure crunch-img anchored" data-anchor-id="but-how">But How?</h2>
+<ul>
+<li><strong>Output Layer</strong> is just linear regression on <strong>activations</strong> (Hidden Layer outputs)</li>
+<li>We saw in Week 7 how good <strong>basis function</strong> allows regression to learn <strong>any</strong> function</li>
+<li>Neural Networks: <strong>GOAT non-linear basis function learners!</strong></li>
+</ul>
+<div class="columns">
+<div class="column" style="width:33%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>xor_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>x1, <span class="sc">~</span>x2, <span class="sc">~</span>label,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">h1 =</span> (x1 <span class="sc">-</span> x2)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">factor</span>(label)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>xor_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>x1, <span class="at">y=</span>x2, <span class="at">label=</span>label)) <span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">color=</span>label, <span class="at">shape=</span>label),</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="dv">2</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="fl">2.5</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_limits</span>(<span class="at">y=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.1</span>,<span class="fl">1.1</span>)) <span class="sc">+</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 45 is minus sign, 95 is em-dash</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">32</span>) <span class="sc">+</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">remove_legend_title</span>() <span class="sc">+</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="fu">TeX</span>(<span class="st">"$x_1$"</span>),</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fu">TeX</span>(<span class="st">"$x_2$"</span>),</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">title=</span><span class="st">"XOR Problem: Original Features"</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-xor-problem" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-xor-problem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-xor-problem-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-xor-problem-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: The DGP <span class="math inline">\(Y = x_1 \oplus x_2\)</span> produces points in <span class="math inline">\([0,1]^2\)</span> which are not linearly separable
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:33%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>xor_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>x1, <span class="sc">~</span>x2, <span class="sc">~</span>label,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">h1 =</span> (x1 <span class="sc">-</span> x2)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">h2 =</span> (x1 <span class="sc">+</span> x2)<span class="sc">^</span><span class="dv">2</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">h2 =</span> <span class="fu">ifelse</span>(h1 <span class="sc">&gt;</span> <span class="fl">0.5</span> <span class="sc">&amp;</span> x2<span class="sc">==</span><span class="dv">0</span>, h2 <span class="sc">+</span> <span class="fl">0.5</span>, h2),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">factor</span>(label)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>xor_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>h1, <span class="at">y=</span>h2, <span class="at">label=</span>label)) <span class="sc">+</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept=</span><span class="fl">0.5</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Negative space</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="at">xmin=</span><span class="sc">-</span><span class="cn">Inf</span>, <span class="at">xmax=</span><span class="fl">0.5</span>, <span class="at">ymin=</span><span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax=</span><span class="cn">Inf</span>, <span class="at">fill=</span>cb_palette[<span class="dv">1</span>], <span class="at">alpha=</span><span class="fl">0.15</span>) <span class="sc">+</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Positive space</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rect</span>(<span class="at">xmin=</span><span class="fl">0.5</span>, <span class="at">xmax=</span><span class="cn">Inf</span>, <span class="at">ymin=</span><span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax=</span><span class="cn">Inf</span>, <span class="at">fill=</span>cb_palette[<span class="dv">2</span>], <span class="at">alpha=</span><span class="fl">0.15</span>) <span class="sc">+</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">color=</span>label, <span class="at">shape=</span>label),</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="dv">2</span>,</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill=</span>label), <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span>g_pointsize<span class="sc">*</span><span class="fl">2.5</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.4</span>) <span class="sc">+</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_limits</span>(<span class="at">y=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.2</span>,<span class="fl">4.2</span>)) <span class="sc">+</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 45 is minus sign, 95 is em-dash</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">32</span>) <span class="sc">+</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">remove_legend_title</span>() <span class="sc">+</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">title=</span><span class="st">"NN-Learned Feature Space"</span>,</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="fu">TeX</span>(<span class="st">"$h_1(x_1, x_2)$"</span>),</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="fu">TeX</span>(<span class="st">"$h_2(x_1, x_2)$"</span>)</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-xor-problem-tr" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-xor-problem-tr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-xor-problem-tr-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-xor-problem-tr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Learned bases <span class="math inline">\(h_1 = (x_1 - x_2)^2\)</span> and <span class="math inline">\(h_2 = (x_1 + x_2)^2\)</span> enable <strong>separating hyperplane</strong> <span class="math inline">\(h_1 = 0.5\)</span>
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:33%;">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>x1_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">0</span>, <span class="at">to=</span><span class="dv">1</span>, <span class="at">by=</span><span class="fl">0.0075</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>x2_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from=</span><span class="dv">0</span>, <span class="at">to=</span><span class="dv">1</span>, <span class="at">by=</span><span class="fl">0.0075</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>grid_df <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">x1=</span>x1_vals, <span class="at">x2=</span>x2_vals) <span class="sc">|&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">label=</span><span class="fu">factor</span>(<span class="fu">as.numeric</span>((x1<span class="sc">-</span>x2)<span class="sc">^</span><span class="dv">2</span> <span class="sc">&gt;</span> <span class="fl">0.5</span>))</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>grid_df,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x=</span>x1, <span class="at">y=</span>x2, <span class="at">color=</span>label),</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha=</span><span class="fl">0.4</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>xor_df,</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x=</span>x1, <span class="at">y=</span>x2, <span class="at">color=</span>label, <span class="at">shape=</span>label),</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">size=</span>g_pointsize <span class="sc">*</span> <span class="dv">2</span>,</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">stroke=</span><span class="dv">6</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">data=</span>xor_df,</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x=</span>x1, <span class="at">y=</span>x2, <span class="at">fill=</span>label),</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">color=</span><span class="st">'black'</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size=</span>g_pointsize<span class="sc">*</span><span class="fl">2.5</span>, <span class="at">stroke=</span><span class="fl">0.75</span>, <span class="at">alpha=</span><span class="fl">0.4</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="dv">1</span>, <span class="at">intercept=</span><span class="fl">0.7</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope=</span><span class="dv">1</span>, <span class="at">intercept=</span><span class="sc">-</span><span class="fl">0.7</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>, <span class="at">linewidth=</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="dv">95</span>, <span class="dv">43</span>)) <span class="sc">+</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">32</span>) <span class="sc">+</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">remove_legend_title</span>() <span class="sc">+</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">title=</span><span class="st">"XOR Problem: Inverted NN Features"</span>,</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="fu">TeX</span>(<span class="st">"$X_1$"</span>), <span class="at">y=</span><span class="fu">TeX</span>(<span class="st">"$X_2$"</span>)</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-xor-inverse" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-xor-inverse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-xor-inverse-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-xor-inverse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Here, the blue area represents points where <span class="math inline">\(h_1 = (x_1 - x_2)^2 &gt; 0.5\)</span>
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="multilayer-neural-networks" class="level1 smaller crunch-title title-12" data-stack-name="Multilayer NNs">
+<h1 class="smaller crunch-title title-12" data-stack-name="Multilayer NNs">Multilayer Neural Networks</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nn_multilayer.svg" class="img-fluid figure-img"></p>
+<figcaption>Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4</figcaption>
+</figure>
+</div>
+<section id="input-representation" class="level2 smaller crunch-title cols-va">
+<h2 class="smaller crunch-title cols-va anchored" data-anchor-id="input-representation">Input Representation</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/mnist_repr.jpg" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>From <a href="https://www.youtube.com/watch?v=aircAruvnKk"><em>But what is a neural network?</em></a>, 3Blue1Brown</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nn_multilayer.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="but-wait-ten-outputs" class="level2 smaller crunch-title crunch-ul cols-va">
+<h2 class="smaller crunch-title crunch-ul cols-va anchored" data-anchor-id="but-wait-ten-outputs">But Wait… Ten Outputs?</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nn_multilayer.svg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
+<li>The (magical) <strong>softmax</strong> function!</li>
+</ul>
+<p><span class="math display">\[
+z_d = \Pr(Y = d \mid X) = \frac{e^{y_d}}{\sum_{i=0}^{9}e^{y_i}}
+\]</span></p>
+<ul>
+<li>Ensures that each <span class="math inline">\(Z_d\)</span> is a <strong>probability!</strong></li>
+</ul>
+<p><span class="math display">\[
+\begin{align}
+0 \leq z_d &amp;\leq 1 \; \; \forall ~ d \in \{0,\ldots,9\} \\
+\sum_{d=0}^{9}z_d &amp;= 1
+\end{align}
+\]</span></p>
+</div>
+</div>
+</section>
+<section id="visualizing-softmax-results" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-softmax-results">Visualizing Softmax Results</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/mnist.jpg" class="img-fluid figure-img"></p>
+<figcaption><a href="https://n8programs.com/mnistLatentSpace/"><strong>Interactive Visualization: Handwritten-Digit Space</strong></a></figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="fancier-neural-networks" class="level1" data-stack-name="Fancier NNs">
+<h1 data-stack-name="Fancier NNs">Fancier Neural Networks</h1>
+<ul>
+<li>Convolutional Neural Networks (CNNs)</li>
+<li>Recurrent Neural Networks (RNNs)</li>
+</ul>
+<section id="cnns" class="level2 crunch-title crunch-ul">
+<h2 class="crunch-title crunch-ul anchored" data-anchor-id="cnns">CNNs</h2>
+<ul>
+<li>Key point: Convolutional layers are <strong>not</strong> fully connected!</li>
+<li>Each layer “pools” info from two units in previous layer</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/cnn.svg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+<section id="decoding-the-thought-vector" class="level2 crunch-title title-11 crunch-ul smaller crunch-quarto-figure crunch-img">
+<h2 class="crunch-title title-11 crunch-ul smaller crunch-quarto-figure crunch-img anchored" data-anchor-id="decoding-the-thought-vector">Decoding the Thought Vector</h2>
+<ul>
+<li>Hidden layers closer to input layer detect low-level “fine-grained” features</li>
+<li>Hidden layers closer to output layer detect high-level “coarse-grained” features</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/frown.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/smile.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+<center>
+<p><a href="https://gabgoh.github.io/ThoughtVectors/"><strong>Decoding the Thought Vector</strong></a></p>
+</center>
+</section>
+<section id="variational-autoencoders" class="level2">
+<h2 class="anchored" data-anchor-id="variational-autoencoders">Variational Autoencoders</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/nn_vae.svg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+<section id="rnns" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="rnns">RNNs</h2>
+<p><em>…More next week, tbh</em></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/10_12.svg" class="img-fluid figure-img"></p>
+<figcaption>ISLR Figure 10.12</figcaption>
+</figure>
+</div>
+</section>
+<section id="ok-but-how-do-we-learn-the-weights" class="level2 smaller title-11">
+<h2 class="smaller title-11 anchored" data-anchor-id="ok-but-how-do-we-learn-the-weights">Ok But How Do We <em>Learn</em> The Weights?</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/backprop.jpg" class="img-fluid figure-img"></p>
+<figcaption><a href="https://youtu.be/tIeHLnjs5U8?si=0CSS66763D5s5UVt">Backpropagation!</a> (3Blue1Brown Again!)</figcaption>
+</figure>
+</div>
+<p><em>(Full NN playlist <a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi">here</a>)</em></p>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<div id="refs" role="list">
-
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-boehmke2019handson" class="csl-entry" role="listitem">
+Boehmke, Brad, and Brandon M. Greenwell. 2019. <em>Hands-<span>On Machine Learning</span> with <span>R</span></em>. CRC Press. <a href="https://books.google.com?id=aXC9DwAAQBAJ">https://books.google.com?id=aXC9DwAAQBAJ</a>.
+</div>
 </div>
 
 
 </section>
 </section>
 
-
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p><em>(More normally-distributed <span class="math inline">\(X\)</span> <span class="math inline">\(\implies\)</span> more likely to “beat” Logistic Regression)</em><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
