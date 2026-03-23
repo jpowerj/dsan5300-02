@@ -240,7 +240,7 @@ $$
 :::: {.columns}
 ::: {.column width="40%"}
 
-Two death points: $d_1 = 150, d_2 = 300$ (plus start point $d_0 = 0$)
+Two death points: $d_1 = 150, d_2 = 300$, start point $d_0 = 0$
 
 $$
 \begin{align*}

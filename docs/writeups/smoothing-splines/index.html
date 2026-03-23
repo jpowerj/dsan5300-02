@@ -492,7 +492,7 @@ window.Quarto = {
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2026-03-23, 04:18:25 PM</em></p>
+<p><em>Updated 2026-03-23, 06:23:37 PM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -767,7 +767,7 @@ f(x) = g(x) + h(x) \Rightarrow f'(x) = g'(x) + h(x) \Rightarrow f''(x) = g''(x) 
 <li>Next it constructs <strong>penalized</strong> splines, one with a small <span class="math inline">\(\lambda\)</span> value of <code>0.01</code> and another with a higher <span class="math inline">\(\lambda\)</span> value of <code>50</code>, producing the orange and green lines respectively. We can see that the orange line is pulled <em>slightly</em> away from the non-penalized blue line, and closer to the true DGP line, but the green line has been pulled <strong>too far</strong>: a spline with such a harsh wigglyness penalty is no longer flexible enough to learn the underlying <span class="math inline">\(y = \sin(x)\)</span> pattern!</li>
 <li>Finally, it asks <code>scipy</code> to use <strong>[Generalized] Cross-Validation</strong> to figure out the <strong>optimal</strong> <span class="math inline">\(\lambda\)</span> value</li>
 </ol>
-<div id="d5578c59" class="cell" data-execution_count="2">
+<div id="fb13396e" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This code block is just *copied* from scipy's source</span></span>
