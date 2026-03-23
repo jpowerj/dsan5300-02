@@ -1,5 +1,5 @@
 ---
-title: "Week 12: Survival Analysis"
+title: "Week 12: Symbolic Regression"
 subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"

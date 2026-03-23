@@ -1,5 +1,5 @@
 ---
-title: "Week 9: Deep Learning"
+title: "Week 9: Generative vs. Discriminative Models"
 subtitle: "*DSAN 5300: Statistical Learning*<br><span class='subsubtitle'>Spring 2026, Georgetown University</span>"
 author: "Jeff Jacobs"
 institute: "[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)"
@@ -12,7 +12,7 @@ categories:
 format:
   revealjs:
     df-print: kable
-    footer: "DSAN 5300 Week 10: {{< var w10.footer >}}"
+    footer: "DSAN 5300 Week 9: {{< var w09.footer >}}"
     output-file: "slides.html"
     html-math-method: mathjax
     scrollable: true
@@ -53,11 +53,11 @@ Today's Planned Schedule:
 
 | | Start | End | Topic |
 |:- |:- |:- |:- |
-| **Lecture** | 6:30pm | 7:00pm | [Single Layer Neural Networks &rarr;](#learning-decision-boundaries) |
-| | 7:00pm | 7:20pm | [Max-Margin Classifiers &rarr;](#max-margin-classifiers) | 
-| | 7:20pm | 8:00pm | [Support Vector *Classifiers* &rarr;](#support-vector-classifiers) |
-| **Break!** | 8:00pm | 8:10pm | |
-| | 8:10pm | 9:00pm | [Fancier Neural Networks &rarr;](#quiz-time) |
+| **Lecture** | 6:30pm | 7:00pm | [SMVs and the Kernel Trick &rarr;](#kern)
+| **Lecture** | 7:00pm | 7:30pm | [Single Layer Neural Networks &rarr;](#learning-decision-boundaries) |
+| | 7:30pm | 7:50pm | [Multilayer Neural Networks &rarr;](#multilayer-neural-networks) |
+| **Break!** | 7:50pm | 8:00pm | |
+| | 8:00pm | 9:00pm | [Fancier Neural Networks &rarr;](#fancier-neural-networks) |
 
 : {tbl-colwidths="[12,12,12,64]"}
 
@@ -69,17 +69,323 @@ source("../dsan-globals/_globals.r")
 set.seed(5300)
 ```
 
-:::
-
 {{< include ../dsan-globals/_globals-tex.qmd >}}
 
-## Quick Roadmap {.smaller .crunch-title .crunch-ul .text-90 .crunch-li-first}
+:::
 
-* We made it! Cutting-edge method for [statistical]{style='text-decoration: line-through;'} *neural* learning
 
-{{< video https://www.youtube.com/watch?v=L5GMVdGy8rU width="100%" height="450" >}}
+```{=html}
+<style>
+@font-face {
+    font-family: Noodle;
+    src: url('/assets/Kbnoodlemonster.ttf');
+}
+.noodle-jj {
+    font-family: "Noodle", serif;
+    font-size: 96pt !important;
+}
+.noodle-jj-smaller {
+    font-family: "Noodle", serif;
+    font-size: 54pt !important;
+}
+</style>
+```
+
+## Linear $\rightarrow$ [Linear]{.noodle-jj-smaller} {.crunch-title .inline-90 .crunch-ul .crunch-quarto-figure}
+
+:::: {.columns}
+::: {.column width="50%"}
+
+* Old feature space: $\mathcal{S} = \{X_1, \ldots, X_J\}$
+* New feature space: $\mathcal{S}^2 = \{X_1, X_1^2, \ldots, X_J, X_J^2\}$
+* **Linear** boundary in $\mathcal{S}^2$ $\implies$ **Quadratic** boundary in $\mathcal{S}$
+* Helpful example: Non-linearly separable in 1D $\leadsto$ Linearly separable in 2D
+
+:::
+::: {.column width="50%"}
+
+1D Hyperplane = **point!** But no separating point here 😰
+
+```{r}
+#| label: plot-1d-nonsep
+#| fig-height: 2.5
+library(tidyverse) |> suppressPackageStartupMessages()
+library(latex2exp) |> suppressPackageStartupMessages()
+x_vals <- runif(50, min=-9, max=9)
+data_df <- tibble(x=x_vals) |> mutate(
+  label = factor(ifelse(abs(x) >= 6, 1, -1)),
+  x2 = x^2
+)
+data_df |> ggplot(aes(x=x, y=0, color=label)) +
+  geom_point(
+    aes(color=label, shape=label), size=g_pointsize,
+    stroke=6
+  ) +
+  geom_point(
+    aes(fill=label), color='black', shape=21, size=6, stroke=0.75, alpha=0.333
+  ) +
+  # xlim(6,25) + ylim(2,22) +
+  # coord_equal() +
+  # 45 is minus sign, 95 is em-dash
+  scale_shape_manual(values=c(95, 43)) +
+  theme_dsan(base_size=28) +
+  theme(
+    axis.line.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  xlim(-10, 10) +
+  ylim(-0.1, 0.1) +
+  labs(title="Non-Linearly-Separable Data") +
+  theme(
+    plot.margin = unit(c(0,0,0,20), "mm")
+  )
+```
+
+```{r}
+#| label: lift-1d-to-2d
+#| crop: false
+data_df |> ggplot(aes(x=x, y=x2, color=label)) +
+  geom_point(
+    aes(color=label, shape=label), size=g_pointsize,
+    stroke=6
+  ) +
+  geom_point(
+    aes(fill=label), color='black', shape=21, size=6, stroke=0.75, alpha=0.333
+  ) +
+  geom_hline(yintercept=36, linetype="dashed") +
+  # xlim(6,25) + ylim(2,22) +
+  # coord_equal() +
+  # 45 is minus sign, 95 is em-dash
+  scale_shape_manual(values=c(95, 43)) +
+  theme_dsan(base_size=28) +
+  xlim(-10, 10) +
+  labs(
+    title = TeX("...Linearly Separable in $R^2$!"),
+    y = TeX("$x^2$")
+  )
+```
+
+:::
+::::
+
+## And in 3D...
+
+&nbsp;<br>
+
+![[Image Source](https://medium.com/@mehmetalitor/support-vector-machine-and-kernel-trick-45b122edc773)](images/kernel_trick.jpg){fig-align="center"}
+
+## Taking This Idea and Running With It {.crunch-title .title-09}
+
+* The goal: find a **transformation of the original space** that the (non-linearly-separable) data lives in, such that data ***is* linearly separable** in new space
+* In theory, could just compute tons and tons of new features $\{X_1, X_1^2, X_1^3, \ldots, X_1X_2, X_1X_3, \ldots, X_1^2X_2, X_1^2X_3, \ldots\}$
+* In practice this "blows up" the dimensionality of the feature space, making SVM slower and slower
+* Weird trick (literally): turns out we only need **inner products** $\langle x_i, x_j \rangle$ between datapoints... **"Kernel Trick"**
+
+## The Magic of Kernels {.smaller .crunch-title .title-12 .math-90}
+
+Radial Basis Function (RBF) Kernel:
+
+$$
+K(x_i, x_{i'}) = \exp\left[ -\gamma \sum_{j=1}^{J} (x_{ij} - x_{i'j})^2 \right]
+$$
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r}
+#| label: linspike-svm
+#| crop: false
+library(kernlab) |> suppressPackageStartupMessages()
+library(mlbench) |> suppressPackageStartupMessages()
+if (!file.exists("assets/linspike_df.rds")) {
+  set.seed(5300)
+  N <- 120
+  x1_vals <- runif(N, min=-5, max=5)
+  x2_raw <- x1_vals
+  x2_noise <- rnorm(N, mean=0, sd=1.25)
+  x2_vals <- x2_raw + x2_noise
+  linspike_df <- tibble(x1=x1_vals, x2=x2_vals) |>
+    mutate(
+      label = factor(ifelse(x1^2 + x2^2 <= 2.75, 1, -1))
+    )
+  linspike_svm <- ksvm(
+    label ~ x1 + x2,
+    data = linspike_df,
+    kernel = "rbfdot",
+    C = 500,
+    prob.model = TRUE
+  )
+  # Grid over which to evaluate decision boundaries
+  npts <- 500
+  lsgrid <- expand.grid(
+    x1 = seq(from = -5, 5, length = npts),
+    x2 = seq(from = -5, 5, length = npts)
+  )
+  # Predicted probabilities (as a two-column matrix)
+  prob_svm <- predict(
+    linspike_svm,
+    newdata = lsgrid,
+    type = "probabilities"
+  )
+  # Add predicted class probabilities
+  lsgrid2 <- lsgrid |>
+    cbind("SVM" = prob_svm[, 1L]) |>
+    tidyr::gather(Model, Prob, -x1, -x2)
+
+  # Serialize for quicker rendering
+  saveRDS(linspike_df, "assets/linspike_df.rds")
+  saveRDS(lsgrid2, "assets/lsgrid2.rds")
+} else {
+  linspike_df <- readRDS("assets/linspike_df.rds")
+  lsgrid2 <- readRDS("assets/lsgrid2.rds")
+}
+linspike_df <- linspike_df |> mutate(
+  Label = label
+)
+linspike_df |> ggplot(aes(x = x1, y = x2)) +
+  # geom_point(aes(shape = label, color = label), size = 3, alpha = 0.75) +
+  geom_point(aes(shape = Label, color = Label), size = 3, stroke=4) +
+  geom_point(aes(fill=Label), color='black', shape=21, size=4, stroke=0.75, alpha=0.4) +
+  xlab(expression(X[1])) +
+  ylab(expression(X[2])) +
+  coord_fixed() +
+  theme(legend.position = "none") +
+  theme_dsan(base_size=28) +
+  xlim(-5, 5) + ylim(-5, 5) +
+  stat_contour(
+    data = lsgrid2,
+    aes(x = x1, y = x2, z = Prob),
+    breaks = 0.5,
+    color = "black"
+  ) +
+  scale_shape_manual(values=c(95, 43))
+```
+
+:::
+::: {.column width="50%"}
+
+```{r}
+#| label: spiral-svm
+#| crop: false
+#| fig-cap: Based on code from @boehmke2019handson, Ch 14
+if (!file.exists("assets/spiral_df.rds")) {
+  spiral_df <- as.data.frame(
+    mlbench.spirals(300, cycles = 2, sd = 0.09)
+  )
+  names(spiral_df) <- c("x1", "x2", "label")
+
+  # Fit SVM using a RBF kernel
+  spirals_svm <- ksvm(
+    label ~ x1 + x2,
+    data = spiral_df,
+    kernel = "rbfdot",
+    C = 500,
+    prob.model = TRUE
+  )
+
+  # Grid over which to evaluate decision boundaries
+  npts <- 500
+  xgrid <- expand.grid(
+    x1 = seq(from = -2, 2, length = npts),
+    x2 = seq(from = -2, 2, length = npts)
+  )
+
+  # Predicted probabilities (as a two-column matrix)
+  prob_svm <- predict(
+    spirals_svm,
+    newdata = xgrid,
+    type = "probabilities"
+  )
+
+  # Add predicted class probabilities
+  xgrid2 <- xgrid |>
+    cbind("SVM" = prob_svm[, 1L]) |>
+    tidyr::gather(Model, Prob, -x1, -x2)
+
+  # Serialize for quicker rendering
+  saveRDS(spiral_df, "assets/spiral_df.rds")
+  saveRDS(xgrid2, "assets/xgrid2.rds")
+} else {
+  spiral_df <- readRDS("assets/spiral_df.rds")
+  xgrid2 <- readRDS("assets/xgrid2.rds")
+}
+# And plot
+spiral_df <- spiral_df |> mutate(
+  Label = factor(ifelse(label == 2, 1, -1))
+)
+spiral_df |> ggplot(aes(x = x1, y = x2)) +
+  geom_point(aes(shape = Label, color = Label), size = 3, stroke=4) +
+  geom_point(aes(fill=Label), color='black', shape=21, size=4, stroke=0.75, alpha=0.4) +
+  xlab(expression(X[1])) +
+  ylab(expression(X[2])) +
+  xlim(-2, 2) +
+  ylim(-2, 2) +
+  coord_fixed() +
+  theme(legend.position = "none") +
+  theme_dsan(base_size=28) +
+  stat_contour(
+    data = xgrid2,
+    aes(x = x1, y = x2, z = Prob),
+    breaks = 0.5,
+    color = "black"
+  ) +
+  scale_shape_manual("Label", values=c(95, 43))
+```
+
+:::
+::::
+
+## How Is This Possible? {.smaller .crunch-math .crunch-title .title-12}
+
+* SVM prediction for an observation $\mathbf{x}$ can be rewritten as
+
+$$
+f(\mathbf{x}) = \beta_0 + \sum_{i=1}^{n} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle
+$$
+
+* Rather than one parameter $\beta_j$ per *feature*, we have one parameter $\alpha_i$ per *observation*
+* At first this seems worse, since usually $n > p$... But we're saved by **support vectors!**
+* Since the margin itself is only a function of the support vectors (not *every* vector---remember that margin $\neq$ average distance!), $\alpha_i > 0$ only when $\mathbf{x}_i$ a support vector! 
+* So the equation becomes $f(\mathbf{x}) = \beta_0 + \sum_{i \in \mathcal{SV}} \alpha_i \langle \mathbf{x}, \mathbf{x}_i \rangle$, just one step left...
+* **Kernel** $K$ = **similarity function** (generalization of inner product!)
+
+$$
+f(\mathbf{x}) = \beta_0 + \sum_{i \in \mathcal{SV}} \alpha_i K(\mathbf{x}, \mathbf{x}_i)
+$$
+
+## Inner Products are Already Similarities! {.smaller .crunch-title .title-11}
+
+* When linearly separable, this is exactly the property we use (by computing inner product of new vector $\mathbf{x}$ with support vectors $\mathbf{x}_i$) to classify!
+
+![[Interactive demo](https://mathinsight.org/dot_product)](images/dot_product_crop.svg){fig-align="center"}
+
+* Why restrict ourselves to *this* similarity function? Choosing $K$ **converts the problem**:
+  * From finding **transformation of *features*** allowing linear separability
+  * To finding **similarity function for *observations*** allowing linear separability
+
+## Kernel Trick as Two-Sided Swiss Army Knife {.smaller .title-11 .crunch-title .crunch-math}
+
+* <i class='bi bi-1-circle'></i> If we *have* a linearly-separating transformation (like $f(x) = x^2$), can "encode" as kernel, saving computation
+* Example: Transformation of features $f(x) = x^2$ equivalent to **quadratic kernel:**
+
+  $$
+  K(x_i, x_{i'}) = (1 + \sum_{j = 1}^{p}x_{ij}x_{i'j})^2
+  $$
+
+* <i class='bi bi-2-circle'></i> If we *don't* have a transformation (and having trouble figuring it out), can **change the problem** into one of finding a "good" **similarity function**
+* Example: Look again at RBF Kernel:
+
+  $$
+  K(x_i, x_{i'}) = \exp\left[ -\gamma \sum_{j=1}^{J} (x_{ij} - x_{i'j})^2 \right]
+  $$
+
+* It turns out: **no** finite collection of transformed features is equivalent to this kernel! (Roughly: can keep adding transformed features to asymptotically approach it---space of SVMs w/kernel thus $>$ space of SVMs w/transformed features)
 
 # Single-Layer Neural Networks {.smaller .title-12 data-stack-name="Single-Layer NNs"}
+
+*(We made it! [Statistical]{style='text-decoration: line-through;'} **Neural** learning*
 
 ![Single-Layer NN, Adapted from ISLR Fig 10.1](images/nn_single_layer.svg){fig-align="center"}
 
