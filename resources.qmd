@@ -1,0 +1,23 @@
+---
+title: "Resources"
+sidebar: mainnav
+bibliography: "_DSAN5300.bib"
+csl: "chicago-17-no-url.csl"
+nocite: |
+  @*
+format:
+  html:
+    df-print: kable
+---
+
+## Books / Articles Mentioned in Class
+
+**@kleinbaum_survival_2012, *Survival Analysis: A Self-Learning Text***
+
+The book whose cover looks similar to the ISLP cover, but is exclusively focused on Survival Analysis models – also has a two-column pictures-and-text format specifically aimed at **self-learning** for this topic.
+
+## References (incl. all material cited in slides)
+
+::: {#refs}
+:::
+
