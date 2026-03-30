@@ -18,6 +18,8 @@ website:
         href: index.qmd
       - text: "Writeups"
         href: writeups/index.qmd
+      - text: "Past Projects"
+        href: past-projects.qmd
       - text: "Recordings <i class='bi bi-box-arrow-up-right ps-1' style='font-size: 80%;'></i>"
         href: "https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=e60c1880-ba36-462c-b8e9-b3c301796e7a"
         target: "_blank"

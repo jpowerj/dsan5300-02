@@ -8,7 +8,7 @@
 
 <meta name="author" content="Jeff Jacobs">
 
-<title>Week 11: Gaussian Processes – DSAN 5300-02</title>
+<title>Week 11: Baby Steps Towards Gaussian Processes – DSAN 5300-02</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -377,6 +377,12 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../past-projects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Past Projects</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="https://georgetown.hosted.panopto.com/Panopto/Pages/Sessions/List.aspx?folderID=e60c1880-ba36-462c-b8e9-b3c301796e7a" class="sidebar-item-text sidebar-link" target="_blank">
  <span class="menu-text">Recordings <i class="bi bi-box-arrow-up-right ps-1" style="font-size: 80%;"></i></span></a>
   </div>
@@ -488,7 +494,7 @@ window.Quarto = {
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2026-03-24, 01:27:01 PM</em></p>
+<p><em>Updated 2026-03-30, 06:39:34 PM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -497,26 +503,16 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#schedule" id="toc-schedule" class="nav-link active" data-scroll-target="#schedule">Schedule</a>
+  <li><a href="#schedule" id="toc-schedule" class="nav-link active" data-scroll-target="#schedule">Schedule</a></li>
+  <li><a href="#bayesian-linear-regression" id="toc-bayesian-linear-regression" class="nav-link" data-scroll-target="#bayesian-linear-regression"><em>Bayesian</em> Linear Regression</a>
   <ul class="collapse">
-  <li><a href="#quick-roadmap" id="toc-quick-roadmap" class="nav-link" data-scroll-target="#quick-roadmap">Quick Roadmap</a></li>
-  <li><a href="#step-by-step" id="toc-step-by-step" class="nav-link" data-scroll-target="#step-by-step">Step-by-Step</a></li>
+  <li><a href="#data-generating-processes-dgps" id="toc-data-generating-processes-dgps" class="nav-link" data-scroll-target="#data-generating-processes-dgps">Data-Generating Processes (DGPs)</a></li>
+  <li><a href="#and-regression" id="toc-and-regression" class="nav-link" data-scroll-target="#and-regression">And Regression?</a></li>
+  <li><a href="#learning-parameters-sequentially" id="toc-learning-parameters-sequentially" class="nav-link" data-scroll-target="#learning-parameters-sequentially">Learning Parameters <em>Sequentially</em></a></li>
   </ul></li>
-  <li><a href="#recall-mnist-digits" id="toc-recall-mnist-digits" class="nav-link" data-scroll-target="#recall-mnist-digits">Recall: MNIST Digits</a>
+  <li><a href="#adventures-in-covariance" id="toc-adventures-in-covariance" class="nav-link" data-scroll-target="#adventures-in-covariance">Adventures in Covariance</a>
   <ul class="collapse">
-  <li><a href="#how-do-we-evaluate-output" id="toc-how-do-we-evaluate-output" class="nav-link" data-scroll-target="#how-do-we-evaluate-output">How Do We Evaluate Output?</a></li>
-  <li><a href="#entropy-in-general" id="toc-entropy-in-general" class="nav-link" data-scroll-target="#entropy-in-general">Entropy in General</a></li>
-  <li><a href="#entropy-loss-output-layer-uncertainty" id="toc-entropy-loss-output-layer-uncertainty" class="nav-link" data-scroll-target="#entropy-loss-output-layer-uncertainty">“Entropy Loss”: Output Layer Uncertainty</a></li>
-  <li><a href="#the-problem-with-entropy-loss" id="toc-the-problem-with-entropy-loss" class="nav-link" data-scroll-target="#the-problem-with-entropy-loss">The Problem With Entropy Loss</a></li>
-  <li><a href="#cross-entropy-loss-output-layer-vs.-truth" id="toc-cross-entropy-loss-output-layer-vs.-truth" class="nav-link" data-scroll-target="#cross-entropy-loss-output-layer-vs.-truth"><em>Cross</em>-Entropy Loss: Output Layer vs.&nbsp;Truth</a></li>
-  <li><a href="#its-not-as-silly-as-you-think" id="toc-its-not-as-silly-as-you-think" class="nav-link" data-scroll-target="#its-not-as-silly-as-you-think">It’s Not as Silly as You Think!</a></li>
-  </ul></li>
-  <li><a href="#ok-but-how-do-we-learn-the-weights" id="toc-ok-but-how-do-we-learn-the-weights" class="nav-link" data-scroll-target="#ok-but-how-do-we-learn-the-weights">Ok But How Do We <em>Learn</em> The Weights?</a>
-  <ul class="collapse">
-  <li><a href="#backpropagation-simple-example" id="toc-backpropagation-simple-example" class="nav-link" data-scroll-target="#backpropagation-simple-example">Backpropagation: Simple Example</a></li>
-  <li><a href="#top-secret-answer-slide" id="toc-top-secret-answer-slide" class="nav-link" data-scroll-target="#top-secret-answer-slide">Top Secret Answer Slide</a></li>
-  <li><a href="#backpropagation-deeper-dive" id="toc-backpropagation-deeper-dive" class="nav-link" data-scroll-target="#backpropagation-deeper-dive">Backpropagation Deeper Dive</a></li>
-  <li><a href="#simplest-possible-backprop" id="toc-simplest-possible-backprop" class="nav-link" data-scroll-target="#simplest-possible-backprop">Simplest Possible Backprop</a></li>
+  <li><a href="#why-should-we-care-about-covariance" id="toc-why-should-we-care-about-covariance" class="nav-link" data-scroll-target="#why-should-we-care-about-covariance">Why Should We Care About Covariance?</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul></li>
   </ul>
@@ -528,7 +524,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Week 11: Gaussian Processes</h1>
+<h1 class="title">Week 11: Baby Steps Towards Gaussian Processes</h1>
 <p class="subtitle lead"><em>DSAN 5300: Statistical Learning</em><br><span class="subsubtitle">Spring 2026, Georgetown University</span></p>
   <div class="quarto-categories">
     <div class="quarto-category">Class Sessions</div>
@@ -593,32 +589,26 @@ window.Quarto = {
 <tr class="odd">
 <td style="text-align: left;"><strong>Lecture</strong></td>
 <td style="text-align: left;">6:30pm</td>
-<td style="text-align: left;">7:00pm</td>
-<td style="text-align: left;"><a href="#learning-decision-boundaries">Single Layer Neural Networks →</a></td>
+<td style="text-align: left;">7:30pm</td>
+<td style="text-align: left;"><a href="../past-projects.html">Past Final Projects!</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">7:00pm</td>
-<td style="text-align: left;">7:20pm</td>
-<td style="text-align: left;"><a href="#max-margin-classifiers">Max-Margin Classifiers →</a></td>
+<td style="text-align: left;">7:30pm</td>
+<td style="text-align: left;">8:00pm</td>
+<td style="text-align: left;"><a href="#bayesian-linear-regression">Bayesian Linear Regression →</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"></td>
-<td style="text-align: left;">7:20pm</td>
-<td style="text-align: left;">8:00pm</td>
-<td style="text-align: left;"><a href="#support-vector-classifiers">Support Vector <em>Classifiers</em> →</a></td>
-</tr>
-<tr class="even">
 <td style="text-align: left;"><strong>Break!</strong></td>
 <td style="text-align: left;">8:00pm</td>
 <td style="text-align: left;">8:10pm</td>
 <td style="text-align: left;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;"></td>
 <td style="text-align: left;">8:10pm</td>
 <td style="text-align: left;">9:00pm</td>
-<td style="text-align: left;"><a href="#quiz-time">Fancier Neural Networks →</a></td>
+<td style="text-align: left;"><a href="#adventures-in-covariance">Adventures in Covariance →</a></td>
 </tr>
 </tbody>
 </table>
@@ -671,255 +661,68 @@ window.Quarto = {
 \newcommand{\bigVar}[1]{\text{Var}\mkern-4mu \left[ #1 \right]}
 \]</span></p>
 </div>
-<section id="quick-roadmap" class="level2 smaller crunch-title title-12 crunch-ul text-90 crunch-li-first">
-<h2 class="smaller crunch-title title-12 crunch-ul text-90 crunch-li-first anchored" data-anchor-id="quick-roadmap">Quick Roadmap</h2>
+</section>
+<section id="bayesian-linear-regression" class="level1" data-stack-name="Bayesian Regression">
+<h1 data-stack-name="Bayesian Regression"><em>Bayesian</em> Linear Regression</h1>
+<section id="data-generating-processes-dgps" class="level2 title-11 crunch-title crunch-ul crunch-quarto-figure crunch-quarto-layout-panel crunch-li-5">
+<h2 class="title-11 crunch-title crunch-ul crunch-quarto-figure crunch-quarto-layout-panel crunch-li-5 anchored" data-anchor-id="data-generating-processes-dgps">Data-Generating Processes (DGPs)</h2>
+<div class="quarto-layout-panel" data-layout="[50,50]" data-layout-align="center">
+<div class="quarto-layout-row quarto-layout-valign-center">
+<div id="dgps-5100" class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <ul>
-<li><p><strong>Last week:</strong> Examples of how NNs are <strong>capable</strong> of learning…</p></li>
-<li><p>The types of features that let us learn fancy non-linear DGPs: <span class="math inline">\(Y = {\color{#e69f00} X_1 X_2 }\)</span> <span class="text-80">✅</span>, <span class="math inline">\(Y = {\color{#56b4e9} X_1^2 + X_2^2 }\)</span> <span class="text-80">✅</span>, <span class="math inline">\(Y = {\color{#009E73} X_1 \underset{\mathclap{\small \text{XOR}}}{\oplus} X_2}\)</span> <span class="text-80">✅</span></p></li>
-<li><p>Multi-layer networks like CNNs for “pooling” low-level/fine-grained information into high-level/coarse-grained information</p>
-<ul>
-<li>Ex: Early layers detect <strong>lines</strong>, later layers figure out whether they’re <strong>brows</strong> or <strong>smiles</strong></li>
-</ul></li>
-<li><p><strong>This week:</strong> How do we actually <strong>learn</strong> the weights/biases which <strong>enable these capabilities?</strong></p>
-<ul>
-<li>The answer is (🙈) <strong>calculus</strong> (chain rule)</li>
-</ul></li>
+<li>You saw this in DSAN 5100!</li>
+<li>«<span class="math inline">\(X_1, \ldots, X_n\)</span> drawn i.i.d. Normal, mean <span class="math inline">\(\mu\)</span> variance <span class="math inline">\(\sigma^2\)</span>» characterizes <strong>DGP of <span class="math inline">\((X_1, \ldots, X_n)\)</span></strong></li>
 </ul>
-</section>
-<section id="step-by-step" class="level2 crunch-title crunch-ul text-90 crunch-p">
-<h2 class="crunch-title crunch-ul text-90 crunch-p anchored" data-anchor-id="step-by-step">Step-by-Step</h2>
-<div class="callout callout-style-default callout-note callout-titled" title="Neural Network Training Procedure" style="font-size: 130%;">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
 </div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Neural Network Training Procedure
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>For each training observation <span class="math inline">\((\mathbf{x}_i, y_i)\)</span>…</p>
-<p><i class="bi bi-1-circle"></i> Predict <span class="math inline">\(\widehat{y}_i\)</span> from <span class="math inline">\(\mathbf{x}_i\)</span></p>
-<p><i class="bi bi-2-circle"></i> Evaluate loss <span class="math inline">\(\mathcal{L}(\widehat{y}_i, y_i)\)</span>: <strong>Cross-Entropy Loss</strong></p>
-<p><i class="bi bi-3-circle"></i> Update parameters (weights/biases): <strong>Backpropagation</strong></p>
-</div>
-</div>
-<p>Key for success of NNs: Non-linear <strong>but differentiable</strong></p>
-<ul>
-<li><span class="math inline">\(\Rightarrow\)</span> parameters <span class="math inline">\(w^*\)</span> <strong>most responsible</strong> for the loss value can be
-<ol type="a">
-<li><strong>identified</strong>: <span class="math inline">\(w^* = \argmax_w\left[ \frac{\partial \mathcal{L}}{\partial w} \right]\)</span>, then</li>
-<li><strong>changed the most</strong> <span class="math inline">\(w^*_t \rightarrow w^*_{t+1}\)</span></li>
-</ol></li>
-</ul>
-</section>
-</section>
-<section id="recall-mnist-digits" class="level1 smaller title-12" data-stack-name="Cross-Entropy Loss">
-<h1 class="smaller title-12" data-stack-name="Cross-Entropy Loss">Recall: MNIST Digits</h1>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/nn_multilayer.svg" class="img-fluid figure-img"></p>
-<figcaption>Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4</figcaption>
-</figure>
-</div>
-<section id="how-do-we-evaluate-output" class="level2 smaller title-12" data-stack-name="Cross-Entropy Loss">
-<h2 class="smaller title-12 anchored" data-stack-name="Cross-Entropy Loss" data-anchor-id="how-do-we-evaluate-output">How Do We Evaluate Output?</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/nn_multilayer_output.svg" class="img-fluid figure-img"></p>
-<figcaption>Multilayer NN for MNIST Handwritten Digit Recognition, Adapted from ISLR Fig 10.4</figcaption>
-</figure>
-</div>
-</section>
-<section id="entropy-in-general" class="level2">
-<h2 class="anchored" data-anchor-id="entropy-in-general">Entropy in General</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/entropy_general.svg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-</section>
-<section id="entropy-loss-output-layer-uncertainty" class="level2 smaller crunch-title title-10 math-80 text-70 crunch-quarto-figure crunch-math crunch-p">
-<h2 class="smaller crunch-title title-10 math-80 text-70 crunch-quarto-figure crunch-math crunch-p anchored" data-anchor-id="entropy-loss-output-layer-uncertainty">“Entropy Loss”: Output Layer Uncertainty</h2>
-<div class="quarto-layout-panel" data-layout="[1,1,1]">
-<div class="quarto-layout-row">
-<div id="maxent-img" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Max entropy = <strong>max</strong> uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/nn_crossent_eq.svg" class="img-fluid figure-img"></p>
-<figcaption>Step 1: NN has no idea, guesses (via softmax) <span class="math inline">\(\widehat{y}_d = \Pr(y = d) = 0.1 \; \forall d\)</span></figcaption>
-</figure>
-</div>
-</div>
-<div id="mident-img" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Less entropy = less uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/nn_crossent_mident.svg" class="img-fluid figure-img"></p>
-<figcaption>Step 2: NN starting to converge: <span class="math inline">\(\Pr(Y = 9)\)</span> high, <span class="math inline">\(\Pr(Y = 3)\)</span> medium, <span class="math inline">\(\Pr(Y = d)\)</span> low for all other <span class="math inline">\(d\)</span></figcaption>
-</figure>
-</div>
-</div>
-<div id="minent-img" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Min entropy = <strong>no</strong> uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/nn_minent.svg" class="img-fluid figure-img"></p>
-<figcaption>Step 3: NN has converged to predicting ultra-high <span class="math inline">\(\widehat{y}_9 = \Pr(y = 9 \mid X)\)</span></figcaption>
+<p><img src="images/hmm_clusters_single_dist.svg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 </div>
 </section>
-<section id="the-problem-with-entropy-loss" class="level2 smaller crunch-title title-10 math-80 text-70 crunch-p crunch-quarto-figure">
-<h2 class="smaller crunch-title title-10 math-80 text-70 crunch-p crunch-quarto-figure anchored" data-anchor-id="the-problem-with-entropy-loss">The Problem With Entropy Loss</h2>
-<div class="quarto-layout-panel" data-layout="[1,1,1]">
-<div class="quarto-layout-row">
-<div id="maxent-problem" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Max entropy = <strong>max</strong> uncertainty</span></p>
-</center>
+<section id="and-regression" class="level2">
+<h2 class="anchored" data-anchor-id="and-regression">And Regression?</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/nn_crossent_eq.svg" class="img-fluid figure-img"></p>
-<figcaption>Step 1: NN has no idea, guesses (via softmax) <span class="math inline">\(\Pr(y = d) = 0.1\)</span> for every <span class="math inline">\(d\)</span></figcaption>
+<p><img src="images/linear_regression.png" class="img-fluid figure-img" width="220"></p>
+<figcaption>Linear Regression as a PGM (<a href="https://revbayes.github.io/tutorials/intro/graph_models.html#bayesian-linear-regression">Source</a>)</figcaption>
 </figure>
-</div>
-</div>
-<div id="mident-problem" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Less entropy = less uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/nn_crossent_miderr.svg" class="img-fluid figure-img"></p>
-<figcaption>Step 2: NN starting to converge: probably <span class="math inline">\(d = 3\)</span>, maybe <span class="math inline">\(d = 9\)</span>, low probability on all other values</figcaption>
-</figure>
-</div>
-</div>
-<div id="minent-problem" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Min entropy = <strong>no</strong> uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/nn_minent_err.svg" class="img-fluid figure-img"></p>
-<figcaption>Step 3: NN has converged to predicting ultra-high <span class="math inline">\(\Pr(y = 3)\)</span></figcaption>
-</figure>
-</div>
-</div>
-</div>
 </div>
 </section>
-<section id="cross-entropy-loss-output-layer-vs.-truth" class="level2 smaller crunch-title title-10 math-80 text-70">
-<h2 class="smaller crunch-title title-10 math-80 text-70 anchored" data-anchor-id="cross-entropy-loss-output-layer-vs.-truth"><em>Cross</em>-Entropy Loss: Output Layer vs.&nbsp;Truth</h2>
-<div class="quarto-layout-panel" data-layout="[1,1,1]">
-<div class="quarto-layout-row">
-<div id="crossent-max" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Max entropy = <strong>max</strong> uncertainty</span></p>
-</center>
+<section id="learning-parameters-sequentially" class="level2">
+<h2 class="anchored" data-anchor-id="learning-parameters-sequentially">Learning Parameters <em>Sequentially</em></h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/nn_crossent_eq.svg" class="img-fluid figure-img"></p>
-<figcaption>Step 1: <span class="math inline">\(H(y, \widehat{y}) = -1\cdot \log_2(0.1) \approx 3.32\)</span></figcaption>
-</figure>
-</div>
-</div>
-<div id="crossent-mid" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Less entropy = less uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/nn_crossent_mident.svg" class="img-fluid figure-img"></p>
-<figcaption>Step 2: <span class="math inline">\(H(y,\widehat{y}) = -1\cdot \log_2(0.4) \approx 1.32\)</span></figcaption>
-</figure>
-</div>
-</div>
-<div id="crossent-min" class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: flex-start;">
-<center>
-<p><span style="font-size: 80%;">Min entropy = <strong>no</strong> uncertainty</span></p>
-</center>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/nn_minent.svg" class="img-fluid figure-img"></p>
-<figcaption>Step 3: <span class="math inline">\(H(y,\widehat{y}) = -1\cdot \log_2(1) = 0\)</span></figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="its-not-as-silly-as-you-think" class="level2 smaller title-12 crunch-title crunch-ul crunch-quarto-figure">
-<h2 class="smaller title-12 crunch-title crunch-ul crunch-quarto-figure anchored" data-anchor-id="its-not-as-silly-as-you-think">It’s Not as Silly as You Think!</h2>
-<ul>
-<li>In our example, we <strong>know</strong> the <strong>true</strong> digit… But remember the <strong>origin of the dataset</strong>: postal workers trying to figure out handwritten digits</li>
-<li>May not <strong>know</strong> with certainty, but may be able to say, e.g., “It’s either a 1 or a 7”</li>
-</ul>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/word-prob-joy.png" class="img-fluid figure-img"></p>
-<figcaption>From <a href="https://github.com/zonination/perceptions"><em>Perceptions of Probability</em> Dataset</a></figcaption>
+<p><img src="images/meta-analysis.jpeg" class="img-fluid figure-img"></p>
+<figcaption>From <span class="citation" data-cites="gelman_bayesian_1995">Gelman et al. (<a href="#ref-gelman_bayesian_1995" role="doc-biblioref">1995</a>)</span></figcaption>
 </figure>
 </div>
 </section>
 </section>
-<section id="ok-but-how-do-we-learn-the-weights" class="level1" data-stack-name="Backpropagation">
-<h1 data-stack-name="Backpropagation">Ok But How Do We <em>Learn</em> The Weights?</h1>
-<ul>
-<li>…<strong>Backpropagation!</strong></li>
-</ul>
-<section id="backpropagation-simple-example" class="level2 smaller crunch-title title-11">
-<h2 class="smaller crunch-title title-11 anchored" data-anchor-id="backpropagation-simple-example">Backpropagation: Simple Example</h2>
-<ul>
-<li>Literally just <strong>one</strong> neuron (which is the output layer), <span class="math inline">\(\mathcal{L}(\widehat{y},y) = (\widehat{y} - y)^2\)</span></li>
-<li>Consider a training datapoint <span class="math inline">\((x,y) = (2,10)\)</span></li>
-<li>And say our current parameters are <span class="math inline">\(\beta_0 = 1, \beta_1 = 3\)</span></li>
-<li>Predicted output: <span class="math inline">\(\widehat{y} = \beta_0 + \beta_1 x = 1 + 3\cdot 2 = 7\)</span></li>
-<li>Since true output is <span class="math inline">\(y = 10\)</span>, we have loss <span class="math inline">\(\mathcal{L} = (10-7)^2 = 9\)</span></li>
-<li>Now, let’s <strong>backpropagate</strong> to update <span class="math inline">\(\beta_1\)</span> (on the board!)
-<ul>
-<li>(Using learning rate of <span class="math inline">\(0.1\)</span>)</li>
-</ul></li>
-</ul>
-</section>
-<section id="top-secret-answer-slide" class="level2">
-<h2 class="anchored" data-anchor-id="top-secret-answer-slide">Top Secret Answer Slide</h2>
-<ul>
-<li>Weight <span class="math inline">\(\beta_1\)</span> becomes 4.2…</li>
-<li>New prediction: <span class="math inline">\(\widehat{y} = 1 + 4.2\cdot 2 = 9.4\)</span></li>
-<li>New loss: <span class="math inline">\((10-9.4)^2 = 0.36\)</span> 🥳</li>
-</ul>
-</section>
-<section id="backpropagation-deeper-dive" class="level2 smaller">
-<h2 class="smaller anchored" data-anchor-id="backpropagation-deeper-dive">Backpropagation Deeper Dive</h2>
+<section id="adventures-in-covariance" class="level1" data-stack-name="Covariance Deep Dive">
+<h1 data-stack-name="Covariance Deep Dive">Adventures in Covariance</h1>
+<section id="why-should-we-care-about-covariance" class="level2">
+<h2 class="anchored" data-anchor-id="why-should-we-care-about-covariance">Why Should We Care About Covariance?</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/backprop.jpg" class="img-fluid figure-img"></p>
-<figcaption><a href="https://youtu.be/tIeHLnjs5U8?si=0CSS66763D5s5UVt">Backpropagation!</a> (3Blue1Brown Again!)</figcaption>
+<p><img src="images/trobriand.svg" class="img-fluid figure-img"></p>
+<figcaption>From <span class="citation" data-cites="mcelreath_statistical_2020">McElreath (<a href="#ref-mcelreath_statistical_2020" role="doc-biblioref">2020</a>)</span></figcaption>
 </figure>
 </div>
-<p><em>(Full NN playlist <a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi">here</a>)</em></p>
-</section>
-<section id="simplest-possible-backprop" class="level2">
-<h2 class="anchored" data-anchor-id="simplest-possible-backprop">Simplest Possible Backprop</h2>
-<ul>
-<li>One input unit, one hidden unit, one output unit</li>
-</ul>
 </section>
 <section id="references" class="level2">
 <h2 class="anchored" data-anchor-id="references">References</h2>
-<div id="refs" role="list">
-
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-gelman_bayesian_1995" class="csl-entry" role="listitem">
+Gelman, A., J. B. Carlin, H. S. Stern, and D. B. Rubin. 1995. <em>Bayesian <span>Data Analysis</span></em>. <span>Chapman and Hall</span>.
+</div>
+<div id="ref-mcelreath_statistical_2020" class="csl-entry" role="listitem">
+McElreath, Richard. 2020. <em>Statistical <span>Rethinking</span>: <span>A Bayesian Course</span> with <span>Examples</span> in <span>R</span> and <span>STAN</span></em>. CRC Press. <a href="https://books.google.com?id=FuLWDwAAQBAJ">https://books.google.com?id=FuLWDwAAQBAJ</a>.
+</div>
 </div>
 
 

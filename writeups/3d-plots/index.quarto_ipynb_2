@@ -1,0 +1,340 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Using Python to Plot... Whatever's Going On in 3D\"\n",
+        "subtitle: \"DSAN 5300: Statistical Learning\"\n",
+        "author: \"Jeff Jacobs\"\n",
+        "affiliation: \"[`jj1088@georgetown.edu`](mailto:jj1088@georgetown.edu)\"\n",
+        "sidebar: mainnav\n",
+        "weeknum: 3\n",
+        "assignment: \"General\"\n",
+        "cache: true\n",
+        "term: current\n",
+        "categories:\n",
+        "  - \"Extra Writeups\"\n",
+        "format:\n",
+        "  html:\n",
+        "    echo: true\n",
+        "    code-fold: true\n",
+        "    html-math-method: mathjax\n",
+        "    df-print: kable\n",
+        "    toc: true\n",
+        "    link-external-icon: true\n",
+        "    link-external-newwindow: true\n",
+        "---\n",
+        "\n",
+        "## The Goal: 3D Plots\n",
+        "\n",
+        "The main reason why I figured a writeup on plotting with Python could be helpful for **DSAN 5300** specifically is because, even though many of yall are in **DSAN 5200** right now, there are visualization techniques that will be helpful to have early-on in 5300---primarily the challenges of plotting in **3D** rather than 2D---which may not be covered until later in 5200.\n",
+        "\n",
+        "So, therefore, the motivating example in this writeup will be **plotting a 3D surface** within which we'll want to overlay the **path taken by gradient descent** to move from a randomly-selected point on the surface to a (possibly local) minimum of the surface.\n",
+        "\n",
+        "## No 3D Plotting in Seaborn 😢 Matplotlib to the Rescue!\n",
+        "\n",
+        "Sadly, even though Seaborn is typically my go-to for the types of visualizations I find myself needing to produce in Data Science contexts, it has little to no support for 3D plotting specifically. Which... makes some sense, given that (as you'll see in 5200) in many visual-communication scenarios there is usually a way to use 2D plots to achieve a more easily-interpretable set of visualizations for your audience!\n",
+        "\n",
+        "But, nonetheless, in this class we have run into one of the key cases (understanding gradient descent beyond single-variable loss functions) where I think we can truly benefit from having 3D plots. So, with that said, a link you can bookmark and explore to get a feel for 3D visualization in Python is **Matplotlib's** `plot-type: 3D` tag, which gathers together all of the examples within Matplotlib's documentation which involve generating 3D plots:\n",
+        "\n",
+        "[https://matplotlib.org/stable/_tags/plot-type-3d.html](https://matplotlib.org/stable/_tags/plot-type-3d.html)\n",
+        "\n",
+        "## Your First 3D Plot in Matplotlib\n",
+        "\n",
+        "To see your first 3D plot created with `matplotlib`, let's consider how **gradient descent** might allow us to choose a **random** point on the (visible) surface of this plot (the **[green]{.cb3} dot**), and eventually make our way to the **optimal** loss-minimizing value (the **[light blue]{.cb2} dot** at $(x,y) = (0,0)$):"
+      ],
+      "id": "ee64b373"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: base-min-plot\n",
+        "#| echo: true\n",
+        "#| code-fold: show\n",
+        "#| fig-align: center\n",
+        "import matplotlib.pyplot as plt\n",
+        "import numpy as np\n",
+        "rng = np.random.default_rng(seed=5302)\n",
+        "from matplotlib import cm\n",
+        "\n",
+        "cb_palette = ['#E69F00', '#56B4E9', '#009E73']\n",
+        "\n",
+        "def loss_fn(x, y):\n",
+        "  return x**2 + y**2\n",
+        "\n",
+        "def objective_fn(x, y):\n",
+        "  return -loss_fn(x, y)\n",
+        "\n",
+        "rand_v = np.array([\n",
+        "  rng.uniform(low=-4, high=0),\n",
+        "  rng.uniform(low=0, high=4),\n",
+        "])\n",
+        "\n",
+        "def gen_surface_plot(\n",
+        "  points,\n",
+        "  title=None,\n",
+        "  minimization=True,\n",
+        "  label_points=False,\n",
+        "  arrows=False,\n",
+        "  elevation=42,\n",
+        "  azimuth=-60\n",
+        "):\n",
+        "  if title is None:\n",
+        "    title = \"Minimization of a Loss Function\"\n",
+        "    if not minimization:\n",
+        "      title = \"Maximization of an Objective Function\"\n",
+        "  opt_fn = loss_fn if minimization else objective_fn\n",
+        "  fig, ax = plt.subplots(\n",
+        "    subplot_kw={\n",
+        "      \"projection\": \"3d\",\n",
+        "      \"title\": title,\n",
+        "      \"computed_zorder\": False,\n",
+        "    }\n",
+        "  )\n",
+        "  # Generate the surface representing the value of\n",
+        "  # the loss function (the z coordinate) for any\n",
+        "  # pair of (x,y) values\n",
+        "  x_range = np.arange(-5, 5, 0.25)\n",
+        "  y_range = np.arange(-5, 5, 0.25)\n",
+        "  x_vals, y_vals = np.meshgrid(x_range, y_range)\n",
+        "  z_vals = opt_fn(x_vals, y_vals)\n",
+        "\n",
+        "  # Plot the points given by the points argument!\n",
+        "  points_x = [p[0] for p in points]\n",
+        "  points_y = [p[1] for p in points]\n",
+        "  points_z = [opt_fn(p[0],p[1]) for p in points]\n",
+        "  ax.scatter(points_x, points_y, points_z, color=cb_palette[2], s=80, zorder=10)\n",
+        "\n",
+        "  # Add labels to points if label_points is True\n",
+        "  if label_points:\n",
+        "    for point_index, point in enumerate(points):\n",
+        "      ax.text(point[0], point[1], loss_fn(point[0], point[1]), str(point_index), zorder=20)\n",
+        "\n",
+        "  # Compute and plot the optimal value\n",
+        "  opt_z = np.min(z_vals) if minimization else np.max(z_vals)\n",
+        "  ax.scatter([0], [0], [opt_z], color=cb_palette[1], s=80, zorder=10)\n",
+        "  surf = ax.plot_surface(\n",
+        "      x_vals, y_vals, z_vals, cmap='magma', zorder=0, alpha=0.8\n",
+        "  )\n",
+        "  ax.set_xlabel(\"x\")\n",
+        "  ax.set_ylabel(\"y\")\n",
+        "  \n",
+        "  ax.view_init(elev=elevation, azim=azimuth)\n",
+        "\n",
+        "  # Add arrows if requested\n",
+        "  if arrows:\n",
+        "    for i in range(len(points) - 1):\n",
+        "      cur_point = points[i]\n",
+        "      cur_z = loss_fn(cur_point[0], cur_point[1])\n",
+        "      next_point = points[i+1]\n",
+        "      next_z = loss_fn(next_point[0], next_point[1])\n",
+        "      x_diff = next_point[0] - cur_point[0]\n",
+        "      y_diff = next_point[1] - cur_point[1]\n",
+        "      z_diff = next_z - cur_z\n",
+        "      ax.quiver(\n",
+        "        cur_point[0], cur_point[1], cur_z,\n",
+        "        x_diff, y_diff, z_diff,\n",
+        "        color = 'white', alpha = .8, lw = 1,\n",
+        "        length=1\n",
+        "      )\n",
+        "\n",
+        "  # Add a color bar which maps values to colors.\n",
+        "  fig.colorbar(surf, shrink=0.5, aspect=5)\n",
+        "  plt.show()\n",
+        "gen_surface_plot(points=[rand_v])"
+      ],
+      "id": "base-min-plot",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Also note how I made the plot-generation code into a **function**, here called `gen_surface_plot()`, which can be immensely helpful for your own plotting adventures, since you can utilize **arguments** to the functions to quickly change different aspects of the plot. For example, I set this function up to allow \"instant\" switching from visualization of **minimization** to visualization of a **maximization** problem, which means we can just pass `minimization=False` to the function to generate a plot of what finding the **maximum** value of a function (the same function, just \"flipped over\" via $z \\mapsto -z$):"
+      ],
+      "id": "80385b56"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: basic-max-plot\n",
+        "#| echo: true\n",
+        "#| code-fold: false\n",
+        "#| fig-align: center\n",
+        "gen_surface_plot(points=[rand_v], minimization=False)"
+      ],
+      "id": "basic-max-plot",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Plotting the Gradient Descent Path\n",
+        "\n",
+        "### The Straightforward First Step: Plotting Points\n",
+        "\n",
+        "Returning to our minimization-in-3D case, how can we now plot the **path**/**trajectory** that we follow if we apply gradient descent starting from the randomly-chosen (green) point? One easy way is to just keep track of each new value in a list (here, we call it `grad_path`), and then plot each element in this list as a point along our gradient-descent pathway:"
+      ],
+      "id": "c6e0d17c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: grad-5-steps\n",
+        "#| fig-align: center\n",
+        "#| echo: true\n",
+        "#| code-fold: show\n",
+        "def grad_loss(x, y):\n",
+        "  return np.array([2*x, 2*y])\n",
+        "\n",
+        "def run_grad_descent(starting_v, num_steps, step_size=0.1):\n",
+        "  cur_v = starting_v\n",
+        "  path = [starting_v]\n",
+        "  for i in range(num_steps):\n",
+        "    grad_at_v = grad_loss(cur_v[0], cur_v[1])\n",
+        "    new_v = cur_v - step_size * grad_at_v\n",
+        "    path.append(new_v)\n",
+        "    cur_v = new_v\n",
+        "  return path\n",
+        "num_steps = 5\n",
+        "grad_path = run_grad_descent(rand_v, num_steps)\n",
+        "gen_surface_plot(grad_path, title=f\"Gradient Descent, {num_steps} steps\")"
+      ],
+      "id": "grad-5-steps",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Even though it may be obvious in this case the order of the points (meaning, you can just \"eyeball\" which was the starting point, the second point, the third, and so on), oftentimes it can help to **label** the order of the points. So, the function takes an optional `label_points` argument, which shows the order of the points along the gradient path if set to `True` (for more on how the `text()` function works in 3D world, see [here](https://matplotlib.org/stable/gallery/mplot3d/text3d.html)):"
+      ],
+      "id": "8ec8e3b7"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: grad-5-steps-labels\n",
+        "#| echo: true\n",
+        "#| code-fold: show\n",
+        "#| fig-align: center\n",
+        "gen_surface_plot(grad_path, title=f\"Gradient Descent, {num_steps} steps\", label_points=True)"
+      ],
+      "id": "grad-5-steps-labels",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "And now we can get a sense for how many steps we'll need for convergence in this case (with a step size set to be $0.1$), by extending this plot to show the trajectory for 10 steps rather than 5:"
+      ],
+      "id": "20b86d34"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: grad-10-steps\n",
+        "#| echo: true\n",
+        "#| code-fold: show\n",
+        "#| fig-align: center\n",
+        "num_steps = 10\n",
+        "grad_path_10 = run_grad_descent(rand_v, num_steps)\n",
+        "gen_surface_plot(grad_path_10, title=f\"Gradient Descent, {num_steps} steps\", label_points=True)"
+      ],
+      "id": "grad-10-steps",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### The Less-Straightforward Second Step: Arrows\n",
+        "\n",
+        "I'm not gonna lie to you... by the time you are trying to add arrows to your `matplotlib` plots, you have somewhat hit the limits of the (very basic!) functionality of `matplotlib`. It is possible, and supported by way of the `quiver()` function, but personally I've never been able to get the arrows to actually look good, which is why at this point I might recommend switching over from `matplotlib` to something like [Plotly]() for this task. But, since we've already produced the above plot, we may as well see what it looks like to just add the arrows onto the plot using `ax.quiver()`."
+      ],
+      "id": "9f611844"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: grad-with-arrows\n",
+        "#| echo: true\n",
+        "#| code-fold: show\n",
+        "#| fig-align: center\n",
+        "gen_surface_plot(\n",
+        "  grad_path_10,\n",
+        "  title=\"Adding arrows with ax.quiver()\",\n",
+        "  label_points=True,\n",
+        "  arrows=True\n",
+        ")"
+      ],
+      "id": "grad-with-arrows",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Moving the \"Camera\"\n",
+        "\n",
+        "Lastly, finally, since this trajectory is somewhat difficult to see from the default angle, you can use the **elevation** and **azimuth** options to the `ax.view_init()` function to shift the \"camera\" around! Here we'll try to see the pathway a little better by lowering its elevation a bit and rotating it to look at this trajectory more \"from the side\" than head-on:"
+      ],
+      "id": "2a4fd6aa"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: trajectory-rotate\n",
+        "#| echo: true\n",
+        "#| code-fold: show\n",
+        "#| fig-align: center\n",
+        "gen_surface_plot(\n",
+        "  grad_path_10,\n",
+        "  title=f\"Gradient Descent, {num_steps} steps\",\n",
+        "  label_points=True,\n",
+        "  arrows=True,\n",
+        "  elevation=39,\n",
+        "  azimuth=-98\n",
+        ")"
+      ],
+      "id": "trajectory-rotate",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "So, if you find yourself extremely stuck at some point where 3D visualization of what's going on could help, I hope you are able to use this `gen_surface_plot()` function with the different options to maybe get a glimpse of e.g. the trajectory that some **numerical optimization algorithm** is taking with respect to some **loss surface**!"
+      ],
+      "id": "a99b68fe"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/Library/Frameworks/Python.framework/Versions/3.14/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

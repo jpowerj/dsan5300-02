@@ -1,0 +1,47 @@
+---
+title: "Past Final Projects"
+sidebar: mainnav
+format:
+  html:
+    df-print: kable
+    toc: true
+---
+
+The following three final projects are featured here as exemplifying different aspects of effective final projects that you can focus on for your own projects!
+
+## Joshua Lin, Kristin Lloyd, Kelsey Szafranski, and Allen Wu: *Predicting Firearm Mortality: A Data-Driven Analysis of State-Level Gun Policies and Socioeconomic Factors*
+
+* [Project webpage](https://kristinmlloyd.github.io/Website-Portfolio/projects/gun-violence/website/_site/)
+* [Project report](./assets/dsan5300_gun_laws.pdf)
+
+This project really checks all of the boxes in terms of, using the methods we've learned in class to their fullest extent for understanding an important social phenomenon:
+
+* Starting off, their [Executive Summary](https://kristinmlloyd.github.io/Website-Portfolio/projects/gun-violence/website/_site/) provides visualizations allowing the reader to get a basic sense for the distributions of variables in the dataset. For example, rather than just printing the mean and variance of the Firearm Mortality or Gun Policy Strength variables, they plot the distribution of these values geographically across the US (in a choropleth map)
+* Next, their [Linear Regression](https://kristinmlloyd.github.io/Website-Portfolio/projects/gun-violence/website/_site/linear_regression.html) results focus on a **continuous**^[Technically a count, but, a count with a wide range such that treating it as a continuous variable provides a good approximation – with infinite time, you might use a fancy Poisson or Negative Binomial regression for this data!] dependent variable, using **Lasso** to figure out which variables are most explanatory of states' outcomes
+* Their [Logistic Regression](https://kristinmlloyd.github.io/Website-Portfolio/projects/gun-violence/website/_site/logistic_regression.html) results then address how, although policymakers may want to reduce the number of gun violence deaths overall, there is also the **political** factor of "competition" among states: in other words, although number of deaths is what a policymaker hopes to minimize "in theory", in practice they may be spurned into action not by the **number** of deaths but by a news article emphasizing how much **higher** gun death rates in their state are relative to other states.
+* Finally, they go **above and beyond** the set of topics from DSAN 5300 alone, reaching back to the **clustering analysis** we learned in DSAN 5000 and carrying out a **hierarchical regression** where individual "fine-grained" policy variables are *grouped* into a small number of general categories: for example, specific policy variables like Assault Weapons Ban, High-Capacity Magazine Ban, etc., are grouped into **Block 1: Gun Policy and Ownership**, so that we can see the importance of these policies **as a whole** rather than trying to aggregate the importance of the individual variables in our heads!
+
+One final thing to note here is that you can do this kind of clustering on the **observations** themselves, which is called **multilevel modeling**: for example, recognizing that US states don't act in isolation, policy-wise, but instead form distinct **regions** with distinct **"political cultures"** (think about, for example, the [prevalence of **hunting**](https://stacker.com/stories/your-state/states-most-registered-hunters) in Wyoming, where 23.4% of the population have hunting licenses, versus here in DC, where as far as I could find online there are no registered hunters), you could design a **multilevel regression** where states are grouped into regions and the project becomes one of learning about these regions rather than about individual states: for **policy** variables like the ones in this project, studying individual states makes sense since that's where the policies are made (in state legislatures)! If the project was more about "cultural" or geographic/ecological hypotheses, for example, regions may make more sense: North Dakota and South Dakota have very similar climates and rural geographies, for example, and used to form a [single territory](https://en.wikipedia.org/wiki/Dakota_Territory) until they were "split" into two different states for **political** reasons in 1889.
+
+## Christy Hsu and Li-Wen Hu, *Predicting Emergency Department Disposition Using Statistical Learning*
+
+* [Project Report](./assets/dsan5300_emergency_department.pdf)
+
+A common theme between the previous project and this project is that they **start with a "puzzle" relating to the dependent variable** (gun violence mortality rates in the previous case, and Emergency Department outcomes in this case), and then "work backwards" to identify which of the independent variables that have the **greatest impact** on this otherwise-hard-to-understand dependent variable. In Christy and Li-Wen's project, this approach is communicated very effectively in the structure of the paper itself, since:
+
+* "Prediction" is there in the title, and then
+* The first sentence in the report emphasizes the **"puzzle"** of what factors determine these outcomes:
+
+  > *"The Emergency department (ED) disposition—the **decision** of whether a patient is admitted, discharged, transferred, leaves voluntarily, or returns—plays a critical role in patient care and hospital resource management"*
+
+If it helps at all, part of why both of these authors were coincidentally hired as TAs for *DSAN 5450: Data Ethics and Policy* this semester (😜) is because of the care they put into "transforming" the available data via a pipeline like:
+
+* Identify a decision that impacts literal human life and death,
+* Understand the decisions in terms of:
+  * First building "domain knowledge" via a literature review (here, learning that hospitals record this data in terms of five different categories: Admit, Discharge, Left Early, Returned, Transferred)
+  * Then reporting **descriptive statistics** like the proportion of cases in each category
+* See how well you can **predict** these outcomes by just "plugging in" all the available independent variables at first, but then
+* Dive into **why** you may be able to predict these outcomes! For example, consider the difference between these two high-importance indpendent variables (from Figure 3) in terms of the **meaning** of their predictive power here:
+  * The importance of **Arrival by EMS** could mean that our data analysis has an immediate policy implication: if the basic treatments or tests that may be performed in an ambulance, for example, lead to "better" intake decisions, then making ambulances cheaper could improve Emergency Department outcomes (and hence health outcomes overall)
+  * The importance of **"Region: West"**, on the other hand, has a qualitatively different implication: it could point to the need for a second study (or collection of additional data for this study) to analyze what might be different about the operation of Emergency Departments in the West relative to other regions that makes this variable important for health outcomes
+
