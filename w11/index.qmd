@@ -102,6 +102,18 @@ set.seed(5300)
 
 ![From @mcelreath_statistical_2020](images/trobriand.svg){fig-align="center"}
 
+## Baby Steps 1
+
+![](images/shrinkage.svg)
+
+## Baby Steps 2
+
+![](images/priors.svg)
+
+## Baby Steps 3
+
+![](images/posteriors.svg)
+
 ## References
 
 ::: {#refs}

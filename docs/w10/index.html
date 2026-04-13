@@ -81,9 +81,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-d78adef7f6610a2c2f822fa3ee3facb8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-639c5b0c21b7ba118e193946d627b9d3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-d78adef7f6610a2c2f822fa3ee3facb8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-52d8f7c98ea916a211f988b1fa639890.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-35bf924c5a189e1c95eca9ffe98161dc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-52d8f7c98ea916a211f988b1fa639890.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -475,7 +475,7 @@ window.Quarto = {
     </ul>
     </div>
 <div class="quarto-sidebar-footer"><div class="sidebar-footer-item">
-<p><em>Updated 2026-03-30, 06:39:34 PM</em></p>
+<p><em>Updated 2026-04-13, 06:25:47 PM</em></p>
 </div></div></nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
@@ -623,8 +623,14 @@ window.Quarto = {
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../dsan-globals/_globals.r"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'ggplot2' was built under R version 4.4.3</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5300</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </div>
@@ -974,34 +980,34 @@ S(d_k) = &amp;\Pr(\underbrace{T &gt; d_k}_{\mathclap{\small\text{Survives past }
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>surv_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>id, <span class="sc">~</span>y, <span class="sc">~</span>delta,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span>, <span class="dv">300</span>, <span class="dv">1</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span>, <span class="dv">365</span>, <span class="dv">0</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="dv">3</span>, <span class="dv">150</span>, <span class="dv">1</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="dv">4</span>, <span class="dv">250</span>, <span class="dv">0</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>surv_obj <span class="ot">&lt;-</span> <span class="fu">Surv</span>(surv_df<span class="sc">$</span>y, <span class="at">event =</span> surv_df<span class="sc">$</span>delta)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>surv_model <span class="ot">&lt;-</span> <span class="fu">survfit</span>(surv_obj <span class="sc">~</span> <span class="dv">1</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot options</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="fl">1.25</span>,<span class="fl">1.0</span>)) <span class="co"># bltr</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>y_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">Pr(T &gt; t)$"</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  surv_model,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab=</span>y_label,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd=</span><span class="dv">1</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">main=</span><span class="st">"Survival Curve for 4-Patient Example"</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>) <span class="co"># conf.int=FALSE</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Add colors</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># lines(c(0, 150), c(1.0, 1.0), type='l', col='#E69F00', lwd=2)</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">0</span>, <span class="at">xright =</span> <span class="dv">150</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#E69F0040"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># lines(c(150, 300), c(3/4, 3/4), type='l', col='#56B4E9', lwd=2)</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">150</span>, <span class="at">xright =</span> <span class="dv">300</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#56B4E940"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co"># lines(c(300, 365), c(3/8, 3/8), type='l', col='#009E73', lwd=2)</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">300</span>, <span class="at">xright =</span> <span class="dv">365</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#009E7340"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>surv_df <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>id, <span class="sc">~</span>y, <span class="sc">~</span>delta,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span>, <span class="dv">300</span>, <span class="dv">1</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span>, <span class="dv">365</span>, <span class="dv">0</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="dv">3</span>, <span class="dv">150</span>, <span class="dv">1</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="dv">4</span>, <span class="dv">250</span>, <span class="dv">0</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>surv_obj <span class="ot">&lt;-</span> <span class="fu">Surv</span>(surv_df<span class="sc">$</span>y, <span class="at">event =</span> surv_df<span class="sc">$</span>delta)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>surv_model <span class="ot">&lt;-</span> <span class="fu">survfit</span>(surv_obj <span class="sc">~</span> <span class="dv">1</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot options</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="fl">1.25</span>,<span class="fl">1.0</span>)) <span class="co"># bltr</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>y_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">Pr(T &gt; t)$"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  surv_model,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab=</span>y_label,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd=</span><span class="dv">1</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">main=</span><span class="st">"Survival Curve for 4-Patient Example"</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>) <span class="co"># conf.int=FALSE</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Add colors</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># lines(c(0, 150), c(1.0, 1.0), type='l', col='#E69F00', lwd=2)</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">0</span>, <span class="at">xright =</span> <span class="dv">150</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#E69F0040"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co"># lines(c(150, 300), c(3/4, 3/4), type='l', col='#56B4E9', lwd=2)</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">150</span>, <span class="at">xright =</span> <span class="dv">300</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#56B4E940"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co"># lines(c(300, 365), c(3/8, 3/8), type='l', col='#009E73', lwd=2)</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="fu">rect</span>(<span class="at">xleft =</span> <span class="dv">300</span>, <span class="at">xright =</span> <span class="dv">365</span>, <span class="at">ybottom =</span> <span class="dv">0</span>, <span class="at">ytop =</span> <span class="fl">1.0</span>, <span class="at">col=</span><span class="st">"#009E7340"</span>, <span class="at">lwd=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1178,14 +1184,14 @@ h(t \mid x_i) = h_0(t)\exp\left[ \sum_{j=1}^{p}\beta_j x_{ij} \right] \iff \unde
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>bc_df <span class="ot">&lt;-</span> BrainCancer <span class="sc">|&gt;</span> <span class="fu">filter</span>(diagnosis <span class="sc">!=</span> <span class="st">"Other"</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>bc_df<span class="sc">$</span>diagnosis <span class="ot">=</span> <span class="fu">factor</span>(bc_df<span class="sc">$</span>diagnosis)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>bc_df<span class="sc">$</span>sex <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">substr</span>(bc_df<span class="sc">$</span>sex, <span class="dv">1</span>, <span class="dv">1</span>))</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>bc_df<span class="sc">$</span>loc <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">substr</span>(bc_df<span class="sc">$</span>loc, <span class="dv">1</span>, <span class="dv">5</span>))</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width=</span><span class="dv">130</span>)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bc_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR2) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>bc_df <span class="ot">&lt;-</span> BrainCancer <span class="sc">|&gt;</span> <span class="fu">filter</span>(diagnosis <span class="sc">!=</span> <span class="st">"Other"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>bc_df<span class="sc">$</span>diagnosis <span class="ot">=</span> <span class="fu">factor</span>(bc_df<span class="sc">$</span>diagnosis)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>bc_df<span class="sc">$</span>sex <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">substr</span>(bc_df<span class="sc">$</span>sex, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>bc_df<span class="sc">$</span>loc <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">substr</span>(bc_df<span class="sc">$</span>loc, <span class="dv">1</span>, <span class="dv">5</span>))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">width=</span><span class="dv">130</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bc_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code> sex         diagnosis     loc           ki              gtv         stereo       status           time      
@@ -1200,7 +1206,7 @@ h(t \mid x_i) = h_0(t)\exp\left[ \sum_{j=1}^{p}\beta_j x_{ij} \right] \iff \unde
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>bc_df <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>bc_df <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="kable-table">
@@ -1289,12 +1295,12 @@ h(t \mid x_i) = h_0(t)\exp\left[ \sum_{j=1}^{p}\beta_j x_{ij} \right] \iff \unde
 <div class="cell cox-table" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>full_cox_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Surv</span>(time, status) <span class="sc">~</span> sex <span class="sc">+</span> diagnosis <span class="sc">+</span> loc <span class="sc">+</span> ki <span class="sc">+</span> gtv <span class="sc">+</span> stereo,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span>bc_df</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>broom<span class="sc">::</span><span class="fu">tidy</span>(full_cox_model) <span class="sc">|&gt;</span> <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>full_cox_model <span class="ot">&lt;-</span> <span class="fu">coxph</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Surv</span>(time, status) <span class="sc">~</span> sex <span class="sc">+</span> diagnosis <span class="sc">+</span> loc <span class="sc">+</span> ki <span class="sc">+</span> gtv <span class="sc">+</span> stereo,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span>bc_df</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>broom<span class="sc">::</span><span class="fu">tidy</span>(full_cox_model) <span class="sc">|&gt;</span> <span class="fu">mutate_if</span>(is.numeric, round, <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="kable-table">
@@ -1373,29 +1379,29 @@ h(t \mid x_i) = h_0(t)\exp\left[ \sum_{j=1}^{p}\beta_j x_{ij} \right] \iff \unde
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(extrafont) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">cex=</span><span class="fl">1.2</span>, <span class="at">family=</span><span class="st">"CMU Sans Serif"</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>diag_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Meningioma"</span>, <span class="st">"LG glioma"</span>, <span class="st">"HG glioma"</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>diag_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">diagnosis =</span> diag_levels,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">sex =</span> <span class="fu">rep</span>(<span class="st">"F"</span>, <span class="dv">3</span>),</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc =</span> <span class="fu">rep</span>(<span class="st">"Supra"</span>, <span class="dv">3</span>),</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ki =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>ki), <span class="dv">3</span>),</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">gtv =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>gtv), <span class="dv">3</span>),</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">stereo =</span> <span class="fu">rep</span>(<span class="st">"SRT"</span>, <span class="dv">3</span>)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>survplots <span class="ot">&lt;-</span> <span class="fu">survfit</span>(full_cox_model, <span class="at">newdata =</span> diag_df)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  survplots,</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Survival Curves by Diagnosis"</span>,</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Months"</span>, <span class="at">ylab =</span> <span class="st">"Survival Probability"</span>,</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette, <span class="at">lwd=</span><span class="fl">1.5</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"bottomleft"</span>,</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  diag_levels,</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd=</span><span class="fl">1.5</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(extrafont) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">cex=</span><span class="fl">1.2</span>, <span class="at">family=</span><span class="st">"CMU Sans Serif"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>diag_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Meningioma"</span>, <span class="st">"LG glioma"</span>, <span class="st">"HG glioma"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>diag_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">diagnosis =</span> diag_levels,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">sex =</span> <span class="fu">rep</span>(<span class="st">"F"</span>, <span class="dv">3</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc =</span> <span class="fu">rep</span>(<span class="st">"Supra"</span>, <span class="dv">3</span>),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ki =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>ki), <span class="dv">3</span>),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">gtv =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>gtv), <span class="dv">3</span>),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">stereo =</span> <span class="fu">rep</span>(<span class="st">"SRT"</span>, <span class="dv">3</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>survplots <span class="ot">&lt;-</span> <span class="fu">survfit</span>(full_cox_model, <span class="at">newdata =</span> diag_df)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  survplots,</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Survival Curves by Diagnosis"</span>,</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Months"</span>, <span class="at">ylab =</span> <span class="st">"Survival Probability"</span>,</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette, <span class="at">lwd=</span><span class="fl">1.5</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"bottomleft"</span>,</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  diag_levels,</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd=</span><span class="fl">1.5</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1416,13 +1422,13 @@ h(t \mid x_i) = h_0(t)\exp\left[ \sum_{j=1}^{p}\beta_j x_{ij} \right] \iff \unde
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>bc_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>ki)) <span class="sc">+</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth=</span>g_linewidth,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill=</span>cb_palette[<span class="dv">1</span>], <span class="at">alpha=</span><span class="fl">0.333</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Karnofsky Index Distribution"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>bc_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>ki)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth=</span>g_linewidth,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill=</span>cb_palette[<span class="dv">1</span>], <span class="at">alpha=</span><span class="fl">0.333</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Karnofsky Index Distribution"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1436,13 +1442,13 @@ h(t \mid x_i) = h_0(t)\exp\left[ \sum_{j=1}^{p}\beta_j x_{ij} \right] \iff \unde
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>bc_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>gtv)) <span class="sc">+</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth=</span>g_linewidth,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill=</span>cb_palette[<span class="dv">1</span>], <span class="at">alpha=</span><span class="fl">0.333</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Gross Tumor Volume (GTV) Distribution"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>bc_df <span class="sc">|&gt;</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>gtv)) <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth=</span>g_linewidth,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill=</span>cb_palette[<span class="dv">1</span>], <span class="at">alpha=</span><span class="fl">0.333</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">28</span>) <span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Gross Tumor Volume (GTV) Distribution"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -1462,13 +1468,13 @@ h(t \mid x_i) = h_0(t)\exp\left[ \sum_{j=1}^{p}\beta_j x_{ij} \right] \iff \unde
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ki_terciles <span class="ot">&lt;-</span> <span class="fu">quantile</span>(bc_df<span class="sc">$</span>ki, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>))</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>bc_df <span class="ot">&lt;-</span> bc_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">tercile =</span> <span class="fu">ifelse</span>(ki <span class="sc">&lt;</span> ki_terciles[<span class="dv">1</span>], <span class="dv">1</span>, <span class="fu">ifelse</span>(ki <span class="sc">&lt;</span> ki_terciles[<span class="dv">2</span>], <span class="dv">2</span>, <span class="dv">3</span>))</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>(terc_df <span class="ot">&lt;-</span> bc_df <span class="sc">|&gt;</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tercile) <span class="sc">|&gt;</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">med_ki=</span><span class="fu">median</span>(ki)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ki_terciles <span class="ot">&lt;-</span> <span class="fu">quantile</span>(bc_df<span class="sc">$</span>ki, <span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>bc_df <span class="ot">&lt;-</span> bc_df <span class="sc">|&gt;</span> <span class="fu">mutate</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">tercile =</span> <span class="fu">ifelse</span>(ki <span class="sc">&lt;</span> ki_terciles[<span class="dv">1</span>], <span class="dv">1</span>, <span class="fu">ifelse</span>(ki <span class="sc">&lt;</span> ki_terciles[<span class="dv">2</span>], <span class="dv">2</span>, <span class="dv">3</span>))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>(terc_df <span class="ot">&lt;-</span> bc_df <span class="sc">|&gt;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tercile) <span class="sc">|&gt;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">med_ki=</span><span class="fu">median</span>(ki)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="kable-table">
@@ -1501,39 +1507,39 @@ h(t \mid x_i) = h_0(t)\exp\left[ \sum_{j=1}^{p}\beta_j x_{ij} \right] \iff \unde
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ki_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">diagnosis =</span> <span class="fu">rep</span>(<span class="st">"Meningioma"</span>, <span class="dv">3</span>),</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">sex =</span> <span class="fu">rep</span>(<span class="st">"F"</span>, <span class="dv">3</span>),</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc =</span> <span class="fu">rep</span>(<span class="st">"Supra"</span>, <span class="dv">3</span>),</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ki =</span> terc_df<span class="sc">$</span>med_ki,</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">gtv =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>gtv), <span class="dv">3</span>),</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">stereo =</span> <span class="fu">rep</span>(<span class="st">"SRT"</span>, <span class="dv">3</span>)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>ki_plots <span class="ot">&lt;-</span> <span class="fu">survfit</span>(full_cox_model, <span class="at">newdata =</span> ki_df)</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">mar=</span><span class="fu">c</span>(<span class="fl">4.0</span>,<span class="fl">4.0</span>,<span class="fl">1.2</span>,<span class="fl">0.5</span>),</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex=</span><span class="fl">1.2</span>,</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">family=</span><span class="st">"CMU Sans Serif"</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>) <span class="co"># bltr</span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  ki_plots,</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Survival Curves by KI Tercile"</span>,</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Months"</span>,</span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">Pr(T &gt; t)$"</span>),</span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd =</span> <span class="dv">1</span>,</span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette</span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>ki_labs <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 70 )$"</span>),</span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 80 )$"</span>),</span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 90 )$"</span>)</span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(</span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"bottomleft"</span>,</span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  ki_labs, <span class="at">lwd=</span><span class="dv">1</span>,</span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">cex=</span><span class="fl">0.8</span></span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(latex2exp) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ki_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">diagnosis =</span> <span class="fu">rep</span>(<span class="st">"Meningioma"</span>, <span class="dv">3</span>),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">sex =</span> <span class="fu">rep</span>(<span class="st">"F"</span>, <span class="dv">3</span>),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc =</span> <span class="fu">rep</span>(<span class="st">"Supra"</span>, <span class="dv">3</span>),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ki =</span> terc_df<span class="sc">$</span>med_ki,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">gtv =</span> <span class="fu">rep</span>(<span class="fu">mean</span>(bc_df<span class="sc">$</span>gtv), <span class="dv">3</span>),</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">stereo =</span> <span class="fu">rep</span>(<span class="st">"SRT"</span>, <span class="dv">3</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>ki_plots <span class="ot">&lt;-</span> <span class="fu">survfit</span>(full_cox_model, <span class="at">newdata =</span> ki_df)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">mar=</span><span class="fu">c</span>(<span class="fl">4.0</span>,<span class="fl">4.0</span>,<span class="fl">1.2</span>,<span class="fl">0.5</span>),</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">cex=</span><span class="fl">1.2</span>,</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">family=</span><span class="st">"CMU Sans Serif"</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>) <span class="co"># bltr</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  ki_plots,</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Survival Curves by KI Tercile"</span>,</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Months"</span>,</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="fu">TeX</span>(<span class="st">"$</span><span class="sc">\\</span><span class="st">Pr(T &gt; t)$"</span>),</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">lwd =</span> <span class="dv">1</span>,</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>ki_labs <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 70 )$"</span>),</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 80 )$"</span>),</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">TeX</span>(<span class="st">"$h( t </span><span class="sc">\\</span><span class="st">, | </span><span class="sc">\\</span><span class="st">, KI = 90 )$"</span>)</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"bottomleft"</span>,</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>  ki_labs, <span class="at">lwd=</span><span class="dv">1</span>,</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">col =</span> cb_palette, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">cex=</span><span class="fl">0.8</span></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
