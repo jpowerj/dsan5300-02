@@ -7,8 +7,8 @@
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-46f66b053e56abd73bb6e954d61a315b.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.9.35">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e44360b8a8db1e130c7792fece1c8032.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.3">
 
   <meta name="author" content="Jeff Jacobs">
   <title>DSAN 5300-02 – Week 13: Machine Learning for Causal Inference</title>
@@ -236,7 +236,7 @@ Jeff Jacobs
   <p class="date">Monday, April 20, 2026</p>
 </section>
 <section>
-<section id="schedule" class="title-slide slide level1 smaller small-title crunch-title crunch-callout center" data-stack-name="Schedule">
+<section id="schedule" class="title-slide slide level1 smaller small-title crunch-title crunch-callout center">
 <h1>Schedule</h1>
 <p>Today’s Planned Schedule:</p>
 <table class="caption-top">
@@ -271,7 +271,7 @@ Jeff Jacobs
 <td style="text-align: left;"></td>
 <td style="text-align: left;">7:20pm</td>
 <td style="text-align: left;">8:00pm</td>
-<td style="text-align: left;"><a href="#/regression-with-survival-response">How Can Machine Learning Help? →</a></td>
+<td style="text-align: left;"><a href="#/matching-estimators">How Can Machine Learning Help? →</a></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Break!</strong></td>
@@ -283,7 +283,7 @@ Jeff Jacobs
 <td style="text-align: left;"></td>
 <td style="text-align: left;">8:10pm</td>
 <td style="text-align: left;">9:00pm</td>
-<td style="text-align: left;"><a href="#/quiz-time">Causal Forests →</a></td>
+<td style="text-align: left;"><a href="#/one-more-issue">Colliders →</a></td>
 </tr>
 </tbody>
 </table>
@@ -448,7 +448,7 @@ Jeff Jacobs
 <p>This was tested by pannenkoek12 - the same person who put up the bounty - using a script that manually flipped that particular bit at the right time, confirming the suspicion of a bit flip.</p>
 </blockquote>
 </section>
-<section id="what-about-a-b-testing" class="slide level2 crunch-title title-09 crunch-li-8">
+<section id="what-about-a-b-testing" class="slide level2 text-90 crunch-title title-09 crunch-li-8">
 <h2>What About A-B Testing?</h2>
 <ul>
 <li>Gets us significantly closer, but methods for <strong>recovering</strong> causal effect require a condition called <strong>SUTVA</strong></li>
@@ -457,14 +457,10 @@ Jeff Jacobs
 <li>Person <span class="math inline">\(i\)</span> seeing design A may like the new design, causing them to spend more time on the app</li>
 <li>Person <span class="math inline">\(i\)</span> may then <strong>message</strong> person <span class="math inline">\(j\)</span> <em>“Check out [app], they redesigned everything!”</em>, causing <span class="math inline">\(j\)</span> to spend more time on app regardless of treatment (network spillover ❌)</li>
 </ul>
-</section>
-<section id="what-is-to-be-done" class="slide level2">
-<h2>What Is To Be Done?</h2>
-
-<img data-src="images/face_everything_and_rise.jpg" class="quarto-figure quarto-figure-center r-stretch"></section></section>
+</section></section>
 <section>
-<section id="matching-estimators" class="title-slide slide level1 crunch-title center" data-stack-name="Matching Estimators">
-<h1>Matching Estimators</h1>
+<section id="enter-matching-estimators" class="title-slide slide level1 crunch-title title-11 center" data-stack-name="Matching Estimators">
+<h1>…Enter <em>Matching Estimators</em>!</h1>
 
 <img data-src="images/fruit.png" class="r-stretch quarto-figure-center"><p class="caption"><a href="https://shirt.woot.com/offers/comparing-apples-to-oranges">Image Source</a></p></section>
 <section id="case-study-military-inequality-leadsto-military-success" class="slide level2 smaller crunch-title title-09 crunch-ul crunch-blockquote crunch-li-8">
@@ -1440,6 +1436,344 @@ Number of Fisher Scoring iterations: 6</code></pre>
 <ul>
 <li><span class="math inline">\(\leadsto\)</span> Treatment effect <span class="math inline">\(\approx\)</span> <strong>-7</strong> 🥳</li>
 </ul>
+</section></section>
+<section>
+<section id="one-more-issue" class="title-slide slide level1 smaller crunch-title crunch-p title-12 center" data-stack-name="Colliders">
+<h1>One More Issue</h1>
+<p><em>(One of these causal paths is not like the others…)</em></p>
+
+<img data-src="images/elemental-confounds.png" class="r-stretch quarto-figure-center"><p class="caption">From Richard McElreath’s <a href="https://youtu.be/mBEA7PKDmiY"><em>Statistical Rethinking</em> lectures</a></p><div class="hidden">
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a></a><span class="fu">library</span>(tidyverse) <span class="co"># For ggplot</span></span>
+<span id="cb16-2"><a></a><span class="fu">library</span>(extraDistr) <span class="co"># For rbern()</span></span>
+<span id="cb16-3"><a></a><span class="fu">library</span>(patchwork) <span class="co"># For side-by-side plotting</span></span>
+<span id="cb16-4"><a></a>n_d <span class="ot">&lt;-</span> <span class="dv">10000</span> <span class="co"># For discrete RVs</span></span>
+<span id="cb16-5"><a></a>n_c <span class="ot">&lt;-</span> <span class="dv">300</span> <span class="co"># For continuous RVs</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</div>
+</section>
+<section id="the-fork-x-leftarrow-z-rightarrow-y" class="slide level2 text-90 crunch-title crunch-quarto-figure">
+<h2>The Fork: <span class="math inline">\(X \leftarrow Z \rightarrow Y\)</span></h2>
+<p><em>Conditioning on <span class="math inline">\(Z\)</span> <strong>controls for</strong> correlation between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span></em> ✅</p>
+<div class="columns">
+<div class="column" style="width:45%;">
+<p><span class="math display">\[
+\begin{aligned}
+Z &amp;\sim \text{Bern}(0.5) \; \text{\small(Fair coin)} \\
+X, Y &amp;\sim \mathcal{N}(2Z - 1, 1) \\
+&amp;= \begin{cases}\mathcal{N}(-1, 1) &amp;\text{if }Z = 0 \\ \mathcal{N}(+1, 1) &amp;\text{if }Z = 1\end{cases}
+\end{aligned}
+\]</span></p>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">set.seed</span>(<span class="dv">5650</span>)</span>
+<span id="cb17-2"><a></a>cfork_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb17-3"><a></a>    <span class="at">Z =</span> <span class="fu">rbern</span>(n_c),</span>
+<span id="cb17-4"><a></a>    <span class="at">X =</span> <span class="fu">rnorm</span>(n_c, <span class="dv">2</span> <span class="sc">*</span> Z <span class="sc">-</span> <span class="dv">1</span>),</span>
+<span id="cb17-5"><a></a>    <span class="at">Y =</span> <span class="fu">rnorm</span>(n_c, <span class="dv">2</span> <span class="sc">*</span> Z <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb17-6"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</div><div class="column" style="width:55%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a>plot_freqs <span class="ot">&lt;-</span> <span class="cf">function</span>(df, plot_title, <span class="at">y_lab=</span><span class="cn">TRUE</span>) {</span>
+<span id="cb18-2"><a></a>  df_cor <span class="ot">&lt;-</span> <span class="fu">cor</span>(df<span class="sc">$</span>X, df<span class="sc">$</span>Y)</span>
+<span id="cb18-3"><a></a>  df_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"Cor(X,Y) = "</span>,<span class="fu">round</span>(df_cor,<span class="dv">3</span>))</span>
+<span id="cb18-4"><a></a>  freq_df <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb18-5"><a></a>    <span class="fu">group_by</span>(X, Y) <span class="sc">|&gt;</span></span>
+<span id="cb18-6"><a></a>    <span class="fu">summarize</span>(<span class="at">count=</span><span class="fu">n</span>())</span>
+<span id="cb18-7"><a></a>  freq_plot <span class="ot">&lt;-</span> freq_df <span class="sc">|&gt;</span></span>
+<span id="cb18-8"><a></a>    <span class="fu">ggplot</span>(</span>
+<span id="cb18-9"><a></a>      <span class="fu">aes</span>(<span class="at">x=</span><span class="fu">factor</span>(X), <span class="at">y=</span><span class="fu">factor</span>(Y), <span class="at">fill=</span>count)</span>
+<span id="cb18-10"><a></a>    ) <span class="sc">+</span></span>
+<span id="cb18-11"><a></a>    <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
+<span id="cb18-12"><a></a>    <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb18-13"><a></a>    <span class="fu">scale_fill_distiller</span>(</span>
+<span id="cb18-14"><a></a>      <span class="at">palette=</span><span class="st">"Greens"</span>, <span class="at">direction=</span><span class="dv">1</span>,</span>
+<span id="cb18-15"><a></a>      <span class="at">limits=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5000</span>)</span>
+<span id="cb18-16"><a></a>    ) <span class="sc">+</span></span>
+<span id="cb18-17"><a></a>    <span class="fu">geom_label</span>(</span>
+<span id="cb18-18"><a></a>      <span class="fu">aes</span>(<span class="at">label=</span>count),</span>
+<span id="cb18-19"><a></a>      <span class="at">fill=</span><span class="st">"white"</span>, <span class="at">color=</span><span class="st">"black"</span>, <span class="at">size=</span><span class="dv">7</span></span>
+<span id="cb18-20"><a></a>    ) <span class="sc">+</span></span>
+<span id="cb18-21"><a></a>    <span class="fu">labs</span>(</span>
+<span id="cb18-22"><a></a>      <span class="at">title =</span> plot_title,</span>
+<span id="cb18-23"><a></a>      <span class="at">subtitle =</span> df_label,</span>
+<span id="cb18-24"><a></a>      <span class="at">x=</span><span class="st">"X"</span>, <span class="at">y=</span><span class="st">"Y"</span></span>
+<span id="cb18-25"><a></a>    ) <span class="sc">+</span></span>
+<span id="cb18-26"><a></a>    <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb18-27"><a></a>    <span class="fu">theme</span>(</span>
+<span id="cb18-28"><a></a>      <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">21</span>),</span>
+<span id="cb18-29"><a></a>      <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">18</span>)</span>
+<span id="cb18-30"><a></a>    ) <span class="sc">+</span></span>
+<span id="cb18-31"><a></a>    <span class="fu">remove_legend</span>()</span>
+<span id="cb18-32"><a></a>  <span class="cf">if</span> (<span class="sc">!</span>y_lab) {</span>
+<span id="cb18-33"><a></a>    freq_plot <span class="ot">&lt;-</span> freq_plot <span class="sc">+</span> <span class="fu">theme</span>(</span>
+<span id="cb18-34"><a></a>      <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb18-35"><a></a>    )</span>
+<span id="cb18-36"><a></a>  }</span>
+<span id="cb18-37"><a></a>  <span class="fu">return</span>(freq_plot)</span>
+<span id="cb18-38"><a></a>}</span>
+<span id="cb18-39"><a></a><span class="fu">library</span>(latex2exp)</span>
+<span id="cb18-40"><a></a>overall_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cfork_df)</span>
+<span id="cb18-41"><a></a>overall_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(overall_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">3</span>)</span>
+<span id="cb18-42"><a></a>z0_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cfork_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">0</span>))</span>
+<span id="cb18-43"><a></a>z0_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(z0_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb18-44"><a></a>z0_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=0} = "</span>,z0_slope,<span class="st">"$"</span>)</span>
+<span id="cb18-45"><a></a>z0_leg_label <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(<span class="st">"0 $(m="</span>,z0_slope,<span class="st">")$"</span>))</span>
+<span id="cb18-46"><a></a>z1_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cfork_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">1</span>))</span>
+<span id="cb18-47"><a></a>z1_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(z1_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb18-48"><a></a>z1_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=1} = "</span>,z1_slope,<span class="st">"$"</span>)</span>
+<span id="cb18-49"><a></a>z_texlabel <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(z0_label, <span class="st">" | "</span>, z1_label))</span>
+<span id="cb18-50"><a></a>cfork_xmin <span class="ot">&lt;-</span> <span class="fu">min</span>(cfork_df<span class="sc">$</span>X)</span>
+<span id="cb18-51"><a></a>cfork_xmax <span class="ot">&lt;-</span> <span class="fu">max</span>(cfork_df<span class="sc">$</span>X)</span>
+<span id="cb18-52"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb18-53"><a></a>  <span class="co"># Points</span></span>
+<span id="cb18-54"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb18-55"><a></a>    <span class="at">data=</span>cfork_df,</span>
+<span id="cb18-56"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb18-57"><a></a>    <span class="at">size=</span><span class="fl">0.6</span><span class="sc">*</span>g_pointsize,</span>
+<span id="cb18-58"><a></a>    <span class="at">alpha=</span><span class="fl">0.8</span></span>
+<span id="cb18-59"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb18-60"><a></a>  <span class="co"># Overall lm</span></span>
+<span id="cb18-61"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb18-62"><a></a>    <span class="at">data=</span>cfork_df, <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y),</span>
+<span id="cb18-63"><a></a>    <span class="at">method =</span> lm, <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-64"><a></a>    <span class="at">linewidth =</span> <span class="fl">2.5</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb18-65"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb18-66"><a></a>  <span class="co"># Stratified lm</span></span>
+<span id="cb18-67"><a></a>  <span class="co"># (slightly larger black lines)</span></span>
+<span id="cb18-68"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb18-69"><a></a>    <span class="at">data=</span>cfork_df,</span>
+<span id="cb18-70"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">group=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb18-71"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb18-72"><a></a>    <span class="at">linewidth=</span><span class="fl">2.75</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb18-73"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb18-74"><a></a>  <span class="co"># (Colored lines)</span></span>
+<span id="cb18-75"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb18-76"><a></a>    <span class="at">data=</span>cfork_df,</span>
+<span id="cb18-77"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb18-78"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb18-79"><a></a>    <span class="at">linewidth=</span><span class="dv">2</span></span>
+<span id="cb18-80"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb18-81"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb18-82"><a></a>  <span class="fu">theme</span>(</span>
+<span id="cb18-83"><a></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">24</span>),</span>
+<span id="cb18-84"><a></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">20</span>)</span>
+<span id="cb18-85"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb18-86"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb18-87"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb18-88"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(</span>
+<span id="cb18-89"><a></a>      <span class="st">"Unstratified Slope = "</span>,overall_slope</span>
+<span id="cb18-90"><a></a>    ),</span>
+<span id="cb18-91"><a></a>    <span class="at">subtitle=</span>z_texlabel,</span>
+<span id="cb18-92"><a></a>    <span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="st">"Y"</span>, <span class="at">color =</span> <span class="st">"Z"</span></span>
+<span id="cb18-93"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/cfork-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="the-pipe-x-rightarrow-z-rightarrow-y" class="slide level2 text-90 crunch-title crunch-quarto-figure">
+<h2>The Pipe: <span class="math inline">\(X \rightarrow Z \rightarrow Y\)</span></h2>
+<p><em>Conditioning on <span class="math inline">\(Z\)</span> <strong>controls for</strong> correlation between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span></em> ✅</p>
+<div class="columns">
+<div class="column" style="width:45%;">
+<p><span class="math display">\[
+\begin{aligned}
+X &amp;\sim \mathcal{N}(0, 1) \\
+Z &amp;\sim \text{Bern}\left( \frac{e^{X}}{1 + e^{X}} \right) \\
+Y &amp;\sim \mathcal{N}(2Z - 1, 1)
+\end{aligned}
+\]</span></p>
+<!-- Continuous Pipe plot -->
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">set.seed</span>(<span class="dv">5650</span>)</span>
+<span id="cb19-2"><a></a>cpipe_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb19-3"><a></a>    <span class="at">X =</span> <span class="fu">rnorm</span>(n_c),</span>
+<span id="cb19-4"><a></a>    <span class="at">Z =</span> <span class="fu">rbern</span>(n_c, <span class="fu">plogis</span>(X)),</span>
+<span id="cb19-5"><a></a>    <span class="at">Y =</span> <span class="fu">rnorm</span>(n_c, <span class="dv">2</span> <span class="sc">*</span> Z <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb19-6"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</div><div class="column" style="width:55%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>cpipe_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cpipe_df)</span>
+<span id="cb20-2"><a></a>cpipe_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(cpipe_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">3</span>)</span>
+<span id="cb20-3"><a></a>cpipe_z0_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cpipe_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">0</span>))</span>
+<span id="cb20-4"><a></a>cpipe_z0_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(cpipe_z0_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb20-5"><a></a>cpipe_z0_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=0} = "</span>,cpipe_z0_slope,<span class="st">"$"</span>)</span>
+<span id="cb20-6"><a></a>cpipe_z1_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>cpipe_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">1</span>))</span>
+<span id="cb20-7"><a></a>cpipe_z1_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(cpipe_z1_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb20-8"><a></a>cpipe_z1_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=1} = "</span>,cpipe_z1_slope,<span class="st">"$"</span>)</span>
+<span id="cb20-9"><a></a>cpipe_z_texlabel <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(cpipe_z0_label, <span class="st">" | "</span>, cpipe_z1_label))</span>
+<span id="cb20-10"><a></a>cpipe_xmin <span class="ot">&lt;-</span> <span class="fu">min</span>(cpipe_df<span class="sc">$</span>X)</span>
+<span id="cb20-11"><a></a>cpipe_xmax <span class="ot">&lt;-</span> <span class="fu">max</span>(cpipe_df<span class="sc">$</span>X)</span>
+<span id="cb20-12"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb20-13"><a></a>  <span class="co"># Points</span></span>
+<span id="cb20-14"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb20-15"><a></a>    <span class="at">data=</span>cpipe_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Y <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">3</span>),</span>
+<span id="cb20-16"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb20-17"><a></a>    <span class="at">size=</span><span class="fl">0.6</span><span class="sc">*</span>g_pointsize,</span>
+<span id="cb20-18"><a></a>    <span class="at">alpha=</span><span class="fl">0.8</span></span>
+<span id="cb20-19"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb20-20"><a></a>  <span class="co"># Overall lm</span></span>
+<span id="cb20-21"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb20-22"><a></a>    <span class="at">data=</span>cpipe_df, <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y),</span>
+<span id="cb20-23"><a></a>    <span class="at">method =</span> lm, <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb20-24"><a></a>    <span class="at">linewidth =</span> <span class="fl">2.5</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb20-25"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb20-26"><a></a>  <span class="co"># Stratified lm</span></span>
+<span id="cb20-27"><a></a>  <span class="co"># (slightly larger black lines)</span></span>
+<span id="cb20-28"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb20-29"><a></a>    <span class="at">data=</span>cpipe_df,</span>
+<span id="cb20-30"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">group=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb20-31"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb20-32"><a></a>    <span class="at">linewidth=</span><span class="fl">2.75</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb20-33"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb20-34"><a></a>  <span class="co"># (Colored lines)</span></span>
+<span id="cb20-35"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb20-36"><a></a>    <span class="at">data=</span>cpipe_df,</span>
+<span id="cb20-37"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb20-38"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb20-39"><a></a>    <span class="at">linewidth=</span><span class="dv">2</span></span>
+<span id="cb20-40"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb20-41"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb20-42"><a></a>  <span class="fu">theme</span>(</span>
+<span id="cb20-43"><a></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">21</span>),</span>
+<span id="cb20-44"><a></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">18</span>)</span>
+<span id="cb20-45"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb20-46"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb20-47"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb20-48"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(</span>
+<span id="cb20-49"><a></a>      <span class="st">"Unstratified Slope = "</span>,cpipe_slope</span>
+<span id="cb20-50"><a></a>    ),</span>
+<span id="cb20-51"><a></a>    <span class="at">subtitle=</span>cpipe_z_texlabel,</span>
+<span id="cb20-52"><a></a>    <span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="st">"Y"</span>, <span class="at">color =</span> <span class="st">"Z"</span></span>
+<span id="cb20-53"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/cpipe-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="the-collider-x-rightarrow-z-leftarrow-y" class="slide level2 text-80 math-90 crunch-math crunch-title crunch-quarto-figure crunch-ul crunch-li-5">
+<h2>⚠️The Collider⚠️: <span class="math inline">\(X \rightarrow Z \leftarrow Y\)</span></h2>
+<p><em>Conditioning on <span class="math inline">\(Z\)</span> <strong>induces correlation</strong> between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, where there <strong>previously was none</strong></em> ☠️</p>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p><span class="math display">\[
+\begin{aligned}
+X &amp;\sim \mathcal{N}(0, 1) \\
+Y &amp;\sim \mathcal{N}(0, 1) \\
+Z &amp;\sim \text{Bern}\left( \frac{e^{2X + 2Y - 2}}{1+e^{2X + 2Y - 2}} \right)
+\end{aligned}
+\]</span></p>
+<!-- Continuous Collider Plot -->
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="fu">set.seed</span>(<span class="dv">5650</span>)</span>
+<span id="cb21-2"><a></a>ccoll_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb21-3"><a></a>    <span class="at">X =</span> <span class="fu">rnorm</span>(n_c),</span>
+<span id="cb21-4"><a></a>    <span class="at">Y =</span> <span class="fu">rnorm</span>(n_c),</span>
+<span id="cb21-5"><a></a>    <span class="at">Z =</span> <span class="fu">rbern</span>(n_c,</span>
+<span id="cb21-6"><a></a>      <span class="fu">plogis</span>(<span class="dv">2</span> <span class="sc">*</span> (X <span class="sc">+</span> Y <span class="sc">-</span> <span class="dv">1</span>))</span>
+<span id="cb21-7"><a></a>    )</span>
+<span id="cb21-8"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</div><div class="column" style="width:45%;">
+<div class="cell" data-layout-align="center" data-crop="false">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a>ccoll_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>ccoll_df)</span>
+<span id="cb22-2"><a></a>ccoll_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(ccoll_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">3</span>)</span>
+<span id="cb22-3"><a></a>ccoll_z0_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>ccoll_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">0</span>))</span>
+<span id="cb22-4"><a></a>ccoll_z0_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(ccoll_z0_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb22-5"><a></a>ccoll_z0_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=0} = "</span>,ccoll_z0_slope,<span class="st">"$"</span>)</span>
+<span id="cb22-6"><a></a>ccoll_z1_lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X, <span class="at">data=</span>ccoll_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Z <span class="sc">==</span> <span class="dv">1</span>))</span>
+<span id="cb22-7"><a></a>ccoll_z1_slope <span class="ot">&lt;-</span> <span class="fu">round</span>(ccoll_z1_lm<span class="sc">$</span>coef[<span class="st">'X'</span>], <span class="dv">2</span>)</span>
+<span id="cb22-8"><a></a>ccoll_z1_label <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"$Slope_{Z=1} = "</span>,ccoll_z1_slope,<span class="st">"$"</span>)</span>
+<span id="cb22-9"><a></a>ccoll_z_texlabel <span class="ot">&lt;-</span> <span class="fu">TeX</span>(<span class="fu">paste0</span>(ccoll_z0_label, <span class="st">" | "</span>, ccoll_z1_label))</span>
+<span id="cb22-10"><a></a>ccoll_xmin <span class="ot">&lt;-</span> <span class="fu">min</span>(ccoll_df<span class="sc">$</span>X)</span>
+<span id="cb22-11"><a></a>ccoll_xmax <span class="ot">&lt;-</span> <span class="fu">max</span>(ccoll_df<span class="sc">$</span>X)</span>
+<span id="cb22-12"><a></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb22-13"><a></a>  <span class="co"># Points</span></span>
+<span id="cb22-14"><a></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb22-15"><a></a>    <span class="at">data=</span>ccoll_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(Y <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">3</span>),</span>
+<span id="cb22-16"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb22-17"><a></a>    <span class="at">size=</span><span class="fl">0.6</span><span class="sc">*</span>g_pointsize,</span>
+<span id="cb22-18"><a></a>    <span class="at">alpha=</span><span class="fl">0.8</span></span>
+<span id="cb22-19"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb22-20"><a></a>  <span class="co"># Overall lm</span></span>
+<span id="cb22-21"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb22-22"><a></a>    <span class="at">data=</span>ccoll_df, <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y),</span>
+<span id="cb22-23"><a></a>    <span class="at">method =</span> lm, <span class="at">se =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb22-24"><a></a>    <span class="at">linewidth =</span> <span class="fl">2.5</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb22-25"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb22-26"><a></a>  <span class="co"># Stratified lm</span></span>
+<span id="cb22-27"><a></a>  <span class="co"># (slightly larger black lines)</span></span>
+<span id="cb22-28"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb22-29"><a></a>    <span class="at">data=</span>ccoll_df,</span>
+<span id="cb22-30"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">group=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb22-31"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb22-32"><a></a>    <span class="at">linewidth=</span><span class="fl">2.75</span>, <span class="at">color=</span><span class="st">'black'</span></span>
+<span id="cb22-33"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb22-34"><a></a>  <span class="co"># (Colored lines)</span></span>
+<span id="cb22-35"><a></a>  <span class="fu">geom_smooth</span>(</span>
+<span id="cb22-36"><a></a>    <span class="at">data=</span>ccoll_df,</span>
+<span id="cb22-37"><a></a>    <span class="fu">aes</span>(<span class="at">x=</span>X, <span class="at">y=</span>Y, <span class="at">color=</span><span class="fu">factor</span>(Z)),</span>
+<span id="cb22-38"><a></a>    <span class="at">method=</span>lm, <span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">fullrange=</span><span class="cn">TRUE</span>,</span>
+<span id="cb22-39"><a></a>    <span class="at">linewidth=</span><span class="dv">2</span></span>
+<span id="cb22-40"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb22-41"><a></a>  <span class="fu">theme_dsan</span>(<span class="at">base_size=</span><span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb22-42"><a></a>  <span class="fu">theme</span>(</span>
+<span id="cb22-43"><a></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">24</span>),</span>
+<span id="cb22-44"><a></a>    <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">20</span>)</span>
+<span id="cb22-45"><a></a>  ) <span class="sc">+</span></span>
+<span id="cb22-46"><a></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb22-47"><a></a>  <span class="fu">labs</span>(</span>
+<span id="cb22-48"><a></a>    <span class="at">title =</span> <span class="fu">paste0</span>(</span>
+<span id="cb22-49"><a></a>      <span class="st">"Unstratified Slope = "</span>,ccoll_slope</span>
+<span id="cb22-50"><a></a>    ),</span>
+<span id="cb22-51"><a></a>    <span class="at">subtitle=</span>ccoll_z_texlabel,</span>
+<span id="cb22-52"><a></a>    <span class="at">x =</span> <span class="st">"X"</span>, <span class="at">y =</span> <span class="st">"Y"</span>, <span class="at">color =</span> <span class="st">"Z"</span></span>
+<span id="cb22-53"><a></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="index_files/figure-revealjs/ccoll-plot-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+<center>
+<p>…And that’s why we have to <strong>think about the causal pathways from <span class="math inline">\(X\)</span> to <span class="math inline">\(Y\)</span></strong>, rather than just “control for everything”! 😭</p>
+</center>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>

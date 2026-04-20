@@ -868,7 +868,7 @@ linspike_df |> ggplot(aes(x = x1, y = x2)) +
 ```{r}
 #| label: spiral-svm
 #| crop: false
-#| fig-cap: Based on code from @boehmke2019handson, Ch 14
+#| fig-cap: Based on code from @boehmke_handson_2019, Ch 14
 if (!file.exists("assets/spiral_df.rds")) {
   spiral_df <- as.data.frame(
     mlbench.spirals(300, cycles = 2, sd = 0.09)

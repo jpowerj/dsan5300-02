@@ -47,7 +47,7 @@ format:
 
 :::
 
-# Schedule {.smaller .small-title .crunch-title .crunch-callout data-stack-name="Schedule"}
+# Schedule {.smaller .small-title .crunch-title .crunch-callout}
 
 Today's Planned Schedule:
 
@@ -55,9 +55,9 @@ Today's Planned Schedule:
 |:- |:- |:- |:- |
 | **Lecture** | 6:30pm | 7:00pm | [Fundamental Problem of Causal Inference &rarr;](#learning-decision-boundaries) |
 | | 7:00pm | 7:20pm | [Apples to Apples &rarr;](#comparing-survival-curves) | 
-| | 7:20pm | 8:00pm | [How Can Machine Learning Help? &rarr;](#regression-with-survival-response) |
+| | 7:20pm | 8:00pm | [How Can Machine Learning Help? &rarr;](#matching-estimators) |
 | **Break!** | 8:00pm | 8:10pm | |
-| | 8:10pm | 9:00pm | [Causal Forests &rarr;](#quiz-time) |
+| | 8:10pm | 9:00pm | [Colliders &rarr;](#one-more-issue) |
 
 : {tbl-colwidths="[12,12,12,64]"}
 
@@ -145,7 +145,7 @@ Seemingly-reasonable assumption: Button-pushes cause outcomes in games...
 
 > This was tested by pannenkoek12 - the same person who put up the bounty - using a script that manually flipped that particular bit at the right time, confirming the suspicion of a bit flip.
 
-## What About A-B Testing? {.crunch-title .title-09 .crunch-li-8}
+## What About A-B Testing? {.text-90 .crunch-title .title-09 .crunch-li-8}
 
 * Gets us significantly closer, but methods for **recovering** causal effect require a condition called **SUTVA**
 * **S**table **U**nit **T**reatment **V**alue **A**ssumption: Treatment applied to $i$ does not affect outcome for another person $j$
@@ -153,11 +153,7 @@ Seemingly-reasonable assumption: Button-pushes cause outcomes in games...
 * Person $i$ seeing design A may like the new design, causing them to spend more time on the app
 * Person $i$ may then **message** person $j$ *"Check out [app], they redesigned everything!"*, causing $j$ to spend more time on app regardless of treatment (network spillover ❌)
 
-## What Is To Be Done?
-
-![](images/face_everything_and_rise.jpg){fig-align="center"}
-
-# Matching Estimators {.crunch-title data-stack-name="Matching Estimators"}
+# ...Enter *Matching Estimators*! {.crunch-title .title-11 data-stack-name="Matching Estimators"}
 
 ![[Image Source](https://shirt.woot.com/offers/comparing-apples-to-oranges)](images/fruit.png){fig-align="center"}
 
@@ -429,6 +425,356 @@ matched_df |> summarize(
 ```
 
 * $\leadsto$ Treatment effect $\approx$ **-7** 🥳
+
+# One More Issue {.smaller .crunch-title .crunch-p .title-12 data-stack-name="Colliders"}
+
+*(One of these causal paths is not like the others...)*
+
+![From Richard McElreath's [*Statistical Rethinking* lectures](https://youtu.be/mBEA7PKDmiY)](images/elemental-confounds.png){fig-align="center"}
+
+::: {.hidden}
+
+```{r}
+#| label: confounding-imports
+library(tidyverse) # For ggplot
+library(extraDistr) # For rbern()
+library(patchwork) # For side-by-side plotting
+n_d <- 10000 # For discrete RVs
+n_c <- 300 # For continuous RVs
+```
+
+:::
+
+## The Fork: $X \leftarrow Z \rightarrow Y$ {.text-90 .crunch-title .crunch-quarto-figure}
+
+*Conditioning on $Z$ **controls for** correlation between $X$ and $Y$* ✅
+
+:::: {.columns}
+::: {.column width="45%"}
+
+$$
+\begin{aligned}
+Z &\sim \text{Bern}(0.5) \; \text{\small(Fair coin)} \\
+X, Y &\sim \mathcal{N}(2Z - 1, 1) \\
+&= \begin{cases}\mathcal{N}(-1, 1) &\text{if }Z = 0 \\ \mathcal{N}(+1, 1) &\text{if }Z = 1\end{cases}
+\end{aligned}
+$$
+
+```{r}
+#| label: fork-continuous
+#| echo: true
+#| code-fold: show
+set.seed(5650)
+cfork_df <- tibble(
+    Z = rbern(n_c),
+    X = rnorm(n_c, 2 * Z - 1),
+    Y = rnorm(n_c, 2 * Z - 1)
+)
+```
+
+:::
+::: {.column width="55%"}
+
+```{r}
+#| label: cfork-plot
+#| echo: true
+#| code-fold: true
+#| crop: false
+plot_freqs <- function(df, plot_title, y_lab=TRUE) {
+  df_cor <- cor(df$X, df$Y)
+  df_label <- paste0("Cor(X,Y) = ",round(df_cor,3))
+  freq_df <- df |>
+    group_by(X, Y) |>
+    summarize(count=n())
+  freq_plot <- freq_df |>
+    ggplot(
+      aes(x=factor(X), y=factor(Y), fill=count)
+    ) +
+    geom_tile() +
+    coord_equal() +
+    scale_fill_distiller(
+      palette="Greens", direction=1,
+      limits=c(0,5000)
+    ) +
+    geom_label(
+      aes(label=count),
+      fill="white", color="black", size=7
+    ) +
+    labs(
+      title = plot_title,
+      subtitle = df_label,
+      x="X", y="Y"
+    ) +
+    theme_dsan(base_size=20) +
+    theme(
+      plot.title = element_text(size=21),
+      plot.subtitle = element_text(size=18)
+    ) +
+    remove_legend()
+  if (!y_lab) {
+    freq_plot <- freq_plot + theme(
+      axis.title.y = element_blank()
+    )
+  }
+  return(freq_plot)
+}
+library(latex2exp)
+overall_lm <- lm(Y ~ X, data=cfork_df)
+overall_slope <- round(overall_lm$coef['X'], 3)
+z0_lm <- lm(Y ~ X, data=cfork_df |> filter(Z == 0))
+z0_slope <- round(z0_lm$coef['X'], 2)
+z0_label <- paste0("$Slope_{Z=0} = ",z0_slope,"$")
+z0_leg_label <- TeX(paste0("0 $(m=",z0_slope,")$"))
+z1_lm <- lm(Y ~ X, data=cfork_df |> filter(Z == 1))
+z1_slope <- round(z1_lm$coef['X'], 2)
+z1_label <- paste0("$Slope_{Z=1} = ",z1_slope,"$")
+z_texlabel <- TeX(paste0(z0_label, " | ", z1_label))
+cfork_xmin <- min(cfork_df$X)
+cfork_xmax <- max(cfork_df$X)
+ggplot() +
+  # Points
+  geom_point(
+    data=cfork_df,
+    aes(x=X, y=Y, color=factor(Z)),
+    size=0.6*g_pointsize,
+    alpha=0.8
+  ) +
+  # Overall lm
+  geom_smooth(
+    data=cfork_df, aes(x=X, y=Y),
+    method = lm, se = FALSE,
+    linewidth = 2.5, color='black'
+  ) +
+  # Stratified lm
+  # (slightly larger black lines)
+  geom_smooth(
+    data=cfork_df,
+    aes(x=X, y=Y, group=factor(Z)),
+    method=lm, se=FALSE, fullrange=TRUE,
+    linewidth=2.75, color='black'
+  ) +
+  # (Colored lines)
+  geom_smooth(
+    data=cfork_df,
+    aes(x=X, y=Y, color=factor(Z)),
+    method=lm, se=FALSE, fullrange=TRUE,
+    linewidth=2
+  ) +
+  theme_dsan(base_size=20) +
+  theme(
+    plot.title = element_text(size=24),
+    plot.subtitle = element_text(size=20)
+  ) +
+  coord_equal() +
+  labs(
+    title = paste0(
+      "Unstratified Slope = ",overall_slope
+    ),
+    subtitle=z_texlabel,
+    x = "X", y = "Y", color = "Z"
+  )
+```
+
+:::
+::::
+
+## The Pipe: $X \rightarrow Z \rightarrow Y$ {.text-90 .crunch-title .crunch-quarto-figure}
+
+*Conditioning on $Z$ **controls for** correlation between $X$ and $Y$* ✅
+
+:::: {.columns}
+::: {.column width="45%"}
+
+$$
+\begin{aligned}
+X &\sim \mathcal{N}(0, 1) \\
+Z &\sim \text{Bern}\left( \frac{e^{X}}{1 + e^{X}} \right) \\
+Y &\sim \mathcal{N}(2Z - 1, 1)
+\end{aligned}
+$$
+
+<!-- Continuous Pipe plot -->
+
+```{r}
+#| label: pipe-continuous
+#| echo: true
+#| code-fold: show
+set.seed(5650)
+cpipe_df <- tibble(
+    X = rnorm(n_c),
+    Z = rbern(n_c, plogis(X)),
+    Y = rnorm(n_c, 2 * Z - 1)
+)
+```
+
+:::
+::: {.column width="55%"}
+
+```{r}
+#| label: cpipe-plot
+#| echo: true
+#| code-fold: true
+#| crop: false
+cpipe_lm <- lm(Y ~ X, data=cpipe_df)
+cpipe_slope <- round(cpipe_lm$coef['X'], 3)
+cpipe_z0_lm <- lm(Y ~ X, data=cpipe_df |> filter(Z == 0))
+cpipe_z0_slope <- round(cpipe_z0_lm$coef['X'], 2)
+cpipe_z0_label <- paste0("$Slope_{Z=0} = ",cpipe_z0_slope,"$")
+cpipe_z1_lm <- lm(Y ~ X, data=cpipe_df |> filter(Z == 1))
+cpipe_z1_slope <- round(cpipe_z1_lm$coef['X'], 2)
+cpipe_z1_label <- paste0("$Slope_{Z=1} = ",cpipe_z1_slope,"$")
+cpipe_z_texlabel <- TeX(paste0(cpipe_z0_label, " | ", cpipe_z1_label))
+cpipe_xmin <- min(cpipe_df$X)
+cpipe_xmax <- max(cpipe_df$X)
+ggplot() +
+  # Points
+  geom_point(
+    data=cpipe_df |> filter(Y > -3),
+    aes(x=X, y=Y, color=factor(Z)),
+    size=0.6*g_pointsize,
+    alpha=0.8
+  ) +
+  # Overall lm
+  geom_smooth(
+    data=cpipe_df, aes(x=X, y=Y),
+    method = lm, se = FALSE,
+    linewidth = 2.5, color='black'
+  ) +
+  # Stratified lm
+  # (slightly larger black lines)
+  geom_smooth(
+    data=cpipe_df,
+    aes(x=X, y=Y, group=factor(Z)),
+    method=lm, se=FALSE, fullrange=TRUE,
+    linewidth=2.75, color='black'
+  ) +
+  # (Colored lines)
+  geom_smooth(
+    data=cpipe_df,
+    aes(x=X, y=Y, color=factor(Z)),
+    method=lm, se=FALSE, fullrange=TRUE,
+    linewidth=2
+  ) +
+  theme_dsan(base_size=20) +
+  theme(
+    plot.title = element_text(size=21),
+    plot.subtitle = element_text(size=18)
+  ) +
+  coord_equal() +
+  labs(
+    title = paste0(
+      "Unstratified Slope = ",cpipe_slope
+    ),
+    subtitle=cpipe_z_texlabel,
+    x = "X", y = "Y", color = "Z"
+  )
+```
+
+:::
+::::
+
+## ⚠️The Collider⚠️: $X \rightarrow Z \leftarrow Y$ {.text-80 .math-90 .crunch-math .crunch-title .crunch-quarto-figure .crunch-ul .crunch-li-5}
+
+*Conditioning on $Z$ **induces correlation** between $X$ and $Y$, where there **previously was none*** ☠️
+
+:::: {.columns}
+::: {.column width="55%"}
+
+$$
+\begin{aligned}
+X &\sim \mathcal{N}(0, 1) \\
+Y &\sim \mathcal{N}(0, 1) \\
+Z &\sim \text{Bern}\left( \frac{e^{2X + 2Y - 2}}{1+e^{2X + 2Y - 2}} \right)
+\end{aligned}
+$$
+
+<!-- Continuous Collider Plot -->
+
+```{r}
+#| label: coll-continuous
+#| echo: true
+#| code-fold: show
+set.seed(5650)
+ccoll_df <- tibble(
+    X = rnorm(n_c),
+    Y = rnorm(n_c),
+    Z = rbern(n_c,
+      plogis(2 * (X + Y - 1))
+    )
+)
+```
+
+:::
+::: {.column width="45%"}
+
+```{r}
+#| label: ccoll-plot
+#| echo: true
+#| code-fold: true
+#| crop: false
+ccoll_lm <- lm(Y ~ X, data=ccoll_df)
+ccoll_slope <- round(ccoll_lm$coef['X'], 3)
+ccoll_z0_lm <- lm(Y ~ X, data=ccoll_df |> filter(Z == 0))
+ccoll_z0_slope <- round(ccoll_z0_lm$coef['X'], 2)
+ccoll_z0_label <- paste0("$Slope_{Z=0} = ",ccoll_z0_slope,"$")
+ccoll_z1_lm <- lm(Y ~ X, data=ccoll_df |> filter(Z == 1))
+ccoll_z1_slope <- round(ccoll_z1_lm$coef['X'], 2)
+ccoll_z1_label <- paste0("$Slope_{Z=1} = ",ccoll_z1_slope,"$")
+ccoll_z_texlabel <- TeX(paste0(ccoll_z0_label, " | ", ccoll_z1_label))
+ccoll_xmin <- min(ccoll_df$X)
+ccoll_xmax <- max(ccoll_df$X)
+ggplot() +
+  # Points
+  geom_point(
+    data=ccoll_df |> filter(Y > -3),
+    aes(x=X, y=Y, color=factor(Z)),
+    size=0.6*g_pointsize,
+    alpha=0.8
+  ) +
+  # Overall lm
+  geom_smooth(
+    data=ccoll_df, aes(x=X, y=Y),
+    method = lm, se = FALSE,
+    linewidth = 2.5, color='black'
+  ) +
+  # Stratified lm
+  # (slightly larger black lines)
+  geom_smooth(
+    data=ccoll_df,
+    aes(x=X, y=Y, group=factor(Z)),
+    method=lm, se=FALSE, fullrange=TRUE,
+    linewidth=2.75, color='black'
+  ) +
+  # (Colored lines)
+  geom_smooth(
+    data=ccoll_df,
+    aes(x=X, y=Y, color=factor(Z)),
+    method=lm, se=FALSE, fullrange=TRUE,
+    linewidth=2
+  ) +
+  theme_dsan(base_size=20) +
+  theme(
+    plot.title = element_text(size=24),
+    plot.subtitle = element_text(size=20)
+  ) +
+  coord_equal() +
+  labs(
+    title = paste0(
+      "Unstratified Slope = ",ccoll_slope
+    ),
+    subtitle=ccoll_z_texlabel,
+    x = "X", y = "Y", color = "Z"
+  )
+```
+
+:::
+::::
+
+<center>
+
+...And that's why we have to **think about the causal pathways from $X$ to $Y$**, rather than just "control for everything"! 😭
+
+</center>
 
 ## References
 
